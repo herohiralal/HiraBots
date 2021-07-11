@@ -15,7 +15,7 @@ namespace HiraBots
         HashSet<string> SameNamedKeyCheckHelper { get; }
         void AddSameNamedKey(string keyName, BlackboardTemplate owner);
         
-        IBlackboardKeyValidatorContext KeyValidatorContext { get; }
+        IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key);
     }
 }
 #endif
