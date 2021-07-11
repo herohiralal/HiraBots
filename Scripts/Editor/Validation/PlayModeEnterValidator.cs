@@ -3,7 +3,7 @@
 namespace HiraBots.Editor
 {
     [InitializeOnLoad]
-    public static class PlayModeEnterValidator
+    internal static class PlayModeEnterValidator
     {
         static PlayModeEnterValidator()
         {
@@ -13,6 +13,10 @@ namespace HiraBots.Editor
 
         private static void OnPlayModeStateChange(PlayModeStateChange state)
         {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                // todo: cook blackboard templates into a scriptable object
+            }
             // acquire all blackboard templates
             // check if the data within them is valid
             // if it isn't,
