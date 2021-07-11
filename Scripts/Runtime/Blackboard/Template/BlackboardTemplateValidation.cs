@@ -89,7 +89,7 @@ namespace HiraBots
         {
             var count = keys.Length;
             for (var i = 0; i < count; i++)
-                keys[i].Validate(context);
+                keys[i].Validate(context.KeyValidatorContext);
         }
     }
 }

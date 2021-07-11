@@ -16,7 +16,7 @@ namespace HiraBots
 
 #if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode
 
-        internal virtual void Validate(IBlackboardTemplateValidatorContext context)
+        internal virtual void Validate(IBlackboardKeyValidatorContext context)
         {
         }
 
