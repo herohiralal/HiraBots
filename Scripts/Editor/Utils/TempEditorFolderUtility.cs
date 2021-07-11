@@ -25,6 +25,7 @@ namespace HiraBots.Editor
             InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] {target},
                 FileNameToTempEditorPath(CookedDataSingleton<T>.FileName), true);
 
+            Object.DestroyImmediate(target, false);
             target = null;
         }
     }

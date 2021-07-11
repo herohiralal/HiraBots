@@ -46,5 +46,20 @@ namespace HiraBots.Editor
             Resources.UnloadAsset(target);
             target = null;
         }
+
+        internal static void DeleteFromTempBuildFolder<T>() where T : CookedDataSingleton<T> =>
+            AssetDatabase.DeleteAsset(FileNameToTempBuildPath(CookedDataSingleton<T>.FileName));
+
+        internal static void DeleteTempBuildFolder()
+        {
+            if (AssetDatabase.IsValidFolder(BUILD_ARTIFACTS_RESOURCES_FOLDER_NAME_R))
+                AssetDatabase.DeleteAsset(BUILD_ARTIFACTS_RESOURCES_FOLDER_NAME_R);
+
+            if (AssetDatabase.IsValidFolder(BUILD_ARTIFACTS_FOLDER_NAME_R + "/" + RESOURCES_FOLDER_NAME))
+                AssetDatabase.DeleteAsset(BUILD_ARTIFACTS_FOLDER_NAME_R + "/" + RESOURCES_FOLDER_NAME);
+
+            if (AssetDatabase.IsValidFolder(BUILD_ARTIFACTS_FOLDER_NAME_R))
+                AssetDatabase.DeleteAsset(BUILD_ARTIFACTS_FOLDER_NAME_R);
+        }
     }
 }
