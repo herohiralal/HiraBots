@@ -1,0 +1,25 @@
+{
+    "name": "HiraBots.Tests",
+    "references": [
+        "GUID:77a164f27b7b62c44bc067ecfe3114e9",
+        "GUID:d9c49781b75291a4e9a1f9a2e0dbd879",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "HIRA_BOTS_TESTS",
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
