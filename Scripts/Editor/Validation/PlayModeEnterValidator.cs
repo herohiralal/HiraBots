@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -17,33 +16,18 @@ namespace HiraBots.Editor
         {
             if (state != PlayModeStateChange.ExitingEditMode) return;
 
-            var validator = new BlackboardValidator();
-
-            var templatesToCook = CookingHelpers.LoadBlackboardTemplatesToCook().ToArray();
-
-            var result = true;
-
-            foreach (var template in templatesToCook)
-            {
-                if (!validator.Execute(template, out var errorText))
-                {
-                    Debug.LogError(errorText, template);
-                    result = false;
-                }
-            }
-
-            if (!result)
+            if (!CookingHelpers.TryGenerateBlackboardTemplateCollection(out var result))
             {
                 Debug.LogError($"One or more blackboard templates have failed to compile. " +
-                               $"You cannot enter play mode until they are fixed.");
+                               "You cannot enter play mode until they are fixed.");
                 EditorApplication.isPlaying = false;
-                return;
             }
-
-            var templatesCollection = BlackboardTemplateCollection.Create(templatesToCook);
-                
-            EditorSerializationUtility.ConfirmTempEditorFolder();
-            EditorSerializationUtility.CookToTempEditorFolderAndForget(ref templatesCollection);
+            else
+            {
+                result.hideFlags = HideFlags.HideAndDontSave;
+                EditorSerializationUtility.ConfirmTempEditorFolder();
+                EditorSerializationUtility.CookToTempEditorFolderAndForget(ref result);
+            }
         }
     }
 }

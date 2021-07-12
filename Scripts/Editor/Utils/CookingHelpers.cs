@@ -13,11 +13,30 @@ namespace HiraBots.Editor
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<T>);
 
-        internal static IEnumerable<BlackboardTemplate> LoadBlackboardTemplatesToCook() =>
-            AssetDatabase
+        internal static bool TryGenerateBlackboardTemplateCollection(out BlackboardTemplateCollection output)
+        {
+            var validator = new BlackboardValidator();
+
+            var templatesToCook = AssetDatabase
                 .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => !path.Contains("HiraBotsTestObjects"))
-                .Select(AssetDatabase.LoadAssetAtPath<BlackboardTemplate>);
+                .Select(AssetDatabase.LoadAssetAtPath<BlackboardTemplate>)
+                .ToArray();
+
+            var result = true;
+
+            foreach (var template in templatesToCook)
+            {
+                if (!validator.Execute(template, out var errorText))
+                {
+                    Debug.LogError(errorText, template);
+                    result = false;
+                }
+            }
+
+            output = result ? BlackboardTemplateCollection.Create(templatesToCook) : null;
+            return result;
+        }
     }
 }
