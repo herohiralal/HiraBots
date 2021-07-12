@@ -12,6 +12,12 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(CookedDataTestObject.VALUE_TO_COOK, CookedDataTestObject.Instance.value);
         }
 
+        [Test]
+        public void BlackboardTemplateCollectionIsCooked()
+        {
+            Assert.IsTrue(BlackboardTemplateCollection.Instance != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
+        }
+
         public void Setup()
         {
 #if UNITY_EDITOR
