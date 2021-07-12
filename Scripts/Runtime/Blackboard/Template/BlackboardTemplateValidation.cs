@@ -91,7 +91,8 @@ namespace HiraBots
             for (var i = 0; i < count; i++)
             {
                 var key = keys[i];
-                key.Validate(context.GetKeyValidatorContext(key));
+                if (key != null)
+                    key.Validate(context.GetKeyValidatorContext(key));
             }
         }
     }
