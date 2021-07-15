@@ -5,19 +5,35 @@ namespace HiraBots
 {
     internal abstract class BlackboardKey : ScriptableObject
     {
-        [SerializeField, HideInInspector] private bool instanceSynced = false;
-        [SerializeField, HideInInspector] private bool essentialToDecisionMaking = false;
+        protected internal BlackboardKey(int sizeInBytes, BlackboardKeyType keyType) =>
+            (SizeInBytes, KeyType) = (sizeInBytes, keyType);
 
-        internal abstract byte SizeInBytes { get; }
-        internal ushort Identifier => throw new NotImplementedException();
-        internal ushort Index => throw new NotImplementedException();
+        [SerializeField, HideInInspector] private BlackboardKeyTraits traits = BlackboardKeyTraits.None;
 
-        internal abstract void Compile(IBlackboardKeyCompilerContext context);
+        [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = null;
+        [NonSerialized] internal readonly int SizeInBytes;
+        [NonSerialized] internal readonly BlackboardKeyType KeyType;
 
-#if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode
+        internal BlackboardKeyCompiledData CompiledData => CompiledDataInternal;
 
-        internal virtual void Validate(IBlackboardKeyValidatorContext context)
+        public bool IsCompiled => CompiledData != null;
+
+        internal BlackboardKeyCompiledData Compile(IBlackboardKeyCompilerContext context)
         {
+            CompileInternal(context);
+            return CompiledDataInternal = new BlackboardKeyCompiledData(context.Identifier, context.Index, traits, KeyType);
+        }
+
+        protected abstract void CompileInternal(IBlackboardKeyCompilerContext context);
+
+        internal virtual void Free() => CompiledDataInternal = null;
+
+#if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode)
+
+        internal void Validate(IBlackboardKeyValidatorContext context)
+        {
+            if (SizeInBytes < byte.MinValue || SizeInBytes > byte.MaxValue || KeyType == BlackboardKeyType.Invalid)
+                context.MarkUnsuccessful();
         }
 
 #endif

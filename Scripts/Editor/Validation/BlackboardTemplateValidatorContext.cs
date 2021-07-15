@@ -2,7 +2,7 @@
 
 namespace HiraBots.Editor
 {
-    internal class BlackboardTemplateValidatorContext : IBlackboardKeyValidatorContext, IBlackboardTemplateValidatorContext
+    internal class BlackboardTemplateValidatorContext : IBlackboardTemplateValidatorContext, IBlackboardKeyValidatorContext
     {
         public void Reset()
         {
@@ -12,6 +12,7 @@ namespace HiraBots.Editor
             RecursionPoint = null;
             EmptyIndices.Clear();
             DuplicateKeys.Clear();
+            BadKeys.Clear();
             _currentKey = null;
         }
 
@@ -24,13 +25,14 @@ namespace HiraBots.Editor
         // validation data
         public BlackboardTemplate RecursionPoint { get; set; } = null;
         public readonly List<int> EmptyIndices = new List<int>();
-        public List<(string, BlackboardTemplate)> DuplicateKeys = new List<(string, BlackboardTemplate)>();
+        public readonly List<(string, BlackboardTemplate)> DuplicateKeys = new List<(string, BlackboardTemplate)>();
+        public readonly List<BlackboardKey> BadKeys = new List<BlackboardKey>();
 
         // state
         private BlackboardKey _currentKey = null;
 
         // other interface
-        public void MarkUnsuccessful() => Validated = false;
+        void IBlackboardTemplateValidatorContext.MarkUnsuccessful() => Validated = false;
         public void AddEmptyKeyIndex(int index) => EmptyIndices.Add(index);
         public void AddSameNamedKey(string keyName, BlackboardTemplate owner) => DuplicateKeys.Add((keyName, owner));
 
@@ -38,6 +40,12 @@ namespace HiraBots.Editor
         {
             _currentKey = key;
             return this;
+        }
+
+        void IBlackboardKeyValidatorContext.MarkUnsuccessful()
+        {
+            BadKeys.Add(_currentKey);
+            Validated = false;
         }
     }
 }

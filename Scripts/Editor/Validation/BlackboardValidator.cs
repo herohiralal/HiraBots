@@ -34,6 +34,9 @@ namespace HiraBots.Editor
                 foreach (var (keyName, template) in _context.DuplicateKeys)
                     _sb.AppendLine($"Contains duplicate keys named {keyName}." +
                                    $" {(template == target ? "" : $" Inherited from {template.name}.")}");
+
+                foreach (var key in _context.BadKeys)
+                    _sb.AppendLine($"Contains invalid data for the key {key.name}.");
             }
 
             _context.Reset();
