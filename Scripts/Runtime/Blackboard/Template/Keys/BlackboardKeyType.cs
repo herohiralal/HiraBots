@@ -8,7 +8,7 @@
         Float,
         Integer,
         Object,
-        Vector,
-        Quaternion
+        Quaternion,
+        Vector
     }
 }

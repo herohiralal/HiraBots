@@ -7,45 +7,67 @@ namespace HiraBots.Editor.Tests
     [TestFixture]
     internal class BlackboardUnsafeHelpersTests
     {
-        [Test]
-        public unsafe void VectorReadWriteTest(
-            [Random(-5, 5, 1)] float x,
-            [Random(-5, 5, 1)] float y,
-            [Random(-5, 5, 1)] float z)
+        private enum GenericResult : ulong
         {
-            var vector = new Vector3(x, y, z);
-            var stream = (byte*) &vector;
-
-            Assert.AreEqual(vector, ReadVectorValue(stream, 0), "Read test failed.");
-
-            var newVector = vector + (100 * Vector3.one);
-
-            Assert.AreNotEqual(vector, newVector, "New value test failed.");
-
-            WriteVectorValue(stream, 0, newVector);
-
-            Assert.AreEqual(newVector, vector, "Write test failed.");
+            Failure = 0,
+            Success = 1
         }
 
         [Test]
-        public unsafe void QuaternionReadWriteTest(
-            [Random(float.MinValue, float.MaxValue, 1)] float x,
-            [Random(float.MinValue, float.MaxValue, 1)] float y,
-            [Random(float.MinValue, float.MaxValue, 1)] float z,
-            [Random(float.MinValue, float.MaxValue, 1)] float w)
+        public unsafe void BooleanReadWriteTest([Random(0, 1, 1)] byte b)
         {
-            var quaternion = new Quaternion(x, y, z, w);
-            var stream = (byte*) &quaternion;
+            var value = b;
+            var stream = &value;
 
-            Assert.AreEqual(quaternion, ReadQuaternionValue(stream, 0), "Read test failed.");
+            var booleanValue = b != 0;
 
-            var newQuaternion = Quaternion.Euler(Vector3.one) * quaternion;
+            Assert.IsTrue(ReadBooleanValue(stream, 0) == booleanValue, "Read test failed.");
 
-            Assert.AreNotEqual(quaternion, newQuaternion, "New value test failed.");
+            WriteBooleanValue(stream, 0, !booleanValue);
 
-            WriteQuaternionValue(stream, 0, newQuaternion);
+            Assert.IsTrue(ReadBooleanValue(stream, 0) != booleanValue, "Write test failed.");
+        }
 
-            Assert.AreEqual(newQuaternion, quaternion, "Write test failed.");
+        [Test]
+        public unsafe void EnumReadWriteTest([Random(0, 1, 1)] byte i)
+        {
+            var input = (GenericResult) i;
+
+            ulong value = i;
+            var stream = (byte*) &value;
+
+            Assert.AreEqual(ReadEnumValue<GenericResult>(stream, 0), input, "Read test failed.");
+
+            WriteEnumValue<GenericResult>(stream, 0, input == GenericResult.Failure ? GenericResult.Success : GenericResult.Failure);
+
+            Assert.AreEqual(ReadEnumValue<GenericResult>(stream, 0),
+                input == GenericResult.Failure ? GenericResult.Success : GenericResult.Failure, "Write test failed.");
+        }
+
+        [Test]
+        public unsafe void FloatReadWriteTest([Random(-5f, 5f, 1)] float f)
+        {
+            var value = f;
+            var stream = (byte*) &value;
+
+            Assert.AreEqual(ReadFloatValue(stream, 0), f, "Read test failed.");
+
+            WriteFloatValue(stream, 0, f + 50);
+
+            Assert.AreEqual(ReadFloatValue(stream, 0), f + 50, "Write test failed.");
+        }
+
+        [Test]
+        public unsafe void IntegerReadWriteTest([Random(-5, 5, 1)] int i)
+        {
+            var value = i;
+            var stream = (byte*) &value;
+
+            Assert.AreEqual(ReadIntegerValue(stream, 0), i, "Read test failed.");
+
+            WriteIntegerValue(stream, 0, i + 50);
+
+            Assert.AreEqual(ReadIntegerValue(stream, 0), i + 50, "Write test failed.");
         }
 
         [Test]
@@ -81,6 +103,47 @@ namespace HiraBots.Editor.Tests
 
             i = inst2;
             Assert.IsNull(ReadObjectValue(stream, 0), "Resource freeing test 2 failed.");
+        }
+
+        [Test]
+        public unsafe void QuaternionReadWriteTest(
+            [Random(float.MinValue, float.MaxValue, 1)] float x,
+            [Random(float.MinValue, float.MaxValue, 1)] float y,
+            [Random(float.MinValue, float.MaxValue, 1)] float z,
+            [Random(float.MinValue, float.MaxValue, 1)] float w)
+        {
+            var quaternion = new Quaternion(x, y, z, w);
+            var stream = (byte*) &quaternion;
+
+            Assert.AreEqual(quaternion, ReadQuaternionValue(stream, 0), "Read test failed.");
+
+            var newQuaternion = Quaternion.Euler(Vector3.one) * quaternion;
+
+            Assert.AreNotEqual(quaternion, newQuaternion, "New value test failed.");
+
+            WriteQuaternionValue(stream, 0, newQuaternion);
+
+            Assert.AreEqual(newQuaternion, quaternion, "Write test failed.");
+        }
+
+        [Test]
+        public unsafe void VectorReadWriteTest(
+            [Random(-5, 5, 1)] float x,
+            [Random(-5, 5, 1)] float y,
+            [Random(-5, 5, 1)] float z)
+        {
+            var vector = new Vector3(x, y, z);
+            var stream = (byte*) &vector;
+
+            Assert.AreEqual(vector, ReadVectorValue(stream, 0), "Read test failed.");
+
+            var newVector = vector + (100 * Vector3.one);
+
+            Assert.AreNotEqual(vector, newVector, "New value test failed.");
+
+            WriteVectorValue(stream, 0, newVector);
+
+            Assert.AreEqual(newVector, vector, "Write test failed.");
         }
     }
 }
