@@ -19,6 +19,7 @@ namespace HiraBots.Editor.Tests
         private static void Initialize()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChange;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChange;
         }
 
         private static void OnPlayModeStateChange(PlayModeStateChange state)
