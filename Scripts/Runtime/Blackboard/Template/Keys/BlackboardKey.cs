@@ -8,7 +8,8 @@ namespace HiraBots
         protected internal BlackboardKey(int sizeInBytes, BlackboardKeyType keyType) =>
             (SizeInBytes, KeyType) = (sizeInBytes, keyType);
 
-        [SerializeField, HideInInspector] private BlackboardKeyTraits traits = BlackboardKeyTraits.None;
+        [SerializeField, HideInInspector] private bool instanceSynced = false;
+        [SerializeField, HideInInspector] private bool essentialToDecisionMaking = false;
 
         [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = null;
         [NonSerialized] internal readonly int SizeInBytes;
@@ -21,6 +22,9 @@ namespace HiraBots
         internal BlackboardKeyCompiledData Compile(IBlackboardKeyCompilerContext context)
         {
             CompileInternal(context);
+            var traits = BlackboardKeyTraits.None
+                         | (instanceSynced ? BlackboardKeyTraits.InstanceSynced : BlackboardKeyTraits.None)
+                         | (essentialToDecisionMaking ? BlackboardKeyTraits.BroadcastEventOnUnexpectedChange : BlackboardKeyTraits.None);
             return CompiledDataInternal = new BlackboardKeyCompiledData(context.Identifier, context.Index, traits, KeyType);
         }
 
@@ -29,6 +33,10 @@ namespace HiraBots
         internal virtual void Free() => CompiledDataInternal = null;
 
 #if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode)
+
+#pragma warning disable CS0414
+        [SerializeField, HideInInspector] private bool isExpanded = false;
+#pragma warning restore CS0414
 
         internal void Validate(IBlackboardKeyValidatorContext context)
         {

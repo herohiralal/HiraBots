@@ -8,11 +8,11 @@ namespace HiraBots
         {
         }
 
-        [SerializeField] private Quaternion defaultValue = Quaternion.identity;
+        [SerializeField] private Vector3 defaultValue = Vector3.zero;
 
         protected override void CompileInternal(IBlackboardKeyCompilerContext context)
         {
-            BlackboardUnsafeHelpers.WriteQuaternionValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteQuaternionValue(context.Address, 0, Quaternion.Euler(defaultValue));
         }
     }
 }
