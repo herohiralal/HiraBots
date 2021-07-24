@@ -61,11 +61,11 @@ namespace HiraBots.Editor
 
             _serializedObject.ApplyModifiedProperties();
 
-            Undo.SetCurrentGroupName($"Destroy {objectToRemove.name}");
-            var group = Undo.GetCurrentGroup();
-            AssetDatabase.RemoveObjectFromAsset(objectToRemove);
-            Undo.DestroyObjectImmediate(objectToRemove);
-            Undo.CollapseUndoOperations(group);
+            using (new UndoMerger($"Destroy {objectToRemove.name}"))
+            {
+                AssetDatabase.RemoveObjectFromAsset(objectToRemove);
+                Undo.DestroyObjectImmediate(objectToRemove);
+            }
 
             EditorUtility.SetDirty(_target);
             AssetDatabase.SaveAssets();

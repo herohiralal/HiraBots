@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -60,19 +61,27 @@ namespace HiraBots.Editor
             {
                 serializedObject.Update();
 
-                var oldParent = parentProperty.objectReferenceValue;
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(parentProperty);
-                var newParent = parentProperty.objectReferenceValue;
-
-                if (!ReferenceEquals(newParent, oldParent))
+                if (EditorGUI.EndChangeCheck())
                 {
-                    if (!ReferenceEquals(newParent, null) && CreateCyclicalDependency(target, newParent))
+                    using (new UndoMerger("Changed Blackboard Parent"))
                     {
-                        parentProperty.objectReferenceValue = null;
-                        Debug.LogError($"Cyclical dependency created in blackboard {target.name}. Removing parent.");
-                    }
+                        serializedObject.ApplyModifiedProperties();
+                        var newParent = parentProperty.objectReferenceValue;
+                        if (CheckForCyclicalDependency(target))
+                        {
+                            parentProperty.objectReferenceValue = null;
+                            Debug.LogError($"Cyclical dependency created in blackboard {target.name}. Removing parent.");
+                        }
+                        else if (newParent != null && CheckForCyclicalDependency(target))
+                        {
+                            parentProperty.objectReferenceValue = null;
+                            Debug.LogError($"Cyclical dependency created in blackboard {newParent.name}. Removing parent.");
+                        }
 
-                    serializedObject.ApplyModifiedProperties();
+                        serializedObject.ApplyModifiedProperties();
+                    }
                 }
 
                 var parent = parentProperty.objectReferenceValue;
@@ -123,6 +132,12 @@ namespace HiraBots.Editor
 
                 rect.y -= 2;
                 rect.height -= 2;
+
+                rect.x += 20f;
+                rect.width -= 20f;
+                ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, true, true);
+
+                rect.x -= 20f;
                 rect.width = 20f;
                 EditorGUI.DrawRect(rect, BlackboardGUIHelpers.GetBlackboardKeyColor(value));
             }
@@ -162,25 +177,17 @@ namespace HiraBots.Editor
         private void OnRemove(ReorderableList list) =>
             _multiAssetFileHelper.RemoveObject(list.index);
 
-        private static bool CreateCyclicalDependency(Object a, Object b)
+        private static bool CheckForCyclicalDependency(Object a)
         {
-            var current = a;
+            var processedObjects = new List<Object>();
 
             do
             {
-                if (current == b) return true;
+                if (processedObjects.Any(o => o == a)) return true;
 
-                current = new SerializedObject(current).FindProperty(parent_property).objectReferenceValue;
-            } while (current != null);
-
-            current = b;
-
-            do
-            {
-                if (current == a) return true;
-
-                current = new SerializedObject(current).FindProperty(parent_property).objectReferenceValue;
-            } while (current != null);
+                processedObjects.Add(a);
+                a = new SerializedObject(a).FindProperty(parent_property).objectReferenceValue;
+            } while (a != null);
 
             return false;
         }

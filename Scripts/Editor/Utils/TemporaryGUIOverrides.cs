@@ -21,4 +21,17 @@ namespace HiraBots.Editor
 
         public void Dispose() => EditorGUI.indentLevel = _existingValue;
     }
+
+    internal class UndoMerger : IDisposable
+    {
+        private readonly int _group;
+
+        public UndoMerger(string name)
+        {
+            Undo.SetCurrentGroupName(name);
+            _group = Undo.GetCurrentGroup();
+        }
+
+        public void Dispose() => Undo.CollapseUndoOperations(_group);
+    }
 }
