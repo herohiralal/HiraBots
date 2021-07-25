@@ -4,7 +4,7 @@ namespace HiraBots.Editor
 {
     internal class BlackboardTemplateValidatorContext : IBlackboardTemplateValidatorContext, IBlackboardKeyValidatorContext
     {
-        public void Reset()
+        internal void Reset()
         {
             Validated = true;
             CyclicalHierarchyCheckHelper.Clear();
@@ -16,7 +16,7 @@ namespace HiraBots.Editor
             _currentKey = null;
         }
 
-        public bool Validated = true;
+        internal bool Validated = true;
 
         // helpers
         public HashSet<BlackboardTemplate> CyclicalHierarchyCheckHelper { get; } = new HashSet<BlackboardTemplate>();
@@ -24,9 +24,9 @@ namespace HiraBots.Editor
 
         // validation data
         public BlackboardTemplate RecursionPoint { get; set; } = null;
-        public readonly List<int> EmptyIndices = new List<int>();
-        public readonly List<(string, BlackboardTemplate)> DuplicateKeys = new List<(string, BlackboardTemplate)>();
-        public readonly List<BlackboardKey> BadKeys = new List<BlackboardKey>();
+        internal readonly List<int> EmptyIndices = new List<int>();
+        internal readonly List<(string, BlackboardTemplate)> DuplicateKeys = new List<(string, BlackboardTemplate)>();
+        internal readonly List<BlackboardKey> BadKeys = new List<BlackboardKey>();
 
         // state
         private BlackboardKey _currentKey = null;

@@ -2,8 +2,8 @@
 {
     internal partial class CookedDataTestObject : CookedDataSingleton<CookedDataTestObject>
     {
-        public int value = 0;
-        public const int VALUE_TO_COOK = 342;
+        [UnityEngine.SerializeField] internal int value = 0;
+        internal const int VALUE_TO_COOK = 342;
     }
 }
 

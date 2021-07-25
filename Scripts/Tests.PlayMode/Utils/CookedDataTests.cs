@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 namespace HiraBots.Editor.Tests
 {
     [TestFixture]
-    internal class CookedDataTest : IPrebuildSetup, IPostBuildCleanup
+    internal class CookedDataTests : IPrebuildSetup, IPostBuildCleanup
     {
         [Test]
         public void SerializationAndDeserializationWorksCorrectly()

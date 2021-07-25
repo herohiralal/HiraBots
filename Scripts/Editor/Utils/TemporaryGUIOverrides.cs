@@ -26,7 +26,7 @@ namespace HiraBots.Editor
     {
         private readonly int _group;
 
-        public UndoMerger(string name)
+        internal UndoMerger(string name)
         {
             Undo.SetCurrentGroupName(name);
             _group = Undo.GetCurrentGroup();
