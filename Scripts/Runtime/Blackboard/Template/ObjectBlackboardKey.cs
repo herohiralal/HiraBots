@@ -4,8 +4,10 @@ namespace HiraBots
 {
     internal partial class ObjectBlackboardKey : BlackboardKey
     {
-        internal ObjectBlackboardKey() : base(sizeof(int), BlackboardKeyType.Object)
+        internal ObjectBlackboardKey()
         {
+            SizeInBytesInternal = sizeof(int);
+            KeyType = BlackboardKeyType.Object;
         }
 
         [SerializeField] private Object defaultValue = null;
