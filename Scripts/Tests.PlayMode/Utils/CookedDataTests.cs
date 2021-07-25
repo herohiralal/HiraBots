@@ -15,7 +15,11 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void BlackboardTemplateCollectionIsCooked()
         {
-            Assert.IsTrue(BlackboardTemplateCollection.Instance != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
+            var btc = BlackboardTemplateCollection.Instance;
+            Assert.IsTrue(btc != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
+
+            for (var i = 1; i < btc.Count; i++)
+                Assert.IsTrue(btc[i].HierarchyIndex >= btc[i - 1].HierarchyIndex, "Blackboard template collection built without proper sorting.");
         }
 
         public void Setup()
