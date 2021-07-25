@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal unsafe class VectorBlackboardKey : BlackboardKey
+    internal unsafe partial class VectorBlackboardKey : BlackboardKey
     {
         internal VectorBlackboardKey() : base(sizeof(float) * 3, BlackboardKeyType.Vector)
         {

@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal unsafe class IntegerBlackboardKey : BlackboardKey
+    internal unsafe partial class IntegerBlackboardKey : BlackboardKey
     {
         internal IntegerBlackboardKey() : base(sizeof(int), BlackboardKeyType.Integer)
         {

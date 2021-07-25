@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal unsafe class BooleanBlackboardKey : BlackboardKey
+    internal unsafe partial class BooleanBlackboardKey : BlackboardKey
     {
         internal BooleanBlackboardKey() : base(sizeof(byte), BlackboardKeyType.Boolean)
         {
