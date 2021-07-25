@@ -50,6 +50,8 @@ namespace HiraBots
 
         internal ReadOnlyArrayAccessor<BlackboardKeyCompiledData> KeyData => _keyData;
 
+        internal BlackboardKeyCompiledData this[string keyName] => _keyNameToIndex.TryGetValue(keyName, out var index) ? _keyData[index] : null;
+
         internal ushort TemplateSize => (ushort) _template.Length;
 
         internal ushort KeyCount => (ushort) _keyData.Length;
