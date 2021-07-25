@@ -1,8 +1,39 @@
 ﻿#if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode)
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace HiraBots
 {
+    internal interface IBlackboardKeyValidatorContext
+    {
+        void MarkUnsuccessful();
+    }
+
+    internal interface IBlackboardTemplateValidatorContext
+    {
+        void MarkUnsuccessful();
+
+        HashSet<BlackboardTemplate> CyclicalHierarchyCheckHelper { get; }
+        BlackboardTemplate RecursionPoint { get; set; }
+
+        void AddEmptyKeyIndex(int index);
+
+        HashSet<string> SameNamedKeyCheckHelper { get; }
+        void AddSameNamedKey(string keyName, BlackboardTemplate owner);
+
+        IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key);
+    }
+
+    internal abstract partial class BlackboardKey
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void Validate(IBlackboardKeyValidatorContext context)
+        {
+            if (KeyType == BlackboardKeyType.Invalid)
+                context.MarkUnsuccessful();
+        }
+    }
+
     internal partial class BlackboardTemplate
     {
         internal ushort HierarchyIndex => parent == null ? (ushort) 0 : (ushort) (parent.HierarchyIndex + 1);
