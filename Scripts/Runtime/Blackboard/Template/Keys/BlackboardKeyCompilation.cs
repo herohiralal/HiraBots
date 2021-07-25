@@ -7,7 +7,7 @@ namespace HiraBots
         [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = null;
         internal BlackboardKeyCompiledData CompiledData => CompiledDataInternal;
 
-        public bool IsCompiled => CompiledData != null;
+        internal bool IsCompiled => CompiledData != null;
 
         internal void Compile(IBlackboardKeyCompilerContext context)
         {

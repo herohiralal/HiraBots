@@ -68,6 +68,10 @@ namespace HiraBots
 
         public void Free()
         {
+            if (parent != null && !parent.IsCompiled)
+                Debug.LogError("Parent blackboard decompiled before self.", this);
+
+            foreach (var key in keys) key.Free();
             CompiledData = null;
         }
     }
