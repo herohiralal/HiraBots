@@ -4,6 +4,8 @@
     {
         byte* Address { get; }
         ushort Index { get; }
-        ushort Identifier { get; }
+        ushort MemoryOffset { get; }
+        BlackboardKeyCompiledData CompiledData { set; }
+        string Name { set; }
     }
 }
