@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -6,6 +7,8 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardKey))]
     internal class BlackboardKeyObjectReferencePropertyDrawer : PropertyDrawer
     {
+        private static readonly Dictionary<int, bool> expansion_status = new Dictionary<int, bool>(40);
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var value = property.objectReferenceValue;
@@ -13,9 +16,9 @@ namespace HiraBots.Editor
             if (value == null)
                 return 21f;
 
-            var isExpandedProperty = new SerializedObject(value).FindProperty("isExpanded");
-                
-            return isExpandedProperty == null || !isExpandedProperty.boolValue
+            expansion_status.TryGetValue(value.GetInstanceID(), out var expanded);
+
+            return !expanded
                 ? 21f
                 : 0f
                   + 21f // header
@@ -89,39 +92,32 @@ namespace HiraBots.Editor
 
         private static bool DrawHeader(Rect position, SerializedObject so)
         {
-            var isExpandedProperty = so.FindProperty("isExpanded");
+            var instanceID = so.targetObject.GetInstanceID();
+            if (!expansion_status.ContainsKey(instanceID)) expansion_status.Add(instanceID, false);
 
-            if (isExpandedProperty != null)
+            using (new GUIEnabledChanger(true))
             {
-                using (new GUIEnabledChanger(true))
-                {
-                    // begin group
-                    var expanded = EditorGUI.BeginFoldoutHeaderGroup(position, isExpandedProperty.boolValue, GUIContent.none);
+                // begin group
+                var expanded = EditorGUI.BeginFoldoutHeaderGroup(position, expansion_status[instanceID], GUIContent.none);
 
-                    // background
-                    position.height -= 2f;
-                    EditorGUI.DrawRect(position, BlackboardGUIHelpers.GetBlackboardKeyColor(so.targetObject) * 0.35f);
+                // background
+                position.height -= 2f;
+                EditorGUI.DrawRect(position, BlackboardGUIHelpers.GetBlackboardKeyColor(so.targetObject) * 0.35f);
 
-                    // name
-                    position.height += 2f;
-                    position.x += 10f;
-                    position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(so.targetObject.name), EditorStyles.boldLabel);
+                // name
+                position.height += 2f;
+                position.x += 10f;
+                position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(so.targetObject.name), EditorStyles.boldLabel);
 
-                    // type
-                    EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(BlackboardGUIHelpers.FORMATTED_NAMES[so.targetObject.GetType()]));
+                // type
+                EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(BlackboardGUIHelpers.FORMATTED_NAMES[so.targetObject.GetType()]));
 
-                    // end group
-                    EditorGUI.EndFoldoutHeaderGroup();
+                // end group
+                EditorGUI.EndFoldoutHeaderGroup();
 
-                    // retrieve data
-                    isExpandedProperty.boolValue = expanded;
-                    return expanded;
-                }
-            }
-            else
-            {
-                EditorGUI.HelpBox(position, $"Missing is expanded property.", MessageType.Error);
-                return false;
+                // retrieve data
+                expansion_status[instanceID] = expanded;
+                return expanded;
             }
         }
     }
