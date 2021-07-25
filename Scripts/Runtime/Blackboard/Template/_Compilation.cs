@@ -156,18 +156,11 @@ namespace HiraBots
                 context.UpdateKeyCompilerContext(key.SizeInBytes);
             }
 
-            CompiledData = new BlackboardTemplateCompiledData(template, keyNameToIndex, keyData);
-            parentCompiledData?.AddListener(CompiledData);
+            CompiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToIndex, keyData);
         }
 
         internal void Free()
         {
-            if (parent != null)
-            {
-                if (!parent.IsCompiled) Debug.LogError("Parent blackboard decompiled before self.", this);
-                else parent.CompiledData.RemoveListener(CompiledData);
-            }
-
             foreach (var key in keys) key.Free();
             CompiledData = null;
         }

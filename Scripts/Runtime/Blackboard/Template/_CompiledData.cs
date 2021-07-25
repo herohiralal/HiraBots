@@ -22,12 +22,16 @@ namespace HiraBots
 
     internal unsafe partial class BlackboardTemplateCompiledData
     {
+        private BlackboardTemplateCompiledData _parentCompiledData;
         private NativeArray<byte> _template = default;
         private Dictionary<string, ushort> _keyNameToIndex;
         private BlackboardKeyCompiledData[] _keyData;
 
-        internal BlackboardTemplateCompiledData(NativeArray<byte> template, Dictionary<string, ushort> keyNameToIndex, BlackboardKeyCompiledData[] keyData)
+        internal BlackboardTemplateCompiledData(BlackboardTemplateCompiledData parentCompiledData, NativeArray<byte> template,
+            Dictionary<string, ushort> keyNameToIndex, BlackboardKeyCompiledData[] keyData)
         {
+            _parentCompiledData = parentCompiledData;
+            _parentCompiledData?.AddInstanceSyncListener(this);
             _template = template;
             _keyNameToIndex = keyNameToIndex;
             _keyData = keyData;
@@ -35,6 +39,9 @@ namespace HiraBots
 
         ~BlackboardTemplateCompiledData()
         {
+            _parentCompiledData?.RemoveInstanceSyncListener(this);
+            _parentCompiledData = null;
+
             if (_template.IsCreated)
                 _template.Dispose();
 
