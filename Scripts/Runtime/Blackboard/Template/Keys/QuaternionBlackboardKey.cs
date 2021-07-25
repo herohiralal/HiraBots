@@ -4,7 +4,7 @@ namespace HiraBots
 {
     internal unsafe class QuaternionBlackboardKey : BlackboardKey
     {
-        public QuaternionBlackboardKey() : base(sizeof(float) * 4, BlackboardKeyType.Quaternion)
+        internal QuaternionBlackboardKey() : base(sizeof(float) * 4, BlackboardKeyType.Quaternion)
         {
         }
 

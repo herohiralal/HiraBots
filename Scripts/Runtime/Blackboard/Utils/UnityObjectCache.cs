@@ -20,7 +20,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public UnityObjectCache(int capacity) => _objectCache = new Dictionary<int, ObjectCacheData>(capacity);
+        internal UnityObjectCache(int capacity) => _objectCache = new Dictionary<int, ObjectCacheData>(capacity);
 
         private readonly Dictionary<int, ObjectCacheData> _objectCache;
 

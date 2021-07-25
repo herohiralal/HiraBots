@@ -12,31 +12,34 @@ namespace HiraBots
             _rawData = rawData;
             _keyNameToIndex = keyNameToIndex;
             _keyData = keyData;
-            Index = startingIndex;
-            MemoryOffset = startingOffset;
+            _index = startingIndex;
+            _memoryOffset = startingOffset;
         }
 
         private readonly NativeArray<byte> _rawData;
         private readonly BlackboardKeyCompiledData[] _keyData;
         private readonly Dictionary<string, ushort> _keyNameToIndex;
-        public byte* Address => (byte*) _rawData.GetUnsafePtr() + MemoryOffset;
-        public ushort Index { get; private set; }
-        public ushort MemoryOffset { get; private set; }
+        private ushort _index;
+        private ushort _memoryOffset;
 
-        public BlackboardKeyCompiledData CompiledData
+        byte* IBlackboardKeyCompilerContext.Address => (byte*) _rawData.GetUnsafePtr() + _memoryOffset;
+        ushort IBlackboardKeyCompilerContext.Index => _index;
+        ushort IBlackboardKeyCompilerContext.MemoryOffset => _memoryOffset;
+
+        BlackboardKeyCompiledData IBlackboardKeyCompilerContext.CompiledData
         {
-            set => _keyData[Index] = value;
+            set => _keyData[_index] = value;
         }
 
-        public string Name
+        string IBlackboardKeyCompilerContext.Name
         {
-            set => _keyNameToIndex.Add(value, Index);
+            set => _keyNameToIndex.Add(value, _index);
         }
 
         internal void Update(ushort offsetDelta)
         {
-            Index++;
-            MemoryOffset += offsetDelta;
+            _index++;
+            _memoryOffset += offsetDelta;
         }
     }
 }

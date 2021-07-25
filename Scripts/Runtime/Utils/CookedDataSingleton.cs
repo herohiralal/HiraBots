@@ -6,8 +6,8 @@ namespace HiraBots
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     internal class CookedDataSingletonAttribute : Attribute
     {
-        public CookedDataSingletonAttribute(string name) => Name = name;
-        public readonly string Name;
+        internal CookedDataSingletonAttribute(string name) => Name = name;
+        internal readonly string Name;
     }
 
     internal abstract class CookedDataSingleton<T> : ScriptableObject where T : CookedDataSingleton<T>

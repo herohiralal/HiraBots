@@ -6,9 +6,9 @@ namespace HiraBots
     internal class BlackboardTemplateCompilerContext : IBlackboardTemplateCompilerContext
     {
         private BlackboardKeyCompilerContext _keyCompilerContext = null;
-        public IBlackboardKeyCompilerContext KeyCompilerContext => _keyCompilerContext;
+        IBlackboardKeyCompilerContext IBlackboardTemplateCompilerContext.KeyCompilerContext => _keyCompilerContext;
 
-        public void GenerateKeyCompilerContext(
+        void IBlackboardTemplateCompilerContext.GenerateKeyCompilerContext(
             NativeArray<byte> template,
             Dictionary<string, ushort> keyNameToIndex,
             BlackboardKeyCompiledData[] keyData,
@@ -23,7 +23,7 @@ namespace HiraBots
                 startingMemoryOffset);
         }
 
-        public void UpdateKeyCompilerContext(ushort memoryOffsetDelta) =>
+        void IBlackboardTemplateCompilerContext.UpdateKeyCompilerContext(ushort memoryOffsetDelta) =>
             _keyCompilerContext.Update(memoryOffsetDelta);
 
         internal void Update() => _keyCompilerContext = null;

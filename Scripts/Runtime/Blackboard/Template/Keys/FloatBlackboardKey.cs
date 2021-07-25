@@ -4,7 +4,7 @@ namespace HiraBots
 {
     internal unsafe class FloatBlackboardKey : BlackboardKey
     {
-        public FloatBlackboardKey() : base(sizeof(float), BlackboardKeyType.Float)
+        internal FloatBlackboardKey() : base(sizeof(float), BlackboardKeyType.Float)
         {
         }
 

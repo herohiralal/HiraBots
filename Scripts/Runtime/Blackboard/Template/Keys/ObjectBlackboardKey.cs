@@ -4,7 +4,7 @@ namespace HiraBots
 {
     internal unsafe class ObjectBlackboardKey : BlackboardKey
     {
-        public ObjectBlackboardKey() : base(sizeof(int), BlackboardKeyType.Object)
+        internal ObjectBlackboardKey() : base(sizeof(int), BlackboardKeyType.Object)
         {
         }
 

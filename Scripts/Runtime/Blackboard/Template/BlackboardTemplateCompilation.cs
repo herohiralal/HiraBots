@@ -10,7 +10,7 @@ namespace HiraBots
         internal BlackboardTemplateCompiledData CompiledData { get; private set; } = null;
         internal bool IsCompiled => CompiledData != null;
 
-        public void Compile(IBlackboardTemplateCompilerContext context)
+        internal void Compile(IBlackboardTemplateCompilerContext context)
         {
             if (IsCompiled)
                 return;
@@ -65,7 +65,7 @@ namespace HiraBots
             CompiledData = new BlackboardTemplateCompiledData(template, keyNameToIndex, keyData);
         }
 
-        public void Free()
+        internal void Free()
         {
             if (parent != null && !parent.IsCompiled)
                 Debug.LogError("Parent blackboard decompiled before self.", this);
