@@ -53,6 +53,15 @@ namespace HiraBots
             : base(traits, sizeInBytes, keyType) =>
             this.defaultValue = defaultValue;
     }
+
+    internal partial class BlackboardTemplate
+    {
+        internal BlackboardTemplate(BlackboardTemplate parent, BlackboardKey[] keys)
+        {
+            this.parent = parent;
+            this.keys = keys;
+        }
+    }
 }
 
 #endif
