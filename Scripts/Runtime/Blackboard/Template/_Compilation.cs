@@ -157,12 +157,16 @@ namespace HiraBots
             }
 
             CompiledData = new BlackboardTemplateCompiledData(template, keyNameToIndex, keyData);
+            parentCompiledData?.AddListener(CompiledData);
         }
 
         internal void Free()
         {
-            if (parent != null && !parent.IsCompiled)
-                Debug.LogError("Parent blackboard decompiled before self.", this);
+            if (parent != null)
+            {
+                if (!parent.IsCompiled) Debug.LogError("Parent blackboard decompiled before self.", this);
+                else parent.CompiledData.RemoveListener(CompiledData);
+            }
 
             foreach (var key in keys) key.Free();
             CompiledData = null;

@@ -20,7 +20,7 @@ namespace HiraBots
         internal readonly BlackboardKeyType KeyType;
     }
 
-    internal class BlackboardTemplateCompiledData
+    internal unsafe partial class BlackboardTemplateCompiledData
     {
         private NativeArray<byte> _template = default;
         private Dictionary<string, ushort> _keyNameToIndex;
@@ -43,8 +43,11 @@ namespace HiraBots
             _keyData = null;
         }
 
-        internal unsafe void CopyTemplateTo(NativeArray<byte> otherTemplate) =>
-            UnsafeUtility.MemCpy(otherTemplate.GetUnsafePtr(), _template.GetUnsafeReadOnlyPtr(), TemplateSize);
+        private byte* TemplatePtr => (byte*) _template.GetUnsafePtr();
+        private byte* TemplateReadOnlyPtr => (byte*) _template.GetUnsafeReadOnlyPtr();
+
+        internal void CopyTemplateTo(NativeArray<byte> otherTemplate) =>
+            UnsafeUtility.MemCpy(otherTemplate.GetUnsafePtr(), TemplateReadOnlyPtr, TemplateSize);
 
         internal ReadOnlyDictionaryAccessor<string, ushort> KeyNameToIndex => _keyNameToIndex;
 
