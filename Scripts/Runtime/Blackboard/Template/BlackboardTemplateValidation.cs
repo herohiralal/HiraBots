@@ -5,6 +5,8 @@ namespace HiraBots
 {
     internal partial class BlackboardTemplate
     {
+        internal ushort HierarchyIndex => parent == null ? (ushort) 0 : (ushort) (parent.HierarchyIndex + 1);
+
         internal void Validate(IBlackboardTemplateValidatorContext context)
         {
             CyclicalHierarchyCheck(context);

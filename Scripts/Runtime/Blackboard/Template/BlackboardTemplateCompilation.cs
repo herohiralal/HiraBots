@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -14,7 +15,17 @@ namespace HiraBots
             if (IsCompiled)
                 return;
 
-            var parentCompiledData = parent != null ? parent.CompiledData : null;
+            var parentCompiledData = (BlackboardTemplateCompiledData) null;
+            if (parent != null)
+            {
+                if (!parent.IsCompiled)
+                {
+                    Debug.LogError("Attempted to compile blackboard before its parent.", this);
+                    return;
+                }
+                
+                parentCompiledData = parent.CompiledData;
+            }
 
             ushort startingMemoryOffset = 0, startingIndex = 0;
 
