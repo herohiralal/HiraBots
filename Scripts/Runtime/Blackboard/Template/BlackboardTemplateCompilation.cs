@@ -10,7 +10,7 @@ namespace HiraBots
         internal BlackboardTemplateCompiledData CompiledData { get; private set; } = null;
         internal bool IsCompiled => CompiledData != null;
 
-        public void Compile()
+        public void Compile(IBlackboardTemplateCompilerContext context)
         {
             if (IsCompiled)
                 return;
@@ -54,13 +54,12 @@ namespace HiraBots
                 for (var i = 0; i < startingIndex; i++) keyData[i] = parentCompiledData.KeyData[i];
             }
 
-            var keyCompilerContext = new BlackboardKeyCompilerContext(template, keyNameToIndex, keyData,
-                startingIndex, startingMemoryOffset);
+            context.GenerateKeyCompilerContext(template, keyNameToIndex, keyData, startingIndex, startingMemoryOffset);
 
             foreach (var key in keys.OrderBy(k => k.SizeInBytes))
             {
-                key.Compile(keyCompilerContext);
-                keyCompilerContext.Update(key.SizeInBytes);
+                key.Compile(context.KeyCompilerContext);
+                context.UpdateKeyCompilerContext(key.SizeInBytes);
             }
 
             CompiledData = new BlackboardTemplateCompiledData(template, keyNameToIndex, keyData);
