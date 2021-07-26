@@ -101,6 +101,45 @@ namespace HiraBots
 
         #region Object
 
+#if UNITY_2020_3_OR_NEWER // 2020.3 or newer can use Resources.InstanceIDToObject directly.
+        [MethodImpl(inline)]
+        internal static void ClearObjectCache()
+        {
+        }
+
+        [MethodImpl(inline)]
+        internal static void Pin(Object _)
+        {
+        }
+
+        [MethodImpl(inline)]
+        internal static void Release(Object _)
+        {
+        }
+
+        [MethodImpl(inline)]
+        internal static Object ReadObjectValue(byte* stream, ushort offset)
+        {
+            var instanceID = ReadIntegerValue(stream, offset);
+            return (instanceID) == 0 ? null : Resources.InstanceIDToObject(instanceID);
+        }
+
+        [MethodImpl(inline)]
+        internal static bool WriteObjectValueAndGetChange(byte* stream, ushort offset, Object value) =>
+            WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+
+        [MethodImpl(inline)]
+        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value) =>
+            WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+
+        [MethodImpl(inline)]
+        internal static void WriteObjectValue(byte* stream, ushort offset, Object value) =>
+            WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
+
+        [MethodImpl(inline)]
+        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value) =>
+            WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
+#else
         private static readonly UnityObjectCache object_cache = new UnityObjectCache(200);
 
         internal static void ClearObjectCache() => object_cache.Clear();
@@ -136,6 +175,7 @@ namespace HiraBots
         [MethodImpl(inline)]
         internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value) =>
             WriteIntegerValue(stream, offset, value.GetInstanceID());
+#endif
 
         #endregion
 

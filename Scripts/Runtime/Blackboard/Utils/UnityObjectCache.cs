@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !UNITY_2020_3_OR_NEWER // 2020.3 or newer can use Resources.InstanceIDToObject directly.
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -88,3 +89,4 @@ namespace HiraBots
             Debug.Log($"UnityObjectCache Update: {(saved ? "Stored" : "Forgot")} {value.name}.");
     }
 }
+#endif
