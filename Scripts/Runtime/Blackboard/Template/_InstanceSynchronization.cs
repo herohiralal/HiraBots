@@ -13,7 +13,7 @@ namespace HiraBots
 
     internal unsafe partial class BlackboardTemplateCompiledData : IInstanceSynchronizerListener
     {
-        public void UpdateValue(ushort memoryOffset, byte* value, ushort size, bool broadcastEventOnUnexpectedChange)
+        void IInstanceSynchronizerListener.UpdateValue(ushort memoryOffset, byte* value, ushort size, bool broadcastEventOnUnexpectedChange)
         {
             var ptr = TemplatePtr + memoryOffset;
             for (var i = 0; i < size; i++) ptr[i] = value[i];
@@ -55,70 +55,70 @@ namespace HiraBots
             if (_listeners.Contains(listener)) _listeners.Remove(listener);
         }
 
-        internal void UpdateInstanceSyncedBooleanKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, bool value)
+        internal void UpdateInstanceSyncedBooleanKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, bool value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteBooleanValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, sizeof(byte), broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedEnumKey<T>(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, T value) where T : unmanaged, Enum
+        internal void UpdateInstanceSyncedEnumKeyWithoutValidation<T>(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, T value) where T : unmanaged, Enum
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteEnumValue<T>(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, (ushort) sizeof(T), broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedFloatKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, float value)
+        internal void UpdateInstanceSyncedFloatKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, float value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteFloatValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, sizeof(float), broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedIntegerKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, int value)
+        internal void UpdateInstanceSyncedIntegerKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, int value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteIntegerValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, sizeof(int), broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedObjectKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Object value)
+        internal void UpdateInstanceSyncedObjectKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Object value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteObjectValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, sizeof(int), broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedVectorKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Vector3 value)
+        internal void UpdateInstanceSyncedVectorKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Vector3 value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteVectorValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
                 listener.UpdateValue(memoryOffset, valuePtr, sizeof(float) * 3, broadcastEventOnUnexpectedChange);
         }
 
-        internal void UpdateInstanceSyncedQuaternionKey(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Quaternion value)
+        internal void UpdateInstanceSyncedQuaternionKeyWithoutValidation(bool broadcastEventOnUnexpectedChange, ushort memoryOffset, Quaternion value)
         {
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteQuaternionValue(owningTemplate.TemplatePtr, memoryOffset, value)) return;
+            if (!BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(owningTemplate.TemplatePtr, memoryOffset, value)) return;
 
             var valuePtr = owningTemplate.TemplateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate._listeners)
