@@ -32,8 +32,17 @@ namespace HiraBots
         internal readonly BlackboardKeyTraits Traits;
         internal readonly BlackboardKeyType KeyType;
 
-        internal bool InstanceSynced => (Traits & BlackboardKeyTraits.InstanceSynced) != 0;
-        internal bool BroadcastEventOnUnexpectedChange => (Traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
+        internal bool InstanceSynced
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (Traits & BlackboardKeyTraits.InstanceSynced) != 0;
+        }
+
+        internal bool BroadcastEventOnUnexpectedChange
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => (Traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
+        }
     }
 
     internal unsafe partial class BlackboardTemplateCompiledData
