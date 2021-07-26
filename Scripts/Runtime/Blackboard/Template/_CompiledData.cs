@@ -27,17 +27,19 @@ namespace HiraBots
     {
         private BlackboardTemplateCompiledData _parentCompiledData;
         private NativeArray<byte> _template = default;
-        private Dictionary<string, ushort> _keyNameToIndex;
-        private BlackboardKeyCompiledData[] _keyData;
+        private readonly Dictionary<string, ushort> _keyNameToMemoryOffset;
+        private readonly Dictionary<ushort, BlackboardKeyCompiledData> _memoryOffsetToKeyData;
+        internal readonly ushort KeyCount;
 
         internal BlackboardTemplateCompiledData(BlackboardTemplateCompiledData parentCompiledData, NativeArray<byte> template,
-            Dictionary<string, ushort> keyNameToIndex, BlackboardKeyCompiledData[] keyData)
+            Dictionary<string, ushort> keyNameToMemoryOffset, Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData, ushort keyCount)
         {
             _parentCompiledData = parentCompiledData;
             _parentCompiledData?.AddInstanceSyncListener(this);
             _template = template;
-            _keyNameToIndex = keyNameToIndex;
-            _keyData = keyData;
+            _keyNameToMemoryOffset = keyNameToMemoryOffset;
+            _memoryOffsetToKeyData = memoryOffsetToKeyData;
+            KeyCount = keyCount;
         }
 
         ~BlackboardTemplateCompiledData()
@@ -48,9 +50,8 @@ namespace HiraBots
             if (_template.IsCreated)
                 _template.Dispose();
 
-            _keyNameToIndex.Clear();
-            _keyNameToIndex = null;
-            _keyData = null;
+            _keyNameToMemoryOffset.Clear();
+            _memoryOffsetToKeyData.Clear();
         }
 
         private byte* TemplatePtr => (byte*) _template.GetUnsafePtr();
@@ -59,14 +60,18 @@ namespace HiraBots
         internal void CopyTemplateTo(NativeArray<byte> otherTemplate) =>
             UnsafeUtility.MemCpy(otherTemplate.GetUnsafePtr(), TemplateReadOnlyPtr, TemplateSize);
 
-        internal ReadOnlyDictionaryAccessor<string, ushort> KeyNameToIndex => _keyNameToIndex;
+        internal ReadOnlyDictionaryAccessor<string, ushort> KeyNameToMemoryOffset =>
+            _keyNameToMemoryOffset;
 
-        internal ReadOnlyArrayAccessor<BlackboardKeyCompiledData> KeyData => _keyData;
+        internal ReadOnlyDictionaryAccessor<ushort, BlackboardKeyCompiledData> MemoryOffsetToKeyData =>
+            _memoryOffsetToKeyData;
 
-        internal BlackboardKeyCompiledData this[string keyName] => _keyNameToIndex.TryGetValue(keyName, out var index) ? _keyData[index] : null;
+        internal BlackboardKeyCompiledData this[string keyName] =>
+            _keyNameToMemoryOffset.TryGetValue(keyName, out var memoryOffset)
+            && _memoryOffsetToKeyData.TryGetValue(memoryOffset, out var output)
+                ? output
+                : null;
 
         internal ushort TemplateSize => (ushort) _template.Length;
-
-        internal ushort KeyCount => (ushort) _keyData.Length;
     }
 }

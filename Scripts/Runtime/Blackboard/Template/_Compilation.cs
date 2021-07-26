@@ -19,8 +19,8 @@ namespace HiraBots
     {
         void GenerateKeyCompilerContext(
             NativeArray<byte> template,
-            Dictionary<string, ushort> keyNameToIndex,
-            BlackboardKeyCompiledData[] keyData,
+            Dictionary<string, ushort> keyNameToMemoryOffset,
+            Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData,
             ushort startingIndex,
             ushort startingMemoryOffset);
 
@@ -123,10 +123,10 @@ namespace HiraBots
 
             ushort startingMemoryOffset = 0, startingIndex = 0;
 
-            var totalTemplateSize = 0;
+            var totalTemplateSize = (ushort) 0;
             foreach (var key in keys) totalTemplateSize += key.SizeInBytes;
 
-            var totalKeyCount = keys.Length;
+            var totalKeyCount = (ushort) keys.Length;
 
             if (parentCompiledData != null)
             {
@@ -138,17 +138,19 @@ namespace HiraBots
             }
 
             var template = new NativeArray<byte>(totalTemplateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            var keyNameToIndex = new Dictionary<string, ushort>();
-            var keyData = new BlackboardKeyCompiledData[totalKeyCount];
+            var keyNameToMemoryOffset = new Dictionary<string, ushort>(totalKeyCount);
+            var memoryOffsetToKeyData = new Dictionary<ushort, BlackboardKeyCompiledData>(totalKeyCount);
 
             if (parentCompiledData != null)
             {
                 parentCompiledData.CopyTemplateTo(template);
-                foreach (var kvp in parentCompiledData.KeyNameToIndex) keyNameToIndex.Add(kvp.Key, kvp.Value);
-                for (var i = 0; i < startingIndex; i++) keyData[i] = parentCompiledData.KeyData[i];
+                foreach (var kvp in parentCompiledData.KeyNameToMemoryOffset)
+                    keyNameToMemoryOffset.Add(kvp.Key, kvp.Value);
+                foreach (var kvp in parentCompiledData.MemoryOffsetToKeyData)
+                    memoryOffsetToKeyData.Add(kvp.Key, kvp.Value);
             }
 
-            context.GenerateKeyCompilerContext(template, keyNameToIndex, keyData, startingIndex, startingMemoryOffset);
+            context.GenerateKeyCompilerContext(template, keyNameToMemoryOffset, memoryOffsetToKeyData, startingIndex, startingMemoryOffset);
 
             foreach (var key in keys.OrderBy(k => k.SizeInBytes))
             {
@@ -156,7 +158,7 @@ namespace HiraBots
                 context.UpdateKeyCompilerContext(key.SizeInBytes);
             }
 
-            CompiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToIndex, keyData);
+            CompiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
         }
 
         internal void Free()

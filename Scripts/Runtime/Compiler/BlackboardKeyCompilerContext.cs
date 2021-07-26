@@ -6,19 +6,19 @@ namespace HiraBots
 {
     internal unsafe class BlackboardKeyCompilerContext : IBlackboardKeyCompilerContext
     {
-        internal BlackboardKeyCompilerContext(NativeArray<byte> rawData, Dictionary<string, ushort> keyNameToIndex,
-            BlackboardKeyCompiledData[] keyData, ushort startingIndex, ushort startingOffset)
+        internal BlackboardKeyCompilerContext(NativeArray<byte> rawData, Dictionary<string, ushort> keyNameToMemoryOffset,
+            Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData, ushort startingIndex, ushort startingOffset)
         {
             _rawData = rawData;
-            _keyNameToIndex = keyNameToIndex;
-            _keyData = keyData;
+            _keyNameToMemoryOffset = keyNameToMemoryOffset;
+            _memoryOffsetToKeyData = memoryOffsetToKeyData;
             _index = startingIndex;
             _memoryOffset = startingOffset;
         }
 
         private readonly NativeArray<byte> _rawData;
-        private readonly BlackboardKeyCompiledData[] _keyData;
-        private readonly Dictionary<string, ushort> _keyNameToIndex;
+        private readonly Dictionary<ushort, BlackboardKeyCompiledData> _memoryOffsetToKeyData;
+        private readonly Dictionary<string, ushort> _keyNameToMemoryOffset;
         private ushort _index;
         private ushort _memoryOffset;
 
@@ -28,12 +28,12 @@ namespace HiraBots
 
         BlackboardKeyCompiledData IBlackboardKeyCompilerContext.CompiledData
         {
-            set => _keyData[_index] = value;
+            set => _memoryOffsetToKeyData.Add(_memoryOffset, value);
         }
 
         string IBlackboardKeyCompilerContext.Name
         {
-            set => _keyNameToIndex.Add(value, _index);
+            set => _keyNameToMemoryOffset.Add(value, _memoryOffset);
         }
 
         internal void Update(ushort offsetDelta)

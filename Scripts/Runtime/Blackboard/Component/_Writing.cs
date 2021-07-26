@@ -17,9 +17,9 @@ namespace HiraBots
             HasUnexpectedChanges |= broadcastEventOnUnexpectedChange;
         }
 
-        internal void SetBooleanValueWithoutValidation(ushort keyIndex, bool value, bool expected = false)
+        internal void SetBooleanValueWithoutValidation(ushort memoryOffset, bool value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -28,11 +28,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteBooleanValue(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteBooleanValue(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -40,20 +40,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetEnumValueWithoutValidation<T>(ushort keyIndex, T value, bool expected = false) where T : unmanaged, Enum
+        internal void SetEnumValueWithoutValidation<T>(ushort memoryOffset, T value, bool expected = false) where T : unmanaged, Enum
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -62,11 +62,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteEnumValue<T>(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteEnumValue<T>(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -74,20 +74,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetFloatValueWithoutValidation(ushort keyIndex, float value, bool expected = false)
+        internal void SetFloatValueWithoutValidation(ushort memoryOffset, float value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -96,11 +96,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteFloatValue(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteFloatValue(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -108,20 +108,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetIntegerValueWithoutValidation(ushort keyIndex, int value, bool expected = false)
+        internal void SetIntegerValueWithoutValidation(ushort memoryOffset, int value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -130,11 +130,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteIntegerValue(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteIntegerValue(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -142,20 +142,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetObjectValueWithoutValidation(ushort keyIndex, Object value, bool expected = false)
+        internal void SetObjectValueWithoutValidation(ushort memoryOffset, Object value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -164,11 +164,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteObjectValueNoProcess(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteObjectValueNoProcess(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -176,20 +176,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetVectorValueWithoutValidation(ushort keyIndex, Vector3 value, bool expected = false)
+        internal void SetVectorValueWithoutValidation(ushort memoryOffset, Vector3 value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -198,11 +198,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteVectorValue(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteVectorValue(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -210,20 +210,20 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }
         }
 
-        internal void SetQuaternionValueWithoutValidation(ushort keyIndex, Quaternion value, bool expected = false)
+        internal void SetQuaternionValueWithoutValidation(ushort memoryOffset, Quaternion value, bool expected = false)
         {
-            var keyData = _template.KeyData[keyIndex];
+            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
 
             if (expected)
             {
@@ -232,11 +232,11 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteQuaternionValue(DataPtr, keyData.MemoryOffset, value);
+                BlackboardUnsafeHelpers.WriteQuaternionValue(DataPtr, memoryOffset, value);
             }
             else
             {
@@ -244,12 +244,12 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, keyData.MemoryOffset, value);
+                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(DataPtr, keyData.MemoryOffset, value))
+                    if (BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(DataPtr, memoryOffset, value))
                         HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
                 }
             }

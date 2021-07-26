@@ -10,15 +10,15 @@ namespace HiraBots
 
         void IBlackboardTemplateCompilerContext.GenerateKeyCompilerContext(
             NativeArray<byte> template,
-            Dictionary<string, ushort> keyNameToIndex,
-            BlackboardKeyCompiledData[] keyData,
+            Dictionary<string, ushort> keyNameToMemoryOffset,
+            Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData,
             ushort startingIndex,
             ushort startingMemoryOffset)
         {
             _keyCompilerContext = new BlackboardKeyCompilerContext(
                 template,
-                keyNameToIndex,
-                keyData,
+                keyNameToMemoryOffset,
+                memoryOffsetToKeyData,
                 startingIndex,
                 startingMemoryOffset);
         }
