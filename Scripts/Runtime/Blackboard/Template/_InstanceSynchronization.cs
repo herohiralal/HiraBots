@@ -27,7 +27,7 @@ namespace HiraBots
     {
         private readonly List<IInstanceSynchronizerListener> _listeners = new List<IInstanceSynchronizerListener>();
 
-        private BlackboardTemplateCompiledData GetOwningTemplate(ushort memoryOffset)
+        internal BlackboardTemplateCompiledData GetOwningTemplate(ushort memoryOffset)
         {
             var current = this;
             var previous = (BlackboardTemplateCompiledData) null;
