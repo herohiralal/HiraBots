@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
-    [CustomEditor(typeof(BlackboardTemplate))]
+    [CustomEditor(typeof(BlackboardTemplate), true)]
     internal class BlackboardTemplateEditor : UnityEditor.Editor
     {
         private const string parent_property = "parent";

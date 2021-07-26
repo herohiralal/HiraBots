@@ -11,7 +11,7 @@ namespace HiraBots
         private byte* DataPtr => (byte*) _data.GetUnsafePtr();
         private byte* DataReadOnlyPtr => (byte*) _data.GetUnsafeReadOnlyPtr();
 
-        internal bool TryCreate(BlackboardTemplate template, out BlackboardComponent component)
+        internal static bool TryCreate(BlackboardTemplate template, out BlackboardComponent component)
         {
             if (template == null)
             {
