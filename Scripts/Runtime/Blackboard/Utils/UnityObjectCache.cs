@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace HiraBots
 {
@@ -12,10 +14,12 @@ namespace HiraBots
             internal ObjectCacheData(Object reference)
             {
                 Reference = reference;
+                Frozen = false;
                 Count = 1;
             }
 
             internal readonly Object Reference;
+            internal bool Frozen;
             internal uint Count;
         }
 
@@ -32,14 +36,28 @@ namespace HiraBots
             instanceID != 0 && _objectCache.TryGetValue(instanceID, out var data) ? data.Reference : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void SetFreeze(int instanceID, bool value)
+        {
+            if (instanceID == 0 || !_objectCache.TryGetValue(instanceID, out var dataToMakePersistent))
+                return;
+
+            dataToMakePersistent.Frozen = value;
+            _objectCache[instanceID] = dataToMakePersistent;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Remove(int instanceID)
         {
             if (instanceID == 0 || !_objectCache.TryGetValue(instanceID, out var dataToRemove))
                 return;
 
-            dataToRemove.Count--;
+            dataToRemove.Count -= dataToRemove.Frozen ? 0u : 1u;
 
-            if (dataToRemove.Count == 0) _objectCache.Remove(instanceID);
+            if (dataToRemove.Count == 0)
+            {
+                _objectCache.Remove(instanceID);
+                LogCacheUpdate(dataToRemove.Reference, false);
+            }
             else _objectCache[instanceID] = dataToRemove;
         }
 
@@ -53,15 +71,20 @@ namespace HiraBots
             
             if (_objectCache.TryGetValue(instanceID, out var currentData))
             {
-                currentData.Count++;
+                currentData.Count += currentData.Frozen ? 0u : 1u;
                 _objectCache[instanceID] = currentData;
             }
             else
             {
                 _objectCache.Add(instanceID, new ObjectCacheData(value));
+                LogCacheUpdate(value, true);
             }
 
             return instanceID;
         }
+
+        [Conditional("LOG_HIRA_BOTS_UNITY_OBJECT_CACHE"), MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogCacheUpdate(Object value, bool saved) =>
+            Debug.Log($"UnityObjectCache Update: {(saved ? "Stored" : "Forgot")} {value.name}.");
     }
 }

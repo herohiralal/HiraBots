@@ -83,8 +83,18 @@ namespace HiraBots
 
     internal unsafe partial class ObjectBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
+        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        {
             BlackboardUnsafeHelpers.WriteObjectValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.Pin(defaultValue);
+        }
+
+        protected override void FreeInternal()
+        {
+            BlackboardUnsafeHelpers.Release(defaultValue);
+            var instanceID = defaultValue.GetInstanceID();
+            BlackboardUnsafeHelpers.WriteObjectValue((byte*) &instanceID, 0, null);
+        }
     }
 
     internal unsafe partial class QuaternionBlackboardKey

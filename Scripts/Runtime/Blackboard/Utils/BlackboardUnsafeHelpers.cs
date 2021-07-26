@@ -106,6 +106,12 @@ namespace HiraBots
         internal static void ClearObjectCache() => object_cache.Clear();
 
         [MethodImpl(inline)]
+        internal static void Pin(Object target) => object_cache.SetFreeze(target.GetInstanceID(), true);
+
+        [MethodImpl(inline)]
+        internal static void Release(Object target) => object_cache.SetFreeze(target.GetInstanceID(), false);
+
+        [MethodImpl(inline)]
         internal static Object ReadObjectValue(byte* stream, ushort offset) =>
             object_cache.Read(ReadIntegerValue(stream, offset));
 
