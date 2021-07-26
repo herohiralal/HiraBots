@@ -5,6 +5,18 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor.Tests
 {
+    [ExposedToHiraBots("5F9A54C1-F247-41B0-8D5E-D64DD26C8317")]
+    internal enum GenericStatus : byte
+    {
+        Empty,
+        VeryLow,
+        Low,
+        Medium,
+        High,
+        VeryHigh,
+        Max
+    }
+
     [TestFixture]
     internal class BlackboardComponentTests
     {
@@ -29,6 +41,7 @@ namespace HiraBots.Editor.Tests
         private ushort HealthLowKeyBoolean => BaseCharacterData["HealthLow"].MemoryOffset;
         private ushort CurrentPlayerLocationKeyVector => BaseCharacterData["CurrentPlayerLocation"].MemoryOffset;
         private ushort PlayerReferenceKeyObject => BaseCharacterData["PlayerReference"].MemoryOffset;
+        private ushort HealthStatusKeyEnum => BaseCharacterData["HealthStatus"].MemoryOffset;
         private ushort StaminaKeyFloat => WarriorData["Stamina"].MemoryOffset;
         private ushort ManaKeyFloat => MageData["Mana"].MemoryOffset;
         private ushort ElementalPowerKeyInteger => ElementalistData["ElementalPower"].MemoryOffset;
@@ -43,7 +56,7 @@ namespace HiraBots.Editor.Tests
             _mockObject2.hideFlags = HideFlags.HideAndDontSave;
             _mockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
             _mockObject3.hideFlags = HideFlags.HideAndDontSave;
-            
+
             _baseCharacterTemplate = Resources.Load<BlackboardTemplate>("TestBaseCharacter");
             _warriorTemplate = Resources.Load<BlackboardTemplate>("TestWarrior");
             _mageTemplate = Resources.Load<BlackboardTemplate>("TestMage");
@@ -162,7 +175,10 @@ namespace HiraBots.Editor.Tests
             var q = Quaternion.Euler(Random.Range(-10, 10), Random.Range(-10, 10), Random.Range(-10, 10));
             baboon.SetQuaternionValueWithoutValidation(ThrowKeyQuaternion, q, true);
             Assert.IsTrue(q == baboon.GetQuaternionValueWithoutValidation(ThrowKeyQuaternion), "Quaternion read-write failed.");
-            
+
+            baboon.SetEnumValueWithoutValidation<GenericStatus>(HealthStatusKeyEnum, GenericStatus.Low, true);
+            Assert.IsTrue(GenericStatus.Low == baboon.GetEnumValueWithoutValidation<GenericStatus>(HealthStatusKeyEnum), "Enum read-write failed.");
+
             Assert.IsFalse(baboon.HasUnexpectedChanges, "Expected changes still lead to dirtying.");
 
             TryCreate(_elementalistTemplate, out var secondBaboon);
@@ -173,7 +189,7 @@ namespace HiraBots.Editor.Tests
             TryCreate(_warriorTemplate, out var knight);
             knight.SetFloatValueWithoutValidation(StaminaKeyFloat, 1f);
             Assert.IsTrue(knight.HasUnexpectedChanges, "Simple dirtying failed.");
-            
+
             TryCreate(_mageTemplate, out var wizard);
             wizard.SetFloatValueWithoutValidation(ManaKeyFloat, 0f);
             Assert.IsTrue(wizard.HasUnexpectedChanges, "Could not test for overwriting with the same value dirtying the blackboard.");
@@ -188,13 +204,13 @@ namespace HiraBots.Editor.Tests
         {
             TryCreate(_baseCharacterTemplate, out var civilian);
             TryCreate(_warriorTemplate, out var knight);
-            
+
             civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.right);
             Assert.AreEqual(Vector3.right, knight.GetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector),
                 "Instance syncing failed between base and warrior.");
 
             TryCreate(_mageTemplate, out var wizard);
-            
+
             Assert.AreEqual(Vector3.right, wizard.GetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector),
                 "Instance sync failed for a newly created key.");
         }
@@ -206,14 +222,14 @@ namespace HiraBots.Editor.Tests
             civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.right);
 
             Assert.IsTrue(civilian.HasUnexpectedChanges, "Simple dirtying test failed.");
-            
+
             civilian.ClearUnexpectedChanges();
-            
+
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Clearing dirtying test failed.");
 
             TryCreate(_elementalistTemplate, out var baboon);
             civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.zero, true);
-            
+
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Expectation parameter test failed.");
             Assert.IsTrue(baboon.HasUnexpectedChanges, "Instance synced dirtying test failed.");
         }

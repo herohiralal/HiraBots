@@ -15,6 +15,23 @@ MonoBehaviour:
   instanceSynced: 0
   essentialToDecisionMaking: 1
   defaultValue: 0
+--- !u!114 &-6359508065409903171
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b1a7c660ebb41bcb9617e2114d967cc, type: 3}
+  m_Name: HealthStatus
+  m_EditorClassIdentifier: 
+  instanceSynced: 0
+  essentialToDecisionMaking: 1
+  defaultValue:
+    typeIdentifier: 5F9A54C1-F247-41B0-8D5E-D64DD26C8317
+    value: 6
 --- !u!114 &-3079195664247875416
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -64,6 +81,7 @@ MonoBehaviour:
   - {fileID: -8470558551495753619}
   - {fileID: -3079195664247875416}
   - {fileID: 5793628663520586142}
+  - {fileID: -6359508065409903171}
 --- !u!114 &5249265092262184567
 MonoBehaviour:
   m_ObjectHideFlags: 3
