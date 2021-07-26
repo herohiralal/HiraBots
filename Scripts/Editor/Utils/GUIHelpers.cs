@@ -1,19 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
+    [InitializeOnLoad]
     internal static class GUIHelpers
     {
-        private static readonly Dictionary<string, GUIContent> gui_content_cache = new Dictionary<string, GUIContent>();
-
-        [InitializeOnLoadMethod]
-        private static void Clear()
-            => gui_content_cache.Clear();
+        static GUIHelpers()
+        {
+            gui_content_cache = new Dictionary<string, GUIContent>();
+            dynamic_popup_method_info = typeof(GUIHelpers)
+                .GetMethod(
+                    nameof(DynamicEnumPopupInternal),
+                    BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    new[] {typeof(Rect), typeof(GUIContent), typeof(IntPtr)},
+                    null);
+        }
+        
+        private static readonly Dictionary<string, GUIContent> gui_content_cache;
+        private static readonly MethodInfo dynamic_popup_method_info;
 
         internal static GUIContent ToGUIContent(string value)
         {
@@ -40,33 +51,33 @@ namespace HiraBots.Editor
             }
         }
 
-        internal static unsafe byte DynamicEnumPopup(Rect rect, byte inValue, Type enumType)
+        internal static void DynamicEnumPopup(Rect position, GUIContent label, IntPtr value, Type enumType)
         {
             if (!enumType.IsEnum)
             {
-                EditorGUI.HelpBox(rect, "Dynamic Enum Popup used without an enum.", MessageType.Error);
-                return default;
+                EditorGUI.HelpBox(position, "Dynamic Enum Popup used without an enum.", MessageType.Error);
+                return;
             }
 
-            var underlyingType = enumType.GetEnumUnderlyingType();
-
-            if (underlyingType == typeof(byte))
+            if (dynamic_popup_method_info == null || !dynamic_popup_method_info.IsGenericMethod)
             {
-                var output = DynamicEnumHelpers.DynamicEnumPopup<byte>(rect, inValue, enumType);
-                return output;
+                EditorGUI.HelpBox(position, "Dynamic Enum Popup failed to find method using reflection.", MessageType.Error);
+                return;
             }
 
-            if (underlyingType == typeof(sbyte))
-            {
-                var output = DynamicEnumHelpers.DynamicEnumPopup<sbyte>(rect, *(sbyte*) &inValue, enumType);
-                return *(byte*) &output;
-            }
-
-            EditorGUI.HelpBox(rect, "Dynamic Enum Popup used with an invalid type.", MessageType.Error);
-            return default;
+            dynamic_popup_method_info
+                .MakeGenericMethod(enumType)
+                .Invoke(null, new object[] {position, label, value});
         }
 
-        
+        private static unsafe void DynamicEnumPopupInternal<T>(Rect position, GUIContent label, IntPtr value) where T : unmanaged, Enum
+        {
+            var enumValue = *(T*) value;
+            var enumOutput = typeof(T).GetCustomAttribute<FlagsAttribute>() == null
+                ? (T) EditorGUI.EnumPopup(position, label, enumValue)
+                : (T) EditorGUI.EnumFlagsField(position, label, enumValue);
+            *(T*) value = enumOutput;
+        }
     }
 
     internal static class BlackboardGUIHelpers

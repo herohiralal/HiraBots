@@ -103,7 +103,12 @@ namespace HiraBots.Editor
                 }
 
                 if (typeRestriction == null) EditorGUI.PropertyField(position, valueProperty, GUIContent.none);
-                else valueProperty.intValue = GUIHelpers.DynamicEnumPopup(position, (byte) valueProperty.intValue, typeRestriction);
+                else unsafe
+                {
+                    var currentValue = (byte) valueProperty.intValue;
+                    GUIHelpers.DynamicEnumPopup(position, GUIContent.none, (IntPtr) (&currentValue), typeRestriction);
+                    valueProperty.intValue = currentValue;
+                }
             }
         }
 
@@ -119,6 +124,9 @@ namespace HiraBots.Editor
                     property.stringValue = "";
                     property.serializedObject.ApplyModifiedProperties();
                 });
+
+            if (currentValue != "" && !identifier_to_type.ContainsKey(currentValue))
+                menu.AddDisabledItem(GUIHelpers.ToGUIContent($"Unknown ({currentValue})"), true);
 
             menu.AddSeparator("");
 
