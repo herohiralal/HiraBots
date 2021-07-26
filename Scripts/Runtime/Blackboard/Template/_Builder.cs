@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR // ideally manual creation must only be done for testing purposes as it skips validation checks
+using System.Reflection;
 using UnityEngine;
 
 namespace HiraBots
@@ -24,6 +25,30 @@ namespace HiraBots
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
             output.defaultValue = defaultValue;
+            return output;
+        }
+    }
+
+    internal unsafe partial class EnumBlackboardKey
+    {
+        internal static EnumBlackboardKey Build<T, TEnumType>(string name, BlackboardKeyTraits traits, TEnumType defaultValue, HideFlags hideFlags = HideFlags.None)
+            where T : EnumBlackboardKey where TEnumType : unmanaged, System.Enum
+        {
+            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
+            output.defaultValue.typeIdentifier = "";
+
+            var enumType = typeof(TEnumType);
+            if (enumType.IsEnum)
+            {
+                if (enumType.GetEnumUnderlyingType() == typeof(byte) || enumType.GetEnumUnderlyingType() == typeof(sbyte))
+                {
+                    var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
+                    if (exposedToHiraBotsAttribute != null)
+                        output.defaultValue.typeIdentifier = exposedToHiraBotsAttribute.Identifier;
+                }
+            }
+
+            output.defaultValue.value = *(byte*) &defaultValue;
             return output;
         }
     }

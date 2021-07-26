@@ -28,14 +28,45 @@ namespace HiraBots.Editor
         internal static void DrawNameField(Rect rect, Object value, string fieldName = "Name")
         {
             rect = EditorGUI.PrefixLabel(rect, ToGUIContent(fieldName));
-            EditorGUI.BeginChangeCheck();
-            var updatedName = EditorGUI.DelayedTextField(rect, GUIContent.none, value.name);
-            if (EditorGUI.EndChangeCheck())
+            using (new IndentNullifier())
             {
-                Undo.RegisterCompleteObjectUndo(value, $"Renamed {value.name}");
-                value.name = updatedName;
+                EditorGUI.BeginChangeCheck();
+                var updatedName = EditorGUI.DelayedTextField(rect, GUIContent.none, value.name);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RegisterCompleteObjectUndo(value, $"Renamed {value.name}");
+                    value.name = updatedName;
+                }
             }
         }
+
+        internal static unsafe byte DynamicEnumPopup(Rect rect, byte inValue, Type enumType)
+        {
+            if (!enumType.IsEnum)
+            {
+                EditorGUI.HelpBox(rect, "Dynamic Enum Popup used without an enum.", MessageType.Error);
+                return default;
+            }
+
+            var underlyingType = enumType.GetEnumUnderlyingType();
+
+            if (underlyingType == typeof(byte))
+            {
+                var output = DynamicEnumHelpers.DynamicEnumPopup<byte>(rect, inValue, enumType);
+                return output;
+            }
+
+            if (underlyingType == typeof(sbyte))
+            {
+                var output = DynamicEnumHelpers.DynamicEnumPopup<sbyte>(rect, *(sbyte*) &inValue, enumType);
+                return *(byte*) &output;
+            }
+
+            EditorGUI.HelpBox(rect, "Dynamic Enum Popup used with an invalid type.", MessageType.Error);
+            return default;
+        }
+
+        
     }
 
     internal static class BlackboardGUIHelpers
@@ -53,8 +84,8 @@ namespace HiraBots.Editor
                     return new Color(144f / 255, 0f / 255, 0f / 255);
                 case FloatBlackboardKey _:
                     return new Color(122f / 255, 195f / 255, 51f / 255);
-                // todo: enum key here
-                //     return new Color(26f / 255, 122f / 255, 49f / 255);
+                case EnumBlackboardKey _:
+                    return new Color(0f / 255, 107f / 255, 97f / 255);
                 case IntegerBlackboardKey _:
                     return new Color(28f / 255, 220f / 255, 169f / 255);
                 case ObjectBlackboardKey _:

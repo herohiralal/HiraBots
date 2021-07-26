@@ -67,6 +67,22 @@ namespace HiraBots
 
         #endregion
 
+        #region Raw Enum
+
+        [MethodImpl(inline)]
+        internal static byte ReadRawEnumValue(byte* stream, ushort offset) =>
+            ReadGenericValue<byte>(stream, offset);
+
+        [MethodImpl(inline)]
+        internal static bool WriteRawEnumValueAndGetChange(byte* stream, ushort offset, byte value) =>
+            WriteGenericValueAndGetChange<byte>(stream, offset, value);
+
+        [MethodImpl(inline)]
+        internal static void WriteRawEnumValue(byte* stream, ushort offset, byte value) =>
+            WriteGenericValue<byte>(stream, offset, value);
+
+        #endregion
+
         #region Float
 
         [MethodImpl(inline)]

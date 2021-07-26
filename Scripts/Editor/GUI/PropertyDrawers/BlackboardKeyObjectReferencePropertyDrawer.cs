@@ -48,6 +48,7 @@ namespace HiraBots.Editor
             currentRect.height = 21f;
             if (DrawHeader(currentRect, so))
             {
+                currentRect.y += 1f;
                 currentRect.height = 19f;
 
                 currentRect.y += 21f;

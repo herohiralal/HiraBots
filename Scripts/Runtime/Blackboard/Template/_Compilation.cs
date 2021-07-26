@@ -69,6 +69,12 @@ namespace HiraBots
             BlackboardUnsafeHelpers.WriteBooleanValue(context.Address, 0, defaultValue);
     }
 
+    internal unsafe partial class EnumBlackboardKey
+    {
+        protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
+            BlackboardUnsafeHelpers.WriteRawEnumValue(context.Address, 0, defaultValue);
+    }
+
     internal unsafe partial class FloatBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
