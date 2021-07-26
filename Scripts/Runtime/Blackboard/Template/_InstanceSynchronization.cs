@@ -40,7 +40,7 @@ namespace HiraBots
                 current = current._parentCompiledData;
             } while (current != null);
 
-            return null;
+            return previous;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
