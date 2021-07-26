@@ -82,19 +82,22 @@ namespace HiraBots.Editor.Tests
             Object.DestroyImmediate(_throwaway);
         }
 
+        private static bool AreEqual(in BlackboardKeyCompiledData a, in BlackboardKeyCompiledData b) =>
+            a.MemoryOffset == b.MemoryOffset && a.Index == b.Index && a.Traits == b.Traits && a.KeyType == b.KeyType;
+
         [Test]
         public void TemplateKeyCompiledDataSyncValidation()
         {
             var parentCompiledData = _parent.CompiledData;
             var childCompiledData = _child.CompiledData;
 
-            Assert.IsTrue(parentCompiledData["first"] == childCompiledData["first"]);
-            Assert.IsTrue(parentCompiledData["second"] == childCompiledData["second"]);
+            Assert.IsTrue(AreEqual(parentCompiledData["first"], childCompiledData["first"]));
+            Assert.IsTrue(AreEqual(parentCompiledData["second"], childCompiledData["second"]));
 
-            Assert.IsTrue(parentCompiledData["first"] == _first.CompiledData);
-            Assert.IsTrue(parentCompiledData["second"] == _second.CompiledData);
-            Assert.IsTrue(childCompiledData["third"] == _third.CompiledData);
-            Assert.IsTrue(childCompiledData["fourth"] == _fourth.CompiledData);
+            Assert.IsTrue(AreEqual(parentCompiledData["first"], _first.CompiledData));
+            Assert.IsTrue(AreEqual(parentCompiledData["second"], _second.CompiledData));
+            Assert.IsTrue(AreEqual(childCompiledData["third"], _third.CompiledData));
+            Assert.IsTrue(AreEqual(childCompiledData["fourth"], _fourth.CompiledData));
         }
 
         [Test]

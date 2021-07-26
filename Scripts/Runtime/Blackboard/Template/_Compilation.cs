@@ -30,10 +30,10 @@ namespace HiraBots
 
     internal abstract partial class BlackboardKey
     {
-        [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = null;
+        [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = BlackboardKeyCompiledData.None;
         internal BlackboardKeyCompiledData CompiledData => CompiledDataInternal;
 
-        internal bool IsCompiled => CompiledData != null;
+        internal bool IsCompiled => CompiledDataInternal.IsValid;
 
         internal void Compile(IBlackboardKeyCompilerContext context)
         {
@@ -53,7 +53,7 @@ namespace HiraBots
         internal void Free()
         {
             FreeInternal();
-            CompiledDataInternal = null;
+            CompiledDataInternal = BlackboardKeyCompiledData.None;
         }
 
         protected abstract void CompileInternal(IBlackboardKeyCompilerContext context);

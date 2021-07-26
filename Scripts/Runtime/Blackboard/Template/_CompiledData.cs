@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace HiraBots
 {
-    internal class BlackboardKeyCompiledData
+    internal readonly struct BlackboardKeyCompiledData
     {
         internal BlackboardKeyCompiledData(ushort memoryOffset, ushort index, BlackboardKeyTraits traits, BlackboardKeyType keyType)
         {
@@ -12,6 +13,18 @@ namespace HiraBots
             Index = index;
             Traits = traits;
             KeyType = keyType;
+        }
+
+        internal static BlackboardKeyCompiledData None
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => new BlackboardKeyCompiledData(ushort.MaxValue, ushort.MaxValue, BlackboardKeyTraits.None, BlackboardKeyType.Invalid);
+        }
+
+        internal bool IsValid
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => KeyType != BlackboardKeyType.Invalid;
         }
 
         internal readonly ushort MemoryOffset;
@@ -70,7 +83,7 @@ namespace HiraBots
             _keyNameToMemoryOffset.TryGetValue(keyName, out var memoryOffset)
             && _memoryOffsetToKeyData.TryGetValue(memoryOffset, out var output)
                 ? output
-                : null;
+                : BlackboardKeyCompiledData.None;
 
         internal ushort TemplateSize => (ushort) _template.Length;
     }
