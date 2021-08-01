@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Object = UnityEngine.Object;
+﻿using UnityEngine;
 
 namespace HiraBots
 {
@@ -9,7 +7,7 @@ namespace HiraBots
         internal bool GetBooleanValueWithoutValidation(ushort memoryOffset) =>
             BlackboardUnsafeHelpers.ReadBooleanValue(DataReadOnlyPtr, memoryOffset);
 
-        internal T GetEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, Enum =>
+        internal T GetEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, System.Enum =>
             BlackboardUnsafeHelpers.ReadEnumValue<T>(DataReadOnlyPtr, memoryOffset);
 
         internal float GetFloatValueWithoutValidation(ushort memoryOffset) =>
