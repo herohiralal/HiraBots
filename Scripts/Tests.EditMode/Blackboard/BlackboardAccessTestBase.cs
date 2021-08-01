@@ -43,6 +43,7 @@ namespace HiraBots.Editor.Tests
         protected ushort ManaKeyFloat => MageData["Mana"].MemoryOffset;
         protected ushort ElementalPowerKeyInteger => ElementalistData["ElementalPower"].MemoryOffset;
         protected ushort ThrowKeyQuaternion => ElementalistData["Throw"].MemoryOffset;
+        protected ushort PowerTypeKeyEnum => ElementalistData["PowerType"].MemoryOffset;
 
         protected void SetUp()
         {
