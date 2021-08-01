@@ -221,7 +221,7 @@ namespace HiraBots.Editor.Tests
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
                 var secondKeyCompiledData = _second.CompiledData;
-                _parent.CompiledData.SetInstanceSyncedBooleanKeyWithoutValidation(
+                _parent.CompiledData.SetInstanceSyncedBooleanValueWithoutValidation(
                     in secondKeyCompiledData,
                     !second_key_default_value);
 
@@ -233,7 +233,7 @@ namespace HiraBots.Editor.Tests
                 Assert.AreEqual(!second_key_default_value, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.MemoryOffset),
                     "Mismatch between child and parent values.");
 
-                _child.CompiledData.SetInstanceSyncedBooleanKeyWithoutValidation(
+                _child.CompiledData.SetInstanceSyncedBooleanValueWithoutValidation(
                     in secondKeyCompiledData,
                     second_key_default_value);
 
