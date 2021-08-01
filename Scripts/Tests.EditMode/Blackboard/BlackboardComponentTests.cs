@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 using static HiraBots.BlackboardComponent;
 using Object = UnityEngine.Object;
@@ -189,6 +190,8 @@ namespace HiraBots.Editor.Tests
             TryCreate(_warriorTemplate, out var knight);
             knight.SetFloatValueWithoutValidation(StaminaKeyFloat, 1f);
             Assert.IsTrue(knight.HasUnexpectedChanges, "Simple dirtying failed.");
+            Assert.IsTrue(knight.UnexpectedChanges
+                    .Contains(StaminaKeyFloat), "Simple dirtying index validation failed.");
 
             TryCreate(_mageTemplate, out var wizard);
             wizard.SetFloatValueWithoutValidation(ManaKeyFloat, 0f);
@@ -222,6 +225,8 @@ namespace HiraBots.Editor.Tests
             civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.right);
 
             Assert.IsTrue(civilian.HasUnexpectedChanges, "Simple dirtying test failed.");
+            Assert.IsTrue(civilian.UnexpectedChanges
+                    .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
 
             civilian.ClearUnexpectedChanges();
 
@@ -232,6 +237,8 @@ namespace HiraBots.Editor.Tests
 
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Expectation parameter test failed.");
             Assert.IsTrue(baboon.HasUnexpectedChanges, "Instance synced dirtying test failed.");
+            Assert.IsTrue(baboon.UnexpectedChanges
+                    .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
         }
     }
 }

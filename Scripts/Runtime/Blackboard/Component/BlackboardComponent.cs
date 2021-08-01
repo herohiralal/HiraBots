@@ -34,6 +34,7 @@ namespace HiraBots
             _template = template;
             _data = new NativeArray<byte>(_template.TemplateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             _template.CopyTemplateTo(_data);
+            _unexpectedChanges = new System.Collections.Generic.List<ushort>(template.KeyCount);
             _template.AddInstanceSyncListener(this);
         }
 

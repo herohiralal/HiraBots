@@ -6,15 +6,17 @@ namespace HiraBots
 {
     internal unsafe partial class BlackboardComponent : IInstanceSynchronizerListener
     {
-        internal bool HasUnexpectedChanges { get; private set; }
-        internal void ClearUnexpectedChanges() => HasUnexpectedChanges = false;
+        private readonly System.Collections.Generic.List<ushort> _unexpectedChanges;
+        internal ReadOnlyListAccessor<ushort> UnexpectedChanges => _unexpectedChanges;
+        internal bool HasUnexpectedChanges => _unexpectedChanges.Count > 0;
+        internal void ClearUnexpectedChanges() => _unexpectedChanges.Clear();
 
         void IInstanceSynchronizerListener.UpdateValue(ushort memoryOffset, byte* value, ushort size, bool broadcastEventOnUnexpectedChange)
         {
             var ptr = DataPtr + memoryOffset;
             for (var i = 0; i < size; i++) ptr[i] = value[i];
 
-            HasUnexpectedChanges |= broadcastEventOnUnexpectedChange;
+            if (broadcastEventOnUnexpectedChange) _unexpectedChanges.Add(memoryOffset);
         }
 
         internal void SetBooleanValueWithoutValidation(ushort memoryOffset, bool value, bool expected = false)
@@ -46,7 +48,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -80,7 +83,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -114,7 +118,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -148,7 +153,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -182,7 +188,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -216,7 +223,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
@@ -250,7 +258,8 @@ namespace HiraBots
                 {
                     // unexpected & not instance synced
                     if (BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(DataPtr, memoryOffset, value))
-                        HasUnexpectedChanges |= keyData.BroadcastEventOnUnexpectedChange;
+                        if (keyData.BroadcastEventOnUnexpectedChange)
+                            _unexpectedChanges.Add(memoryOffset);
                 }
             }
         }
