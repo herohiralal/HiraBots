@@ -6,123 +6,14 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor.Tests
 {
-    [ExposedToHiraBots("5F9A54C1-F247-41B0-8D5E-D64DD26C8317")]
-    internal enum GenericStatus : byte
-    {
-        Empty,
-        VeryLow,
-        Low,
-        Medium,
-        High,
-        VeryHigh,
-        Max
-    }
-
     [TestFixture]
-    internal class BlackboardComponentTests
+    internal class BlackboardComponentTests : BlackboardAccessTestBase
     {
-        private BlackboardTemplate _baseCharacterTemplate = null;
-        private BlackboardTemplateCompiledData BaseCharacterData => _baseCharacterTemplate.CompiledData;
-
-        private BlackboardTemplate _warriorTemplate = null;
-        private BlackboardTemplateCompiledData WarriorData => _warriorTemplate.CompiledData;
-
-        private BlackboardTemplate _mageTemplate = null;
-        private BlackboardTemplateCompiledData MageData => _mageTemplate.CompiledData;
-
-        private BlackboardTemplate _elementalistTemplate = null;
-        private BlackboardTemplateCompiledData ElementalistData => _elementalistTemplate.CompiledData;
-
-        private ScriptableObject _mockObject1 = null;
-        private ScriptableObject _mockObject2 = null;
-        private ScriptableObject _mockObject3 = null;
-
-        private ushort LevelKeyInteger => BaseCharacterData["Level"].MemoryOffset;
-        private ushort HealthKeyFloat => BaseCharacterData["Health"].MemoryOffset;
-        private ushort HealthLowKeyBoolean => BaseCharacterData["HealthLow"].MemoryOffset;
-        private ushort CurrentPlayerLocationKeyVector => BaseCharacterData["CurrentPlayerLocation"].MemoryOffset;
-        private ushort PlayerReferenceKeyObject => BaseCharacterData["PlayerReference"].MemoryOffset;
-        private ushort HealthStatusKeyEnum => BaseCharacterData["HealthStatus"].MemoryOffset;
-        private ushort StaminaKeyFloat => WarriorData["Stamina"].MemoryOffset;
-        private ushort ManaKeyFloat => MageData["Mana"].MemoryOffset;
-        private ushort ElementalPowerKeyInteger => ElementalistData["ElementalPower"].MemoryOffset;
-        private ushort ThrowKeyQuaternion => ElementalistData["Throw"].MemoryOffset;
-
         [OneTimeSetUp]
-        public void SetUp()
-        {
-            _mockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
-            _mockObject1.hideFlags = HideFlags.HideAndDontSave;
-            _mockObject2 = ScriptableObject.CreateInstance<ScriptableObject>();
-            _mockObject2.hideFlags = HideFlags.HideAndDontSave;
-            _mockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
-            _mockObject3.hideFlags = HideFlags.HideAndDontSave;
-
-            _baseCharacterTemplate = Resources.Load<BlackboardTemplate>("TestBaseCharacter");
-            _warriorTemplate = Resources.Load<BlackboardTemplate>("TestWarrior");
-            _mageTemplate = Resources.Load<BlackboardTemplate>("TestMage");
-            _elementalistTemplate = Resources.Load<BlackboardTemplate>("TestElementalist");
-
-            CheckLoaded(_baseCharacterTemplate, _warriorTemplate, _mageTemplate, _elementalistTemplate);
-            Validate(_baseCharacterTemplate, _warriorTemplate, _mageTemplate, _elementalistTemplate);
-            Compile(_baseCharacterTemplate, _warriorTemplate, _mageTemplate, _elementalistTemplate);
-        }
-
-        private static void CheckLoaded(params BlackboardTemplate[] templates)
-        {
-            foreach (var template in templates) Assert.IsTrue(template != null, "Template could not be loaded.");
-        }
-
-        private static void Validate(params BlackboardTemplate[] templates)
-        {
-            var validator = new BlackboardTemplateValidatorContext();
-
-            foreach (var template in templates)
-            {
-                template.Validate(validator);
-                Assert.IsTrue(validator.Validated, $"{template.name} could not be validated.");
-                validator.Reset();
-            }
-        }
-
-        private static void Compile(params BlackboardTemplate[] templates)
-        {
-            var compiler = new BlackboardTemplateCompilerContext();
-
-            foreach (var template in templates)
-            {
-                template.Compile(compiler);
-                Assert.IsTrue(template.IsCompiled, $"{template.name} could not be compiled.");
-                compiler.Update();
-            }
-        }
+        public new void SetUp() => base.SetUp();
 
         [OneTimeTearDown]
-        public void TearDown()
-        {
-            Free(_elementalistTemplate, _mageTemplate, _warriorTemplate, _baseCharacterTemplate);
-            Unload(_elementalistTemplate, _mageTemplate, _warriorTemplate, _baseCharacterTemplate);
-
-            _baseCharacterTemplate = _warriorTemplate = _mageTemplate = _elementalistTemplate = null;
-
-            Object.DestroyImmediate(_mockObject3);
-            Object.DestroyImmediate(_mockObject2);
-            Object.DestroyImmediate(_mockObject1);
-        }
-
-        private static void Free(params BlackboardTemplate[] templates)
-        {
-            foreach (var template in templates)
-                if (template != null)
-                    template.Free();
-        }
-
-        private static void Unload(params BlackboardTemplate[] templates)
-        {
-            foreach (var template in templates)
-                if (template != null)
-                    Resources.UnloadAsset(template);
-        }
+        public new void TearDown() => base.TearDown();
 
         [Test]
         public void CreationValidation()
@@ -138,16 +29,16 @@ namespace HiraBots.Editor.Tests
                 Assert.IsTrue(!TryCreate(nonCompilingBlackboard, out component) && component == null,
                     "Created a component with a non-compiling template.");
 
-                Assert.IsTrue(TryCreate(_baseCharacterTemplate, out component) && component != null,
+                Assert.IsTrue(TryCreate(BaseCharacterTemplate, out component) && component != null,
                     "Failed to create a base character.");
 
-                Assert.IsTrue(TryCreate(_warriorTemplate, out component) && component != null,
+                Assert.IsTrue(TryCreate(WarriorTemplate, out component) && component != null,
                     "Failed to create a warrior character.");
 
-                Assert.IsTrue(TryCreate(_mageTemplate, out component) && component != null,
+                Assert.IsTrue(TryCreate(MageTemplate, out component) && component != null,
                     "Failed to create a mage character.");
 
-                Assert.IsTrue(TryCreate(_elementalistTemplate, out component) && component != null,
+                Assert.IsTrue(TryCreate(ElementalistTemplate, out component) && component != null,
                     "Failed to create a elementalist character.");
             }
             finally
@@ -159,7 +50,7 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void SimpleReadWriteValidation()
         {
-            TryCreate(_elementalistTemplate, out var baboon);
+            TryCreate(ElementalistTemplate, out var baboon);
             var elementalistKeyData = ElementalistData.MemoryOffsetToKeyData;
 
             baboon.SetIntegerValueWithoutValidation(elementalistKeyData[LevelKeyInteger], 3, true);
@@ -171,8 +62,8 @@ namespace HiraBots.Editor.Tests
             baboon.SetBooleanValueWithoutValidation(elementalistKeyData[HealthLowKeyBoolean], true, true);
             Assert.IsTrue(baboon.GetBooleanValueWithoutValidation(HealthLowKeyBoolean), "Boolean read-write failed.");
 
-            baboon.SetObjectValueWithoutValidation(elementalistKeyData[PlayerReferenceKeyObject], _mockObject2, true);
-            Assert.IsTrue(_mockObject2 == baboon.GetObjectValueWithoutValidation(PlayerReferenceKeyObject), "Object read-write failed.");
+            baboon.SetObjectValueWithoutValidation(elementalistKeyData[PlayerReferenceKeyObject], MockObject2, true);
+            Assert.IsTrue(MockObject2 == baboon.GetObjectValueWithoutValidation(PlayerReferenceKeyObject), "Object read-write failed.");
 
             var q = Quaternion.Euler(Random.Range(-10, 10), Random.Range(-10, 10), Random.Range(-10, 10));
             baboon.SetQuaternionValueWithoutValidation(elementalistKeyData[ThrowKeyQuaternion], q, true);
@@ -183,12 +74,12 @@ namespace HiraBots.Editor.Tests
 
             Assert.IsFalse(baboon.HasUnexpectedChanges, "Expected changes still lead to dirtying.");
 
-            TryCreate(_elementalistTemplate, out var secondBaboon);
+            TryCreate(ElementalistTemplate, out var secondBaboon);
 
             baboon.SetIntegerValueWithoutValidation(elementalistKeyData[ElementalPowerKeyInteger], 34);
             Assert.IsTrue(34 == secondBaboon.GetIntegerValueWithoutValidation(ElementalPowerKeyInteger), "Instance syncing failed.");
 
-            TryCreate(_warriorTemplate, out var knight);
+            TryCreate(WarriorTemplate, out var knight);
             var warriorKeyData = WarriorData.MemoryOffsetToKeyData;
 
             knight.SetFloatValueWithoutValidation(warriorKeyData[StaminaKeyFloat], 1f);
@@ -196,7 +87,7 @@ namespace HiraBots.Editor.Tests
             Assert.IsTrue(knight.UnexpectedChanges
                 .Contains(StaminaKeyFloat), "Simple dirtying index validation failed.");
 
-            TryCreate(_mageTemplate, out var wizard);
+            TryCreate(MageTemplate, out var wizard);
             var mageKeyData = MageData.MemoryOffsetToKeyData;
 
             wizard.SetFloatValueWithoutValidation(mageKeyData[ManaKeyFloat], 0f);
@@ -210,16 +101,16 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void InstanceSyncValidation()
         {
-            TryCreate(_baseCharacterTemplate, out var civilian);
+            TryCreate(BaseCharacterTemplate, out var civilian);
             var baseCharacterKeyData = BaseCharacterData.MemoryOffsetToKeyData;
 
-            TryCreate(_warriorTemplate, out var knight);
+            TryCreate(WarriorTemplate, out var knight);
 
             civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.right);
             Assert.AreEqual(Vector3.right, knight.GetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector),
                 "Instance syncing failed between base and warrior.");
 
-            TryCreate(_mageTemplate, out var wizard);
+            TryCreate(MageTemplate, out var wizard);
 
             Assert.AreEqual(Vector3.right, wizard.GetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector),
                 "Instance sync failed for a newly created key.");
@@ -228,7 +119,7 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void BlackboardDirtyingValidation()
         {
-            TryCreate(_baseCharacterTemplate, out var civilian);
+            TryCreate(BaseCharacterTemplate, out var civilian);
             var baseCharacterKeyData = BaseCharacterData.MemoryOffsetToKeyData;
 
             civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.right);
@@ -241,7 +132,7 @@ namespace HiraBots.Editor.Tests
 
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Clearing dirtying test failed.");
 
-            TryCreate(_elementalistTemplate, out var baboon);
+            TryCreate(ElementalistTemplate, out var baboon);
             civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.zero, true);
 
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Expectation parameter test failed.");
