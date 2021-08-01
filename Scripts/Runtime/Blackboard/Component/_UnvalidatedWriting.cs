@@ -30,7 +30,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
+                    _template.SetInstanceSyncedBooleanKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -42,7 +42,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
+                    _template.SetInstanceSyncedBooleanKeyWithoutValidation(
                         in keyData, value);
                 }
                 else
@@ -65,7 +65,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
+                    _template.SetInstanceSyncedEnumKeyWithoutValidation<T>(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -77,7 +77,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
+                    _template.SetInstanceSyncedEnumKeyWithoutValidation<T>(
                         in keyData, value);
                 }
                 else
@@ -100,7 +100,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
+                    _template.SetInstanceSyncedFloatKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -112,7 +112,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
+                    _template.SetInstanceSyncedFloatKeyWithoutValidation(
                         in keyData, value);
                 }
                 else
@@ -135,7 +135,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
+                    _template.SetInstanceSyncedIntegerKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -147,7 +147,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
+                    _template.SetInstanceSyncedIntegerKeyWithoutValidation(
                         in keyData, value);
                 }
                 else
@@ -170,7 +170,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
+                    _template.SetInstanceSyncedObjectKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -182,7 +182,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
+                    _template.SetInstanceSyncedObjectKeyWithoutValidation(
                         in keyData, value);
                 }
                 else
@@ -205,7 +205,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
+                    _template.SetInstanceSyncedVectorKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -217,7 +217,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
+                    _template.SetInstanceSyncedVectorKeyWithoutValidation(
                         in keyData, value);
                 }
                 else
@@ -240,7 +240,7 @@ namespace HiraBots
                 {
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
-                    _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
+                    _template.SetInstanceSyncedQuaternionKeyWithoutValidation(
                         in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
@@ -252,7 +252,7 @@ namespace HiraBots
                 if (keyData.InstanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
+                    _template.SetInstanceSyncedQuaternionKeyWithoutValidation(
                         in keyData, value);
                 }
                 else

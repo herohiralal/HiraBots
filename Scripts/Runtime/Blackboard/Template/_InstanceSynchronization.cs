@@ -25,6 +25,30 @@ namespace HiraBots
 
     internal unsafe partial class BlackboardTemplateCompiledData
     {
+        internal bool GetInstanceSyncedBooleanValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadBooleanValue(TemplateReadOnlyPtr, memoryOffset);
+
+        internal T GetInstanceSyncedEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, Enum =>
+            BlackboardUnsafeHelpers.ReadEnumValue<T>(TemplateReadOnlyPtr, memoryOffset);
+
+        internal float GetInstanceSyncedFloatValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadFloatValue(TemplateReadOnlyPtr, memoryOffset);
+
+        internal int GetInstanceSyncedIntegerValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadIntegerValue(TemplateReadOnlyPtr, memoryOffset);
+
+        internal Object GetInstanceSyncedObjectValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadObjectValue(TemplateReadOnlyPtr, memoryOffset);
+
+        internal Vector3 GetInstanceSyncedVectorValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadVectorValue(TemplateReadOnlyPtr, memoryOffset);
+
+        internal Quaternion GetInstanceSyncedQuaternionValueWithoutValidation(ushort memoryOffset) =>
+            BlackboardUnsafeHelpers.ReadQuaternionValue(TemplateReadOnlyPtr, memoryOffset);
+    }
+
+    internal unsafe partial class BlackboardTemplateCompiledData
+    {
         private readonly List<IInstanceSynchronizerListener> _listeners = new List<IInstanceSynchronizerListener>();
 
         internal BlackboardTemplateCompiledData GetOwningTemplate(ushort memoryOffset)
@@ -55,7 +79,7 @@ namespace HiraBots
             if (_listeners.Contains(listener)) _listeners.Remove(listener);
         }
 
-        internal void UpdateInstanceSyncedBooleanKeyWithoutValidation(in BlackboardKeyCompiledData keyData, bool value)
+        internal void SetInstanceSyncedBooleanKeyWithoutValidation(in BlackboardKeyCompiledData keyData, bool value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -66,7 +90,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, sizeof(byte));
         }
 
-        internal void UpdateInstanceSyncedEnumKeyWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value) where T : unmanaged, Enum
+        internal void SetInstanceSyncedEnumKeyWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value) where T : unmanaged, Enum
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -77,7 +101,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, (ushort) sizeof(T));
         }
 
-        internal void UpdateInstanceSyncedFloatKeyWithoutValidation(in BlackboardKeyCompiledData keyData, float value)
+        internal void SetInstanceSyncedFloatKeyWithoutValidation(in BlackboardKeyCompiledData keyData, float value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -88,7 +112,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, sizeof(float));
         }
 
-        internal void UpdateInstanceSyncedIntegerKeyWithoutValidation(in BlackboardKeyCompiledData keyData, int value)
+        internal void SetInstanceSyncedIntegerKeyWithoutValidation(in BlackboardKeyCompiledData keyData, int value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -99,7 +123,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, sizeof(int));
         }
 
-        internal void UpdateInstanceSyncedObjectKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Object value)
+        internal void SetInstanceSyncedObjectKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Object value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -110,7 +134,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, sizeof(int));
         }
 
-        internal void UpdateInstanceSyncedVectorKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value)
+        internal void SetInstanceSyncedVectorKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -121,7 +145,7 @@ namespace HiraBots
                 listener.UpdateValue(in keyData, valuePtr, sizeof(float) * 3);
         }
 
-        internal void UpdateInstanceSyncedQuaternionKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value)
+        internal void SetInstanceSyncedQuaternionKeyWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value)
         {
             var memoryOffset = keyData.MemoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
