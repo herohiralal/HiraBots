@@ -11,17 +11,18 @@ namespace HiraBots
         internal bool HasUnexpectedChanges => _unexpectedChanges.Count > 0;
         internal void ClearUnexpectedChanges() => _unexpectedChanges.Clear();
 
-        void IInstanceSynchronizerListener.UpdateValue(ushort memoryOffset, byte* value, ushort size, bool broadcastEventOnUnexpectedChange)
+        void IInstanceSynchronizerListener.UpdateValue(in BlackboardKeyCompiledData keyData, byte* value, ushort size)
         {
+            var memoryOffset = keyData.MemoryOffset;
             var ptr = DataPtr + memoryOffset;
             for (var i = 0; i < size; i++) ptr[i] = value[i];
 
-            if (broadcastEventOnUnexpectedChange) _unexpectedChanges.Add(memoryOffset);
+            if (keyData.BroadcastEventOnUnexpectedChange) _unexpectedChanges.Add(memoryOffset);
         }
 
-        internal void SetBooleanValueWithoutValidation(ushort memoryOffset, bool value, bool expected = false)
+        internal void SetBooleanValueWithoutValidation(in BlackboardKeyCompiledData keyData, bool value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -30,7 +31,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -42,7 +43,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -54,9 +55,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetEnumValueWithoutValidation<T>(ushort memoryOffset, T value, bool expected = false) where T : unmanaged, Enum
+        internal void SetEnumValueWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value, bool expected = false) where T : unmanaged, Enum
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -65,7 +66,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -77,7 +78,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedEnumKeyWithoutValidation<T>(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -89,9 +90,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetFloatValueWithoutValidation(ushort memoryOffset, float value, bool expected = false)
+        internal void SetFloatValueWithoutValidation(in BlackboardKeyCompiledData keyData, float value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -100,7 +101,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -112,7 +113,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedFloatKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -124,9 +125,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetIntegerValueWithoutValidation(ushort memoryOffset, int value, bool expected = false)
+        internal void SetIntegerValueWithoutValidation(in BlackboardKeyCompiledData keyData, int value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -135,7 +136,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -147,7 +148,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedIntegerKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -159,9 +160,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetObjectValueWithoutValidation(ushort memoryOffset, Object value, bool expected = false)
+        internal void SetObjectValueWithoutValidation(in BlackboardKeyCompiledData keyData, Object value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -170,7 +171,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -182,7 +183,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedObjectKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -194,9 +195,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetVectorValueWithoutValidation(ushort memoryOffset, Vector3 value, bool expected = false)
+        internal void SetVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -205,7 +206,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -217,7 +218,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedVectorKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {
@@ -229,9 +230,9 @@ namespace HiraBots
             }
         }
 
-        internal void SetQuaternionValueWithoutValidation(ushort memoryOffset, Quaternion value, bool expected = false)
+        internal void SetQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value, bool expected = false)
         {
-            var keyData = _template.MemoryOffsetToKeyData[memoryOffset];
+            var memoryOffset = keyData.MemoryOffset;
 
             if (expected)
             {
@@ -240,7 +241,7 @@ namespace HiraBots
                     // instance synced
                     _template.RemoveInstanceSyncListener(this);
                     _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                     _template.AddInstanceSyncListener(this);
                 }
 
@@ -252,7 +253,7 @@ namespace HiraBots
                 {
                     // unexpected & instance synced
                     _template.UpdateInstanceSyncedQuaternionKeyWithoutValidation(
-                        keyData.BroadcastEventOnUnexpectedChange, memoryOffset, value);
+                        in keyData, value);
                 }
                 else
                 {

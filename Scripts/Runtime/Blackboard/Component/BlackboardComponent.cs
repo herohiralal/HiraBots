@@ -41,7 +41,7 @@ namespace HiraBots
         ~BlackboardComponent()
         {
             _template.RemoveInstanceSyncListener(this);
-            
+
             if (_data.IsCreated)
                 _data.Dispose();
 

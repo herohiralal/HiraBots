@@ -222,8 +222,7 @@ namespace HiraBots.Editor.Tests
 
                 var secondKeyCompiledData = _second.CompiledData;
                 _parent.CompiledData.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                    secondKeyCompiledData.BroadcastEventOnUnexpectedChange,
-                    secondKeyCompiledData.MemoryOffset,
+                    in secondKeyCompiledData,
                     !second_key_default_value);
 
                 _parent.CompiledData.CopyTemplateTo(template);
@@ -235,8 +234,7 @@ namespace HiraBots.Editor.Tests
                     "Mismatch between child and parent values.");
 
                 _child.CompiledData.UpdateInstanceSyncedBooleanKeyWithoutValidation(
-                    secondKeyCompiledData.BroadcastEventOnUnexpectedChange,
-                    secondKeyCompiledData.MemoryOffset,
+                    in secondKeyCompiledData,
                     second_key_default_value);
 
                 _parent.CompiledData.CopyTemplateTo(template);
@@ -260,16 +258,16 @@ namespace HiraBots.Editor.Tests
 
             Assert.IsTrue(parentData.GetOwningTemplate(second_key_memory_offset) == parentData, "Culprit: Parent. Key: second.");
             Assert.IsTrue(childData.GetOwningTemplate(second_key_memory_offset) == parentData, "Culprit: Child. Key: second.");
-            
+
             Assert.IsTrue(parentData.GetOwningTemplate(third_key_memory_offset) == null, "Culprit: Parent. Key: third.");
             Assert.IsTrue(childData.GetOwningTemplate(third_key_memory_offset) == childData, "Culprit: Child. Key: third.");
 
             Assert.IsTrue(parentData.GetOwningTemplate(fourth_key_memory_offset) == null, "Culprit: Parent. Key: fourth.");
             Assert.IsTrue(childData.GetOwningTemplate(fourth_key_memory_offset) == childData, "Culprit: Child. Key: fourth.");
-            
+
             Assert.IsTrue(parentData.GetOwningTemplate(parentData.TemplateSize) == null, "Culprit: Parent. Key: template size.");
             Assert.IsTrue(childData.GetOwningTemplate(childData.TemplateSize) == null, "Culprit: Child. Key: template size.");
-            
+
             Assert.IsTrue(parentData.GetOwningTemplate((ushort) (parentData.TemplateSize + 5)) == null, "Culprit: Parent. Key: template size + 5.");
             Assert.IsTrue(childData.GetOwningTemplate((ushort) (childData.TemplateSize + 5)) == null, "Culprit: Child. Key: template size + 5.");
         }

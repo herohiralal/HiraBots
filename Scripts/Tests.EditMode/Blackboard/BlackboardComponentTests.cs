@@ -160,45 +160,50 @@ namespace HiraBots.Editor.Tests
         public void SimpleReadWriteValidation()
         {
             TryCreate(_elementalistTemplate, out var baboon);
+            var elementalistKeyData = ElementalistData.MemoryOffsetToKeyData;
 
-            baboon.SetIntegerValueWithoutValidation(LevelKeyInteger, 3, true);
+            baboon.SetIntegerValueWithoutValidation(elementalistKeyData[LevelKeyInteger], 3, true);
             Assert.IsTrue(3 == baboon.GetIntegerValueWithoutValidation(LevelKeyInteger), "Integer read-write failed.");
 
-            baboon.SetFloatValueWithoutValidation(HealthKeyFloat, 35f, true);
+            baboon.SetFloatValueWithoutValidation(elementalistKeyData[HealthKeyFloat], 35f, true);
             Assert.IsTrue(Mathf.Abs(35f - baboon.GetFloatValueWithoutValidation(HealthKeyFloat)) < 0.5f, "Float read-write failed.");
 
-            baboon.SetBooleanValueWithoutValidation(HealthLowKeyBoolean, true, true);
+            baboon.SetBooleanValueWithoutValidation(elementalistKeyData[HealthLowKeyBoolean], true, true);
             Assert.IsTrue(baboon.GetBooleanValueWithoutValidation(HealthLowKeyBoolean), "Boolean read-write failed.");
 
-            baboon.SetObjectValueWithoutValidation(PlayerReferenceKeyObject, _mockObject2, true);
+            baboon.SetObjectValueWithoutValidation(elementalistKeyData[PlayerReferenceKeyObject], _mockObject2, true);
             Assert.IsTrue(_mockObject2 == baboon.GetObjectValueWithoutValidation(PlayerReferenceKeyObject), "Object read-write failed.");
 
             var q = Quaternion.Euler(Random.Range(-10, 10), Random.Range(-10, 10), Random.Range(-10, 10));
-            baboon.SetQuaternionValueWithoutValidation(ThrowKeyQuaternion, q, true);
+            baboon.SetQuaternionValueWithoutValidation(elementalistKeyData[ThrowKeyQuaternion], q, true);
             Assert.IsTrue(q == baboon.GetQuaternionValueWithoutValidation(ThrowKeyQuaternion), "Quaternion read-write failed.");
 
-            baboon.SetEnumValueWithoutValidation<GenericStatus>(HealthStatusKeyEnum, GenericStatus.Low, true);
+            baboon.SetEnumValueWithoutValidation<GenericStatus>(elementalistKeyData[HealthStatusKeyEnum], GenericStatus.Low, true);
             Assert.IsTrue(GenericStatus.Low == baboon.GetEnumValueWithoutValidation<GenericStatus>(HealthStatusKeyEnum), "Enum read-write failed.");
 
             Assert.IsFalse(baboon.HasUnexpectedChanges, "Expected changes still lead to dirtying.");
 
             TryCreate(_elementalistTemplate, out var secondBaboon);
 
-            baboon.SetIntegerValueWithoutValidation(ElementalPowerKeyInteger, 34);
+            baboon.SetIntegerValueWithoutValidation(elementalistKeyData[ElementalPowerKeyInteger], 34);
             Assert.IsTrue(34 == secondBaboon.GetIntegerValueWithoutValidation(ElementalPowerKeyInteger), "Instance syncing failed.");
 
             TryCreate(_warriorTemplate, out var knight);
-            knight.SetFloatValueWithoutValidation(StaminaKeyFloat, 1f);
+            var warriorKeyData = WarriorData.MemoryOffsetToKeyData;
+
+            knight.SetFloatValueWithoutValidation(warriorKeyData[StaminaKeyFloat], 1f);
             Assert.IsTrue(knight.HasUnexpectedChanges, "Simple dirtying failed.");
             Assert.IsTrue(knight.UnexpectedChanges
-                    .Contains(StaminaKeyFloat), "Simple dirtying index validation failed.");
+                .Contains(StaminaKeyFloat), "Simple dirtying index validation failed.");
 
             TryCreate(_mageTemplate, out var wizard);
-            wizard.SetFloatValueWithoutValidation(ManaKeyFloat, 0f);
+            var mageKeyData = MageData.MemoryOffsetToKeyData;
+
+            wizard.SetFloatValueWithoutValidation(mageKeyData[ManaKeyFloat], 0f);
             Assert.IsTrue(wizard.HasUnexpectedChanges, "Could not test for overwriting with the same value dirtying the blackboard.");
             wizard.ClearUnexpectedChanges();
 
-            wizard.SetFloatValueWithoutValidation(ManaKeyFloat, 0f);
+            wizard.SetFloatValueWithoutValidation(mageKeyData[ManaKeyFloat], 0f);
             Assert.IsFalse(wizard.HasUnexpectedChanges, "Overwriting with same value dirtied the blackboard.");
         }
 
@@ -206,9 +211,11 @@ namespace HiraBots.Editor.Tests
         public void InstanceSyncValidation()
         {
             TryCreate(_baseCharacterTemplate, out var civilian);
+            var baseCharacterKeyData = BaseCharacterData.MemoryOffsetToKeyData;
+
             TryCreate(_warriorTemplate, out var knight);
 
-            civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.right);
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.right);
             Assert.AreEqual(Vector3.right, knight.GetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector),
                 "Instance syncing failed between base and warrior.");
 
@@ -222,23 +229,25 @@ namespace HiraBots.Editor.Tests
         public void BlackboardDirtyingValidation()
         {
             TryCreate(_baseCharacterTemplate, out var civilian);
-            civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.right);
+            var baseCharacterKeyData = BaseCharacterData.MemoryOffsetToKeyData;
+
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.right);
 
             Assert.IsTrue(civilian.HasUnexpectedChanges, "Simple dirtying test failed.");
             Assert.IsTrue(civilian.UnexpectedChanges
-                    .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
+                .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
 
             civilian.ClearUnexpectedChanges();
 
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Clearing dirtying test failed.");
 
             TryCreate(_elementalistTemplate, out var baboon);
-            civilian.SetVectorValueWithoutValidation(CurrentPlayerLocationKeyVector, Vector3.zero, true);
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[CurrentPlayerLocationKeyVector], Vector3.zero, true);
 
             Assert.IsFalse(civilian.HasUnexpectedChanges, "Expectation parameter test failed.");
             Assert.IsTrue(baboon.HasUnexpectedChanges, "Instance synced dirtying test failed.");
             Assert.IsTrue(baboon.UnexpectedChanges
-                    .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
+                .Contains(CurrentPlayerLocationKeyVector), "Simple dirtying test index validation failed.");
         }
     }
 }
