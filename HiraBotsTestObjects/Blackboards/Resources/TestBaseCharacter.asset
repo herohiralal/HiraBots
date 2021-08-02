@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b933bed9b3bc407d9a704296b326ab4a, type: 3}
   m_Name: HealthLow
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 1
-  defaultValue: 0
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 1
+  m_DefaultValue: 0
 --- !u!114 &-6359508065409903171
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -27,11 +27,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b1a7c660ebb41bcb9617e2114d967cc, type: 3}
   m_Name: HealthStatus
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 1
-  defaultValue:
-    typeIdentifier: 5F9A54C1-F247-41B0-8D5E-D64DD26C8317
-    value: 6
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 1
+  m_DefaultValue:
+    m_TypeIdentifier: 5F9A54C1-F247-41B0-8D5E-D64DD26C8317
+    m_Value: 6
 --- !u!114 &-3079195664247875416
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb7cd0bd84747b5b7ae8289fbdd048d, type: 3}
   m_Name: CurrentPlayerLocation
   m_EditorClassIdentifier: 
-  instanceSynced: 1
-  essentialToDecisionMaking: 1
-  defaultValue: {x: 0, y: 0, z: 0}
+  m_InstanceSynced: 1
+  m_EssentialToDecisionMaking: 1
+  m_DefaultValue: {x: 0, y: 0, z: 0}
 --- !u!114 &-1850307722600930011
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -59,9 +59,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600e7994c3974ba2bd0feed4990690fc, type: 3}
   m_Name: Health
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 0
-  defaultValue: 100
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue: 100
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,8 +74,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 957ed87a28d14304947334559d53c3e3, type: 3}
   m_Name: TestBaseCharacter
   m_EditorClassIdentifier: 
-  parent: {fileID: 0}
-  keys:
+  m_Parent: {fileID: 0}
+  m_Keys:
   - {fileID: 5249265092262184567}
   - {fileID: -1850307722600930011}
   - {fileID: -8470558551495753619}
@@ -94,9 +94,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79495d4e033741e7b16e042b56250295, type: 3}
   m_Name: Level
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 0
-  defaultValue: 1
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue: 1
 --- !u!114 &5793628663520586142
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -109,6 +109,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 396af9b054994aa3a219df4ec60c2c30, type: 3}
   m_Name: PlayerReference
   m_EditorClassIdentifier: 
-  instanceSynced: 1
-  essentialToDecisionMaking: 0
-  defaultValue: {fileID: 0}
+  m_InstanceSynced: 1
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue: {fileID: 0}

@@ -9,7 +9,7 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void SerializationAndDeserializationWorksCorrectly()
         {
-            Assert.AreEqual(CookedDataTestObject.k_ValueToCook, CookedDataTestObject.instance.value);
+            Assert.AreEqual(CookedDataTestObject.k_ValueToCook, CookedDataTestObject.instance.m_Value);
         }
 
         [Test]

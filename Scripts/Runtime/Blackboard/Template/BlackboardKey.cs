@@ -9,8 +9,8 @@ namespace HiraBots
         {
         }
 
-        [SerializeField, HideInInspector] protected bool instanceSynced = false;
-        [SerializeField, HideInInspector] protected bool essentialToDecisionMaking = false;
+        [SerializeField, HideInInspector] protected bool m_InstanceSynced = false;
+        [SerializeField, HideInInspector] protected bool m_EssentialToDecisionMaking = false;
 
         [NonSerialized] protected byte m_SizeInBytesInternal;
         internal byte sizeInBytes => m_SizeInBytesInternal;

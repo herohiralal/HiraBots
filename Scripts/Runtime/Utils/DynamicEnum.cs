@@ -15,11 +15,11 @@ namespace HiraBots
     internal struct DynamicEnum
     {
 #if UNITY_EDITOR
-        [SerializeField] internal string typeIdentifier;
+        [SerializeField] internal string m_TypeIdentifier;
 #endif
-        [SerializeField] internal byte value;
+        [SerializeField] internal byte m_Value;
 
-        public static implicit operator byte(DynamicEnum input) => input.value;
+        public static implicit operator byte(DynamicEnum input) => input.m_Value;
 
 #if UNITY_EDITOR
         [InitializeOnLoad]

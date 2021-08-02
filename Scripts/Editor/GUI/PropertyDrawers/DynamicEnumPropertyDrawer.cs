@@ -9,6 +9,9 @@ namespace HiraBots.Editor
     {
         private const float k_PropertyHeight = 21f;
 
+        private const string k_TypeIdentifierProperty = "m_TypeIdentifier";
+        private const string k_ValueProperty = "m_Value";
+
         internal static void DrawWithAutomaticLayout(SerializedProperty property, GUIContent label, Type typeRestriction)
         {
             var position = EditorGUILayout.GetControlRect(true, k_PropertyHeight);
@@ -40,14 +43,14 @@ namespace HiraBots.Editor
 
         internal static void DrawInternal(Rect position, SerializedProperty property, GUIContent label, Type typeRestriction, bool allowChangingType)
         {
-            var typeIdentifierProperty = property.FindPropertyRelative("typeIdentifier");
+            var typeIdentifierProperty = property.FindPropertyRelative(k_TypeIdentifierProperty);
             if (typeIdentifierProperty == null || typeIdentifierProperty.propertyType != SerializedPropertyType.String)
             {
                 EditorGUI.HelpBox(position, "Missing type identifier property.", MessageType.Error);
                 return;
             }
 
-            var valueProperty = property.FindPropertyRelative("value");
+            var valueProperty = property.FindPropertyRelative(k_ValueProperty);
             if (valueProperty == null || valueProperty.propertyType != SerializedPropertyType.Integer)
             {
                 EditorGUI.HelpBox(position, "Missing value property.", MessageType.Error);

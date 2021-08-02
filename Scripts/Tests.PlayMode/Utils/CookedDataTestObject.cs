@@ -2,7 +2,7 @@
 {
     internal partial class CookedDataTestObject : CookedDataSingleton<CookedDataTestObject>
     {
-        [UnityEngine.SerializeField] internal int value = 0;
+        [UnityEngine.SerializeField] internal int m_Value = 0;
         internal const int k_ValueToCook = 342;
     }
 }
@@ -36,7 +36,7 @@ namespace HiraBots.Editor.Tests
         internal static void CreateCookedData(out CookedDataTestObject cookedData)
         {
             cookedData = CreateInstance<CookedDataTestObject>();
-            cookedData.value = k_ValueToCook;
+            cookedData.m_Value = k_ValueToCook;
         }
     }
 }

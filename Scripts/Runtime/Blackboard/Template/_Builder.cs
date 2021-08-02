@@ -12,8 +12,8 @@ namespace HiraBots
             var output = CreateInstance<T>();
             output.hideFlags = hideFlags;
             output.name = name;
-            output.instanceSynced = (traits & BlackboardKeyTraits.InstanceSynced) != 0;
-            output.essentialToDecisionMaking = (traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
+            output.m_InstanceSynced = (traits & BlackboardKeyTraits.InstanceSynced) != 0;
+            output.m_EssentialToDecisionMaking = (traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
             return output;
         }
     }
@@ -24,7 +24,7 @@ namespace HiraBots
             where T : BooleanBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -35,7 +35,7 @@ namespace HiraBots
             where T : EnumBlackboardKey where TEnumType : unmanaged, System.Enum
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue.typeIdentifier = "";
+            output.m_DefaultValue.m_TypeIdentifier = "";
 
             var enumType = typeof(TEnumType);
             if (enumType.IsEnum)
@@ -44,11 +44,11 @@ namespace HiraBots
                 {
                     var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
                     if (exposedToHiraBotsAttribute != null)
-                        output.defaultValue.typeIdentifier = exposedToHiraBotsAttribute.m_Identifier;
+                        output.m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.m_Identifier;
                 }
             }
 
-            output.defaultValue.value = *(byte*) &defaultValue;
+            output.m_DefaultValue.m_Value = *(byte*) &defaultValue;
             return output;
         }
     }
@@ -59,7 +59,7 @@ namespace HiraBots
             where T : FloatBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -70,7 +70,7 @@ namespace HiraBots
             where T : IntegerBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -81,7 +81,7 @@ namespace HiraBots
             where T : ObjectBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -92,7 +92,7 @@ namespace HiraBots
             where T : QuaternionBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -103,7 +103,7 @@ namespace HiraBots
             where T : VectorBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.defaultValue = defaultValue;
+            output.m_DefaultValue = defaultValue;
             return output;
         }
     }
@@ -116,8 +116,8 @@ namespace HiraBots
             var output = CreateInstance<T>();
             output.hideFlags = hideFlags;
             output.name = name;
-            output.parent = parent;
-            output.keys = keys;
+            output.m_Parent = parent;
+            output.m_Keys = keys;
             return output;
         }
     }

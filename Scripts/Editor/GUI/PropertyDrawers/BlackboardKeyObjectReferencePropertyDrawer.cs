@@ -7,6 +7,9 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardKey))]
     internal class BlackboardKeyObjectReferencePropertyDrawer : PropertyDrawer
     {
+        private const string k_InstanceSyncedProperty = "m_InstanceSynced";
+        private const string k_DefaultValueProperty = "m_DefaultValue";
+
         private static readonly Dictionary<int, bool> s_ExpansionStatus = new Dictionary<int, bool>(40);
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -55,7 +58,7 @@ namespace HiraBots.Editor
                 GUIHelpers.DrawNameField(currentRect, value);
 
                 currentRect.y += 21f;
-                var instanceSyncedProperty = so.FindProperty("instanceSynced");
+                var instanceSyncedProperty = so.FindProperty(k_InstanceSyncedProperty);
                 if (instanceSyncedProperty == null)
                 {
                     EditorGUI.HelpBox(currentRect, "Missing instance sync property.", MessageType.Error);
@@ -77,7 +80,7 @@ namespace HiraBots.Editor
                 }
 
                 currentRect.y += 21f;
-                var defaultValueProperty = so.FindProperty("defaultValue");
+                var defaultValueProperty = so.FindProperty(k_DefaultValueProperty);
                 if (defaultValueProperty == null)
                 {
                     EditorGUI.HelpBox(currentRect, "Missing default value property.", MessageType.Error);

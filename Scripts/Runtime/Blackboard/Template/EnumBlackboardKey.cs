@@ -10,6 +10,6 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Enum;
         }
 
-        [SerializeField] private DynamicEnum defaultValue = default;
+        [SerializeField] private DynamicEnum m_DefaultValue = default;
     }
 }

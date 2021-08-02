@@ -10,6 +10,6 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Quaternion;
         }
 
-        [SerializeField] private Vector3 defaultValue = Vector3.zero;
+        [SerializeField] private Vector3 m_DefaultValue = Vector3.zero;
     }
 }

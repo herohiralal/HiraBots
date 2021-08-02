@@ -45,7 +45,7 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void CyclicalHierarchyValidation()
         {
-            var parentField = typeof(BlackboardTemplate).GetField("parent", BindingFlags.Instance | BindingFlags.NonPublic);
+            var parentField = typeof(BlackboardTemplate).GetField("m_Parent", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsFalse(parentField == null, "Could not find parent field in blackboard template. Test incomplete.");
 
             var first = BlackboardTemplate

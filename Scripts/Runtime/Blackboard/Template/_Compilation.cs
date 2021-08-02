@@ -41,8 +41,8 @@ namespace HiraBots
                 return;
 
             var traits = BlackboardKeyTraits.None
-                         | (instanceSynced ? BlackboardKeyTraits.InstanceSynced : BlackboardKeyTraits.None)
-                         | (essentialToDecisionMaking ? BlackboardKeyTraits.BroadcastEventOnUnexpectedChange : BlackboardKeyTraits.None);
+                         | (m_InstanceSynced ? BlackboardKeyTraits.InstanceSynced : BlackboardKeyTraits.None)
+                         | (m_EssentialToDecisionMaking ? BlackboardKeyTraits.BroadcastEventOnUnexpectedChange : BlackboardKeyTraits.None);
 
             m_CompiledDataInternal = new BlackboardKeyCompiledData(context.memoryOffset, context.index, traits, m_KeyType);
             context.compiledData = m_CompiledDataInternal;
@@ -66,39 +66,39 @@ namespace HiraBots
     internal unsafe partial class BooleanBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteBooleanValue(context.address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteBooleanValue(context.address, 0, m_DefaultValue);
     }
 
     internal unsafe partial class EnumBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteRawEnumValue(context.address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteRawEnumValue(context.address, 0, m_DefaultValue);
     }
 
     internal unsafe partial class FloatBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteFloatValue(context.address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteFloatValue(context.address, 0, m_DefaultValue);
     }
 
     internal unsafe partial class IntegerBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteIntegerValue(context.address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteIntegerValue(context.address, 0, m_DefaultValue);
     }
 
     internal unsafe partial class ObjectBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context)
         {
-            BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, defaultValue);
-            BlackboardUnsafeHelpers.Pin(defaultValue);
+            BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, m_DefaultValue);
+            BlackboardUnsafeHelpers.Pin(m_DefaultValue);
         }
 
         protected override void FreeInternal()
         {
-            BlackboardUnsafeHelpers.Release(defaultValue);
-            var instanceID = defaultValue.GetInstanceID();
+            BlackboardUnsafeHelpers.Release(m_DefaultValue);
+            var instanceID = m_DefaultValue.GetInstanceID();
             BlackboardUnsafeHelpers.WriteObjectValue((byte*) &instanceID, 0, null);
         }
     }
@@ -106,13 +106,13 @@ namespace HiraBots
     internal unsafe partial class QuaternionBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, Quaternion.Euler(defaultValue));
+            BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, Quaternion.Euler(m_DefaultValue));
     }
 
     internal unsafe partial class VectorBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteVectorValue(context.address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteVectorValue(context.address, 0, m_DefaultValue);
     }
 
     internal partial class BlackboardTemplate
@@ -126,23 +126,23 @@ namespace HiraBots
                 return;
 
             var parentCompiledData = (BlackboardTemplateCompiledData) null;
-            if (parent != null)
+            if (m_Parent != null)
             {
-                if (!parent.isCompiled)
+                if (!m_Parent.isCompiled)
                 {
                     Debug.LogError("Attempted to compile blackboard before its parent.", this);
                     return;
                 }
 
-                parentCompiledData = parent.compiledData;
+                parentCompiledData = m_Parent.compiledData;
             }
 
             ushort startingMemoryOffset = 0, startingIndex = 0;
 
             var totalTemplateSize = (ushort) 0;
-            foreach (var key in keys) totalTemplateSize += key.sizeInBytes;
+            foreach (var key in m_Keys) totalTemplateSize += key.sizeInBytes;
 
-            var totalKeyCount = (ushort) keys.Length;
+            var totalKeyCount = (ushort) m_Keys.Length;
 
             if (parentCompiledData != null)
             {
@@ -168,7 +168,7 @@ namespace HiraBots
 
             context.GenerateKeyCompilerContext(template, keyNameToMemoryOffset, memoryOffsetToKeyData, startingIndex, startingMemoryOffset);
 
-            foreach (var key in keys.OrderBy(k => k.sizeInBytes))
+            foreach (var key in m_Keys.OrderBy(k => k.sizeInBytes))
             {
                 key.Compile(context.keyCompilerContext);
                 context.UpdateKeyCompilerContext(key.sizeInBytes);
@@ -179,7 +179,7 @@ namespace HiraBots
 
         internal void Free()
         {
-            foreach (var key in keys) key.Free();
+            foreach (var key in m_Keys) key.Free();
             compiledData = null;
         }
     }

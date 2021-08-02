@@ -10,10 +10,10 @@ namespace HiraBots.Editor
     [CustomEditor(typeof(BlackboardTemplate), true)]
     internal class BlackboardTemplateEditor : UnityEditor.Editor
     {
-        private const string k_ParentProperty = "parent";
-        private const string k_KeysProperty = "keys";
+        private const string k_ParentProperty = "m_Parent";
+        private const string k_KeysProperty = "m_Keys";
 
-        [SerializeField] private bool dirty = false;
+        [SerializeField] private bool m_Dirty = false;
         private MultiAssetFileHelper m_MultiAssetFileHelper = null;
         private ReorderableList m_ReorderableList = null;
 
@@ -26,7 +26,7 @@ namespace HiraBots.Editor
             m_ReorderableList = null;
         }
 
-        private void OnUndoPerformed() => dirty = true;
+        private void OnUndoPerformed() => m_Dirty = true;
 
         public override void OnInspectorGUI()
         {
@@ -51,10 +51,10 @@ namespace HiraBots.Editor
             if (editingDisabled)
                 EditorGUILayout.HelpBox("HiraBots components are read-only while in play mode.", MessageType.Warning);
 
-            if (dirty)
+            if (m_Dirty)
             {
                 m_MultiAssetFileHelper.SynchronizeCollectionAndAsset();
-                dirty = false;
+                m_Dirty = false;
             }
 
             using (new GUIEnabledChanger(!editingDisabled))

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 957ed87a28d14304947334559d53c3e3, type: 3}
   m_Name: TestWarrior
   m_EditorClassIdentifier: 
-  parent: {fileID: 11400000, guid: 99fa164ae574a21478df87d35314d80c, type: 2}
-  keys:
+  m_Parent: {fileID: 11400000, guid: 99fa164ae574a21478df87d35314d80c, type: 2}
+  m_Keys:
   - {fileID: 6222802776808687956}
 --- !u!114 &6222802776808687956
 MonoBehaviour:
@@ -27,6 +27,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600e7994c3974ba2bd0feed4990690fc, type: 3}
   m_Name: Stamina
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 1
-  defaultValue: 100
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 1
+  m_DefaultValue: 100

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b1a7c660ebb41bcb9617e2114d967cc, type: 3}
   m_Name: PowerType
   m_EditorClassIdentifier: 
-  instanceSynced: 1
-  essentialToDecisionMaking: 0
-  defaultValue:
-    typeIdentifier: 7E11BA86-1F8E-4010-92C2-FC9482B52507
-    value: 1
+  m_InstanceSynced: 1
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue:
+    m_TypeIdentifier: 7E11BA86-1F8E-4010-92C2-FC9482B52507
+    m_Value: 1
 --- !u!114 &-2372215952943780408
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -29,9 +29,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79495d4e033741e7b16e042b56250295, type: 3}
   m_Name: ElementalPower
   m_EditorClassIdentifier: 
-  instanceSynced: 1
-  essentialToDecisionMaking: 0
-  defaultValue: 5
+  m_InstanceSynced: 1
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue: 5
 --- !u!114 &-1244710888310362356
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -44,9 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a772c5ce59844b8db950291038630738, type: 3}
   m_Name: Throw
   m_EditorClassIdentifier: 
-  instanceSynced: 0
-  essentialToDecisionMaking: 0
-  defaultValue: {x: 0, y: 0, z: 0}
+  m_InstanceSynced: 0
+  m_EssentialToDecisionMaking: 0
+  m_DefaultValue: {x: 0, y: 0, z: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,8 +59,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 957ed87a28d14304947334559d53c3e3, type: 3}
   m_Name: TestElementalist
   m_EditorClassIdentifier: 
-  parent: {fileID: 11400000, guid: 064ad95cebe64ea4485757cd17ca9e12, type: 2}
-  keys:
+  m_Parent: {fileID: 11400000, guid: 064ad95cebe64ea4485757cd17ca9e12, type: 2}
+  m_Keys:
   - {fileID: -2372215952943780408}
   - {fileID: -1244710888310362356}
   - {fileID: -2854073008941790579}

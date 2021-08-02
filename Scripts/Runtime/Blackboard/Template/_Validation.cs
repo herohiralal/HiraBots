@@ -36,7 +36,7 @@ namespace HiraBots
 
     internal partial class BlackboardTemplate
     {
-        internal ushort hierarchyIndex => parent == null ? (ushort) 0 : (ushort) (parent.hierarchyIndex + 1);
+        internal ushort hierarchyIndex => m_Parent == null ? (ushort) 0 : (ushort) (m_Parent.hierarchyIndex + 1);
 
         internal void Validate(IBlackboardTemplateValidatorContext context)
         {
@@ -64,17 +64,17 @@ namespace HiraBots
                 hashSet.Add(t);
 
                 prev = t;
-                t = t.parent;
+                t = t.m_Parent;
             } while (t != null);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void EmptyKeyCheck(IBlackboardTemplateValidatorContext context)
         {
-            var count = keys.Length;
+            var count = m_Keys.Length;
             for (ushort i = 0; i < count; i++)
             {
-                if (keys[i] != null)
+                if (m_Keys[i] != null)
                     continue;
 
                 context.MarkUnsuccessful();
@@ -96,7 +96,7 @@ namespace HiraBots
 
             do
             {
-                var currentKeySet = t.keys;
+                var currentKeySet = t.m_Keys;
                 var count = currentKeySet.Length;
                 for (var i = 0; i < count; i++)
                 {
@@ -113,17 +113,17 @@ namespace HiraBots
                 }
 
                 prev = t;
-                t = t.parent;
+                t = t.m_Parent;
             } while (t != null && prev != recursionPoint);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void IndividualKeyValidationCheck(IBlackboardTemplateValidatorContext context)
         {
-            var count = keys.Length;
+            var count = m_Keys.Length;
             for (var i = 0; i < count; i++)
             {
-                var key = keys[i];
+                var key = m_Keys[i];
                 if (key != null)
                     key.Validate(context.GetKeyValidatorContext(key));
             }

@@ -10,6 +10,6 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Boolean;
         }
 
-        [SerializeField] private bool defaultValue = false;
+        [SerializeField] private bool m_DefaultValue = false;
     }
 }
