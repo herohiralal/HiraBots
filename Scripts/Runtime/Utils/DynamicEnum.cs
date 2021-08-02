@@ -31,22 +31,22 @@ namespace HiraBots
                     .GetTypesWithAttribute<ExposedToHiraBotsAttribute>()
                     .Where(t => t.IsEnum && (t.GetEnumUnderlyingType() == typeof(byte) || t.GetEnumUnderlyingType() == typeof(sbyte)));
 
-                var typeToIdentifier = new Dictionary<Type, string>();
-                var identifierToType = new Dictionary<string, Type>();
+                var dT2I = new Dictionary<Type, string>();
+                var dI2T = new Dictionary<string, Type>();
 
                 foreach (var type in dynamicEnumTypes)
                 {
-                    var identifier = type.GetCustomAttribute<ExposedToHiraBotsAttribute>().Identifier;
-                    typeToIdentifier.Add(type, identifier);
-                    identifierToType.Add(identifier, type);
+                    var identifier = type.GetCustomAttribute<ExposedToHiraBotsAttribute>().m_Identifier;
+                    dT2I.Add(type, identifier);
+                    dI2T.Add(identifier, type);
                 }
 
-                TYPE_TO_IDENTIFIER = typeToIdentifier;
-                IDENTIFIER_TO_TYPE = identifierToType;
+                Helpers.typeToIdentifier = dT2I;
+                Helpers.identifierToType = dI2T;
             }
 
-            public static readonly ReadOnlyDictionaryAccessor<Type, string> TYPE_TO_IDENTIFIER;
-            public static readonly ReadOnlyDictionaryAccessor<string, Type> IDENTIFIER_TO_TYPE;
+            public static ReadOnlyDictionaryAccessor<Type, string> typeToIdentifier { get; }
+            public static ReadOnlyDictionaryAccessor<string, Type> identifierToType { get; }
         }
 #endif
     }

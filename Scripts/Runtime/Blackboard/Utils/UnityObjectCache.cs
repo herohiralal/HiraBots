@@ -14,52 +14,52 @@ namespace HiraBots
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal ObjectCacheData(Object reference)
             {
-                Reference = reference;
-                Frozen = false;
-                Count = 1;
+                m_Reference = reference;
+                m_Frozen = false;
+                m_Count = 1;
             }
 
-            internal readonly Object Reference;
-            internal bool Frozen;
-            internal uint Count;
+            internal readonly Object m_Reference;
+            internal bool m_Frozen;
+            internal uint m_Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal UnityObjectCache(int capacity) => _objectCache = new Dictionary<int, ObjectCacheData>(capacity);
+        internal UnityObjectCache(int capacity) => m_ObjectCache = new Dictionary<int, ObjectCacheData>(capacity);
 
-        private readonly Dictionary<int, ObjectCacheData> _objectCache;
+        private readonly Dictionary<int, ObjectCacheData> m_ObjectCache;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Clear() => _objectCache.Clear();
+        internal void Clear() => m_ObjectCache.Clear();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Object Read(int instanceID) =>
-            instanceID != 0 && _objectCache.TryGetValue(instanceID, out var data) ? data.Reference : null;
+            instanceID != 0 && m_ObjectCache.TryGetValue(instanceID, out var data) ? data.m_Reference : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void SetFreeze(int instanceID, bool value)
         {
-            if (instanceID == 0 || !_objectCache.TryGetValue(instanceID, out var dataToMakePersistent))
+            if (instanceID == 0 || !m_ObjectCache.TryGetValue(instanceID, out var dataToMakePersistent))
                 return;
 
-            dataToMakePersistent.Frozen = value;
-            _objectCache[instanceID] = dataToMakePersistent;
+            dataToMakePersistent.m_Frozen = value;
+            m_ObjectCache[instanceID] = dataToMakePersistent;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Remove(int instanceID)
         {
-            if (instanceID == 0 || !_objectCache.TryGetValue(instanceID, out var dataToRemove))
+            if (instanceID == 0 || !m_ObjectCache.TryGetValue(instanceID, out var dataToRemove))
                 return;
 
-            dataToRemove.Count -= dataToRemove.Frozen ? 0u : 1u;
+            dataToRemove.m_Count -= dataToRemove.m_Frozen ? 0u : 1u;
 
-            if (dataToRemove.Count == 0)
+            if (dataToRemove.m_Count == 0)
             {
-                _objectCache.Remove(instanceID);
-                LogCacheUpdate(dataToRemove.Reference, false);
+                m_ObjectCache.Remove(instanceID);
+                LogCacheUpdate(dataToRemove.m_Reference, false);
             }
-            else _objectCache[instanceID] = dataToRemove;
+            else m_ObjectCache[instanceID] = dataToRemove;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -70,14 +70,14 @@ namespace HiraBots
 
             var instanceID = value.GetInstanceID();
             
-            if (_objectCache.TryGetValue(instanceID, out var currentData))
+            if (m_ObjectCache.TryGetValue(instanceID, out var currentData))
             {
-                currentData.Count += currentData.Frozen ? 0u : 1u;
-                _objectCache[instanceID] = currentData;
+                currentData.m_Count += currentData.m_Frozen ? 0u : 1u;
+                m_ObjectCache[instanceID] = currentData;
             }
             else
             {
-                _objectCache.Add(instanceID, new ObjectCacheData(value));
+                m_ObjectCache.Add(instanceID, new ObjectCacheData(value));
                 LogCacheUpdate(value, true);
             }
 

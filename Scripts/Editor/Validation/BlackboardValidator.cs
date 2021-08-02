@@ -4,45 +4,45 @@ namespace HiraBots.Editor
 {
     internal class BlackboardValidator
     {
-        private readonly StringBuilder _sb;
-        private readonly BlackboardTemplateValidatorContext _context;
+        private readonly StringBuilder m_ErrorStringBuilder;
+        private readonly BlackboardTemplateValidatorContext m_Context;
 
         internal BlackboardValidator()
         {
-            _sb = new StringBuilder(2000);
-            _context = new BlackboardTemplateValidatorContext();
+            m_ErrorStringBuilder = new StringBuilder(2000);
+            m_Context = new BlackboardTemplateValidatorContext();
         }
 
         internal bool Execute(BlackboardTemplate target, out string errorText)
         {
             var success = true;
 
-            target.Validate(_context);
+            target.Validate(m_Context);
 
-            if (!_context.Validated)
+            if (!m_Context.m_Validated)
             {
                 success = false;
 
-                _sb.AppendLine($"Failed to validate blackboard template {target.name}.\n\n");
+                m_ErrorStringBuilder.AppendLine($"Failed to validate blackboard template {target.name}.\n\n");
 
-                if (_context.RecursionPoint != null)
-                    _sb.AppendLine($"Contains cyclical hierarchy. Recursion Point - {_context.RecursionPoint}.");
+                if (m_Context.recursionPoint != null)
+                    m_ErrorStringBuilder.AppendLine($"Contains cyclical hierarchy. Recursion Point - {m_Context.recursionPoint}.");
 
-                foreach (var index in _context.EmptyIndices)
-                    _sb.AppendLine($"The key at index {index} is empty.");
+                foreach (var index in m_Context.m_EmptyIndices)
+                    m_ErrorStringBuilder.AppendLine($"The key at index {index} is empty.");
 
-                foreach (var (keyName, template) in _context.DuplicateKeys)
-                    _sb.AppendLine($"Contains duplicate keys named {keyName}." +
+                foreach (var (keyName, template) in m_Context.m_DuplicateKeys)
+                    m_ErrorStringBuilder.AppendLine($"Contains duplicate keys named {keyName}." +
                                    $" {(template == target ? "" : $" Inherited from {template.name}.")}");
 
-                foreach (var key in _context.BadKeys)
-                    _sb.AppendLine($"Contains invalid data for the key {key.name}.");
+                foreach (var key in m_Context.m_BadKeys)
+                    m_ErrorStringBuilder.AppendLine($"Contains invalid data for the key {key.name}.");
             }
 
-            _context.Reset();
+            m_Context.Reset();
 
-            errorText = _sb.ToString();
-            _sb.Clear();
+            errorText = m_ErrorStringBuilder.ToString();
+            m_ErrorStringBuilder.Clear();
 
             return success;
         }

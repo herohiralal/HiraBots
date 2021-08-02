@@ -9,37 +9,37 @@ namespace HiraBots
         internal BlackboardKeyCompilerContext(NativeArray<byte> rawData, Dictionary<string, ushort> keyNameToMemoryOffset,
             Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData, ushort startingIndex, ushort startingOffset)
         {
-            _rawData = rawData;
-            _keyNameToMemoryOffset = keyNameToMemoryOffset;
-            _memoryOffsetToKeyData = memoryOffsetToKeyData;
-            _index = startingIndex;
-            _memoryOffset = startingOffset;
+            m_RawData = rawData;
+            m_KeyNameToMemoryOffset = keyNameToMemoryOffset;
+            m_MemoryOffsetToKeyData = memoryOffsetToKeyData;
+            m_Index = startingIndex;
+            m_MemoryOffset = startingOffset;
         }
 
-        private readonly NativeArray<byte> _rawData;
-        private readonly Dictionary<ushort, BlackboardKeyCompiledData> _memoryOffsetToKeyData;
-        private readonly Dictionary<string, ushort> _keyNameToMemoryOffset;
-        private ushort _index;
-        private ushort _memoryOffset;
+        private readonly NativeArray<byte> m_RawData;
+        private readonly Dictionary<ushort, BlackboardKeyCompiledData> m_MemoryOffsetToKeyData;
+        private readonly Dictionary<string, ushort> m_KeyNameToMemoryOffset;
+        private ushort m_Index;
+        private ushort m_MemoryOffset;
 
-        byte* IBlackboardKeyCompilerContext.Address => (byte*) _rawData.GetUnsafePtr() + _memoryOffset;
-        ushort IBlackboardKeyCompilerContext.Index => _index;
-        ushort IBlackboardKeyCompilerContext.MemoryOffset => _memoryOffset;
+        byte* IBlackboardKeyCompilerContext.address => (byte*) m_RawData.GetUnsafePtr() + m_MemoryOffset;
+        ushort IBlackboardKeyCompilerContext.index => m_Index;
+        ushort IBlackboardKeyCompilerContext.memoryOffset => m_MemoryOffset;
 
-        BlackboardKeyCompiledData IBlackboardKeyCompilerContext.CompiledData
+        BlackboardKeyCompiledData IBlackboardKeyCompilerContext.compiledData
         {
-            set => _memoryOffsetToKeyData.Add(_memoryOffset, value);
+            set => m_MemoryOffsetToKeyData.Add(m_MemoryOffset, value);
         }
 
-        string IBlackboardKeyCompilerContext.Name
+        string IBlackboardKeyCompilerContext.name
         {
-            set => _keyNameToMemoryOffset.Add(value, _memoryOffset);
+            set => m_KeyNameToMemoryOffset.Add(value, m_MemoryOffset);
         }
 
         internal void Update(ushort offsetDelta)
         {
-            _index++;
-            _memoryOffset += offsetDelta;
+            m_Index++;
+            m_MemoryOffset += offsetDelta;
         }
     }
 }

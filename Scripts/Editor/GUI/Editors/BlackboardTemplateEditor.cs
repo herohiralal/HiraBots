@@ -10,34 +10,34 @@ namespace HiraBots.Editor
     [CustomEditor(typeof(BlackboardTemplate), true)]
     internal class BlackboardTemplateEditor : UnityEditor.Editor
     {
-        private const string parent_property = "parent";
-        private const string keys_property = "keys";
+        private const string k_ParentProperty = "parent";
+        private const string k_KeysProperty = "keys";
 
         [SerializeField] private bool dirty = false;
-        private MultiAssetFileHelper _multiAssetFileHelper = null;
-        private ReorderableList _reorderableList = null;
+        private MultiAssetFileHelper m_MultiAssetFileHelper = null;
+        private ReorderableList m_ReorderableList = null;
 
         private void OnEnable() => Undo.undoRedoPerformed += OnUndoPerformed;
 
         private void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoPerformed;
-            _multiAssetFileHelper = null;
-            _reorderableList = null;
+            m_MultiAssetFileHelper = null;
+            m_ReorderableList = null;
         }
 
         private void OnUndoPerformed() => dirty = true;
 
         public override void OnInspectorGUI()
         {
-            var parentProperty = serializedObject.FindProperty(parent_property);
+            var parentProperty = serializedObject.FindProperty(k_ParentProperty);
             if (parentProperty == null || parentProperty.propertyType != SerializedPropertyType.ObjectReference)
             {
                 EditorGUILayout.HelpBox("Could not find parent property.", MessageType.Error);
                 return;
             }
 
-            var keysProperty = serializedObject.FindProperty(keys_property);
+            var keysProperty = serializedObject.FindProperty(k_KeysProperty);
             if (keysProperty == null || !keysProperty.isArray)
             {
                 EditorGUILayout.HelpBox("Could not find keys property.", MessageType.Error);
@@ -53,7 +53,7 @@ namespace HiraBots.Editor
 
             if (dirty)
             {
-                _multiAssetFileHelper.SynchronizeCollectionAndAsset();
+                m_MultiAssetFileHelper.SynchronizeCollectionAndAsset();
                 dirty = false;
             }
 
@@ -100,18 +100,18 @@ namespace HiraBots.Editor
                         DrawKeysFor(new SerializedObject(parent));
                 }
 
-                _reorderableList.DoLayoutList();
+                m_ReorderableList.DoLayoutList();
             }
         }
 
         private void InitializeIfRequired(SerializedProperty keysProperty)
         {
-            if (_multiAssetFileHelper == null)
-                _multiAssetFileHelper = new MultiAssetFileHelper(target, serializedObject, keysProperty);
+            if (m_MultiAssetFileHelper == null)
+                m_MultiAssetFileHelper = new MultiAssetFileHelper(target, serializedObject, keysProperty);
 
-            if (_reorderableList == null)
+            if (m_ReorderableList == null)
             {
-                _reorderableList = new ReorderableList(serializedObject, keysProperty, true, true, true, true)
+                m_ReorderableList = new ReorderableList(serializedObject, keysProperty, true, true, true, true)
                 {
                     drawHeaderCallback = DrawKeyListHeader,
                     onAddDropdownCallback = OnAddDropdown,
@@ -127,7 +127,7 @@ namespace HiraBots.Editor
         {
             if (index >= 0)
             {
-                var property = serializedObject.FindProperty(keys_property).GetArrayElementAtIndex(index);
+                var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
                 var value = property.objectReferenceValue;
 
                 rect.y -= 2;
@@ -145,13 +145,13 @@ namespace HiraBots.Editor
 
         private float GetKeyHeight(int index)
         {
-            var property = serializedObject.FindProperty(keys_property).GetArrayElementAtIndex(index);
+            var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
             return EditorGUI.GetPropertyHeight(property) + 4;
         }
 
         private void DrawSelfKey(Rect rect, int index, bool isActive, bool isFocused)
         {
-            var property = serializedObject.FindProperty(keys_property).GetArrayElementAtIndex(index);
+            var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
             EditorGUI.PropertyField(rect, property, GUIContent.none, true);
         }
 
@@ -167,15 +167,15 @@ namespace HiraBots.Editor
 
             foreach (var type in TypeCache.GetTypesDerivedFrom<BlackboardKey>().Where(t => !t.IsAbstract && !t.IsInterface))
             {
-                menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.FORMATTED_NAMES[type]), false,
-                    () => _multiAssetFileHelper.AddNewObject(type));
+                menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[type]), false,
+                    () => m_MultiAssetFileHelper.AddNewObject(type));
             }
 
             menu.ShowAsContext();
         }
 
         private void OnRemove(ReorderableList list) =>
-            _multiAssetFileHelper.RemoveObject(list.index);
+            m_MultiAssetFileHelper.RemoveObject(list.index);
 
         private static bool CheckForCyclicalDependency(Object a)
         {
@@ -186,7 +186,7 @@ namespace HiraBots.Editor
                 if (processedObjects.Any(o => o == a)) return true;
 
                 processedObjects.Add(a);
-                a = new SerializedObject(a).FindProperty(parent_property).objectReferenceValue;
+                a = new SerializedObject(a).FindProperty(k_ParentProperty).objectReferenceValue;
             } while (a != null);
 
             return false;
@@ -196,11 +196,11 @@ namespace HiraBots.Editor
         {
             o.Update();
 
-            var parent = o.FindProperty(parent_property).objectReferenceValue;
+            var parent = o.FindProperty(k_ParentProperty).objectReferenceValue;
             if (parent != null)
                 DrawKeysFor(new SerializedObject(parent));
 
-            var keysProperty = o.FindProperty(keys_property);
+            var keysProperty = o.FindProperty(k_KeysProperty);
 
             var size = keysProperty.arraySize;
 

@@ -22,7 +22,7 @@ namespace HiraBots.Editor
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => !path.Contains("HiraBotsTestObjects"))
                 .Select(AssetDatabase.LoadAssetAtPath<BlackboardTemplate>)
-                .OrderBy(bt => bt.HierarchyIndex)
+                .OrderBy(bt => bt.hierarchyIndex)
                 .ToArray();
 
             var result = true;

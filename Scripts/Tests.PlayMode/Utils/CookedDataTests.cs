@@ -9,17 +9,17 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void SerializationAndDeserializationWorksCorrectly()
         {
-            Assert.AreEqual(CookedDataTestObject.VALUE_TO_COOK, CookedDataTestObject.Instance.value);
+            Assert.AreEqual(CookedDataTestObject.k_ValueToCook, CookedDataTestObject.instance.value);
         }
 
         [Test]
         public void BlackboardTemplateCollectionIsCooked()
         {
-            var btc = BlackboardTemplateCollection.Instance;
+            var btc = BlackboardTemplateCollection.instance;
             Assert.IsTrue(btc != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
 
-            for (var i = 1; i < btc.Count; i++)
-                Assert.IsTrue(btc[i].HierarchyIndex >= btc[i - 1].HierarchyIndex, "Blackboard template collection built without proper sorting.");
+            for (var i = 1; i < btc.count; i++)
+                Assert.IsTrue(btc[i].hierarchyIndex >= btc[i - 1].hierarchyIndex, "Blackboard template collection built without proper sorting.");
         }
 
         public void Setup()

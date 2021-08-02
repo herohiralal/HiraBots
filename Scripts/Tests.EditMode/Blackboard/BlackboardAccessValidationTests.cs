@@ -26,212 +26,212 @@ namespace HiraBots.Editor.Tests
         [OneTimeTearDown]
         public new void TearDown() => base.TearDown();
 
-        private const string invalid_key_name = "E1E5B7FC-5BE4-45BA-A84E-95821BBA9662";
+        private const string k_InvalidKeyName = "E1E5B7FC-5BE4-45BA-A84E-95821BBA9662";
 
-        private const ushort invalid_memory_offset = ushort.MaxValue;
+        private const ushort k_InvalidMemoryOffset = ushort.MaxValue;
 
         [Test]
         public void InvalidKeyHandlingOnBlackboardComponent()
         {
-            TryCreate(ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate, out var baboon);
 
-            InvalidGetterTest<string, bool, KeyNotFoundException>(baboon.GetBooleanValue, invalid_key_name,
+            InvalidGetterTest<string, bool, KeyNotFoundException>(baboon.GetBooleanValue, k_InvalidKeyName,
                 "Invalid Boolean key name getter test failed.");
-            InvalidGetterTest<ushort, bool, KeyNotFoundException>(baboon.GetBooleanValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, bool, KeyNotFoundException>(baboon.GetBooleanValue, k_InvalidMemoryOffset,
                 "Invalid Boolean memory offset getter test failed.");
-            InvalidSetterTest<string, bool, KeyNotFoundException>(baboon.SetBooleanValue, invalid_key_name,
+            InvalidSetterTest<string, bool, KeyNotFoundException>(baboon.SetBooleanValue, k_InvalidKeyName,
                 "Invalid Boolean key name setter test failed.");
-            InvalidSetterTest<ushort, bool, KeyNotFoundException>(baboon.SetBooleanValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, bool, KeyNotFoundException>(baboon.SetBooleanValue, k_InvalidMemoryOffset,
                 "Invalid Boolean memory offset setter test failed.");
 
-            InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(baboon.GetEnumValue<GenericStatus>, invalid_key_name,
+            InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(baboon.GetEnumValue<GenericStatus>, k_InvalidKeyName,
                 "Invalid Enum key name getter test failed.");
-            InvalidGetterTest<ushort, GenericStatus, KeyNotFoundException>(baboon.GetEnumValue<GenericStatus>, invalid_memory_offset,
+            InvalidGetterTest<ushort, GenericStatus, KeyNotFoundException>(baboon.GetEnumValue<GenericStatus>, k_InvalidMemoryOffset,
                 "Invalid Enum memory offset getter test failed.");
-            InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(baboon.SetEnumValue<GenericStatus>, invalid_key_name,
+            InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(baboon.SetEnumValue<GenericStatus>, k_InvalidKeyName,
                 "Invalid Enum key name setter test failed.");
-            InvalidSetterTest<ushort, GenericStatus, KeyNotFoundException>(baboon.SetEnumValue<GenericStatus>, invalid_memory_offset,
+            InvalidSetterTest<ushort, GenericStatus, KeyNotFoundException>(baboon.SetEnumValue<GenericStatus>, k_InvalidMemoryOffset,
                 "Invalid Enum memory offset setter test failed.");
 
-            InvalidGetterTest<string, float, KeyNotFoundException>(baboon.GetFloatValue, invalid_key_name,
+            InvalidGetterTest<string, float, KeyNotFoundException>(baboon.GetFloatValue, k_InvalidKeyName,
                 "Invalid Float key name getter test failed.");
-            InvalidGetterTest<ushort, float, KeyNotFoundException>(baboon.GetFloatValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, float, KeyNotFoundException>(baboon.GetFloatValue, k_InvalidMemoryOffset,
                 "Invalid Float memory offset getter test failed.");
-            InvalidSetterTest<string, float, KeyNotFoundException>(baboon.SetFloatValue, invalid_key_name,
+            InvalidSetterTest<string, float, KeyNotFoundException>(baboon.SetFloatValue, k_InvalidKeyName,
                 "Invalid Float key name setter test failed.");
-            InvalidSetterTest<ushort, float, KeyNotFoundException>(baboon.SetFloatValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, float, KeyNotFoundException>(baboon.SetFloatValue, k_InvalidMemoryOffset,
                 "Invalid Float memory offset setter test failed.");
 
-            InvalidGetterTest<string, int, KeyNotFoundException>(baboon.GetIntegerValue, invalid_key_name,
+            InvalidGetterTest<string, int, KeyNotFoundException>(baboon.GetIntegerValue, k_InvalidKeyName,
                 "Invalid Integer key name getter test failed.");
-            InvalidGetterTest<ushort, int, KeyNotFoundException>(baboon.GetIntegerValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, int, KeyNotFoundException>(baboon.GetIntegerValue, k_InvalidMemoryOffset,
                 "Invalid Integer memory offset getter test failed.");
-            InvalidSetterTest<string, int, KeyNotFoundException>(baboon.SetIntegerValue, invalid_key_name,
+            InvalidSetterTest<string, int, KeyNotFoundException>(baboon.SetIntegerValue, k_InvalidKeyName,
                 "Invalid Integer key name setter test failed.");
-            InvalidSetterTest<ushort, int, KeyNotFoundException>(baboon.SetIntegerValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, int, KeyNotFoundException>(baboon.SetIntegerValue, k_InvalidMemoryOffset,
                 "Invalid Integer memory offset setter test failed.");
 
-            InvalidGetterTest<string, Object, KeyNotFoundException>(baboon.GetObjectValue, invalid_key_name,
+            InvalidGetterTest<string, Object, KeyNotFoundException>(baboon.GetObjectValue, k_InvalidKeyName,
                 "Invalid Object key name getter test failed.");
-            InvalidGetterTest<ushort, Object, KeyNotFoundException>(baboon.GetObjectValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Object, KeyNotFoundException>(baboon.GetObjectValue, k_InvalidMemoryOffset,
                 "Invalid Object memory offset getter test failed.");
-            InvalidSetterTest<string, Object, KeyNotFoundException>(baboon.SetObjectValue, invalid_key_name,
+            InvalidSetterTest<string, Object, KeyNotFoundException>(baboon.SetObjectValue, k_InvalidKeyName,
                 "Invalid Object key name setter test failed.");
-            InvalidSetterTest<ushort, Object, KeyNotFoundException>(baboon.SetObjectValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Object, KeyNotFoundException>(baboon.SetObjectValue, k_InvalidMemoryOffset,
                 "Invalid Object memory offset setter test failed.");
 
-            InvalidGetterTest<string, Vector3, KeyNotFoundException>(baboon.GetVectorValue, invalid_key_name,
+            InvalidGetterTest<string, Vector3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidKeyName,
                 "Invalid Vector key name getter test failed.");
-            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(baboon.GetVectorValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidMemoryOffset,
                 "Invalid Vector memory offset getter test failed.");
-            InvalidSetterTest<string, Vector3, KeyNotFoundException>(baboon.SetVectorValue, invalid_key_name,
+            InvalidSetterTest<string, Vector3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidKeyName,
                 "Invalid Vector key name setter test failed.");
-            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(baboon.SetVectorValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidMemoryOffset,
                 "Invalid Vector memory offset setter test failed.");
 
-            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, invalid_key_name,
+            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidKeyName,
                 "Invalid Quaternion key name getter test failed.");
-            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid Quaternion memory offset getter test failed.");
-            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, invalid_key_name,
+            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidKeyName,
                 "Invalid Quaternion key name setter test failed.");
-            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid Quaternion memory offset setter test failed.");
         }
 
         [Test]
         public void InvalidTypeAccessHandlingOnBlackboardComponent()
         {
-            TryCreate(ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate, out var baboon);
 
             InvalidGetterTest<string, bool, InvalidCastException>(baboon.GetBooleanValue, "Mana",
                 "Invalid type read-access with key name test failed.");
-            InvalidGetterTest<ushort, bool, InvalidCastException>(baboon.GetBooleanValue, ManaKeyFloat,
+            InvalidGetterTest<ushort, bool, InvalidCastException>(baboon.GetBooleanValue, manaKeyFloat,
                 "Invalid type read-access with memory offset test failed.");
             InvalidSetterTest<string, bool, InvalidCastException>(baboon.SetBooleanValue, "Mana",
                 "Invalid type write-access with key name test failed.");
-            InvalidSetterTest<ushort, bool, InvalidCastException>(baboon.SetBooleanValue, ManaKeyFloat,
+            InvalidSetterTest<ushort, bool, InvalidCastException>(baboon.SetBooleanValue, manaKeyFloat,
                 "Invalid type write-access with memory offset test failed.");
         }
 
         [Test]
         public void InvalidEnumTypeAccessHandlingOnBlackboardComponent()
         {
-            TryCreate(ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate, out var baboon);
             
             InvalidGetterTest<string, LongEnum, OverflowException>(baboon.GetEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type read-access with key name test failed.");
-            InvalidGetterTest<ushort, LongEnum, OverflowException>(baboon.GetEnumValue<LongEnum>, PowerTypeKeyEnum,
+            InvalidGetterTest<ushort, LongEnum, OverflowException>(baboon.GetEnumValue<LongEnum>, powerTypeKeyEnum,
                 "Invalid enum type read-access with memory offset test failed.");
             InvalidSetterTest<string, LongEnum, OverflowException>(baboon.SetEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type write-access with key name test failed.");
-            InvalidSetterTest<ushort, LongEnum, OverflowException>(baboon.SetEnumValue<LongEnum>, PowerTypeKeyEnum,
+            InvalidSetterTest<ushort, LongEnum, OverflowException>(baboon.SetEnumValue<LongEnum>, powerTypeKeyEnum,
                 "Invalid enum type write-access with memory offset test failed.");
         }
 
         [Test]
         public void InvalidKeyHandlingOnBlackboardCompiledData()
         {
-            InvalidGetterTest<string, bool, KeyNotFoundException>(ElementalistData.GetInstanceSyncedBooleanValue, invalid_key_name,
+            InvalidGetterTest<string, bool, KeyNotFoundException>(elementalistData.GetInstanceSyncedBooleanValue, k_InvalidKeyName,
                 "Invalid instance synced Boolean key name getter test failed.");
-            InvalidGetterTest<ushort, bool, KeyNotFoundException>(ElementalistData.GetInstanceSyncedBooleanValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, bool, KeyNotFoundException>(elementalistData.GetInstanceSyncedBooleanValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Boolean memory offset getter test failed.");
-            InvalidSetterTest<string, bool, KeyNotFoundException>(ElementalistData.SetInstanceSyncedBooleanValue, invalid_key_name,
+            InvalidSetterTest<string, bool, KeyNotFoundException>(elementalistData.SetInstanceSyncedBooleanValue, k_InvalidKeyName,
                 "Invalid instance synced Boolean key name setter test failed.");
-            InvalidSetterTest<ushort, bool, KeyNotFoundException>(ElementalistData.SetInstanceSyncedBooleanValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, bool, KeyNotFoundException>(elementalistData.SetInstanceSyncedBooleanValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Boolean memory offset setter test failed.");
 
-            InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(ElementalistData.GetInstanceSyncedEnumValue<GenericStatus>, invalid_key_name,
+            InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(elementalistData.GetInstanceSyncedEnumValue<GenericStatus>, k_InvalidKeyName,
                 "Invalid instance synced Enum key name getter test failed.");
-            InvalidGetterTest<ushort, GenericStatus, KeyNotFoundException>(ElementalistData.GetInstanceSyncedEnumValue<GenericStatus>, invalid_memory_offset,
+            InvalidGetterTest<ushort, GenericStatus, KeyNotFoundException>(elementalistData.GetInstanceSyncedEnumValue<GenericStatus>, k_InvalidMemoryOffset,
                 "Invalid instance synced Enum memory offset getter test failed.");
-            InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(ElementalistData.SetInstanceSyncedEnumValue<GenericStatus>, invalid_key_name,
+            InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(elementalistData.SetInstanceSyncedEnumValue<GenericStatus>, k_InvalidKeyName,
                 "Invalid instance synced Enum key name setter test failed.");
-            InvalidSetterTest<ushort, GenericStatus, KeyNotFoundException>(ElementalistData.SetInstanceSyncedEnumValue<GenericStatus>, invalid_memory_offset,
+            InvalidSetterTest<ushort, GenericStatus, KeyNotFoundException>(elementalistData.SetInstanceSyncedEnumValue<GenericStatus>, k_InvalidMemoryOffset,
                 "Invalid instance synced Enum memory offset setter test failed.");
 
-            InvalidGetterTest<string, float, KeyNotFoundException>(ElementalistData.GetInstanceSyncedFloatValue, invalid_key_name,
+            InvalidGetterTest<string, float, KeyNotFoundException>(elementalistData.GetInstanceSyncedFloatValue, k_InvalidKeyName,
                 "Invalid instance synced Float key name getter test failed.");
-            InvalidGetterTest<ushort, float, KeyNotFoundException>(ElementalistData.GetInstanceSyncedFloatValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, float, KeyNotFoundException>(elementalistData.GetInstanceSyncedFloatValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Float memory offset getter test failed.");
-            InvalidSetterTest<string, float, KeyNotFoundException>(ElementalistData.SetInstanceSyncedFloatValue, invalid_key_name,
+            InvalidSetterTest<string, float, KeyNotFoundException>(elementalistData.SetInstanceSyncedFloatValue, k_InvalidKeyName,
                 "Invalid instance synced Float key name setter test failed.");
-            InvalidSetterTest<ushort, float, KeyNotFoundException>(ElementalistData.SetInstanceSyncedFloatValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, float, KeyNotFoundException>(elementalistData.SetInstanceSyncedFloatValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Float memory offset setter test failed.");
 
-            InvalidGetterTest<string, int, KeyNotFoundException>(ElementalistData.GetInstanceSyncedIntegerValue, invalid_key_name,
+            InvalidGetterTest<string, int, KeyNotFoundException>(elementalistData.GetInstanceSyncedIntegerValue, k_InvalidKeyName,
                 "Invalid instance synced Integer key name getter test failed.");
-            InvalidGetterTest<ushort, int, KeyNotFoundException>(ElementalistData.GetInstanceSyncedIntegerValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, int, KeyNotFoundException>(elementalistData.GetInstanceSyncedIntegerValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Integer memory offset getter test failed.");
-            InvalidSetterTest<string, int, KeyNotFoundException>(ElementalistData.SetInstanceSyncedIntegerValue, invalid_key_name,
+            InvalidSetterTest<string, int, KeyNotFoundException>(elementalistData.SetInstanceSyncedIntegerValue, k_InvalidKeyName,
                 "Invalid instance synced Integer key name setter test failed.");
-            InvalidSetterTest<ushort, int, KeyNotFoundException>(ElementalistData.SetInstanceSyncedIntegerValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, int, KeyNotFoundException>(elementalistData.SetInstanceSyncedIntegerValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Integer memory offset setter test failed.");
 
-            InvalidGetterTest<string, Object, KeyNotFoundException>(ElementalistData.GetInstanceSyncedObjectValue, invalid_key_name,
+            InvalidGetterTest<string, Object, KeyNotFoundException>(elementalistData.GetInstanceSyncedObjectValue, k_InvalidKeyName,
                 "Invalid instance synced Object key name getter test failed.");
-            InvalidGetterTest<ushort, Object, KeyNotFoundException>(ElementalistData.GetInstanceSyncedObjectValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Object, KeyNotFoundException>(elementalistData.GetInstanceSyncedObjectValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Object memory offset getter test failed.");
-            InvalidSetterTest<string, Object, KeyNotFoundException>(ElementalistData.SetInstanceSyncedObjectValue, invalid_key_name,
+            InvalidSetterTest<string, Object, KeyNotFoundException>(elementalistData.SetInstanceSyncedObjectValue, k_InvalidKeyName,
                 "Invalid instance synced Object key name setter test failed.");
-            InvalidSetterTest<ushort, Object, KeyNotFoundException>(ElementalistData.SetInstanceSyncedObjectValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Object, KeyNotFoundException>(elementalistData.SetInstanceSyncedObjectValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Object memory offset setter test failed.");
 
-            InvalidGetterTest<string, Vector3, KeyNotFoundException>(ElementalistData.GetInstanceSyncedVectorValue, invalid_key_name,
+            InvalidGetterTest<string, Vector3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidKeyName,
                 "Invalid instance synced Vector key name getter test failed.");
-            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(ElementalistData.GetInstanceSyncedVectorValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Vector memory offset getter test failed.");
-            InvalidSetterTest<string, Vector3, KeyNotFoundException>(ElementalistData.SetInstanceSyncedVectorValue, invalid_key_name,
+            InvalidSetterTest<string, Vector3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidKeyName,
                 "Invalid instance synced Vector key name setter test failed.");
-            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(ElementalistData.SetInstanceSyncedVectorValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Vector memory offset setter test failed.");
 
-            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(ElementalistData.GetInstanceSyncedQuaternionValue, invalid_key_name,
+            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidKeyName,
                 "Invalid instance synced Quaternion key name getter test failed.");
-            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(ElementalistData.GetInstanceSyncedQuaternionValue, invalid_memory_offset,
+            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Quaternion memory offset getter test failed.");
-            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(ElementalistData.SetInstanceSyncedQuaternionValue, invalid_key_name,
+            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidKeyName,
                 "Invalid instance synced Quaternion key name setter test failed.");
-            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(ElementalistData.SetInstanceSyncedQuaternionValue, invalid_memory_offset,
+            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Quaternion memory offset setter test failed.");
         }
 
         [Test]
         public void NonInstanceSyncedKeyHandlingOnBlackboardCompiledData()
         {
-            InvalidGetterTest<string, float, InvalidOperationException>(ElementalistData.GetInstanceSyncedFloatValue, "Mana",
+            InvalidGetterTest<string, float, InvalidOperationException>(elementalistData.GetInstanceSyncedFloatValue, "Mana",
                 "Non instance synced key read-access with key name test failed.");
-            InvalidGetterTest<ushort, float, InvalidOperationException>(ElementalistData.GetInstanceSyncedFloatValue, ManaKeyFloat,
+            InvalidGetterTest<ushort, float, InvalidOperationException>(elementalistData.GetInstanceSyncedFloatValue, manaKeyFloat,
                 "Non instance synced key read-access with memory offset test failed.");
-            InvalidSetterTest<string, float, InvalidOperationException>(ElementalistData.SetInstanceSyncedFloatValue, "Mana",
+            InvalidSetterTest<string, float, InvalidOperationException>(elementalistData.SetInstanceSyncedFloatValue, "Mana",
                 "Non instance synced key write-access with key name test failed.");
-            InvalidSetterTest<ushort, float, InvalidOperationException>(ElementalistData.SetInstanceSyncedFloatValue, ManaKeyFloat,
+            InvalidSetterTest<ushort, float, InvalidOperationException>(elementalistData.SetInstanceSyncedFloatValue, manaKeyFloat,
                 "Non instance synced key write-access with memory offset test failed.");
         }
 
         [Test]
         public void InvalidTypeAccessHandlingOnBlackboardCompiledData()
         {
-            InvalidGetterTest<string, bool, InvalidCastException>(ElementalistData.GetInstanceSyncedBooleanValue, "CurrentPlayerLocation",
+            InvalidGetterTest<string, bool, InvalidCastException>(elementalistData.GetInstanceSyncedBooleanValue, "CurrentPlayerLocation",
                 "Invalid type read-access with key name test failed.");
-            InvalidGetterTest<ushort, bool, InvalidCastException>(ElementalistData.GetInstanceSyncedBooleanValue, CurrentPlayerLocationKeyVector,
+            InvalidGetterTest<ushort, bool, InvalidCastException>(elementalistData.GetInstanceSyncedBooleanValue, currentPlayerLocationKeyVector,
                 "Invalid type read-access with memory offset test failed.");
-            InvalidSetterTest<string, bool, InvalidCastException>(ElementalistData.SetInstanceSyncedBooleanValue, "CurrentPlayerLocation",
+            InvalidSetterTest<string, bool, InvalidCastException>(elementalistData.SetInstanceSyncedBooleanValue, "CurrentPlayerLocation",
                 "Invalid type write-access with key name test failed.");
-            InvalidSetterTest<ushort, bool, InvalidCastException>(ElementalistData.SetInstanceSyncedBooleanValue, CurrentPlayerLocationKeyVector,
+            InvalidSetterTest<ushort, bool, InvalidCastException>(elementalistData.SetInstanceSyncedBooleanValue, currentPlayerLocationKeyVector,
                 "Invalid type write-access with memory offset test failed.");
         }
 
         [Test]
         public void InvalidEnumTypeAccessHandlingOnBlackboardCompiledData()
         {
-            InvalidGetterTest<string, LongEnum, OverflowException>(ElementalistData.GetInstanceSyncedEnumValue<LongEnum>, "PowerType",
+            InvalidGetterTest<string, LongEnum, OverflowException>(elementalistData.GetInstanceSyncedEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type read-access with key name test failed.");
-            InvalidGetterTest<ushort, LongEnum, OverflowException>(ElementalistData.GetInstanceSyncedEnumValue<LongEnum>, PowerTypeKeyEnum,
+            InvalidGetterTest<ushort, LongEnum, OverflowException>(elementalistData.GetInstanceSyncedEnumValue<LongEnum>, powerTypeKeyEnum,
                 "Invalid enum type read-access with memory offset test failed.");
-            InvalidSetterTest<string, LongEnum, OverflowException>(ElementalistData.SetInstanceSyncedEnumValue<LongEnum>, "PowerType",
+            InvalidSetterTest<string, LongEnum, OverflowException>(elementalistData.SetInstanceSyncedEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type write-access with key name test failed.");
-            InvalidSetterTest<ushort, LongEnum, OverflowException>(ElementalistData.SetInstanceSyncedEnumValue<LongEnum>, PowerTypeKeyEnum,
+            InvalidSetterTest<ushort, LongEnum, OverflowException>(elementalistData.SetInstanceSyncedEnumValue<LongEnum>, powerTypeKeyEnum,
                 "Invalid enum type write-access with memory offset test failed.");
         }
 

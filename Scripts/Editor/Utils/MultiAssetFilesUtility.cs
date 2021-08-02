@@ -10,56 +10,56 @@ namespace HiraBots.Editor
     {
         internal MultiAssetFileHelper(Object target, SerializedObject serializedObject, SerializedProperty arrayProperty)
         {
-            _target = target;
-            _serializedObject = serializedObject;
-            _arrayProperty = arrayProperty;
+            m_Target = target;
+            m_SerializedObject = serializedObject;
+            m_ArrayProperty = arrayProperty;
         }
 
         ~MultiAssetFileHelper()
         {
-            _target = null;
-            _serializedObject = null;
-            _arrayProperty = null;
+            m_Target = null;
+            m_SerializedObject = null;
+            m_ArrayProperty = null;
         }
 
-        private Object _target;
-        private SerializedObject _serializedObject;
-        private SerializedProperty _arrayProperty;
+        private Object m_Target;
+        private SerializedObject m_SerializedObject;
+        private SerializedProperty m_ArrayProperty;
 
         internal void AddNewObject(Type t)
         {
-            _serializedObject.Update();
+            m_SerializedObject.Update();
 
-            var index = _arrayProperty.arraySize;
+            var index = m_ArrayProperty.arraySize;
 
             var newObject = ScriptableObject.CreateInstance(t);
             newObject.name = t.Name;
             newObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
             Undo.RegisterCreatedObjectUndo(newObject, $"Add {t.Name} Object");
 
-            AssetDatabase.AddObjectToAsset(newObject, _target);
+            AssetDatabase.AddObjectToAsset(newObject, m_Target);
 
-            _arrayProperty.arraySize++;
-            var newObjectProperty = _arrayProperty.GetArrayElementAtIndex(index);
+            m_ArrayProperty.arraySize++;
+            var newObjectProperty = m_ArrayProperty.GetArrayElementAtIndex(index);
             newObjectProperty.objectReferenceValue = newObject;
 
-            _serializedObject.ApplyModifiedProperties();
+            m_SerializedObject.ApplyModifiedProperties();
 
-            EditorUtility.SetDirty(_target);
+            EditorUtility.SetDirty(m_Target);
             AssetDatabase.SaveAssets();
         }
 
         internal void RemoveObject(int index)
         {
-            _serializedObject.Update();
+            m_SerializedObject.Update();
 
-            var property = _arrayProperty.GetArrayElementAtIndex(index);
+            var property = m_ArrayProperty.GetArrayElementAtIndex(index);
             var objectToRemove = property.objectReferenceValue;
 
             property.objectReferenceValue = null;
-            _arrayProperty.DeleteArrayElementAtIndex(index);
+            m_ArrayProperty.DeleteArrayElementAtIndex(index);
 
-            _serializedObject.ApplyModifiedProperties();
+            m_SerializedObject.ApplyModifiedProperties();
 
             using (new UndoMerger($"Destroy {objectToRemove.name}"))
             {
@@ -67,18 +67,18 @@ namespace HiraBots.Editor
                 Undo.DestroyObjectImmediate(objectToRemove);
             }
 
-            EditorUtility.SetDirty(_target);
+            EditorUtility.SetDirty(m_Target);
             AssetDatabase.SaveAssets();
         }
 
         internal void SynchronizeCollectionAndAsset()
         {
-            _serializedObject.Update();
-            var assetsInFile = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(_target))
-                .Where(a => a != _target)
+            m_SerializedObject.Update();
+            var assetsInFile = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(m_Target))
+                .Where(a => a != m_Target)
                 .ToArray();
 
-            var arraySize = _arrayProperty.arraySize;
+            var arraySize = m_ArrayProperty.arraySize;
             var assetsCount = assetsInFile.Length;
 
             var assetDirty = false;
@@ -86,12 +86,12 @@ namespace HiraBots.Editor
             for (var i = assetsCount - 1; i >= 0; i--)
             {
                 var currentAsset = assetsInFile[i];
-                if (currentAsset == _target) continue;
+                if (currentAsset == m_Target) continue;
 
                 var found = false;
                 for (var j = 0; j < arraySize; j++)
                 {
-                    if (_arrayProperty.GetArrayElementAtIndex(j).objectReferenceValue != currentAsset) continue;
+                    if (m_ArrayProperty.GetArrayElementAtIndex(j).objectReferenceValue != currentAsset) continue;
 
                     found = true;
                     break;
@@ -106,21 +106,21 @@ namespace HiraBots.Editor
 
             for (var i = 0; i < arraySize; i++)
             {
-                var currentKey = _arrayProperty.GetArrayElementAtIndex(i).objectReferenceValue;
+                var currentKey = m_ArrayProperty.GetArrayElementAtIndex(i).objectReferenceValue;
 
                 if (assetsInFile.Contains(currentKey)) continue;
 
-                AssetDatabase.AddObjectToAsset(currentKey, _target);
+                AssetDatabase.AddObjectToAsset(currentKey, m_Target);
                 assetDirty = true;
             }
 
             if (assetDirty)
             {
-                EditorUtility.SetDirty(_target);
+                EditorUtility.SetDirty(m_Target);
                 AssetDatabase.SaveAssets();
             }
 
-            _serializedObject.ApplyModifiedProperties();
+            m_SerializedObject.ApplyModifiedProperties();
         }
     }
 }

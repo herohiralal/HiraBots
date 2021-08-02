@@ -4,15 +4,15 @@
     {
         [UnityEngine.SerializeField] private BlackboardTemplate[] templates = new BlackboardTemplate[0];
 
-        internal int Count => templates.Length;
+        internal int count => templates.Length;
         internal BlackboardTemplate this[int index] => templates[index];
 
 #if UNITY_EDITOR
         internal static BlackboardTemplateCollection Create(BlackboardTemplate[] input)
         {
-            var instance = CreateInstance<BlackboardTemplateCollection>();
-            instance.templates = input;
-            return instance;
+            var createdInstance = CreateInstance<BlackboardTemplateCollection>();
+            createdInstance.templates = input;
+            return createdInstance;
         }
 #endif
     }

@@ -7,23 +7,23 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(DynamicEnum))]
     public class DynamicEnumPropertyDrawer : PropertyDrawer
     {
-        private const float property_height = 21f;
+        private const float k_PropertyHeight = 21f;
 
         internal static void DrawWithAutomaticLayout(SerializedProperty property, GUIContent label, Type typeRestriction)
         {
-            var position = EditorGUILayout.GetControlRect(true, property_height);
+            var position = EditorGUILayout.GetControlRect(true, k_PropertyHeight);
             Draw(position, property, label, typeRestriction);
         }
 
         internal static void DrawWithAutomaticLayout(SerializedProperty property, GUIContent label, string typeIdentifierRestriction)
         {
-            var position = EditorGUILayout.GetControlRect(true, property_height);
+            var position = EditorGUILayout.GetControlRect(true, k_PropertyHeight);
             Draw(position, property, label, typeIdentifierRestriction);
         }
 
         internal static void Draw(Rect position, SerializedProperty property, GUIContent label, Type typeRestriction)
         {
-            if (typeRestriction != null && !DynamicEnum.Helpers.TYPE_TO_IDENTIFIER.ContainsKey(typeRestriction))
+            if (typeRestriction != null && !DynamicEnum.Helpers.typeToIdentifier.ContainsKey(typeRestriction))
                 EditorGUI.HelpBox(position, $"Unrecognized type - {typeRestriction.FullName}.", MessageType.Error);
             else
                 DrawInternal(position, property, label, typeRestriction, false);
@@ -32,7 +32,7 @@ namespace HiraBots.Editor
         internal static void Draw(Rect position, SerializedProperty property, GUIContent label, string typeIdentifierRestriction)
         {
             Type t = null;
-            if (typeIdentifierRestriction != null && !DynamicEnum.Helpers.IDENTIFIER_TO_TYPE.TryGetValue(typeIdentifierRestriction, out t))
+            if (typeIdentifierRestriction != null && !DynamicEnum.Helpers.identifierToType.TryGetValue(typeIdentifierRestriction, out t))
                 EditorGUI.HelpBox(position, $"Unrecognized Identifier.", MessageType.Error);
             else
                 DrawInternal(position, property, label, t, false);
@@ -67,7 +67,7 @@ namespace HiraBots.Editor
                 position.width -= 20f;
 
                 if (typeRestriction == null)
-                    DynamicEnum.Helpers.IDENTIFIER_TO_TYPE.TryGetValue(typeIdentifierProperty.stringValue, out typeRestriction);
+                    DynamicEnum.Helpers.identifierToType.TryGetValue(typeIdentifierProperty.stringValue, out typeRestriction);
 
                 using (new GUIEnabledChanger(GUI.enabled && allowChangingType))
                 {
@@ -98,12 +98,12 @@ namespace HiraBots.Editor
                     property.serializedObject.ApplyModifiedProperties();
                 });
 
-            if (currentValue != "" && !DynamicEnum.Helpers.IDENTIFIER_TO_TYPE.ContainsKey(currentValue))
+            if (currentValue != "" && !DynamicEnum.Helpers.identifierToType.ContainsKey(currentValue))
                 menu.AddDisabledItem(GUIHelpers.ToGUIContent($"Unknown ({currentValue})"), true);
 
             menu.AddSeparator("");
 
-            foreach (var kvp in DynamicEnum.Helpers.IDENTIFIER_TO_TYPE)
+            foreach (var kvp in DynamicEnum.Helpers.identifierToType)
             {
                 var identifier = kvp.Key;
                 var displayText = kvp.Value.FullName?.Replace('.', '/');
@@ -120,7 +120,7 @@ namespace HiraBots.Editor
             return menu;
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => property_height;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => k_PropertyHeight;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) =>
             DrawInternal(position, property, label, null, true);

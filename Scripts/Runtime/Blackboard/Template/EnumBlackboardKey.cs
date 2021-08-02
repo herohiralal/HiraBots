@@ -6,8 +6,8 @@ namespace HiraBots
     {
         internal EnumBlackboardKey()
         {
-            SizeInBytesInternal = sizeof(byte);
-            KeyType = BlackboardKeyType.Enum;
+            m_SizeInBytesInternal = sizeof(byte);
+            m_KeyType = BlackboardKeyType.Enum;
         }
 
         [SerializeField] private DynamicEnum defaultValue = default;

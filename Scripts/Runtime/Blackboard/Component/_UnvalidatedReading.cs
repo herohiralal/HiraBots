@@ -5,24 +5,24 @@ namespace HiraBots
     internal unsafe partial class BlackboardComponent
     {
         internal bool GetBooleanValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadBooleanValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadBooleanValue(dataReadOnlyPtr, memoryOffset);
 
         internal T GetEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, System.Enum =>
-            BlackboardUnsafeHelpers.ReadEnumValue<T>(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadEnumValue<T>(dataReadOnlyPtr, memoryOffset);
 
         internal float GetFloatValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadFloatValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadFloatValue(dataReadOnlyPtr, memoryOffset);
 
         internal int GetIntegerValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadIntegerValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadIntegerValue(dataReadOnlyPtr, memoryOffset);
 
         internal Object GetObjectValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadObjectValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadObjectValue(dataReadOnlyPtr, memoryOffset);
 
         internal Vector3 GetVectorValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadVectorValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadVectorValue(dataReadOnlyPtr, memoryOffset);
 
         internal Quaternion GetQuaternionValueWithoutValidation(ushort memoryOffset) =>
-            BlackboardUnsafeHelpers.ReadQuaternionValue(DataReadOnlyPtr, memoryOffset);
+            BlackboardUnsafeHelpers.ReadQuaternionValue(dataReadOnlyPtr, memoryOffset);
     }
 }

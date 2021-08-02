@@ -6,8 +6,8 @@ namespace HiraBots
     {
         internal VectorBlackboardKey()
         {
-            SizeInBytesInternal = sizeof(float) * 3;
-            KeyType = BlackboardKeyType.Vector;
+            m_SizeInBytesInternal = sizeof(float) * 3;
+            m_KeyType = BlackboardKeyType.Vector;
         }
 
         [SerializeField] private Vector3 defaultValue = Vector3.zero;

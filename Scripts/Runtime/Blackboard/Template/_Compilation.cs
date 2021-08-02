@@ -8,11 +8,11 @@ namespace HiraBots
 {
     internal unsafe interface IBlackboardKeyCompilerContext
     {
-        byte* Address { get; }
-        ushort Index { get; }
-        ushort MemoryOffset { get; }
-        BlackboardKeyCompiledData CompiledData { set; }
-        string Name { set; }
+        byte* address { get; }
+        ushort index { get; }
+        ushort memoryOffset { get; }
+        BlackboardKeyCompiledData compiledData { set; }
+        string name { set; }
     }
 
     internal interface IBlackboardTemplateCompilerContext
@@ -24,36 +24,36 @@ namespace HiraBots
             ushort startingIndex,
             ushort startingMemoryOffset);
 
-        IBlackboardKeyCompilerContext KeyCompilerContext { get; }
+        IBlackboardKeyCompilerContext keyCompilerContext { get; }
         void UpdateKeyCompilerContext(ushort memoryOffsetDelta);
     }
 
     internal abstract partial class BlackboardKey
     {
-        [NonSerialized] protected internal BlackboardKeyCompiledData CompiledDataInternal = BlackboardKeyCompiledData.None;
-        internal BlackboardKeyCompiledData CompiledData => CompiledDataInternal;
+        [NonSerialized] protected internal BlackboardKeyCompiledData m_CompiledDataInternal = BlackboardKeyCompiledData.none;
+        internal BlackboardKeyCompiledData compiledData => m_CompiledDataInternal;
 
-        internal bool IsCompiled => CompiledDataInternal.IsValid;
+        internal bool isCompiled => m_CompiledDataInternal.isValid;
 
         internal void Compile(IBlackboardKeyCompilerContext context)
         {
-            if (IsCompiled)
+            if (isCompiled)
                 return;
 
             var traits = BlackboardKeyTraits.None
                          | (instanceSynced ? BlackboardKeyTraits.InstanceSynced : BlackboardKeyTraits.None)
                          | (essentialToDecisionMaking ? BlackboardKeyTraits.BroadcastEventOnUnexpectedChange : BlackboardKeyTraits.None);
 
-            CompiledDataInternal = new BlackboardKeyCompiledData(context.MemoryOffset, context.Index, traits, KeyType);
-            context.CompiledData = CompiledDataInternal;
-            context.Name = name;
+            m_CompiledDataInternal = new BlackboardKeyCompiledData(context.memoryOffset, context.index, traits, m_KeyType);
+            context.compiledData = m_CompiledDataInternal;
+            context.name = name;
             CompileInternal(context);
         }
 
         internal void Free()
         {
             FreeInternal();
-            CompiledDataInternal = BlackboardKeyCompiledData.None;
+            m_CompiledDataInternal = BlackboardKeyCompiledData.none;
         }
 
         protected abstract void CompileInternal(IBlackboardKeyCompilerContext context);
@@ -66,32 +66,32 @@ namespace HiraBots
     internal unsafe partial class BooleanBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteBooleanValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteBooleanValue(context.address, 0, defaultValue);
     }
 
     internal unsafe partial class EnumBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteRawEnumValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteRawEnumValue(context.address, 0, defaultValue);
     }
 
     internal unsafe partial class FloatBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteFloatValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteFloatValue(context.address, 0, defaultValue);
     }
 
     internal unsafe partial class IntegerBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteIntegerValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteIntegerValue(context.address, 0, defaultValue);
     }
 
     internal unsafe partial class ObjectBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context)
         {
-            BlackboardUnsafeHelpers.WriteObjectValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, defaultValue);
             BlackboardUnsafeHelpers.Pin(defaultValue);
         }
 
@@ -106,48 +106,48 @@ namespace HiraBots
     internal unsafe partial class QuaternionBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteQuaternionValue(context.Address, 0, Quaternion.Euler(defaultValue));
+            BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, Quaternion.Euler(defaultValue));
     }
 
     internal unsafe partial class VectorBlackboardKey
     {
         protected override void CompileInternal(IBlackboardKeyCompilerContext context) =>
-            BlackboardUnsafeHelpers.WriteVectorValue(context.Address, 0, defaultValue);
+            BlackboardUnsafeHelpers.WriteVectorValue(context.address, 0, defaultValue);
     }
 
     internal partial class BlackboardTemplate
     {
-        internal BlackboardTemplateCompiledData CompiledData { get; private set; } = null;
-        internal bool IsCompiled => CompiledData != null;
+        internal BlackboardTemplateCompiledData compiledData { get; private set; } = null;
+        internal bool isCompiled => compiledData != null;
 
         internal void Compile(IBlackboardTemplateCompilerContext context)
         {
-            if (IsCompiled)
+            if (isCompiled)
                 return;
 
             var parentCompiledData = (BlackboardTemplateCompiledData) null;
             if (parent != null)
             {
-                if (!parent.IsCompiled)
+                if (!parent.isCompiled)
                 {
                     Debug.LogError("Attempted to compile blackboard before its parent.", this);
                     return;
                 }
 
-                parentCompiledData = parent.CompiledData;
+                parentCompiledData = parent.compiledData;
             }
 
             ushort startingMemoryOffset = 0, startingIndex = 0;
 
             var totalTemplateSize = (ushort) 0;
-            foreach (var key in keys) totalTemplateSize += key.SizeInBytes;
+            foreach (var key in keys) totalTemplateSize += key.sizeInBytes;
 
             var totalKeyCount = (ushort) keys.Length;
 
             if (parentCompiledData != null)
             {
-                startingMemoryOffset = parentCompiledData.TemplateSize;
-                startingIndex = parentCompiledData.KeyCount;
+                startingMemoryOffset = parentCompiledData.templateSize;
+                startingIndex = parentCompiledData.m_KeyCount;
 
                 totalTemplateSize += startingMemoryOffset;
                 totalKeyCount += startingIndex;
@@ -160,27 +160,27 @@ namespace HiraBots
             if (parentCompiledData != null)
             {
                 parentCompiledData.CopyTemplateTo(template);
-                foreach (var kvp in parentCompiledData.KeyNameToMemoryOffset)
+                foreach (var kvp in parentCompiledData.keyNameToMemoryOffset)
                     keyNameToMemoryOffset.Add(kvp.Key, kvp.Value);
-                foreach (var kvp in parentCompiledData.MemoryOffsetToKeyData)
+                foreach (var kvp in parentCompiledData.memoryOffsetToKeyData)
                     memoryOffsetToKeyData.Add(kvp.Key, kvp.Value);
             }
 
             context.GenerateKeyCompilerContext(template, keyNameToMemoryOffset, memoryOffsetToKeyData, startingIndex, startingMemoryOffset);
 
-            foreach (var key in keys.OrderBy(k => k.SizeInBytes))
+            foreach (var key in keys.OrderBy(k => k.sizeInBytes))
             {
-                key.Compile(context.KeyCompilerContext);
-                context.UpdateKeyCompilerContext(key.SizeInBytes);
+                key.Compile(context.keyCompilerContext);
+                context.UpdateKeyCompilerContext(key.sizeInBytes);
             }
 
-            CompiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
+            compiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
         }
 
         internal void Free()
         {
             foreach (var key in keys) key.Free();
-            CompiledData = null;
+            compiledData = null;
         }
     }
 }

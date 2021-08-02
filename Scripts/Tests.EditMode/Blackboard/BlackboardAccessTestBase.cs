@@ -17,51 +17,51 @@ namespace HiraBots.Editor.Tests
 
     public abstract class BlackboardAccessTestBase
     {
-        internal BlackboardTemplate BaseCharacterTemplate = null;
-        internal BlackboardTemplateCompiledData BaseCharacterData => BaseCharacterTemplate.CompiledData;
+        internal BlackboardTemplate m_BaseCharacterTemplate = null;
+        internal BlackboardTemplateCompiledData baseCharacterData => m_BaseCharacterTemplate.compiledData;
 
-        internal BlackboardTemplate WarriorTemplate = null;
-        internal BlackboardTemplateCompiledData WarriorData => WarriorTemplate.CompiledData;
+        internal BlackboardTemplate m_WarriorTemplate = null;
+        internal BlackboardTemplateCompiledData warriorData => m_WarriorTemplate.compiledData;
 
-        internal BlackboardTemplate MageTemplate = null;
-        internal BlackboardTemplateCompiledData MageData => MageTemplate.CompiledData;
+        internal BlackboardTemplate m_MageTemplate = null;
+        internal BlackboardTemplateCompiledData mageData => m_MageTemplate.compiledData;
 
-        internal BlackboardTemplate ElementalistTemplate = null;
-        internal BlackboardTemplateCompiledData ElementalistData => ElementalistTemplate.CompiledData;
+        internal BlackboardTemplate m_ElementalistTemplate = null;
+        internal BlackboardTemplateCompiledData elementalistData => m_ElementalistTemplate.compiledData;
 
-        internal ScriptableObject MockObject1 = null;
-        internal ScriptableObject MockObject2 = null;
-        internal ScriptableObject MockObject3 = null;
+        internal ScriptableObject m_MockObject1 = null;
+        internal ScriptableObject m_MockObject2 = null;
+        internal ScriptableObject m_MockObject3 = null;
 
-        protected ushort LevelKeyInteger => BaseCharacterData["Level"].MemoryOffset;
-        protected ushort HealthKeyFloat => BaseCharacterData["Health"].MemoryOffset;
-        protected ushort HealthLowKeyBoolean => BaseCharacterData["HealthLow"].MemoryOffset;
-        protected ushort CurrentPlayerLocationKeyVector => BaseCharacterData["CurrentPlayerLocation"].MemoryOffset;
-        protected ushort PlayerReferenceKeyObject => BaseCharacterData["PlayerReference"].MemoryOffset;
-        protected ushort HealthStatusKeyEnum => BaseCharacterData["HealthStatus"].MemoryOffset;
-        protected ushort StaminaKeyFloat => WarriorData["Stamina"].MemoryOffset;
-        protected ushort ManaKeyFloat => MageData["Mana"].MemoryOffset;
-        protected ushort ElementalPowerKeyInteger => ElementalistData["ElementalPower"].MemoryOffset;
-        protected ushort ThrowKeyQuaternion => ElementalistData["Throw"].MemoryOffset;
-        protected ushort PowerTypeKeyEnum => ElementalistData["PowerType"].MemoryOffset;
+        protected ushort levelKeyInteger => baseCharacterData["Level"].m_MemoryOffset;
+        protected ushort healthKeyFloat => baseCharacterData["Health"].m_MemoryOffset;
+        protected ushort healthLowKeyBoolean => baseCharacterData["HealthLow"].m_MemoryOffset;
+        protected ushort currentPlayerLocationKeyVector => baseCharacterData["CurrentPlayerLocation"].m_MemoryOffset;
+        protected ushort playerReferenceKeyObject => baseCharacterData["PlayerReference"].m_MemoryOffset;
+        protected ushort healthStatusKeyEnum => baseCharacterData["HealthStatus"].m_MemoryOffset;
+        protected ushort staminaKeyFloat => warriorData["Stamina"].m_MemoryOffset;
+        protected ushort manaKeyFloat => mageData["Mana"].m_MemoryOffset;
+        protected ushort elementalPowerKeyInteger => elementalistData["ElementalPower"].m_MemoryOffset;
+        protected ushort throwKeyQuaternion => elementalistData["Throw"].m_MemoryOffset;
+        protected ushort powerTypeKeyEnum => elementalistData["PowerType"].m_MemoryOffset;
 
         protected void SetUp()
         {
-            MockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
-            MockObject1.hideFlags = HideFlags.HideAndDontSave;
-            MockObject2 = ScriptableObject.CreateInstance<ScriptableObject>();
-            MockObject2.hideFlags = HideFlags.HideAndDontSave;
-            MockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
-            MockObject3.hideFlags = HideFlags.HideAndDontSave;
+            m_MockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
+            m_MockObject1.hideFlags = HideFlags.HideAndDontSave;
+            m_MockObject2 = ScriptableObject.CreateInstance<ScriptableObject>();
+            m_MockObject2.hideFlags = HideFlags.HideAndDontSave;
+            m_MockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
+            m_MockObject3.hideFlags = HideFlags.HideAndDontSave;
 
-            BaseCharacterTemplate = Resources.Load<BlackboardTemplate>("TestBaseCharacter");
-            WarriorTemplate = Resources.Load<BlackboardTemplate>("TestWarrior");
-            MageTemplate = Resources.Load<BlackboardTemplate>("TestMage");
-            ElementalistTemplate = Resources.Load<BlackboardTemplate>("TestElementalist");
+            m_BaseCharacterTemplate = Resources.Load<BlackboardTemplate>("TestBaseCharacter");
+            m_WarriorTemplate = Resources.Load<BlackboardTemplate>("TestWarrior");
+            m_MageTemplate = Resources.Load<BlackboardTemplate>("TestMage");
+            m_ElementalistTemplate = Resources.Load<BlackboardTemplate>("TestElementalist");
 
-            CheckLoaded(BaseCharacterTemplate, WarriorTemplate, MageTemplate, ElementalistTemplate);
-            Validate(BaseCharacterTemplate, WarriorTemplate, MageTemplate, ElementalistTemplate);
-            Compile(BaseCharacterTemplate, WarriorTemplate, MageTemplate, ElementalistTemplate);
+            CheckLoaded(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
+            Validate(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
+            Compile(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
         }
 
         private static void CheckLoaded(params BlackboardTemplate[] templates)
@@ -76,7 +76,7 @@ namespace HiraBots.Editor.Tests
             foreach (var template in templates)
             {
                 template.Validate(validator);
-                Assert.IsTrue(validator.Validated, $"{template.name} could not be validated.");
+                Assert.IsTrue(validator.m_Validated, $"{template.name} could not be validated.");
                 validator.Reset();
             }
         }
@@ -88,21 +88,21 @@ namespace HiraBots.Editor.Tests
             foreach (var template in templates)
             {
                 template.Compile(compiler);
-                Assert.IsTrue(template.IsCompiled, $"{template.name} could not be compiled.");
+                Assert.IsTrue(template.isCompiled, $"{template.name} could not be compiled.");
                 compiler.Update();
             }
         }
 
         protected void TearDown()
         {
-            Free(ElementalistTemplate, MageTemplate, WarriorTemplate, BaseCharacterTemplate);
-            Unload(ElementalistTemplate, MageTemplate, WarriorTemplate, BaseCharacterTemplate);
+            Free(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
+            Unload(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
 
-            BaseCharacterTemplate = WarriorTemplate = MageTemplate = ElementalistTemplate = null;
+            m_BaseCharacterTemplate = m_WarriorTemplate = m_MageTemplate = m_ElementalistTemplate = null;
 
-            Object.DestroyImmediate(MockObject3);
-            Object.DestroyImmediate(MockObject2);
-            Object.DestroyImmediate(MockObject1);
+            Object.DestroyImmediate(m_MockObject3);
+            Object.DestroyImmediate(m_MockObject2);
+            Object.DestroyImmediate(m_MockObject1);
         }
 
         private static void Free(params BlackboardTemplate[] templates)

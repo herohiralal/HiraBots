@@ -2,10 +2,10 @@
 {
     internal class SerializationUtility
     {
-        protected const string MAIN_SUBFOLDER_NAME = "HiraBots";
+        protected const string k_MainSubfolderName = "HiraBots";
 
 #if UNITY_EDITOR
-        protected const string TEMP_FOLDER_NAME = "Temp";
+        protected const string k_TempFolderName = "Temp";
 #endif
 
         internal static T LoadCookedData<T>(string fileName) where T : UnityEngine.Object
@@ -23,10 +23,10 @@
 
 #if UNITY_EDITOR
         protected static string FileNameToTempEditorPath(string name) =>
-            TEMP_FOLDER_NAME + "/" + MAIN_SUBFOLDER_NAME + "/" + name + ".asset";
+            k_TempFolderName + "/" + k_MainSubfolderName + "/" + name + ".asset";
 #endif
 
         protected static string FileNameToResourcesRelativePath(string name) =>
-            MAIN_SUBFOLDER_NAME + "/" + name;
+            k_MainSubfolderName + "/" + name;
     }
 }

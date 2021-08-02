@@ -8,40 +8,40 @@ namespace HiraBots.Editor.Tests
     [TestFixture]
     internal class BlackboardCompilationTests
     {
-        private const string first_key_name = "first";
-        private const string second_key_name = "second";
-        private const string third_key_name = "third";
-        private const string fourth_key_name = "fourth";
-        private const string parent_template_name = "parent";
-        private const string child_template_name = "child";
-        private const int first_key_index = 1;
-        private const int second_key_index = 0;
-        private const int third_key_index = 3;
-        private const int fourth_key_index = 2;
-        private const int second_key_memory_offset = 0;
-        private const int first_key_memory_offset = 1;
-        private const int fourth_key_memory_offset = 5;
-        private const int third_key_memory_offset = 9;
-        private const int parent_template_size = 5;
-        private const int child_template_size = 21;
-        private const int parent_key_count = 2;
-        private const int child_key_count = 4;
-        private const int first_key_default_value = 0;
-        private const bool second_key_default_value = true;
-        private static readonly Vector3 third_key_default_value = Vector3.one;
+        private const string k_FirstKeyName = "first";
+        private const string k_SecondKeyName = "second";
+        private const string k_ThirdKeyName = "third";
+        private const string k_FourthKeyName = "fourth";
+        private const string k_ParentTemplateName = "parent";
+        private const string k_ChildTemplateName = "child";
+        private const int k_FirstKeyIndex = 1;
+        private const int k_SecondKeyIndex = 0;
+        private const int k_ThirdKeyIndex = 3;
+        private const int k_FourthKeyIndex = 2;
+        private const int k_SecondKeyMemoryOffset = 0;
+        private const int k_FirstKeyMemoryOffset = 1;
+        private const int k_FourthKeyMemoryOffset = 5;
+        private const int k_ThirdKeyMemoryOffset = 9;
+        private const int k_ParentTemplateSize = 5;
+        private const int k_ChildTemplateSize = 21;
+        private const int k_ParentKeyCount = 2;
+        private const int k_ChildKeyCount = 4;
+        private const int k_FirstKeyDefaultValue = 0;
+        private const bool k_SecondKeyDefaultValue = true;
+        private static readonly Vector3 s_ThirdKeyDefaultValue = Vector3.one;
         // ReSharper disable once InconsistentNaming
         private ScriptableObject fourth_key_default_value;
-        private const BlackboardKeyTraits first_key_traits = BlackboardKeyTraits.None;
-        private const BlackboardKeyTraits second_key_traits = BlackboardKeyTraits.InstanceSynced;
-        private const BlackboardKeyTraits third_key_traits = BlackboardKeyTraits.BroadcastEventOnUnexpectedChange;
-        private const BlackboardKeyTraits fourth_key_traits = BlackboardKeyTraits.InstanceSynced | BlackboardKeyTraits.BroadcastEventOnUnexpectedChange;
-        private const BlackboardKeyType first_key_type = BlackboardKeyType.Integer;
-        private const BlackboardKeyType second_key_type = BlackboardKeyType.Boolean;
-        private const BlackboardKeyType third_key_type = BlackboardKeyType.Vector;
-        private const BlackboardKeyType fourth_key_type = BlackboardKeyType.Object;
+        private const BlackboardKeyTraits k_FirstKeyTraits = BlackboardKeyTraits.None;
+        private const BlackboardKeyTraits k_SecondKeyTraits = BlackboardKeyTraits.InstanceSynced;
+        private const BlackboardKeyTraits k_ThirdKeyTraits = BlackboardKeyTraits.BroadcastEventOnUnexpectedChange;
+        private const BlackboardKeyTraits k_FourthKeyTraits = BlackboardKeyTraits.InstanceSynced | BlackboardKeyTraits.BroadcastEventOnUnexpectedChange;
+        private const BlackboardKeyType k_FirstKeyType = BlackboardKeyType.Integer;
+        private const BlackboardKeyType k_SecondKeyType = BlackboardKeyType.Boolean;
+        private const BlackboardKeyType k_ThirdKeyType = BlackboardKeyType.Vector;
+        private const BlackboardKeyType k_FourthKeyType = BlackboardKeyType.Object;
 
-        private BlackboardKey _first, _second, _third, _fourth;
-        private BlackboardTemplate _parent, _child;
+        private BlackboardKey m_First, m_Second, m_Third, m_Fourth;
+        private BlackboardTemplate m_Parent, m_Child;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -49,31 +49,31 @@ namespace HiraBots.Editor.Tests
             fourth_key_default_value = ScriptableObject.CreateInstance<ScriptableObject>();
             fourth_key_default_value.hideFlags = HideFlags.HideAndDontSave;
 
-            _first = IntegerBlackboardKey.Build<IntegerBlackboardKey>(first_key_name, first_key_traits, first_key_default_value, HideFlags.HideAndDontSave);
+            m_First = IntegerBlackboardKey.Build<IntegerBlackboardKey>(k_FirstKeyName, k_FirstKeyTraits, k_FirstKeyDefaultValue, HideFlags.HideAndDontSave);
 
-            _second = BooleanBlackboardKey.Build<BooleanBlackboardKey>(second_key_name, second_key_traits, second_key_default_value, HideFlags.HideAndDontSave);
+            m_Second = BooleanBlackboardKey.Build<BooleanBlackboardKey>(k_SecondKeyName, k_SecondKeyTraits, k_SecondKeyDefaultValue, HideFlags.HideAndDontSave);
 
-            _third = VectorBlackboardKey.Build<VectorBlackboardKey>(third_key_name, third_key_traits, third_key_default_value, HideFlags.HideAndDontSave);
+            m_Third = VectorBlackboardKey.Build<VectorBlackboardKey>(k_ThirdKeyName, k_ThirdKeyTraits, s_ThirdKeyDefaultValue, HideFlags.HideAndDontSave);
 
-            _fourth = ObjectBlackboardKey.Build<ObjectBlackboardKey>(fourth_key_name, fourth_key_traits, fourth_key_default_value, HideFlags.HideAndDontSave);
+            m_Fourth = ObjectBlackboardKey.Build<ObjectBlackboardKey>(k_FourthKeyName, k_FourthKeyTraits, fourth_key_default_value, HideFlags.HideAndDontSave);
 
-            _parent = BlackboardTemplate.Build<BlackboardTemplate>(parent_template_name, null,
-                new[] {_first, _second}, HideFlags.HideAndDontSave);
-            _child = BlackboardTemplate.Build<BlackboardTemplate>(child_template_name, _parent,
-                new[] {_third, _fourth}, HideFlags.HideAndDontSave);
+            m_Parent = BlackboardTemplate.Build<BlackboardTemplate>(k_ParentTemplateName, null,
+                new[] {m_First, m_Second}, HideFlags.HideAndDontSave);
+            m_Child = BlackboardTemplate.Build<BlackboardTemplate>(k_ChildTemplateName, m_Parent,
+                new[] {m_Third, m_Fourth}, HideFlags.HideAndDontSave);
 
 
             // validate the blackboard templates first
             {
                 var validatorContext = new BlackboardTemplateValidatorContext();
 
-                _parent.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.Validated, "Parent blackboard template couldn't be validated. Test incomplete.");
+                m_Parent.Validate(validatorContext);
+                Assert.IsTrue(validatorContext.m_Validated, "Parent blackboard template couldn't be validated. Test incomplete.");
 
                 validatorContext.Reset();
 
-                _child.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.Validated, "Child blackboard template couldn't be validated. Test incomplete.");
+                m_Child.Validate(validatorContext);
+                Assert.IsTrue(validatorContext.m_Validated, "Child blackboard template couldn't be validated. Test incomplete.");
 
                 validatorContext.Reset();
             }
@@ -81,9 +81,9 @@ namespace HiraBots.Editor.Tests
             // compile
             {
                 var compilerContext = new BlackboardTemplateCompilerContext();
-                _parent.Compile(compilerContext);
+                m_Parent.Compile(compilerContext);
                 compilerContext.Update();
-                _child.Compile(compilerContext);
+                m_Child.Compile(compilerContext);
                 compilerContext.Update();
             }
         }
@@ -91,124 +91,124 @@ namespace HiraBots.Editor.Tests
         [OneTimeTearDown]
         public void TearDown()
         {
-            _child.Free();
-            _parent.Free();
+            m_Child.Free();
+            m_Parent.Free();
 
-            Object.DestroyImmediate(_child);
-            Object.DestroyImmediate(_parent);
+            Object.DestroyImmediate(m_Child);
+            Object.DestroyImmediate(m_Parent);
 
-            Object.DestroyImmediate(_fourth);
-            Object.DestroyImmediate(_third);
-            Object.DestroyImmediate(_second);
-            Object.DestroyImmediate(_first);
+            Object.DestroyImmediate(m_Fourth);
+            Object.DestroyImmediate(m_Third);
+            Object.DestroyImmediate(m_Second);
+            Object.DestroyImmediate(m_First);
 
             Object.DestroyImmediate(fourth_key_default_value);
         }
 
         private static bool AreEqual(in BlackboardKeyCompiledData a, in BlackboardKeyCompiledData b) =>
-            a.MemoryOffset == b.MemoryOffset && a.Index == b.Index && a.Traits == b.Traits && a.KeyType == b.KeyType;
+            a.m_MemoryOffset == b.m_MemoryOffset && a.m_Index == b.m_Index && a.m_Traits == b.m_Traits && a.m_KeyType == b.m_KeyType;
 
         [Test]
         public void TemplateKeyCompiledDataSyncValidation()
         {
-            var parentCompiledData = _parent.CompiledData;
-            var childCompiledData = _child.CompiledData;
+            var parentCompiledData = m_Parent.compiledData;
+            var childCompiledData = m_Child.compiledData;
 
-            Assert.IsTrue(AreEqual(parentCompiledData[first_key_name], childCompiledData[first_key_name]));
-            Assert.IsTrue(AreEqual(parentCompiledData[second_key_name], childCompiledData[second_key_name]));
+            Assert.IsTrue(AreEqual(parentCompiledData[k_FirstKeyName], childCompiledData[k_FirstKeyName]));
+            Assert.IsTrue(AreEqual(parentCompiledData[k_SecondKeyName], childCompiledData[k_SecondKeyName]));
 
-            Assert.IsTrue(AreEqual(parentCompiledData[first_key_name], _first.CompiledData));
-            Assert.IsTrue(AreEqual(parentCompiledData[second_key_name], _second.CompiledData));
-            Assert.IsTrue(AreEqual(childCompiledData[third_key_name], _third.CompiledData));
-            Assert.IsTrue(AreEqual(childCompiledData[fourth_key_name], _fourth.CompiledData));
+            Assert.IsTrue(AreEqual(parentCompiledData[k_FirstKeyName], m_First.compiledData));
+            Assert.IsTrue(AreEqual(parentCompiledData[k_SecondKeyName], m_Second.compiledData));
+            Assert.IsTrue(AreEqual(childCompiledData[k_ThirdKeyName], m_Third.compiledData));
+            Assert.IsTrue(AreEqual(childCompiledData[k_FourthKeyName], m_Fourth.compiledData));
         }
 
         [Test]
         public void KeyIndexSyncValidation()
         {
             // blackboard keys get sorted according to their sizes
-            Assert.AreEqual(first_key_index, _first.CompiledData.Index);
-            Assert.AreEqual(second_key_index, _second.CompiledData.Index);
-            Assert.AreEqual(third_key_index, _third.CompiledData.Index);
-            Assert.AreEqual(fourth_key_index, _fourth.CompiledData.Index);
+            Assert.AreEqual(k_FirstKeyIndex, m_First.compiledData.m_Index);
+            Assert.AreEqual(k_SecondKeyIndex, m_Second.compiledData.m_Index);
+            Assert.AreEqual(k_ThirdKeyIndex, m_Third.compiledData.m_Index);
+            Assert.AreEqual(k_FourthKeyIndex, m_Fourth.compiledData.m_Index);
         }
 
         [Test]
         public void KeyTypeSyncValidation()
         {
-            Assert.AreEqual(first_key_type, _first.CompiledData.KeyType);
-            Assert.AreEqual(second_key_type, _second.CompiledData.KeyType);
-            Assert.AreEqual(third_key_type, _third.CompiledData.KeyType);
-            Assert.AreEqual(fourth_key_type, _fourth.CompiledData.KeyType);
+            Assert.AreEqual(k_FirstKeyType, m_First.compiledData.m_KeyType);
+            Assert.AreEqual(k_SecondKeyType, m_Second.compiledData.m_KeyType);
+            Assert.AreEqual(k_ThirdKeyType, m_Third.compiledData.m_KeyType);
+            Assert.AreEqual(k_FourthKeyType, m_Fourth.compiledData.m_KeyType);
         }
 
         [Test]
         public void KeyTraitsSyncValidation()
         {
-            Assert.AreEqual(first_key_traits, _first.CompiledData.Traits);
-            Assert.AreEqual(second_key_traits, _second.CompiledData.Traits);
-            Assert.AreEqual(third_key_traits, _third.CompiledData.Traits);
-            Assert.AreEqual(fourth_key_traits, _fourth.CompiledData.Traits);
+            Assert.AreEqual(k_FirstKeyTraits, m_First.compiledData.m_Traits);
+            Assert.AreEqual(k_SecondKeyTraits, m_Second.compiledData.m_Traits);
+            Assert.AreEqual(k_ThirdKeyTraits, m_Third.compiledData.m_Traits);
+            Assert.AreEqual(k_FourthKeyTraits, m_Fourth.compiledData.m_Traits);
         }
 
         [Test]
         public void KeyCountValidation()
         {
-            Assert.AreEqual(parent_key_count, _parent.CompiledData.KeyCount);
-            Assert.AreEqual(child_key_count, _child.CompiledData.KeyCount);
+            Assert.AreEqual(k_ParentKeyCount, m_Parent.compiledData.m_KeyCount);
+            Assert.AreEqual(k_ChildKeyCount, m_Child.compiledData.m_KeyCount);
         }
 
         [Test]
         public void TemplateSizeValidation()
         {
-            Assert.AreEqual(parent_template_size, _parent.CompiledData.TemplateSize, "Child template size mismatch.");
-            Assert.AreEqual(child_template_size, _child.CompiledData.TemplateSize, "Child template size mismatch.");
+            Assert.AreEqual(k_ParentTemplateSize, m_Parent.compiledData.templateSize, "Child template size mismatch.");
+            Assert.AreEqual(k_ChildTemplateSize, m_Child.compiledData.templateSize, "Child template size mismatch.");
         }
 
         [Test]
         public void MemoryOffsetValidation()
         {
             // blackboard keys get sorted according to their sizes
-            Assert.AreEqual(second_key_memory_offset, _second.CompiledData.MemoryOffset);
-            Assert.AreEqual(first_key_memory_offset, _first.CompiledData.MemoryOffset);
-            Assert.AreEqual(fourth_key_memory_offset, _fourth.CompiledData.MemoryOffset);
-            Assert.AreEqual(third_key_memory_offset, _third.CompiledData.MemoryOffset);
+            Assert.AreEqual(k_SecondKeyMemoryOffset, m_Second.compiledData.m_MemoryOffset);
+            Assert.AreEqual(k_FirstKeyMemoryOffset, m_First.compiledData.m_MemoryOffset);
+            Assert.AreEqual(k_FourthKeyMemoryOffset, m_Fourth.compiledData.m_MemoryOffset);
+            Assert.AreEqual(k_ThirdKeyMemoryOffset, m_Third.compiledData.m_MemoryOffset);
         }
 
         [Test]
         public unsafe void TemplateDefaultsValidationParent()
         {
-            using (var template = new NativeArray<byte>(_parent.CompiledData.TemplateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
+            using (var template = new NativeArray<byte>(m_Parent.compiledData.templateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
             {
-                _parent.CompiledData.CopyTemplateTo(template);
+                m_Parent.compiledData.CopyTemplateTo(template);
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
-                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, _first.CompiledData.MemoryOffset);
-                Assert.AreEqual(first_key_default_value, firstValue);
+                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.m_MemoryOffset);
+                Assert.AreEqual(k_FirstKeyDefaultValue, firstValue);
 
-                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, _second.CompiledData.MemoryOffset);
-                Assert.AreEqual(second_key_default_value, secondValue);
+                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.m_MemoryOffset);
+                Assert.AreEqual(k_SecondKeyDefaultValue, secondValue);
             }
         }
 
         [Test]
         public unsafe void TemplateDefaultsValidationChild()
         {
-            using (var template = new NativeArray<byte>(_child.CompiledData.TemplateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
+            using (var template = new NativeArray<byte>(m_Child.compiledData.templateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
             {
-                _child.CompiledData.CopyTemplateTo(template);
+                m_Child.compiledData.CopyTemplateTo(template);
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
-                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, _first.CompiledData.MemoryOffset);
-                Assert.AreEqual(first_key_default_value, firstValue);
+                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.m_MemoryOffset);
+                Assert.AreEqual(k_FirstKeyDefaultValue, firstValue);
 
-                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, _second.CompiledData.MemoryOffset);
-                Assert.AreEqual(second_key_default_value, secondValue);
+                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.m_MemoryOffset);
+                Assert.AreEqual(k_SecondKeyDefaultValue, secondValue);
 
-                var thirdValue = BlackboardUnsafeHelpers.ReadVectorValue(templatePtr, _third.CompiledData.MemoryOffset);
-                Assert.AreEqual(third_key_default_value, thirdValue);
+                var thirdValue = BlackboardUnsafeHelpers.ReadVectorValue(templatePtr, m_Third.compiledData.m_MemoryOffset);
+                Assert.AreEqual(s_ThirdKeyDefaultValue, thirdValue);
 
-                var fourthValue = BlackboardUnsafeHelpers.ReadObjectValue(templatePtr, _fourth.CompiledData.MemoryOffset);
+                var fourthValue = BlackboardUnsafeHelpers.ReadObjectValue(templatePtr, m_Fourth.compiledData.m_MemoryOffset);
                 Assert.AreEqual(fourth_key_default_value, fourthValue);
             }
         }
@@ -216,33 +216,33 @@ namespace HiraBots.Editor.Tests
         [Test]
         public unsafe void InstanceSyncedKeysSynchronizedBetweenChildAndParentTemplatesCheck()
         {
-            using (var template = new NativeArray<byte>(_child.CompiledData.TemplateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
+            using (var template = new NativeArray<byte>(m_Child.compiledData.templateSize, Allocator.Temp, NativeArrayOptions.UninitializedMemory))
             {
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
-                var secondKeyCompiledData = _second.CompiledData;
-                _parent.CompiledData.SetInstanceSyncedBooleanValueWithoutValidation(
+                var secondKeyCompiledData = m_Second.compiledData;
+                m_Parent.compiledData.SetInstanceSyncedBooleanValueWithoutValidation(
                     in secondKeyCompiledData,
-                    !second_key_default_value);
+                    !k_SecondKeyDefaultValue);
 
-                _parent.CompiledData.CopyTemplateTo(template);
-                Assert.AreEqual(!second_key_default_value, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.MemoryOffset),
+                m_Parent.compiledData.CopyTemplateTo(template);
+                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
                     "Update not applied to the parent.");
 
-                _child.CompiledData.CopyTemplateTo(template);
-                Assert.AreEqual(!second_key_default_value, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.MemoryOffset),
+                m_Child.compiledData.CopyTemplateTo(template);
+                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
                     "Mismatch between child and parent values.");
 
-                _child.CompiledData.SetInstanceSyncedBooleanValueWithoutValidation(
+                m_Child.compiledData.SetInstanceSyncedBooleanValueWithoutValidation(
                     in secondKeyCompiledData,
-                    second_key_default_value);
+                    k_SecondKeyDefaultValue);
 
-                _parent.CompiledData.CopyTemplateTo(template);
-                Assert.AreEqual(second_key_default_value, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.MemoryOffset),
+                m_Parent.compiledData.CopyTemplateTo(template);
+                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
                     "Update not applied to the parent.");
 
-                _child.CompiledData.CopyTemplateTo(template);
-                Assert.AreEqual(second_key_default_value, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.MemoryOffset),
+                m_Child.compiledData.CopyTemplateTo(template);
+                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
                     "Mismatch between child and parent values.");
             }
         }
@@ -250,26 +250,26 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void OwningTemplateValidation()
         {
-            var parentData = _parent.CompiledData;
-            var childData = _child.CompiledData;
+            var parentData = m_Parent.compiledData;
+            var childData = m_Child.compiledData;
 
-            Assert.IsTrue(parentData.GetOwningTemplate(first_key_memory_offset) == parentData, "Culprit: Parent. Key: first.");
-            Assert.IsTrue(childData.GetOwningTemplate(first_key_memory_offset) == parentData, "Culprit: Child. Key: first.");
+            Assert.IsTrue(parentData.GetOwningTemplate(k_FirstKeyMemoryOffset) == parentData, "Culprit: Parent. Key: first.");
+            Assert.IsTrue(childData.GetOwningTemplate(k_FirstKeyMemoryOffset) == parentData, "Culprit: Child. Key: first.");
 
-            Assert.IsTrue(parentData.GetOwningTemplate(second_key_memory_offset) == parentData, "Culprit: Parent. Key: second.");
-            Assert.IsTrue(childData.GetOwningTemplate(second_key_memory_offset) == parentData, "Culprit: Child. Key: second.");
+            Assert.IsTrue(parentData.GetOwningTemplate(k_SecondKeyMemoryOffset) == parentData, "Culprit: Parent. Key: second.");
+            Assert.IsTrue(childData.GetOwningTemplate(k_SecondKeyMemoryOffset) == parentData, "Culprit: Child. Key: second.");
 
-            Assert.IsTrue(parentData.GetOwningTemplate(third_key_memory_offset) == null, "Culprit: Parent. Key: third.");
-            Assert.IsTrue(childData.GetOwningTemplate(third_key_memory_offset) == childData, "Culprit: Child. Key: third.");
+            Assert.IsTrue(parentData.GetOwningTemplate(k_ThirdKeyMemoryOffset) == null, "Culprit: Parent. Key: third.");
+            Assert.IsTrue(childData.GetOwningTemplate(k_ThirdKeyMemoryOffset) == childData, "Culprit: Child. Key: third.");
 
-            Assert.IsTrue(parentData.GetOwningTemplate(fourth_key_memory_offset) == null, "Culprit: Parent. Key: fourth.");
-            Assert.IsTrue(childData.GetOwningTemplate(fourth_key_memory_offset) == childData, "Culprit: Child. Key: fourth.");
+            Assert.IsTrue(parentData.GetOwningTemplate(k_FourthKeyMemoryOffset) == null, "Culprit: Parent. Key: fourth.");
+            Assert.IsTrue(childData.GetOwningTemplate(k_FourthKeyMemoryOffset) == childData, "Culprit: Child. Key: fourth.");
 
-            Assert.IsTrue(parentData.GetOwningTemplate(parentData.TemplateSize) == null, "Culprit: Parent. Key: template size.");
-            Assert.IsTrue(childData.GetOwningTemplate(childData.TemplateSize) == null, "Culprit: Child. Key: template size.");
+            Assert.IsTrue(parentData.GetOwningTemplate(parentData.templateSize) == null, "Culprit: Parent. Key: template size.");
+            Assert.IsTrue(childData.GetOwningTemplate(childData.templateSize) == null, "Culprit: Child. Key: template size.");
 
-            Assert.IsTrue(parentData.GetOwningTemplate((ushort) (parentData.TemplateSize + 5)) == null, "Culprit: Parent. Key: template size + 5.");
-            Assert.IsTrue(childData.GetOwningTemplate((ushort) (childData.TemplateSize + 5)) == null, "Culprit: Child. Key: template size + 5.");
+            Assert.IsTrue(parentData.GetOwningTemplate((ushort) (parentData.templateSize + 5)) == null, "Culprit: Parent. Key: template size + 5.");
+            Assert.IsTrue(childData.GetOwningTemplate((ushort) (childData.templateSize + 5)) == null, "Culprit: Child. Key: template size + 5.");
         }
     }
 }

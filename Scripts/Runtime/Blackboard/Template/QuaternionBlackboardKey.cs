@@ -6,8 +6,8 @@ namespace HiraBots
     {
         internal QuaternionBlackboardKey()
         {
-            SizeInBytesInternal = sizeof(float) * 4;
-            KeyType = BlackboardKeyType.Quaternion;
+            m_SizeInBytesInternal = sizeof(float) * 4;
+            m_KeyType = BlackboardKeyType.Quaternion;
         }
 
         [SerializeField] private Vector3 defaultValue = Vector3.zero;

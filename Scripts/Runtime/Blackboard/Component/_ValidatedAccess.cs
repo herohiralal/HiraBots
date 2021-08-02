@@ -7,29 +7,29 @@ namespace HiraBots
     {
         private void ValidateInput(string keyName, BlackboardKeyType keyType, out BlackboardKeyCompiledData data)
         {
-            data = _template[keyName];
+            data = m_Template[keyName];
 
-            if (!data.IsValid)
+            if (!data.isValid)
             {
                 throw new KeyNotFoundException($"Invalid key name: {keyName}");
             }
 
-            if (data.KeyType != keyType)
+            if (data.m_KeyType != keyType)
             {
-                throw new InvalidCastException($"Type mismatch: {keyName}. Requested - {keyType}. Actual - {data.KeyType}");
+                throw new InvalidCastException($"Type mismatch: {keyName}. Requested - {keyType}. Actual - {data.m_KeyType}");
             }
         }
 
         private void ValidateInput(ushort memoryOffset, BlackboardKeyType keyType, out BlackboardKeyCompiledData data)
         {
-            if (!_template.MemoryOffsetToKeyData.TryGetValue(memoryOffset, out data))
+            if (!m_Template.memoryOffsetToKeyData.TryGetValue(memoryOffset, out data))
             {
                 throw new KeyNotFoundException($"Invalid memory offset: {memoryOffset}");
             }
 
-            if (data.KeyType != keyType)
+            if (data.m_KeyType != keyType)
             {
-                throw new InvalidCastException($"Type mismatch: {memoryOffset}. Requested - {keyType}. Actual - {data.KeyType}");
+                throw new InvalidCastException($"Type mismatch: {memoryOffset}. Requested - {keyType}. Actual - {data.m_KeyType}");
             }
         }
 

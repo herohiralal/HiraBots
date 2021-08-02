@@ -6,8 +6,8 @@ namespace HiraBots
     {
         internal BooleanBlackboardKey()
         {
-            SizeInBytesInternal = sizeof(byte);
-            KeyType = BlackboardKeyType.Boolean;
+            m_SizeInBytesInternal = sizeof(byte);
+            m_KeyType = BlackboardKeyType.Boolean;
         }
 
         [SerializeField] private bool defaultValue = false;

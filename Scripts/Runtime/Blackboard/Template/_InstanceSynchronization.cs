@@ -12,17 +12,17 @@ namespace HiraBots
     {
         void IInstanceSynchronizerListener.UpdateValue(in BlackboardKeyCompiledData keyData, byte* value, ushort size)
         {
-            var ptr = TemplatePtr + keyData.MemoryOffset;
+            var ptr = templatePtr + keyData.m_MemoryOffset;
             for (var i = 0; i < size; i++) ptr[i] = value[i];
 
-            foreach (var listener in _listeners)
+            foreach (var listener in m_Listeners)
                 listener.UpdateValue(in keyData, value, size);
         }
     }
 
     internal partial class BlackboardTemplateCompiledData
     {
-        private readonly List<IInstanceSynchronizerListener> _listeners = new List<IInstanceSynchronizerListener>();
+        private readonly List<IInstanceSynchronizerListener> m_Listeners = new List<IInstanceSynchronizerListener>();
 
         internal BlackboardTemplateCompiledData GetOwningTemplate(ushort memoryOffset)
         {
@@ -31,10 +31,10 @@ namespace HiraBots
 
             do
             {
-                if (current.TemplateSize <= memoryOffset) return previous;
+                if (current.templateSize <= memoryOffset) return previous;
 
                 previous = current;
-                current = current._parentCompiledData;
+                current = current.m_ParentCompiledData;
             } while (current != null);
 
             return previous;
@@ -43,13 +43,13 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void AddInstanceSyncListener(IInstanceSynchronizerListener listener)
         {
-            if (!_listeners.Contains(listener)) _listeners.Add(listener);
+            if (!m_Listeners.Contains(listener)) m_Listeners.Add(listener);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void RemoveInstanceSyncListener(IInstanceSynchronizerListener listener)
         {
-            if (_listeners.Contains(listener)) _listeners.Remove(listener);
+            if (m_Listeners.Contains(listener)) m_Listeners.Remove(listener);
         }
     }
 }

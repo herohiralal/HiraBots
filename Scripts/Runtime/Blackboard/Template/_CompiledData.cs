@@ -9,91 +9,91 @@ namespace HiraBots
     {
         internal BlackboardKeyCompiledData(ushort memoryOffset, ushort index, BlackboardKeyTraits traits, BlackboardKeyType keyType)
         {
-            MemoryOffset = memoryOffset;
-            Index = index;
-            Traits = traits;
-            KeyType = keyType;
+            m_MemoryOffset = memoryOffset;
+            m_Index = index;
+            m_Traits = traits;
+            m_KeyType = keyType;
         }
 
-        internal static BlackboardKeyCompiledData None
+        internal static BlackboardKeyCompiledData none
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => new BlackboardKeyCompiledData(ushort.MaxValue, ushort.MaxValue, BlackboardKeyTraits.None, BlackboardKeyType.Invalid);
         }
 
-        internal bool IsValid
+        internal bool isValid
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => KeyType != BlackboardKeyType.Invalid;
+            get => m_KeyType != BlackboardKeyType.Invalid;
         }
 
-        internal readonly ushort MemoryOffset;
-        internal readonly ushort Index;
-        internal readonly BlackboardKeyTraits Traits;
-        internal readonly BlackboardKeyType KeyType;
+        internal readonly ushort m_MemoryOffset;
+        internal readonly ushort m_Index;
+        internal readonly BlackboardKeyTraits m_Traits;
+        internal readonly BlackboardKeyType m_KeyType;
 
-        internal bool InstanceSynced
+        internal bool instanceSynced
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (Traits & BlackboardKeyTraits.InstanceSynced) != 0;
+            get => (m_Traits & BlackboardKeyTraits.InstanceSynced) != 0;
         }
 
-        internal bool BroadcastEventOnUnexpectedChange
+        internal bool broadcastEventOnUnexpectedChange
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (Traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
+            get => (m_Traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
         }
     }
 
     internal unsafe partial class BlackboardTemplateCompiledData
     {
-        private BlackboardTemplateCompiledData _parentCompiledData;
-        private NativeArray<byte> _template = default;
-        private readonly Dictionary<string, ushort> _keyNameToMemoryOffset;
-        private readonly Dictionary<ushort, BlackboardKeyCompiledData> _memoryOffsetToKeyData;
-        internal readonly ushort KeyCount;
+        private BlackboardTemplateCompiledData m_ParentCompiledData;
+        private NativeArray<byte> m_Template = default;
+        private readonly Dictionary<string, ushort> m_KeyNameToMemoryOffset;
+        private readonly Dictionary<ushort, BlackboardKeyCompiledData> m_MemoryOffsetToKeyData;
+        internal readonly ushort m_KeyCount;
 
         internal BlackboardTemplateCompiledData(BlackboardTemplateCompiledData parentCompiledData, NativeArray<byte> template,
             Dictionary<string, ushort> keyNameToMemoryOffset, Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData, ushort keyCount)
         {
-            _parentCompiledData = parentCompiledData;
-            _parentCompiledData?.AddInstanceSyncListener(this);
-            _template = template;
-            _keyNameToMemoryOffset = keyNameToMemoryOffset;
-            _memoryOffsetToKeyData = memoryOffsetToKeyData;
-            KeyCount = keyCount;
+            m_ParentCompiledData = parentCompiledData;
+            m_ParentCompiledData?.AddInstanceSyncListener(this);
+            m_Template = template;
+            m_KeyNameToMemoryOffset = keyNameToMemoryOffset;
+            m_MemoryOffsetToKeyData = memoryOffsetToKeyData;
+            m_KeyCount = keyCount;
         }
 
         ~BlackboardTemplateCompiledData()
         {
-            _parentCompiledData?.RemoveInstanceSyncListener(this);
-            _parentCompiledData = null;
+            m_ParentCompiledData?.RemoveInstanceSyncListener(this);
+            m_ParentCompiledData = null;
 
-            if (_template.IsCreated)
-                _template.Dispose();
+            if (m_Template.IsCreated)
+                m_Template.Dispose();
 
-            _keyNameToMemoryOffset.Clear();
-            _memoryOffsetToKeyData.Clear();
+            m_KeyNameToMemoryOffset.Clear();
+            m_MemoryOffsetToKeyData.Clear();
         }
 
-        private byte* TemplatePtr => (byte*) _template.GetUnsafePtr();
-        private byte* TemplateReadOnlyPtr => (byte*) _template.GetUnsafeReadOnlyPtr();
+        private byte* templatePtr => (byte*) m_Template.GetUnsafePtr();
+        private byte* templateReadOnlyPtr => (byte*) m_Template.GetUnsafeReadOnlyPtr();
 
         internal void CopyTemplateTo(NativeArray<byte> otherTemplate) =>
-            UnsafeUtility.MemCpy(otherTemplate.GetUnsafePtr(), TemplateReadOnlyPtr, TemplateSize);
+            UnsafeUtility.MemCpy(otherTemplate.GetUnsafePtr(), templateReadOnlyPtr, templateSize);
 
-        internal ReadOnlyDictionaryAccessor<string, ushort> KeyNameToMemoryOffset =>
-            _keyNameToMemoryOffset;
+        internal ReadOnlyDictionaryAccessor<string, ushort> keyNameToMemoryOffset =>
+            m_KeyNameToMemoryOffset;
 
-        internal ReadOnlyDictionaryAccessor<ushort, BlackboardKeyCompiledData> MemoryOffsetToKeyData =>
-            _memoryOffsetToKeyData;
+        internal ReadOnlyDictionaryAccessor<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData =>
+            m_MemoryOffsetToKeyData;
 
         internal BlackboardKeyCompiledData this[string keyName] =>
-            _keyNameToMemoryOffset.TryGetValue(keyName, out var memoryOffset)
-            && _memoryOffsetToKeyData.TryGetValue(memoryOffset, out var output)
+            m_KeyNameToMemoryOffset.TryGetValue(keyName, out var memoryOffset)
+            && m_MemoryOffsetToKeyData.TryGetValue(memoryOffset, out var output)
                 ? output
-                : BlackboardKeyCompiledData.None;
+                : BlackboardKeyCompiledData.none;
 
-        internal ushort TemplateSize => (ushort) _template.Length;
+        internal ushort templateSize => (ushort) m_Template.Length;
     }
 }

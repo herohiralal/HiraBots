@@ -12,9 +12,9 @@ namespace HiraBots
         [SerializeField, HideInInspector] protected bool instanceSynced = false;
         [SerializeField, HideInInspector] protected bool essentialToDecisionMaking = false;
 
-        [NonSerialized] protected byte SizeInBytesInternal;
-        internal byte SizeInBytes => SizeInBytesInternal;
+        [NonSerialized] protected byte m_SizeInBytesInternal;
+        internal byte sizeInBytes => m_SizeInBytesInternal;
 
-        [NonSerialized] protected BlackboardKeyType KeyType;
+        [NonSerialized] protected BlackboardKeyType m_KeyType;
     }
 }

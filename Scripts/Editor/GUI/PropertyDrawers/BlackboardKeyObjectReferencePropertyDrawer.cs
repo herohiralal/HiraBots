@@ -7,7 +7,7 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardKey))]
     internal class BlackboardKeyObjectReferencePropertyDrawer : PropertyDrawer
     {
-        private static readonly Dictionary<int, bool> expansion_status = new Dictionary<int, bool>(40);
+        private static readonly Dictionary<int, bool> s_ExpansionStatus = new Dictionary<int, bool>(40);
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -16,7 +16,7 @@ namespace HiraBots.Editor
             if (value == null)
                 return 21f;
 
-            expansion_status.TryGetValue(value.GetInstanceID(), out var expanded);
+            s_ExpansionStatus.TryGetValue(value.GetInstanceID(), out var expanded);
 
             return !expanded
                 ? 21f
@@ -94,12 +94,12 @@ namespace HiraBots.Editor
         private static bool DrawHeader(Rect position, SerializedObject so)
         {
             var instanceID = so.targetObject.GetInstanceID();
-            if (!expansion_status.ContainsKey(instanceID)) expansion_status.Add(instanceID, false);
+            if (!s_ExpansionStatus.ContainsKey(instanceID)) s_ExpansionStatus.Add(instanceID, false);
 
             using (new GUIEnabledChanger(true))
             {
                 // begin group
-                var expanded = EditorGUI.BeginFoldoutHeaderGroup(position, expansion_status[instanceID], GUIContent.none);
+                var expanded = EditorGUI.BeginFoldoutHeaderGroup(position, s_ExpansionStatus[instanceID], GUIContent.none);
 
                 // background
                 position.height -= 2f;
@@ -111,13 +111,13 @@ namespace HiraBots.Editor
                 position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(so.targetObject.name), EditorStyles.boldLabel);
 
                 // type
-                EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(BlackboardGUIHelpers.FORMATTED_NAMES[so.targetObject.GetType()]));
+                EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[so.targetObject.GetType()]));
 
                 // end group
                 EditorGUI.EndFoldoutHeaderGroup();
 
                 // retrieve data
-                expansion_status[instanceID] = expanded;
+                s_ExpansionStatus[instanceID] = expanded;
                 return expanded;
             }
         }

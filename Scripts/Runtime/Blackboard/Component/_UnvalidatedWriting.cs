@@ -6,261 +6,261 @@ namespace HiraBots
 {
     internal unsafe partial class BlackboardComponent : IInstanceSynchronizerListener
     {
-        private readonly System.Collections.Generic.List<ushort> _unexpectedChanges;
-        internal ReadOnlyListAccessor<ushort> UnexpectedChanges => _unexpectedChanges;
-        internal bool HasUnexpectedChanges => _unexpectedChanges.Count > 0;
-        internal void ClearUnexpectedChanges() => _unexpectedChanges.Clear();
+        private readonly System.Collections.Generic.List<ushort> m_UnexpectedChanges;
+        internal ReadOnlyListAccessor<ushort> unexpectedChanges => m_UnexpectedChanges;
+        internal bool hasUnexpectedChanges => m_UnexpectedChanges.Count > 0;
+        internal void ClearUnexpectedChanges() => m_UnexpectedChanges.Clear();
 
         void IInstanceSynchronizerListener.UpdateValue(in BlackboardKeyCompiledData keyData, byte* value, ushort size)
         {
-            var memoryOffset = keyData.MemoryOffset;
-            var ptr = DataPtr + memoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
+            var ptr = dataPtr + memoryOffset;
             for (var i = 0; i < size; i++) ptr[i] = value[i];
 
-            if (keyData.BroadcastEventOnUnexpectedChange) _unexpectedChanges.Add(memoryOffset);
+            if (keyData.broadcastEventOnUnexpectedChange) m_UnexpectedChanges.Add(memoryOffset);
         }
 
         internal void SetBooleanValueWithoutValidation(in BlackboardKeyCompiledData keyData, bool value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedBooleanValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedBooleanValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteBooleanValue(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteBooleanValue(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedBooleanValueWithoutValidation(
+                    m_Template.SetInstanceSyncedBooleanValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteBooleanValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetEnumValueWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value, bool expected = false) where T : unmanaged, Enum
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedEnumValueWithoutValidation<T>(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedEnumValueWithoutValidation<T>(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteEnumValue<T>(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteEnumValue<T>(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedEnumValueWithoutValidation<T>(
+                    m_Template.SetInstanceSyncedEnumValueWithoutValidation<T>(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange<T>(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetFloatValueWithoutValidation(in BlackboardKeyCompiledData keyData, float value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedFloatValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedFloatValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteFloatValue(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteFloatValue(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedFloatValueWithoutValidation(
+                    m_Template.SetInstanceSyncedFloatValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteFloatValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetIntegerValueWithoutValidation(in BlackboardKeyCompiledData keyData, int value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedIntegerValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedIntegerValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteIntegerValue(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteIntegerValue(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedIntegerValueWithoutValidation(
+                    m_Template.SetInstanceSyncedIntegerValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteIntegerValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetObjectValueWithoutValidation(in BlackboardKeyCompiledData keyData, Object value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedObjectValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedObjectValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteObjectValueNoProcess(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteObjectValueNoProcess(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedObjectValueWithoutValidation(
+                    m_Template.SetInstanceSyncedObjectValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedVectorValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedVectorValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteVectorValue(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteVectorValue(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedVectorValueWithoutValidation(
+                    m_Template.SetInstanceSyncedVectorValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteVectorValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }
 
         internal void SetQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value, bool expected = false)
         {
-            var memoryOffset = keyData.MemoryOffset;
+            var memoryOffset = keyData.m_MemoryOffset;
 
             if (expected)
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // instance synced
-                    _template.RemoveInstanceSyncListener(this);
-                    _template.SetInstanceSyncedQuaternionValueWithoutValidation(
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedQuaternionValueWithoutValidation(
                         in keyData, value);
-                    _template.AddInstanceSyncListener(this);
+                    m_Template.AddInstanceSyncListener(this);
                 }
 
-                BlackboardUnsafeHelpers.WriteQuaternionValue(DataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteQuaternionValue(dataPtr, memoryOffset, value);
             }
             else
             {
-                if (keyData.InstanceSynced)
+                if (keyData.instanceSynced)
                 {
                     // unexpected & instance synced
-                    _template.SetInstanceSyncedQuaternionValueWithoutValidation(
+                    m_Template.SetInstanceSyncedQuaternionValueWithoutValidation(
                         in keyData, value);
                 }
                 else
                 {
                     // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(DataPtr, memoryOffset, value))
-                        if (keyData.BroadcastEventOnUnexpectedChange)
-                            _unexpectedChanges.Add(memoryOffset);
+                    if (BlackboardUnsafeHelpers.WriteQuaternionValueAndGetChange(dataPtr, memoryOffset, value))
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                            m_UnexpectedChanges.Add(memoryOffset);
                 }
             }
         }

@@ -6,8 +6,8 @@ namespace HiraBots
     {
         internal FloatBlackboardKey()
         {
-            SizeInBytesInternal = sizeof(float);
-            KeyType = BlackboardKeyType.Float;
+            m_SizeInBytesInternal = sizeof(float);
+            m_KeyType = BlackboardKeyType.Float;
         }
 
         [SerializeField] private float defaultValue = 0f;

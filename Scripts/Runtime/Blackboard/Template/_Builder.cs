@@ -44,7 +44,7 @@ namespace HiraBots
                 {
                     var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
                     if (exposedToHiraBotsAttribute != null)
-                        output.defaultValue.typeIdentifier = exposedToHiraBotsAttribute.Identifier;
+                        output.defaultValue.typeIdentifier = exposedToHiraBotsAttribute.m_Identifier;
                 }
             }
 

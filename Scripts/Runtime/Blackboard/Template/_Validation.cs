@@ -13,12 +13,12 @@ namespace HiraBots
     {
         void MarkUnsuccessful();
 
-        HashSet<BlackboardTemplate> CyclicalHierarchyCheckHelper { get; }
-        BlackboardTemplate RecursionPoint { get; set; }
+        HashSet<BlackboardTemplate> cyclicalHierarchyCheckHelper { get; }
+        BlackboardTemplate recursionPoint { get; set; }
 
         void AddEmptyKeyIndex(int index);
 
-        HashSet<string> SameNamedKeyCheckHelper { get; }
+        HashSet<string> sameNamedKeyCheckHelper { get; }
         void AddSameNamedKey(string keyName, BlackboardTemplate owner);
 
         IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key);
@@ -29,14 +29,14 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Validate(IBlackboardKeyValidatorContext context)
         {
-            if (KeyType == BlackboardKeyType.Invalid)
+            if (m_KeyType == BlackboardKeyType.Invalid)
                 context.MarkUnsuccessful();
         }
     }
 
     internal partial class BlackboardTemplate
     {
-        internal ushort HierarchyIndex => parent == null ? (ushort) 0 : (ushort) (parent.HierarchyIndex + 1);
+        internal ushort hierarchyIndex => parent == null ? (ushort) 0 : (ushort) (parent.hierarchyIndex + 1);
 
         internal void Validate(IBlackboardTemplateValidatorContext context)
         {
@@ -49,7 +49,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CyclicalHierarchyCheck(IBlackboardTemplateValidatorContext context)
         {
-            var hashSet = context.CyclicalHierarchyCheckHelper;
+            var hashSet = context.cyclicalHierarchyCheckHelper;
             hashSet.Clear();
             var (t, prev) = (this, (BlackboardTemplate) null);
             do
@@ -57,7 +57,7 @@ namespace HiraBots
                 if (hashSet.Contains(t))
                 {
                     context.MarkUnsuccessful();
-                    context.RecursionPoint = prev;
+                    context.recursionPoint = prev;
                     return;
                 }
 
@@ -86,10 +86,10 @@ namespace HiraBots
         private void SameNamedOrEmptyKeyCheck(IBlackboardTemplateValidatorContext context)
             // as a ScriptableObject can only ever have one name, this will also invalidate any duplicate key objects
         {
-            var hashSet = context.SameNamedKeyCheckHelper;
+            var hashSet = context.sameNamedKeyCheckHelper;
             hashSet.Clear();
 
-            var recursionPoint = context.RecursionPoint;
+            var recursionPoint = context.recursionPoint;
 
             BlackboardTemplate prev;
             var t = this;

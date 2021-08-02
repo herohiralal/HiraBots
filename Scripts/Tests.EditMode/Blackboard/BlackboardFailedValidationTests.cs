@@ -30,8 +30,8 @@ namespace HiraBots.Editor.Tests
             {
                 template.Validate(validatorContext);
 
-                Assert.IsFalse(validatorContext.Validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.EmptyIndices.Contains(1), "Correct validation index not included in the report.");
+                Assert.IsFalse(validatorContext.m_Validated, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(validatorContext.m_EmptyIndices.Contains(1), "Correct validation index not included in the report.");
             }
             finally
             {
@@ -61,15 +61,15 @@ namespace HiraBots.Editor.Tests
             {
                 first.Validate(validatorContext);
 
-                Assert.IsFalse(validatorContext.Validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.RecursionPoint == second, "Correct recursion point not included in the report.");
+                Assert.IsFalse(validatorContext.m_Validated, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(validatorContext.recursionPoint == second, "Correct recursion point not included in the report.");
 
                 validatorContext.Reset();
 
                 second.Validate(validatorContext);
 
-                Assert.IsFalse(validatorContext.Validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.RecursionPoint == first, "Correct recursion point not included in the report.");
+                Assert.IsFalse(validatorContext.m_Validated, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(validatorContext.recursionPoint == first, "Correct recursion point not included in the report.");
             }
             finally
             {
@@ -101,8 +101,8 @@ namespace HiraBots.Editor.Tests
             {
                 template.Validate(validatorContext);
 
-                Assert.IsFalse(validatorContext.Validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.SameNamedKeyCheckHelper.Contains("Dumb Key"), "Correct key name not included in the report.");
+                Assert.IsFalse(validatorContext.m_Validated, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(validatorContext.sameNamedKeyCheckHelper.Contains("Dumb Key"), "Correct key name not included in the report.");
             }
             finally
             {

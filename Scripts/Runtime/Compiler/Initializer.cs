@@ -17,8 +17,8 @@ namespace HiraBots
             Profiler.BeginSample("Blackboard Template Compilation");
             var blackboardTemplateCompilerContext = new BlackboardTemplateCompilerContext();
             
-            var btc = BlackboardTemplateCollection.Instance;
-            var btcCount = btc.Count;
+            var btc = BlackboardTemplateCollection.instance;
+            var btcCount = btc.count;
             for (var i = 0; i < btcCount; i++)
             {
                 btc[i].Compile(blackboardTemplateCompilerContext);
@@ -33,8 +33,8 @@ namespace HiraBots
         {
             Application.quitting -= Quit;
 
-            var btc = BlackboardTemplateCollection.Instance;
-            var btcCount = btc.Count;
+            var btc = BlackboardTemplateCollection.instance;
+            var btcCount = btc.count;
             for (var i = btcCount - 1; i >= 0; i--) btc[i].Free();
 
             BlackboardUnsafeHelpers.ClearObjectCache();

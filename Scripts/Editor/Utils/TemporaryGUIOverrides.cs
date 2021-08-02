@@ -6,32 +6,32 @@ namespace HiraBots.Editor
 {
     internal class GUIEnabledChanger : IDisposable
     {
-        private readonly bool _existingValue;
+        private readonly bool m_ExistingValue;
 
-        internal GUIEnabledChanger(bool newValue) => (_existingValue, GUI.enabled) = (GUI.enabled, newValue);
+        internal GUIEnabledChanger(bool newValue) => (m_ExistingValue, GUI.enabled) = (GUI.enabled, newValue);
 
-        public void Dispose() => GUI.enabled = _existingValue;
+        public void Dispose() => GUI.enabled = m_ExistingValue;
     }
 
     internal class IndentNullifier : IDisposable
     {
-        private readonly int _existingValue;
+        private readonly int m_ExistingValue;
 
-        internal IndentNullifier() => (_existingValue, EditorGUI.indentLevel) = (EditorGUI.indentLevel, 0);
+        internal IndentNullifier() => (m_ExistingValue, EditorGUI.indentLevel) = (EditorGUI.indentLevel, 0);
 
-        public void Dispose() => EditorGUI.indentLevel = _existingValue;
+        public void Dispose() => EditorGUI.indentLevel = m_ExistingValue;
     }
 
     internal class UndoMerger : IDisposable
     {
-        private readonly int _group;
+        private readonly int m_Group;
 
         internal UndoMerger(string name)
         {
             Undo.SetCurrentGroupName(name);
-            _group = Undo.GetCurrentGroup();
+            m_Group = Undo.GetCurrentGroup();
         }
 
-        public void Dispose() => Undo.CollapseUndoOperations(_group);
+        public void Dispose() => Undo.CollapseUndoOperations(m_Group);
     }
 }

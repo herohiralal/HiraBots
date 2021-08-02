@@ -13,8 +13,8 @@ namespace HiraBots.Editor
     {
         static GUIHelpers()
         {
-            gui_content_cache = new Dictionary<string, GUIContent>();
-            dynamic_popup_method_info = typeof(GUIHelpers)
+            s_GUIContentCache = new Dictionary<string, GUIContent>();
+            s_DynamicPopupMethodInfo = typeof(GUIHelpers)
                 .GetMethod(
                     nameof(DynamicEnumPopupInternal),
                     BindingFlags.NonPublic | BindingFlags.Static,
@@ -22,17 +22,17 @@ namespace HiraBots.Editor
                     new[] {typeof(Rect), typeof(GUIContent), typeof(IntPtr)},
                     null);
         }
-        
-        private static readonly Dictionary<string, GUIContent> gui_content_cache;
-        private static readonly MethodInfo dynamic_popup_method_info;
+
+        private static readonly Dictionary<string, GUIContent> s_GUIContentCache;
+        private static readonly MethodInfo s_DynamicPopupMethodInfo;
 
         internal static GUIContent ToGUIContent(string value)
         {
-            if (gui_content_cache.TryGetValue(value, out var content))
+            if (s_GUIContentCache.TryGetValue(value, out var content))
                 return content;
 
             content = new GUIContent(value);
-            gui_content_cache.Add(value, content);
+            s_GUIContentCache.Add(value, content);
             return content;
         }
 
@@ -59,13 +59,13 @@ namespace HiraBots.Editor
                 return;
             }
 
-            if (dynamic_popup_method_info == null || !dynamic_popup_method_info.IsGenericMethod)
+            if (s_DynamicPopupMethodInfo == null || !s_DynamicPopupMethodInfo.IsGenericMethod)
             {
                 EditorGUI.HelpBox(position, "Dynamic Enum Popup failed to find method using reflection.", MessageType.Error);
                 return;
             }
 
-            dynamic_popup_method_info
+            s_DynamicPopupMethodInfo
                 .MakeGenericMethod(enumType)
                 .Invoke(null, new object[] {position, label, value});
         }
@@ -82,7 +82,7 @@ namespace HiraBots.Editor
 
     internal static class BlackboardGUIHelpers
     {
-        internal static readonly IReadOnlyDictionary<Type, string> FORMATTED_NAMES = TypeCache
+        internal static IReadOnlyDictionary<Type, string> formattedNames { get; } = TypeCache
             .GetTypesDerivedFrom<BlackboardKey>()
             .ToDictionary(blackboardKeyType => blackboardKeyType,
                 blackboardKeyType => blackboardKeyType.Name.Replace("Blackboard", " "));
