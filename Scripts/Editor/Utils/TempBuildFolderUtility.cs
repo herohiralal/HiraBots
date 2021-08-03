@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    /// <summary>
-    /// Editor-only serialization utility with regards to the temporary build folder.
-    /// The folder gets created before the build and gets deleted after the build succeeds/fails.
-    /// </summary>
     internal abstract partial class EditorSerializationUtility
     {
         #region Folder Confirmation

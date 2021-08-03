@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    /// <summary>
-    /// Editor-only serialization utility with regards to the temporary editor folder.
-    /// The folder is only ever valid inside the editor, and all the relevant data gets copied to the build.
-    /// </summary>
     internal abstract partial class EditorSerializationUtility
     {
         #region Folder Confirmation
