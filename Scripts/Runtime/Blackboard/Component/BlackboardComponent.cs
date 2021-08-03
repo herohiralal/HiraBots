@@ -3,6 +3,9 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Blackboard component to be used as a part of an AI brain.
+    /// </summary>
     internal unsafe partial class BlackboardComponent
     {
         private BlackboardTemplateCompiledData m_Template;
@@ -11,6 +14,10 @@ namespace HiraBots
         private byte* dataPtr => (byte*) m_Data.GetUnsafePtr();
         private byte* dataReadOnlyPtr => (byte*) m_Data.GetUnsafeReadOnlyPtr();
 
+        /// <summary>
+        /// Attempt to create a BlackboardComponent from a template.
+        /// </summary>
+        /// <returns>Whether the process was successful.</returns>
         internal static bool TryCreate(BlackboardTemplate template, out BlackboardComponent component)
         {
             if (template == null)
@@ -34,7 +41,7 @@ namespace HiraBots
             m_Template = template;
             m_Data = new NativeArray<byte>(m_Template.templateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             m_Template.CopyTemplateTo(m_Data);
-            m_UnexpectedChanges = new System.Collections.Generic.List<ushort>(template.m_KeyCount);
+            m_UnexpectedChanges = new System.Collections.Generic.List<ushort>(template.keyCount);
             m_Template.AddInstanceSyncListener(this);
         }
 
@@ -42,8 +49,18 @@ namespace HiraBots
         {
             m_Template.RemoveInstanceSyncListener(this);
 
+            foreach (var keyData in m_Template.memoryOffsetToKeyData.values)
+            {
+                if (keyData.keyType == BlackboardKeyType.Object && !keyData.instanceSynced)
+                {
+                    SetObjectValueWithoutValidation(in keyData, null, true);
+                }
+            }
+
             if (m_Data.IsCreated)
+            {
                 m_Data.Dispose();
+            }
 
             m_Template = null;
         }

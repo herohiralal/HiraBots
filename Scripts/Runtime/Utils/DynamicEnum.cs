@@ -11,6 +11,10 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// An enum value which can have its type selected dynamically from a dropdown in the inspector.
+    /// The type identification data is not present in a built player.
+    /// </summary>
     [Serializable]
     internal struct DynamicEnum
     {
@@ -22,6 +26,10 @@ namespace HiraBots
         public static implicit operator byte(DynamicEnum input) => input.m_Value;
 
 #if UNITY_EDITOR
+
+        /// <summary>
+        /// Helper class for DynamicEnum.
+        /// </summary>
         [InitializeOnLoad]
         internal static class Helpers
         {
@@ -36,17 +44,24 @@ namespace HiraBots
 
                 foreach (var type in dynamicEnumTypes)
                 {
-                    var identifier = type.GetCustomAttribute<ExposedToHiraBotsAttribute>().m_Identifier;
+                    var identifier = type.GetCustomAttribute<ExposedToHiraBotsAttribute>().identifier;
                     dT2I.Add(type, identifier);
                     dI2T.Add(identifier, type);
                 }
 
-                Helpers.typeToIdentifier = dT2I;
-                Helpers.identifierToType = dI2T;
+                typeToIdentifier = dT2I;
+                identifierToType = dI2T;
             }
 
-            public static ReadOnlyDictionaryAccessor<Type, string> typeToIdentifier { get; }
-            public static ReadOnlyDictionaryAccessor<string, Type> identifierToType { get; }
+            /// <summary>
+            /// A map from a Type to its corresponding type identifier.
+            /// </summary>
+            internal static ReadOnlyDictionaryAccessor<Type, string> typeToIdentifier { get; }
+
+            /// <summary>
+            /// A map from a type identifier to its corresponding Type.
+            /// </summary>
+            internal static ReadOnlyDictionaryAccessor<string, Type> identifierToType { get; }
         }
 #endif
     }

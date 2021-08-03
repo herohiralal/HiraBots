@@ -1,10 +1,14 @@
 ﻿namespace HiraBots
 {
+    /// <summary>
+    /// The type of key a blackboard can have.
+    /// Acts as quick RTTI to maintain type-safety.
+    /// </summary>
     internal enum BlackboardKeyType : byte
     {
         Invalid = 0,
         Boolean,
-        Enum, // todo: make an actual enum key, with a callback that writes a ScriptableObject upon compilation
+        Enum,
         Float,
         Integer,
         Object,

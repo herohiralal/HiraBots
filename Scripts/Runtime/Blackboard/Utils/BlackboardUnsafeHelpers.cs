@@ -5,16 +5,23 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Helper functions to access blackboards at a low-level.
+    /// </summary>
     internal static unsafe class BlackboardUnsafeHelpers
     {
         private const MethodImplOptions k_Inline = MethodImplOptions.AggressiveInlining;
 
         #region Generic
 
+        // read a value using generics
         [MethodImpl(k_Inline)]
-        private static T ReadGenericValue<T>(byte* stream, ushort offset) where T : unmanaged =>
-            *(T*) (stream + offset);
+        private static T ReadGenericValue<T>(byte* stream, ushort offset) where T : unmanaged
+        {
+            return *(T*) (stream + offset);
+        }
 
+        // write a value using generics and determine whether it has changed from before
         [MethodImpl(k_Inline)]
         private static bool WriteGenericValueAndGetChange<T>(byte* stream, ushort offset, T value) where T : unmanaged
         {
@@ -22,117 +29,211 @@ namespace HiraBots
             var valuePtr = (byte*) &value;
 
             var changed = false;
-            for (var i = 0; i < sizeof(T); i++) changed |= (address[i] != valuePtr[i]);
+            for (var i = 0; i < sizeof(T); i++)
+            {
+                changed |= (address[i] != valuePtr[i]);
+            }
 
             *(T*) address = value;
 
             return changed;
         }
 
+        // write a value using generics
         [MethodImpl(k_Inline)]
-        private static void WriteGenericValue<T>(byte* stream, ushort offset, T value) where T : unmanaged =>
+        private static void WriteGenericValue<T>(byte* stream, ushort offset, T value) where T : unmanaged
+        {
             *(T*) (stream + offset) = value;
+        }
 
         #endregion
 
         #region Booelan
 
+        /// <summary>
+        /// Read Boolean value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool ReadBooleanValue(byte* stream, ushort offset) =>
-            ReadGenericValue<byte>(stream, offset).ToBoolean();
+        internal static bool ReadBooleanValue(byte* stream, ushort offset)
+        {
+            return ReadGenericValue<byte>(stream, offset).ToBoolean();
+        }
 
+        /// <summary>
+        /// Write Boolean value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteBooleanValueAndGetChange(byte* stream, ushort offset, bool value) =>
-            WriteGenericValueAndGetChange<byte>(stream, offset, value.ToByte());
+        internal static bool WriteBooleanValueAndGetChange(byte* stream, ushort offset, bool value)
+        {
+            return WriteGenericValueAndGetChange<byte>(stream, offset, value.ToByte());
+        }
 
+        /// <summary>
+        /// Write Boolean value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteBooleanValue(byte* stream, ushort offset, bool value) =>
+        internal static void WriteBooleanValue(byte* stream, ushort offset, bool value)
+        {
             WriteGenericValue<byte>(stream, offset, value.ToByte());
+        }
 
         #endregion
 
         #region Enum
 
+        /// <summary>
+        /// Read Enum value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static T ReadEnumValue<T>(byte* stream, ushort offset) where T : unmanaged, Enum =>
-            ReadGenericValue<T>(stream, offset);
+        internal static T ReadEnumValue<T>(byte* stream, ushort offset) where T : unmanaged, Enum
+        {
+            return ReadGenericValue<T>(stream, offset);
+        }
 
+        /// <summary>
+        /// Write Enum value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteEnumValueAndGetChange<T>(byte* stream, ushort offset, T value) where T : unmanaged, Enum =>
-            WriteGenericValueAndGetChange<T>(stream, offset, value);
+        internal static bool WriteEnumValueAndGetChange<T>(byte* stream, ushort offset, T value) where T : unmanaged, Enum
+        {
+            return WriteGenericValueAndGetChange<T>(stream, offset, value);
+        }
 
+        /// <summary>
+        /// Write Enum value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteEnumValue<T>(byte* stream, ushort offset, T value) where T : unmanaged, Enum =>
+        internal static void WriteEnumValue<T>(byte* stream, ushort offset, T value) where T : unmanaged, Enum
+        {
             WriteGenericValue<T>(stream, offset, value);
+        }
 
         #endregion
 
         #region Raw Enum
 
+        /// <summary>
+        /// Read a raw 8-bit Enum value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static byte ReadRawEnumValue(byte* stream, ushort offset) =>
-            ReadGenericValue<byte>(stream, offset);
+        internal static byte ReadRawEnumValue(byte* stream, ushort offset)
+        {
+            return ReadGenericValue<byte>(stream, offset);
+        }
 
+        /// <summary>
+        /// Write a raw 8-bit Enum value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteRawEnumValueAndGetChange(byte* stream, ushort offset, byte value) =>
-            WriteGenericValueAndGetChange<byte>(stream, offset, value);
+        internal static bool WriteRawEnumValueAndGetChange(byte* stream, ushort offset, byte value)
+        {
+            return WriteGenericValueAndGetChange<byte>(stream, offset, value);
+        }
 
+        /// <summary>
+        /// Write a raw 8-bit Enum value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteRawEnumValue(byte* stream, ushort offset, byte value) =>
+        internal static void WriteRawEnumValue(byte* stream, ushort offset, byte value)
+        {
             WriteGenericValue<byte>(stream, offset, value);
+        }
 
         #endregion
 
         #region Float
 
+        /// <summary>
+        /// Read Float value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static float ReadFloatValue(byte* stream, ushort offset) =>
-            ReadGenericValue<float>(stream, offset);
+        internal static float ReadFloatValue(byte* stream, ushort offset)
+        {
+            return ReadGenericValue<float>(stream, offset);
+        }
 
+        /// <summary>
+        /// Write Float value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteFloatValueAndGetChange(byte* stream, ushort offset, float value) =>
-            WriteGenericValueAndGetChange<float>(stream, offset, value);
+        internal static bool WriteFloatValueAndGetChange(byte* stream, ushort offset, float value)
+        {
+            return WriteGenericValueAndGetChange<float>(stream, offset, value);
+        }
 
+        /// <summary>
+        /// Write Float value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteFloatValue(byte* stream, ushort offset, float value) =>
+        internal static void WriteFloatValue(byte* stream, ushort offset, float value)
+        {
             WriteGenericValue<float>(stream, offset, value);
+        }
 
         #endregion
 
         #region Integer
 
+        /// <summary>
+        /// Read Integer value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static int ReadIntegerValue(byte* stream, ushort offset) =>
-            ReadGenericValue<int>(stream, offset);
+        internal static int ReadIntegerValue(byte* stream, ushort offset)
+        {
+            return ReadGenericValue<int>(stream, offset);
+        }
 
+        /// <summary>
+        /// Write Integer value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteIntegerValueAndGetChange(byte* stream, ushort offset, int value) =>
-            WriteGenericValueAndGetChange<int>(stream, offset, value);
+        internal static bool WriteIntegerValueAndGetChange(byte* stream, ushort offset, int value)
+        {
+            return WriteGenericValueAndGetChange<int>(stream, offset, value);
+        }
 
+        /// <summary>
+        /// Write Integer value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteIntegerValue(byte* stream, ushort offset, int value) =>
+        internal static void WriteIntegerValue(byte* stream, ushort offset, int value)
+        {
             WriteGenericValue<int>(stream, offset, value);
+        }
 
         #endregion
 
         #region Object
 
 #if UNITY_2020_3_OR_NEWER // 2020.3 or newer can use Resources.InstanceIDToObject directly.
+        
+        /// <summary>
+        /// No-op replacement for a 2019.4 function.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void ClearObjectCache()
         {
         }
 
+        /// <summary>
+        /// No-op replacement for a 2019.4 function.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void Pin(Object _)
         {
         }
 
+        /// <summary>
+        /// No-op replacement for a 2019.4 function.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void Release(Object _)
         {
         }
 
+        /// <summary>
+        /// Read Object value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static Object ReadObjectValue(byte* stream, ushort offset)
         {
@@ -140,36 +241,78 @@ namespace HiraBots
             return (instanceID) == 0 ? null : Resources.InstanceIDToObject(instanceID);
         }
 
+        /// <summary>
+        /// Write Object value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueAndGetChange(byte* stream, ushort offset, Object value) =>
-            WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+        internal static bool WriteObjectValueAndGetChange(byte* stream, ushort offset, Object value)
+        {
+            return WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+        }
 
+        /// <summary>
+        /// Write Object value to a memory stream without caching it and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value) =>
-            WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value)
+        {
+            return WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
+        }
 
+        /// <summary>
+        /// Write Object value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteObjectValue(byte* stream, ushort offset, Object value) =>
+        internal static void WriteObjectValue(byte* stream, ushort offset, Object value)
+        {
             WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
+        }
 
+        /// <summary>
+        /// Write Object value to a memory stream without caching it.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value) =>
+        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value)
+        {
             WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
+        }
 #else
+        // the object cache utility
         private static readonly UnityObjectCache s_ObjectCache = new UnityObjectCache(200);
 
+        /// <summary>
+        /// Clear the Unity object cache.
+        /// </summary>
         internal static void ClearObjectCache() => s_ObjectCache.Clear();
 
+        /// <summary>
+        /// Freeze the reference counting on an object.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void Pin(Object target) => s_ObjectCache.SetFreeze(target.GetInstanceID(), true);
+        internal static void Pin(Object target)
+        {
+            s_ObjectCache.SetFreeze(target.GetInstanceID(), true);
+        }
 
+        /// <summary>
+        /// Unfreeze the reference counting on an object.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void Release(Object target) => s_ObjectCache.SetFreeze(target.GetInstanceID(), false);
+        internal static void Release(Object target)
+        {
+            s_ObjectCache.SetFreeze(target.GetInstanceID(), false);
+        }
 
+        /// <summary>
+        /// Read Object value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static Object ReadObjectValue(byte* stream, ushort offset) =>
             s_ObjectCache.Read(ReadIntegerValue(stream, offset));
 
+        /// <summary>
+        /// Write Object value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static bool WriteObjectValueAndGetChange(byte* stream, ushort offset, Object value)
         {
@@ -177,10 +320,18 @@ namespace HiraBots
             return WriteIntegerValueAndGetChange(stream, offset, s_ObjectCache.Process(value));
         }
 
+        /// <summary>
+        /// Write Object value to a memory stream without caching it and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value) =>
-            WriteIntegerValueAndGetChange(stream, offset, value.GetInstanceID());
+        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value)
+        {
+            return WriteIntegerValueAndGetChange(stream, offset, value.GetInstanceID());
+        }
 
+        /// <summary>
+        /// Write Object value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void WriteObjectValue(byte* stream, ushort offset, Object value)
         {
@@ -188,24 +339,37 @@ namespace HiraBots
             WriteIntegerValue(stream, offset, s_ObjectCache.Process(value));
         }
 
+        /// <summary>
+        /// Write Object value to a memory stream without caching it.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value) =>
+        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value)
+        {
             WriteIntegerValue(stream, offset, value.GetInstanceID());
+        }
 #endif
 
         #endregion
 
         #region Vector
 
+        /// <summary>
+        /// Read Vector value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static Vector3 ReadVectorValue(byte* stream, ushort offset) =>
-            new Vector3
+        internal static Vector3 ReadVectorValue(byte* stream, ushort offset)
+        {
+            return new Vector3
             (
                 ReadFloatValue(stream, offset),
                 ReadFloatValue(stream, (ushort) (offset + sizeof(float))),
                 ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float)))
             );
+        }
 
+        /// <summary>
+        /// Write Vector value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static bool WriteVectorValueAndGetChange(byte* stream, ushort offset, Vector3 value)
         {
@@ -215,6 +379,9 @@ namespace HiraBots
             return x || y || z;
         }
 
+        /// <summary>
+        /// Write Vector value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void WriteVectorValue(byte* stream, ushort offset, Vector3 value)
         {
@@ -227,16 +394,24 @@ namespace HiraBots
 
         #region Quaternion
 
+        /// <summary>
+        /// Read Quaternion value from a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
-        internal static Quaternion ReadQuaternionValue(byte* stream, ushort offset) =>
-            new Quaternion
+        internal static Quaternion ReadQuaternionValue(byte* stream, ushort offset)
+        {
+            return new Quaternion
             (
                 ReadFloatValue(stream, offset),
                 ReadFloatValue(stream, (ushort) (offset + sizeof(float))),
                 ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float))),
                 ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float) + sizeof(float)))
             );
+        }
 
+        /// <summary>
+        /// Write Quaternion value to a memory stream and determine whether it has changed from before.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static bool WriteQuaternionValueAndGetChange(byte* stream, ushort offset, Quaternion value)
         {
@@ -247,6 +422,9 @@ namespace HiraBots
             return x || y || z || w;
         }
 
+        /// <summary>
+        /// Write Quaternion value to a memory stream.
+        /// </summary>
         [MethodImpl(k_Inline)]
         internal static void WriteQuaternionValue(byte* stream, ushort offset, Quaternion value)
         {

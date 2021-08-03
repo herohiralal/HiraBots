@@ -6,6 +6,9 @@ namespace HiraBots
 {
     internal abstract partial class BlackboardKey
     {
+        /// <summary>
+        /// Build a BlackboardKey.
+        /// </summary>
         protected static T Build<T>(string name, BlackboardKeyTraits traits, HideFlags hideFlags = HideFlags.None)
             where T : BlackboardKey
         {
@@ -20,6 +23,9 @@ namespace HiraBots
 
     internal partial class BooleanBlackboardKey
     {
+        /// <summary>
+        /// Build a BooleanBlackboardKey.
+        /// </summary>
         internal static BooleanBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, bool defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : BooleanBlackboardKey
         {
@@ -31,6 +37,9 @@ namespace HiraBots
 
     internal unsafe partial class EnumBlackboardKey
     {
+        /// <summary>
+        /// Build an EnumBlackboardKey.
+        /// </summary>
         internal static EnumBlackboardKey Build<T, TEnumType>(string name, BlackboardKeyTraits traits, TEnumType defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : EnumBlackboardKey where TEnumType : unmanaged, System.Enum
         {
@@ -44,7 +53,9 @@ namespace HiraBots
                 {
                     var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
                     if (exposedToHiraBotsAttribute != null)
-                        output.m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.m_Identifier;
+                    {
+                        output.m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.identifier;
+                    }
                 }
             }
 
@@ -55,6 +66,9 @@ namespace HiraBots
 
     internal partial class FloatBlackboardKey
     {
+        /// <summary>
+        /// Build a FloatBlackboardKey.
+        /// </summary>
         internal static FloatBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : FloatBlackboardKey
         {
@@ -66,6 +80,9 @@ namespace HiraBots
 
     internal partial class IntegerBlackboardKey
     {
+        /// <summary>
+        /// Build a IntegerBlackboardKey.
+        /// </summary>
         internal static IntegerBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, int defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : IntegerBlackboardKey
         {
@@ -77,6 +94,9 @@ namespace HiraBots
 
     internal partial class ObjectBlackboardKey
     {
+        /// <summary>
+        /// Build a ObjectBlackboardKey.
+        /// </summary>
         internal static ObjectBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Object defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : ObjectBlackboardKey
         {
@@ -88,6 +108,9 @@ namespace HiraBots
 
     internal partial class QuaternionBlackboardKey
     {
+        /// <summary>
+        /// Build a QuaternionBlackboardKey.
+        /// </summary>
         internal static QuaternionBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Vector3 defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : QuaternionBlackboardKey
         {
@@ -99,6 +122,9 @@ namespace HiraBots
 
     internal partial class VectorBlackboardKey
     {
+        /// <summary>
+        /// Build a VectorBlackboardKey.
+        /// </summary>
         internal static VectorBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Vector3 defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : VectorBlackboardKey
         {
@@ -110,6 +136,9 @@ namespace HiraBots
 
     internal partial class BlackboardTemplate
     {
+        /// <summary>
+        /// Build a BlackboardTemplate.
+        /// </summary>
         internal static T Build<T>(string name, BlackboardTemplate parent, BlackboardKey[] keys, HideFlags hideFlags = HideFlags.None)
             where T : BlackboardTemplate
         {

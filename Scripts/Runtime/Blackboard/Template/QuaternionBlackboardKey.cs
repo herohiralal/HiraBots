@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Quaternion blackboard key.
+    /// </summary>
     internal partial class QuaternionBlackboardKey : BlackboardKey
     {
         internal QuaternionBlackboardKey()

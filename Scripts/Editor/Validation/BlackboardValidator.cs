@@ -28,7 +28,7 @@ namespace HiraBots.Editor
 
             target.Validate(m_Context);
 
-            if (!m_Context.m_Validated)
+            if (!m_Context.validated)
             {
                 success = false;
 
@@ -39,18 +39,18 @@ namespace HiraBots.Editor
                     m_ErrorStringBuilder.AppendLine($"Contains cyclical hierarchy. Recursion Point - {m_Context.recursionPoint}.");
                 }
 
-                foreach (var index in m_Context.m_EmptyIndices)
+                foreach (var index in m_Context.emptyIndices)
                 {
                     m_ErrorStringBuilder.AppendLine($"The key at index {index} is empty.");
                 }
 
-                foreach (var (keyName, template) in m_Context.m_DuplicateKeys)
+                foreach (var (keyName, template) in m_Context.duplicateKeys)
                 {
                     m_ErrorStringBuilder.AppendLine($"Contains duplicate keys named {keyName}." +
                                                     $" {(template == target ? "" : $" Inherited from {template.name}.")}");
                 }
 
-                foreach (var key in m_Context.m_BadKeys)
+                foreach (var key in m_Context.badKeys)
                 {
                     m_ErrorStringBuilder.AppendLine($"Contains invalid data for the key {key.name}.");
                 }

@@ -4,6 +4,9 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Context to compile a blackboard key.
+    /// </summary>
     internal unsafe class BlackboardKeyCompilerContext : IBlackboardKeyCompilerContext
     {
         internal BlackboardKeyCompilerContext(NativeArray<byte> rawData, Dictionary<string, ushort> keyNameToMemoryOffset,
@@ -36,7 +39,10 @@ namespace HiraBots
             set => m_KeyNameToMemoryOffset.Add(value, m_MemoryOffset);
         }
 
-        internal void Update(ushort offsetDelta)
+        /// <summary>
+        /// Reset this object, for reuse with the next key.
+        /// </summary>
+        internal void Reset(ushort offsetDelta)
         {
             m_Index++;
             m_MemoryOffset += offsetDelta;

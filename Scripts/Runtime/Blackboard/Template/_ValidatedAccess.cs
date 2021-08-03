@@ -5,6 +5,7 @@ namespace HiraBots
 {
     internal partial class BlackboardTemplateCompiledData
     {
+        // validate the input when provided with a key name
         private void ValidateInput(string keyName, BlackboardKeyType keyType, out BlackboardKeyCompiledData data)
         {
             data = this[keyName];
@@ -14,9 +15,9 @@ namespace HiraBots
                 throw new KeyNotFoundException($"Invalid key name: {keyName}");
             }
 
-            if (data.m_KeyType != keyType)
+            if (data.keyType != keyType)
             {
-                throw new InvalidCastException($"Type mismatch: {keyName}. Requested - {keyType}. Actual - {data.m_KeyType}");
+                throw new InvalidCastException($"Type mismatch: {keyName}. Requested - {keyType}. Actual - {data.keyType}");
             }
 
             if (!data.instanceSynced)
@@ -25,6 +26,7 @@ namespace HiraBots
             }
         }
 
+        // validate the input when provided with a memory offset
         private void ValidateInput(ushort memoryOffset, BlackboardKeyType keyType, out BlackboardKeyCompiledData data)
         {
             if (!m_MemoryOffsetToKeyData.TryGetValue(memoryOffset, out data))
@@ -32,9 +34,9 @@ namespace HiraBots
                 throw new KeyNotFoundException($"Invalid memory offset: {memoryOffset}.");
             }
 
-            if (data.m_KeyType != keyType)
+            if (data.keyType != keyType)
             {
-                throw new InvalidCastException($"Type mismatch: {memoryOffset}. Requested - {keyType}. Actual - {data.m_KeyType}");
+                throw new InvalidCastException($"Type mismatch: {memoryOffset}. Requested - {keyType}. Actual - {data.keyType}");
             }
 
             if (!data.instanceSynced)
@@ -43,6 +45,7 @@ namespace HiraBots
             }
         }
 
+        // validate the enum type
         private static unsafe void ValidateEnumType<T>() where T : unmanaged, Enum
         {
             if (sizeof(T) != 1)

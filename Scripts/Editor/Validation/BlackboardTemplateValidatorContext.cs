@@ -10,28 +10,37 @@ namespace HiraBots.Editor
         // reset this object, for reuse
         internal void Reset()
         {
-            m_Validated = true;
+            validated = true;
             cyclicalHierarchyCheckHelper.Clear();
             sameNamedKeyCheckHelper.Clear();
             recursionPoint = null;
-            m_EmptyIndices.Clear();
-            m_DuplicateKeys.Clear();
-            m_BadKeys.Clear();
+            emptyIndices.Clear();
+            duplicateKeys.Clear();
+            badKeys.Clear();
             m_CurrentKey = null;
         }
 
         // the current status
-        internal bool m_Validated = true;
+        internal bool validated { get; private set; } = true;
 
         // helpers
-        public HashSet<BlackboardTemplate> cyclicalHierarchyCheckHelper { get; } = new HashSet<BlackboardTemplate>();
-        public HashSet<string> sameNamedKeyCheckHelper { get; } = new HashSet<string>();
+        private HashSet<BlackboardTemplate> cyclicalHierarchyCheckHelper { get; } = new HashSet<BlackboardTemplate>();
+        HashSet<BlackboardTemplate> IBlackboardTemplateValidatorContext.cyclicalHierarchyCheckHelper => cyclicalHierarchyCheckHelper;
+
+        private HashSet<string> sameNamedKeyCheckHelper { get; } = new HashSet<string>();
+        HashSet<string> IBlackboardTemplateValidatorContext.sameNamedKeyCheckHelper => sameNamedKeyCheckHelper;
 
         // validation data
-        public BlackboardTemplate recursionPoint { get; set; } = null;
-        internal readonly List<int> m_EmptyIndices = new List<int>();
-        internal readonly List<(string, BlackboardTemplate)> m_DuplicateKeys = new List<(string, BlackboardTemplate)>();
-        internal readonly List<BlackboardKey> m_BadKeys = new List<BlackboardKey>();
+        internal BlackboardTemplate recursionPoint { get; private set; } = null;
+        BlackboardTemplate IBlackboardTemplateValidatorContext.recursionPoint
+        {
+            get => recursionPoint;
+            set => recursionPoint = value;
+        }
+
+        internal List<int> emptyIndices { get; } = new List<int>();
+        internal List<(string, BlackboardTemplate)> duplicateKeys { get; } = new List<(string, BlackboardTemplate)>();
+        internal List<BlackboardKey> badKeys { get; } = new List<BlackboardKey>();
 
         // state
         private BlackboardKey m_CurrentKey = null;
@@ -39,20 +48,20 @@ namespace HiraBots.Editor
         // other interface
         void IBlackboardTemplateValidatorContext.MarkUnsuccessful()
         {
-            m_Validated = false;
+            validated = false;
         }
 
-        public void AddEmptyKeyIndex(int index)
+        void IBlackboardTemplateValidatorContext.AddEmptyKeyIndex(int index)
         {
-            m_EmptyIndices.Add(index);
+            emptyIndices.Add(index);
         }
 
-        public void AddSameNamedKey(string keyName, BlackboardTemplate owner)
+        void IBlackboardTemplateValidatorContext.AddSameNamedKey(string keyName, BlackboardTemplate owner)
         {
-            m_DuplicateKeys.Add((keyName, owner));
+            duplicateKeys.Add((keyName, owner));
         }
 
-        public IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key)
+        IBlackboardKeyValidatorContext IBlackboardTemplateValidatorContext.GetKeyValidatorContext(BlackboardKey key)
         {
             m_CurrentKey = key;
             return this;
@@ -60,8 +69,8 @@ namespace HiraBots.Editor
 
         void IBlackboardKeyValidatorContext.MarkUnsuccessful()
         {
-            m_BadKeys.Add(m_CurrentKey);
-            m_Validated = false;
+            badKeys.Add(m_CurrentKey);
+            validated = false;
         }
     }
 }

@@ -5,10 +5,6 @@ namespace HiraBots
 {
     internal abstract partial class BlackboardKey : ScriptableObject
     {
-        protected internal BlackboardKey()
-        {
-        }
-
         [SerializeField, HideInInspector] protected bool m_InstanceSynced = false;
         [SerializeField, HideInInspector] protected bool m_EssentialToDecisionMaking = false;
 

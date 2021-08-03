@@ -73,12 +73,12 @@ namespace HiraBots.Editor.Tests
                 var validatorContext = new BlackboardTemplateValidatorContext();
 
                 m_Parent.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.m_Validated, "Parent blackboard template couldn't be validated. Test incomplete.");
+                Assert.IsTrue(validatorContext.validated, "Parent blackboard template couldn't be validated. Test incomplete.");
 
                 validatorContext.Reset();
 
                 m_Child.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.m_Validated, "Child blackboard template couldn't be validated. Test incomplete.");
+                Assert.IsTrue(validatorContext.validated, "Child blackboard template couldn't be validated. Test incomplete.");
 
                 validatorContext.Reset();
             }
@@ -87,9 +87,9 @@ namespace HiraBots.Editor.Tests
             {
                 var compilerContext = new BlackboardTemplateCompilerContext();
                 m_Parent.Compile(compilerContext);
-                compilerContext.Update();
+                compilerContext.Reset();
                 m_Child.Compile(compilerContext);
-                compilerContext.Update();
+                compilerContext.Reset();
             }
         }
 
@@ -117,10 +117,10 @@ namespace HiraBots.Editor.Tests
         private static bool AreEqual(in BlackboardKeyCompiledData a, in BlackboardKeyCompiledData b)
         {
             return
-                a.m_MemoryOffset == b.m_MemoryOffset
-                && a.m_Index == b.m_Index
-                && a.m_Traits == b.m_Traits
-                && a.m_KeyType == b.m_KeyType;
+                a.memoryOffset == b.memoryOffset
+                && a.index == b.index
+                && a.traits == b.traits
+                && a.keyType == b.keyType;
         }
 
         /// <summary>
@@ -148,10 +148,10 @@ namespace HiraBots.Editor.Tests
         public void KeyIndexSyncValidation()
         {
             // blackboard keys get sorted according to their sizes
-            Assert.AreEqual(k_FirstKeyIndex, m_First.compiledData.m_Index);
-            Assert.AreEqual(k_SecondKeyIndex, m_Second.compiledData.m_Index);
-            Assert.AreEqual(k_ThirdKeyIndex, m_Third.compiledData.m_Index);
-            Assert.AreEqual(k_FourthKeyIndex, m_Fourth.compiledData.m_Index);
+            Assert.AreEqual(k_FirstKeyIndex, m_First.compiledData.index);
+            Assert.AreEqual(k_SecondKeyIndex, m_Second.compiledData.index);
+            Assert.AreEqual(k_ThirdKeyIndex, m_Third.compiledData.index);
+            Assert.AreEqual(k_FourthKeyIndex, m_Fourth.compiledData.index);
         }
 
         /// <summary>
@@ -160,10 +160,10 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void KeyTypeSyncValidation()
         {
-            Assert.AreEqual(k_FirstKeyType, m_First.compiledData.m_KeyType);
-            Assert.AreEqual(k_SecondKeyType, m_Second.compiledData.m_KeyType);
-            Assert.AreEqual(k_ThirdKeyType, m_Third.compiledData.m_KeyType);
-            Assert.AreEqual(k_FourthKeyType, m_Fourth.compiledData.m_KeyType);
+            Assert.AreEqual(k_FirstKeyType, m_First.compiledData.keyType);
+            Assert.AreEqual(k_SecondKeyType, m_Second.compiledData.keyType);
+            Assert.AreEqual(k_ThirdKeyType, m_Third.compiledData.keyType);
+            Assert.AreEqual(k_FourthKeyType, m_Fourth.compiledData.keyType);
         }
 
         /// <summary>
@@ -172,10 +172,10 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void KeyTraitsSyncValidation()
         {
-            Assert.AreEqual(k_FirstKeyTraits, m_First.compiledData.m_Traits);
-            Assert.AreEqual(k_SecondKeyTraits, m_Second.compiledData.m_Traits);
-            Assert.AreEqual(k_ThirdKeyTraits, m_Third.compiledData.m_Traits);
-            Assert.AreEqual(k_FourthKeyTraits, m_Fourth.compiledData.m_Traits);
+            Assert.AreEqual(k_FirstKeyTraits, m_First.compiledData.traits);
+            Assert.AreEqual(k_SecondKeyTraits, m_Second.compiledData.traits);
+            Assert.AreEqual(k_ThirdKeyTraits, m_Third.compiledData.traits);
+            Assert.AreEqual(k_FourthKeyTraits, m_Fourth.compiledData.traits);
         }
 
         /// <summary>
@@ -184,8 +184,8 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void KeyCountValidation()
         {
-            Assert.AreEqual(k_ParentKeyCount, m_Parent.compiledData.m_KeyCount);
-            Assert.AreEqual(k_ChildKeyCount, m_Child.compiledData.m_KeyCount);
+            Assert.AreEqual(k_ParentKeyCount, m_Parent.compiledData.keyCount);
+            Assert.AreEqual(k_ChildKeyCount, m_Child.compiledData.keyCount);
         }
 
         /// <summary>
@@ -205,10 +205,10 @@ namespace HiraBots.Editor.Tests
         public void MemoryOffsetValidation()
         {
             // blackboard keys get sorted according to their sizes
-            Assert.AreEqual(k_SecondKeyMemoryOffset, m_Second.compiledData.m_MemoryOffset);
-            Assert.AreEqual(k_FirstKeyMemoryOffset, m_First.compiledData.m_MemoryOffset);
-            Assert.AreEqual(k_FourthKeyMemoryOffset, m_Fourth.compiledData.m_MemoryOffset);
-            Assert.AreEqual(k_ThirdKeyMemoryOffset, m_Third.compiledData.m_MemoryOffset);
+            Assert.AreEqual(k_SecondKeyMemoryOffset, m_Second.compiledData.memoryOffset);
+            Assert.AreEqual(k_FirstKeyMemoryOffset, m_First.compiledData.memoryOffset);
+            Assert.AreEqual(k_FourthKeyMemoryOffset, m_Fourth.compiledData.memoryOffset);
+            Assert.AreEqual(k_ThirdKeyMemoryOffset, m_Third.compiledData.memoryOffset);
         }
 
         /// <summary>
@@ -222,10 +222,10 @@ namespace HiraBots.Editor.Tests
                 m_Parent.compiledData.CopyTemplateTo(template);
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
-                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.m_MemoryOffset);
+                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.memoryOffset);
                 Assert.AreEqual(k_FirstKeyDefaultValue, firstValue);
 
-                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.m_MemoryOffset);
+                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.memoryOffset);
                 Assert.AreEqual(k_SecondKeyDefaultValue, secondValue);
             }
         }
@@ -241,16 +241,16 @@ namespace HiraBots.Editor.Tests
                 m_Child.compiledData.CopyTemplateTo(template);
                 var templatePtr = (byte*) template.GetUnsafeReadOnlyPtr();
 
-                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.m_MemoryOffset);
+                var firstValue = BlackboardUnsafeHelpers.ReadIntegerValue(templatePtr, m_First.compiledData.memoryOffset);
                 Assert.AreEqual(k_FirstKeyDefaultValue, firstValue);
 
-                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.m_MemoryOffset);
+                var secondValue = BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, m_Second.compiledData.memoryOffset);
                 Assert.AreEqual(k_SecondKeyDefaultValue, secondValue);
 
-                var thirdValue = BlackboardUnsafeHelpers.ReadVectorValue(templatePtr, m_Third.compiledData.m_MemoryOffset);
+                var thirdValue = BlackboardUnsafeHelpers.ReadVectorValue(templatePtr, m_Third.compiledData.memoryOffset);
                 Assert.AreEqual(s_ThirdKeyDefaultValue, thirdValue);
 
-                var fourthValue = BlackboardUnsafeHelpers.ReadObjectValue(templatePtr, m_Fourth.compiledData.m_MemoryOffset);
+                var fourthValue = BlackboardUnsafeHelpers.ReadObjectValue(templatePtr, m_Fourth.compiledData.memoryOffset);
                 Assert.AreEqual(m_FourthKeyDefaultValue, fourthValue);
             }
         }
@@ -271,11 +271,11 @@ namespace HiraBots.Editor.Tests
                     !k_SecondKeyDefaultValue);
 
                 m_Parent.compiledData.CopyTemplateTo(template);
-                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
+                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.memoryOffset),
                     "Update not applied to the parent.");
 
                 m_Child.compiledData.CopyTemplateTo(template);
-                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
+                Assert.AreEqual(!k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.memoryOffset),
                     "Mismatch between child and parent values.");
 
                 m_Child.compiledData.SetInstanceSyncedBooleanValueWithoutValidation(
@@ -283,11 +283,11 @@ namespace HiraBots.Editor.Tests
                     k_SecondKeyDefaultValue);
 
                 m_Parent.compiledData.CopyTemplateTo(template);
-                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
+                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.memoryOffset),
                     "Update not applied to the parent.");
 
                 m_Child.compiledData.CopyTemplateTo(template);
-                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.m_MemoryOffset),
+                Assert.AreEqual(k_SecondKeyDefaultValue, BlackboardUnsafeHelpers.ReadBooleanValue(templatePtr, secondKeyCompiledData.memoryOffset),
                     "Mismatch between child and parent values.");
             }
         }

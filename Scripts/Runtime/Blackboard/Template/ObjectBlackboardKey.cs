@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Object blackboard key.
+    /// </summary>
     internal partial class ObjectBlackboardKey : BlackboardKey
     {
         internal ObjectBlackboardKey()

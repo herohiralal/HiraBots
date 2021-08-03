@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Boolean blackboard key.
+    /// </summary>
     internal partial class BooleanBlackboardKey : BlackboardKey
     {
         internal BooleanBlackboardKey()

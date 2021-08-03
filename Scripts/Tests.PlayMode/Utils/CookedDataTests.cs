@@ -28,17 +28,19 @@ namespace HiraBots.Editor.Tests
             var btc = BlackboardTemplateCollection.instance;
             Assert.IsTrue(btc != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
 
+#if UNITY_EDITOR // hierarchy index is not accessible in a build
             for (var i = 1; i < btc.count; i++)
             {
                 Assert.IsTrue(btc[i].hierarchyIndex >= btc[i - 1].hierarchyIndex, "Blackboard template collection built without proper sorting.");
             }
+#endif
         }
 
         public void Setup()
         {
 #if UNITY_EDITOR // cook the CookedDataTestObject into the build.
             CookedDataTestObject.CreateCookedData(out var data);
-            
+
             EditorSerializationUtility.ConfirmTempBuildFolder();
             EditorSerializationUtility.CookToTempBuildFolderAndForget(ref data);
 #endif

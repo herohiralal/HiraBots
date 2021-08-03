@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// A blackboard template to make blackboard components out of.
+    /// </summary>
     [CreateAssetMenu(fileName = "New Blackboard", menuName = "HiraBots/Blackboard")]
     internal partial class BlackboardTemplate : ScriptableObject
     {

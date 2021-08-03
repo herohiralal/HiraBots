@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Float blackboard key.
+    /// </summary>
     internal partial class FloatBlackboardKey : BlackboardKey
     {
         internal FloatBlackboardKey()

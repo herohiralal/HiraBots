@@ -1,6 +1,4 @@
-﻿// test blackboard template does not show up in object pickers unless testing
-#if HIRA_BOTS_TESTS
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace HiraBots.Editor.Tests
 {
@@ -9,4 +7,3 @@ namespace HiraBots.Editor.Tests
     {
     }
 }
-#endif

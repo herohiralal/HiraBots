@@ -3,8 +3,12 @@ using Unity.Collections;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Context to compile a blackboard template.
+    /// </summary>
     internal class BlackboardTemplateCompilerContext : IBlackboardTemplateCompilerContext
     {
+        // the current key compiler context
         private BlackboardKeyCompilerContext m_KeyCompilerContext = null;
         IBlackboardKeyCompilerContext IBlackboardTemplateCompilerContext.keyCompilerContext => m_KeyCompilerContext;
 
@@ -23,9 +27,17 @@ namespace HiraBots
                 startingMemoryOffset);
         }
 
-        void IBlackboardTemplateCompilerContext.UpdateKeyCompilerContext(ushort memoryOffsetDelta) =>
-            m_KeyCompilerContext.Update(memoryOffsetDelta);
+        void IBlackboardTemplateCompilerContext.UpdateKeyCompilerContext(ushort memoryOffsetDelta)
+        {
+            m_KeyCompilerContext.Reset(memoryOffsetDelta);
+        }
 
-        internal void Update() => m_KeyCompilerContext = null;
+        /// <summary>
+        /// Reset this object, for reuse.
+        /// </summary>
+        internal void Reset()
+        {
+            m_KeyCompilerContext = null;
+        }
     }
 }

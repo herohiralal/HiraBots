@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Vector3 blackboard key.
+    /// </summary>
     internal partial class VectorBlackboardKey : BlackboardKey
     {
         internal VectorBlackboardKey()

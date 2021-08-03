@@ -56,17 +56,17 @@ namespace HiraBots.Editor.Tests
         protected ScriptableObject mockObject2 { get; private set; } = null;
         protected ScriptableObject mockObject3 { get; private set; } = null;
 
-        protected ushort levelKeyInteger => baseCharacterData["Level"].m_MemoryOffset;
-        protected ushort healthKeyFloat => baseCharacterData["Health"].m_MemoryOffset;
-        protected ushort healthLowKeyBoolean => baseCharacterData["HealthLow"].m_MemoryOffset;
-        protected ushort currentPlayerLocationKeyVector => baseCharacterData["CurrentPlayerLocation"].m_MemoryOffset;
-        protected ushort playerReferenceKeyObject => baseCharacterData["PlayerReference"].m_MemoryOffset;
-        protected ushort healthStatusKeyEnum => baseCharacterData["HealthStatus"].m_MemoryOffset;
-        protected ushort staminaKeyFloat => warriorData["Stamina"].m_MemoryOffset;
-        protected ushort manaKeyFloat => mageData["Mana"].m_MemoryOffset;
-        protected ushort elementalPowerKeyInteger => elementalistData["ElementalPower"].m_MemoryOffset;
-        protected ushort throwKeyQuaternion => elementalistData["Throw"].m_MemoryOffset;
-        protected ushort powerTypeKeyEnum => elementalistData["PowerType"].m_MemoryOffset;
+        protected ushort levelKeyInteger => baseCharacterData["Level"].memoryOffset;
+        protected ushort healthKeyFloat => baseCharacterData["Health"].memoryOffset;
+        protected ushort healthLowKeyBoolean => baseCharacterData["HealthLow"].memoryOffset;
+        protected ushort currentPlayerLocationKeyVector => baseCharacterData["CurrentPlayerLocation"].memoryOffset;
+        protected ushort playerReferenceKeyObject => baseCharacterData["PlayerReference"].memoryOffset;
+        protected ushort healthStatusKeyEnum => baseCharacterData["HealthStatus"].memoryOffset;
+        protected ushort staminaKeyFloat => warriorData["Stamina"].memoryOffset;
+        protected ushort manaKeyFloat => mageData["Mana"].memoryOffset;
+        protected ushort elementalPowerKeyInteger => elementalistData["ElementalPower"].memoryOffset;
+        protected ushort throwKeyQuaternion => elementalistData["Throw"].memoryOffset;
+        protected ushort powerTypeKeyEnum => elementalistData["PowerType"].memoryOffset;
 
         /// <summary>
         /// Validate and compile all blackboards.
@@ -107,7 +107,7 @@ namespace HiraBots.Editor.Tests
             foreach (var template in templates)
             {
                 template.Validate(validator);
-                Assert.IsTrue(validator.m_Validated, $"{template.name} could not be validated.");
+                Assert.IsTrue(validator.validated, $"{template.name} could not be validated.");
                 validator.Reset();
             }
         }
@@ -121,7 +121,7 @@ namespace HiraBots.Editor.Tests
             {
                 template.Compile(compiler);
                 Assert.IsTrue(template.isCompiled, $"{template.name} could not be compiled.");
-                compiler.Update();
+                compiler.Reset();
             }
         }
 

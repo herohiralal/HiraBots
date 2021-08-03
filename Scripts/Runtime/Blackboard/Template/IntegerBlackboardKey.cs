@@ -2,6 +2,9 @@
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Integer blackboard key.
+    /// </summary>
     internal partial class IntegerBlackboardKey : BlackboardKey
     {
         internal IntegerBlackboardKey()
