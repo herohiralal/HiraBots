@@ -1,7 +1,7 @@
 {
     "name": "HiraBots.Editor",
     "references": [
-        "HiraBots",
+        "HiraBots.Runtime",
         "Unity.Burst",
         "Unity.Mathematics"
     ],

@@ -1,7 +1,7 @@
 {
     "name": "HiraBots.Tests.EditMode",
     "references": [
-        "HiraBots",
+        "HiraBots.Runtime",
         "HiraBots.Editor",
         "HiraBots.Tests.PlayMode",
         "UnityEngine.TestRunner",

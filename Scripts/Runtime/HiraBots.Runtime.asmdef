@@ -1,5 +1,5 @@
 {
-    "name": "HiraBots",
+    "name": "HiraBots.Runtime",
     "references": [
         "Unity.Burst",
         "Unity.Mathematics"
