@@ -3,18 +3,17 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    internal partial class EditorSerializationUtility : SerializationUtility
+    /// <summary>
+    /// Editor-only serialization utility with regards to the temporary build folder.
+    /// The folder gets created before the build and gets deleted after the build succeeds/fails.
+    /// </summary>
+    internal abstract partial class EditorSerializationUtility
     {
         #region Folder Confirmation
 
-        protected const string k_AssetsFolderName = "Assets";
-        protected const string k_HiraBotsBuildArtifactsFolderName = "HiraBotsBuildArtifacts";
-        protected const string k_ResourcesFolderName = "Resources";
-
-        protected const string k_BuildArtifactsFolderNameR = k_AssetsFolderName + "/" + k_HiraBotsBuildArtifactsFolderName;
-
-        protected const string k_BuildArtifactsResourcesFolderNameR = k_BuildArtifactsFolderNameR + "/" + k_ResourcesFolderName + "/" + k_MainSubfolderName;
-
+        /// <summary>
+        /// Confirm the existence of the temporary build-only folder.
+        /// </summary>
         internal static void ConfirmTempBuildFolder()
         {
             if (!AssetDatabase.IsValidFolder(k_BuildArtifactsFolderNameR))
@@ -36,9 +35,18 @@ namespace HiraBots.Editor
 
         #endregion
 
-        protected static string FileNameToTempBuildPath(string fileName) =>
-            k_BuildArtifactsResourcesFolderNameR + "/" + fileName + ".asset";
+        /// <summary>
+        /// Convert a file name to an address in the temporary build-only folder.
+        /// </summary>
+        protected static string FileNameToTempBuildPath(string fileName)
+        {
+            return k_BuildArtifactsResourcesFolderNameR + "/" + fileName + ".asset";
+        }
 
+        /// <summary>
+        /// Cook a <see cref="CookedDataSingleton{T}"/> into the temporary build-only folder.
+        /// </summary>
+        /// <param name="target">The object to cook. Passed as reference, so the reference can be nullified right after.</param>
         internal static void CookToTempBuildFolderAndForget<T>(ref T target) where T : CookedDataSingleton<T>
         {
             AssetDatabase.CreateAsset(target, FileNameToTempBuildPath(CookedDataSingleton<T>.fileName));
@@ -47,9 +55,17 @@ namespace HiraBots.Editor
             target = null;
         }
 
-        internal static void DeleteFromTempBuildFolder<T>() where T : CookedDataSingleton<T> =>
+        /// <summary>
+        /// Delete a <see cref="CookedDataSingleton{T}"/> from the temporary build-only folder.
+        /// </summary>
+        internal static void DeleteFromTempBuildFolder<T>() where T : CookedDataSingleton<T>
+        {
             AssetDatabase.DeleteAsset(FileNameToTempBuildPath(CookedDataSingleton<T>.fileName));
+        }
 
+        /// <summary>
+        /// Delete the temporary build-only folder.
+        /// </summary>
         internal static void DeleteTempBuildFolder()
         {
             if (AssetDatabase.IsValidFolder(k_BuildArtifactsResourcesFolderNameR))

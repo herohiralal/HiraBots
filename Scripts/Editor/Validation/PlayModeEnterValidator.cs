@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// This class is responsible for cooking objects into the temporary editor folder before
+    /// entering play mode, and disabling access to play mode, should this process fail.
+    /// </summary>
     [InitializeOnLoad]
     internal static class PlayModeEnterValidator
     {
@@ -14,8 +18,14 @@ namespace HiraBots.Editor
 
         private static void OnPlayModeStateChange(PlayModeStateChange state)
         {
-            if (state != PlayModeStateChange.ExitingEditMode) return;
+            if (state != PlayModeStateChange.ExitingEditMode)
+            {
+                return;
+            }
 
+            EditorSerializationUtility.ConfirmTempEditorFolder();
+
+            // validate the blackboards and generate the template collection
             if (!CookingHelpers.TryGenerateBlackboardTemplateCollection(out var result))
             {
                 Debug.LogError($"One or more blackboard templates have failed to compile. " +
@@ -25,7 +35,8 @@ namespace HiraBots.Editor
             else
             {
                 result.hideFlags = HideFlags.HideAndDontSave;
-                EditorSerializationUtility.ConfirmTempEditorFolder();
+
+                // cook the collection into the temporary build folder
                 EditorSerializationUtility.CookToTempEditorFolderAndForget(ref result);
             }
         }

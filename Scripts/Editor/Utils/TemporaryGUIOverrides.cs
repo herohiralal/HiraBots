@@ -2,27 +2,49 @@
 using UnityEditor;
 using UnityEngine;
 
+// This file contains certain temporary overrides to GUI that are removed when Dispose() gets called.
 namespace HiraBots.Editor
 {
-    internal class GUIEnabledChanger : IDisposable
+    /// <summary>
+    /// Change GUI.enabled and reset it on Dispose().
+    /// </summary>
+    internal readonly struct GUIEnabledChanger : IDisposable
     {
         private readonly bool m_ExistingValue;
 
-        internal GUIEnabledChanger(bool newValue) => (m_ExistingValue, GUI.enabled) = (GUI.enabled, newValue);
+        internal GUIEnabledChanger(bool newValue)
+        {
+            (m_ExistingValue, GUI.enabled) = (GUI.enabled, newValue);
+        }
 
-        public void Dispose() => GUI.enabled = m_ExistingValue;
+        public void Dispose()
+        {
+            GUI.enabled = m_ExistingValue;
+        }
     }
 
-    internal class IndentNullifier : IDisposable
+    /// <summary>
+    /// Change EditorGUI.indentLevel and reset it on Dispose().
+    /// </summary>
+    internal readonly struct IndentNullifier : IDisposable
     {
         private readonly int m_ExistingValue;
 
-        internal IndentNullifier() => (m_ExistingValue, EditorGUI.indentLevel) = (EditorGUI.indentLevel, 0);
+        internal IndentNullifier(int newValue)
+        {
+            (m_ExistingValue, EditorGUI.indentLevel) = (EditorGUI.indentLevel, newValue);
+        }
 
-        public void Dispose() => EditorGUI.indentLevel = m_ExistingValue;
+        public void Dispose()
+        {
+            EditorGUI.indentLevel = m_ExistingValue;
+        }
     }
 
-    internal class UndoMerger : IDisposable
+    /// <summary>
+    /// Merge multiple undo functions within the scope under a single command name.
+    /// </summary>
+    internal readonly struct UndoMerger : IDisposable
     {
         private readonly int m_Group;
 
@@ -32,6 +54,9 @@ namespace HiraBots.Editor
             m_Group = Undo.GetCurrentGroup();
         }
 
-        public void Dispose() => Undo.CollapseUndoOperations(m_Group);
+        public void Dispose()
+        {
+            Undo.CollapseUndoOperations(m_Group);
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Validator to abstract out any context required by the blackboard templates.
+    /// </summary>
     internal class BlackboardValidator
     {
         private readonly StringBuilder m_ErrorStringBuilder;
@@ -13,6 +16,12 @@ namespace HiraBots.Editor
             m_Context = new BlackboardTemplateValidatorContext();
         }
 
+        /// <summary>
+        /// Validate a Blackboard Template.
+        /// </summary>
+        /// <param name="target">The target template to validate.</param>
+        /// <param name="errorText">The error text.</param>
+        /// <returns>Whether the template is validated.</returns>
         internal bool Execute(BlackboardTemplate target, out string errorText)
         {
             var success = true;
@@ -26,17 +35,25 @@ namespace HiraBots.Editor
                 m_ErrorStringBuilder.AppendLine($"Failed to validate blackboard template {target.name}.\n\n");
 
                 if (m_Context.recursionPoint != null)
+                {
                     m_ErrorStringBuilder.AppendLine($"Contains cyclical hierarchy. Recursion Point - {m_Context.recursionPoint}.");
+                }
 
                 foreach (var index in m_Context.m_EmptyIndices)
+                {
                     m_ErrorStringBuilder.AppendLine($"The key at index {index} is empty.");
+                }
 
                 foreach (var (keyName, template) in m_Context.m_DuplicateKeys)
+                {
                     m_ErrorStringBuilder.AppendLine($"Contains duplicate keys named {keyName}." +
-                                   $" {(template == target ? "" : $" Inherited from {template.name}.")}");
+                                                    $" {(template == target ? "" : $" Inherited from {template.name}.")}");
+                }
 
                 foreach (var key in m_Context.m_BadKeys)
+                {
                     m_ErrorStringBuilder.AppendLine($"Contains invalid data for the key {key.name}.");
+                }
             }
 
             m_Context.Reset();

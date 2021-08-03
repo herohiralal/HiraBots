@@ -4,12 +4,19 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    internal partial class EditorSerializationUtility
+    /// <summary>
+    /// Editor-only serialization utility with regards to the temporary editor folder.
+    /// The folder is only ever valid inside the editor, and all the relevant data gets copied to the build.
+    /// </summary>
+    internal abstract partial class EditorSerializationUtility
     {
         #region Folder Confirmation
 
         protected static readonly string s_ProjectDirectoryA = Path.GetDirectoryName(Application.dataPath);
 
+        /// <summary>
+        /// Confirm the existence of the temporary editor-only folder.
+        /// </summary>
         internal static void ConfirmTempEditorFolder()
         {
             var directory = Path.Combine(s_ProjectDirectoryA, k_TempFolderName, k_MainSubfolderName);
@@ -20,6 +27,10 @@ namespace HiraBots.Editor
 
         #endregion
 
+        /// <summary>
+        /// Cook a <see cref="CookedDataSingleton{T}"/> into the temporary editor-only folder.
+        /// </summary>
+        /// <param name="target">The object to cook. Passed as reference, so the reference can be nullified right after.</param>
         internal static void CookToTempEditorFolderAndForget<T>(ref T target) where T : CookedDataSingleton<T>
         {
             InternalEditorUtility.SaveToSerializedFileAndForget(new Object[] {target},

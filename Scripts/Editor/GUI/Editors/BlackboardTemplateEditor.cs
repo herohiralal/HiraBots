@@ -7,17 +7,26 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Custom editor for Blackboard Template.
+    /// todo: implement this in UIElements (the current issue is that ListView has a predefined length for each element)
+    /// </summary>
     [CustomEditor(typeof(BlackboardTemplate), true)]
     internal class BlackboardTemplateEditor : UnityEditor.Editor
     {
+        // property names
         private const string k_ParentProperty = "m_Parent";
         private const string k_KeysProperty = "m_Keys";
 
+        // undo helper
         [SerializeField] private bool m_Dirty = false;
         private MultiAssetFileHelper m_MultiAssetFileHelper = null;
         private ReorderableList m_ReorderableList = null;
 
-        private void OnEnable() => Undo.undoRedoPerformed += OnUndoPerformed;
+        private void OnEnable()
+        {
+            Undo.undoRedoPerformed += OnUndoPerformed;
+        }
 
         private void OnDisable()
         {
@@ -26,10 +35,14 @@ namespace HiraBots.Editor
             m_ReorderableList = null;
         }
 
-        private void OnUndoPerformed() => m_Dirty = true;
+        private void OnUndoPerformed()
+        {
+            m_Dirty = true;
+        }
 
         public override void OnInspectorGUI()
         {
+            // try find parent property
             var parentProperty = serializedObject.FindProperty(k_ParentProperty);
             if (parentProperty == null || parentProperty.propertyType != SerializedPropertyType.ObjectReference)
             {
@@ -37,6 +50,7 @@ namespace HiraBots.Editor
                 return;
             }
 
+            // try find keys property
             var keysProperty = serializedObject.FindProperty(k_KeysProperty);
             if (keysProperty == null || !keysProperty.isArray)
             {
@@ -49,14 +63,17 @@ namespace HiraBots.Editor
             var editingDisabled = EditorApplication.isPlayingOrWillChangePlaymode;
 
             if (editingDisabled)
-                EditorGUILayout.HelpBox("HiraBots components are read-only while in play mode.", MessageType.Warning);
+            {
+                EditorGUILayout.HelpBox("Blackboard Templates are read-only while in play mode.", MessageType.Warning);
+            }
 
             if (m_Dirty)
             {
-                m_MultiAssetFileHelper.SynchronizeCollectionAndAsset();
+                m_MultiAssetFileHelper.SynchronizeFileToCollection();
                 m_Dirty = false;
             }
 
+            // parent property field
             using (new GUIEnabledChanger(!editingDisabled))
             {
                 serializedObject.Update();
@@ -84,22 +101,28 @@ namespace HiraBots.Editor
                     }
                 }
 
+                // parent keys list
                 var parent = parentProperty.objectReferenceValue;
                 if (parent != null)
                 {
                     var inheritedKeysLabel = EditorGUILayout.GetControlRect();
                     if (Event.current.type == EventType.Repaint)
+                    {
                         ReorderableList.defaultBehaviours.headerBackground.Draw(inheritedKeysLabel,
                             false, false, false, false);
+                    }
 
                     inheritedKeysLabel.x += 25;
                     inheritedKeysLabel.width -= 25;
                     EditorGUI.LabelField(inheritedKeysLabel, GUIHelpers.ToGUIContent("Inherited Keys"), EditorStyles.boldLabel);
 
                     using (new GUIEnabledChanger(false))
+                    {
                         DrawKeysFor(new SerializedObject(parent));
+                    }
                 }
 
+                // self keys list
                 m_ReorderableList.DoLayoutList();
             }
         }
@@ -107,7 +130,9 @@ namespace HiraBots.Editor
         private void InitializeIfRequired(SerializedProperty keysProperty)
         {
             if (m_MultiAssetFileHelper == null)
+            {
                 m_MultiAssetFileHelper = new MultiAssetFileHelper(target, serializedObject, keysProperty);
+            }
 
             if (m_ReorderableList == null)
             {
@@ -133,10 +158,12 @@ namespace HiraBots.Editor
                 rect.y -= 2;
                 rect.height -= 2;
 
+                // default reorderable list background
                 rect.x += 20f;
                 rect.width -= 20f;
                 ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, true, true);
 
+                // override a portion with a colour
                 rect.x -= 20f;
                 rect.width = 20f;
                 EditorGUI.DrawRect(rect, BlackboardGUIHelpers.GetBlackboardKeyColor(value));
@@ -174,16 +201,22 @@ namespace HiraBots.Editor
             menu.ShowAsContext();
         }
 
-        private void OnRemove(ReorderableList list) =>
+        private void OnRemove(ReorderableList list)
+        {
             m_MultiAssetFileHelper.RemoveObject(list.index);
+        }
 
+        // check for cyclical dependency created within the template
         private static bool CheckForCyclicalDependency(Object a)
         {
             var processedObjects = new List<Object>();
 
             do
             {
-                if (processedObjects.Any(o => o == a)) return true;
+                if (processedObjects.Any(o => o == a))
+                {
+                    return true;
+                }
 
                 processedObjects.Add(a);
                 a = new SerializedObject(a).FindProperty(k_ParentProperty).objectReferenceValue;
@@ -192,20 +225,27 @@ namespace HiraBots.Editor
             return false;
         }
 
+        // draw keys for a specific object (used to draw all keys for each parent)
         private static void DrawKeysFor(SerializedObject o)
         {
             o.Update();
 
             var parent = o.FindProperty(k_ParentProperty).objectReferenceValue;
             if (parent != null)
+            {
+                // draw the keys for the parent before drawing them for self
+                // this way, the order is better maintained
                 DrawKeysFor(new SerializedObject(parent));
+            }
 
             var keysProperty = o.FindProperty(k_KeysProperty);
 
             var size = keysProperty.arraySize;
 
             for (var i = 0; i < size; i++)
+            {
                 EditorGUILayout.PropertyField(keysProperty.GetArrayElementAtIndex(i));
+            }
         }
     }
 }

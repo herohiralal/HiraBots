@@ -4,12 +4,23 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Custom property drawer for a Blackboard Key.
+    /// The main feature is that it draws the key object directly.
+    /// todo: implement this in UIElements (get rid of repeated creation/disposal of SerializedObjects per key)
+    /// </summary>
     [CustomPropertyDrawer(typeof(BlackboardKey))]
     internal class BlackboardKeyObjectReferencePropertyDrawer : PropertyDrawer
     {
+        // property names
         private const string k_InstanceSyncedProperty = "m_InstanceSynced";
+        private const string k_EssentialToDecisionMakingProperty = "k_EssentialToDecisionMaking";
         private const string k_DefaultValueProperty = "m_DefaultValue";
 
+        // using SerializedProperty.isExpanded has its pitfalls, such as being shared between all instances
+        // of a blackboard template, which means that on a blackboard template with a parent, if you expand
+        // a key of index 3, every parent in its chain of hierarchy will get index 3 expanded, which will be
+        // reflected in the parent keys section of the blackboard template.
         private static readonly Dictionary<int, bool> s_ExpansionStatus = new Dictionary<int, bool>(40);
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -17,7 +28,9 @@ namespace HiraBots.Editor
             var value = property.objectReferenceValue;
 
             if (value == null)
+            {
                 return 21f;
+            }
 
             s_ExpansionStatus.TryGetValue(value.GetInstanceID(), out var expanded);
 
@@ -34,6 +47,7 @@ namespace HiraBots.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            // try find object
             var value = property.objectReferenceValue;
 
             if (value == null)
@@ -49,14 +63,18 @@ namespace HiraBots.Editor
             currentRect.x += 20f;
             currentRect.width -= 20f;
             currentRect.height = 21f;
+
+            // draw header, and check if it's expanded
             if (DrawHeader(currentRect, so))
             {
                 currentRect.y += 1f;
                 currentRect.height = 19f;
 
+                // name field
                 currentRect.y += 21f;
                 GUIHelpers.DrawNameField(currentRect, value);
 
+                // instance synced property field
                 currentRect.y += 21f;
                 var instanceSyncedProperty = so.FindProperty(k_InstanceSyncedProperty);
                 if (instanceSyncedProperty == null)
@@ -68,8 +86,9 @@ namespace HiraBots.Editor
                     EditorGUI.PropertyField(currentRect, instanceSyncedProperty);
                 }
 
+                // essential to decision-making property field
                 currentRect.y += 21f;
-                var essentialToDecisionMakingProperty = so.FindProperty("essentialToDecisionMaking");
+                var essentialToDecisionMakingProperty = so.FindProperty(k_EssentialToDecisionMakingProperty);
                 if (essentialToDecisionMakingProperty == null)
                 {
                     EditorGUI.HelpBox(currentRect, "Missing essential to decision making property.", MessageType.Error);
@@ -79,6 +98,7 @@ namespace HiraBots.Editor
                     EditorGUI.PropertyField(currentRect, essentialToDecisionMakingProperty);
                 }
 
+                // default value property field
                 currentRect.y += 21f;
                 var defaultValueProperty = so.FindProperty(k_DefaultValueProperty);
                 if (defaultValueProperty == null)
@@ -92,12 +112,20 @@ namespace HiraBots.Editor
             }
 
             so.ApplyModifiedProperties();
+            so.Dispose();
         }
 
+        /// <summary>
+        /// Draw a header for a specific key object.
+        /// </summary>
+        /// <returns>Whether the header is expanded.</returns>
         private static bool DrawHeader(Rect position, SerializedObject so)
         {
             var instanceID = so.targetObject.GetInstanceID();
-            if (!s_ExpansionStatus.ContainsKey(instanceID)) s_ExpansionStatus.Add(instanceID, false);
+            if (!s_ExpansionStatus.ContainsKey(instanceID))
+            {
+                s_ExpansionStatus.Add(instanceID, false);
+            }
 
             using (new GUIEnabledChanger(true))
             {

@@ -6,8 +6,17 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// A utility class to help with multiple assets being present in the same file.
+    /// </summary>
     internal class MultiAssetFileHelper
     {
+        /// <summary>
+        /// Create a MultiAssetFileHelper
+        /// </summary>
+        /// <param name="target">The target object.</param>
+        /// <param name="serializedObject">The target object as a SerializedObject.</param>
+        /// <param name="arrayProperty">The array property to edit and add objects to.</param>
         internal MultiAssetFileHelper(Object target, SerializedObject serializedObject, SerializedProperty arrayProperty)
         {
             m_Target = target;
@@ -26,6 +35,10 @@ namespace HiraBots.Editor
         private SerializedObject m_SerializedObject;
         private SerializedProperty m_ArrayProperty;
 
+        /// <summary>
+        /// Add an object to the collection (and to the file).
+        /// </summary>
+        /// <param name="t">The type of object to add.</param>
         internal void AddNewObject(Type t)
         {
             m_SerializedObject.Update();
@@ -49,6 +62,10 @@ namespace HiraBots.Editor
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Remove an object from the collection (and from the file).
+        /// </summary>
+        /// <param name="index">The index of the object within the collection.</param>
         internal void RemoveObject(int index)
         {
             m_SerializedObject.Update();
@@ -71,7 +88,10 @@ namespace HiraBots.Editor
             AssetDatabase.SaveAssets();
         }
 
-        internal void SynchronizeCollectionAndAsset()
+        /// <summary>
+        /// Synchronize the file to the collection by removing orphaned assets and adding absent assets.
+        /// </summary>
+        internal void SynchronizeFileToCollection()
         {
             m_SerializedObject.Update();
             var assetsInFile = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(m_Target))

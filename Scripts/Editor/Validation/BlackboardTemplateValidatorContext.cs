@@ -2,8 +2,12 @@
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Context to validate a blackboard template. Only used inside the editor.
+    /// </summary>
     internal class BlackboardTemplateValidatorContext : IBlackboardTemplateValidatorContext, IBlackboardKeyValidatorContext
     {
+        // reset this object, for reuse
         internal void Reset()
         {
             m_Validated = true;
@@ -16,6 +20,7 @@ namespace HiraBots.Editor
             m_CurrentKey = null;
         }
 
+        // the current status
         internal bool m_Validated = true;
 
         // helpers
@@ -32,9 +37,20 @@ namespace HiraBots.Editor
         private BlackboardKey m_CurrentKey = null;
 
         // other interface
-        void IBlackboardTemplateValidatorContext.MarkUnsuccessful() => m_Validated = false;
-        public void AddEmptyKeyIndex(int index) => m_EmptyIndices.Add(index);
-        public void AddSameNamedKey(string keyName, BlackboardTemplate owner) => m_DuplicateKeys.Add((keyName, owner));
+        void IBlackboardTemplateValidatorContext.MarkUnsuccessful()
+        {
+            m_Validated = false;
+        }
+
+        public void AddEmptyKeyIndex(int index)
+        {
+            m_EmptyIndices.Add(index);
+        }
+
+        public void AddSameNamedKey(string keyName, BlackboardTemplate owner)
+        {
+            m_DuplicateKeys.Add((keyName, owner));
+        }
 
         public IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key)
         {

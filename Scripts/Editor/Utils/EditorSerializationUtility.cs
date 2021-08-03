@@ -1,0 +1,26 @@
+﻿namespace HiraBots.Editor
+{
+    /// <summary>
+    /// Helper class for serialization functionalities within the editor.
+    /// It's not meant to be instantiated, it's just a collection of helper functions.
+    /// It's not made static to allow inheritance.
+    /// </summary>
+    internal abstract partial class EditorSerializationUtility : SerializationUtility
+    {
+        // The overall folder structure is as so:
+        // 
+        // In the editor, cooked objects are stored inside: <project-path>/Temp/HiraBots/
+        // The base class is aware of the editor-only temporary folder.
+        // 
+        // In the build, cooked objects are stored inside: <project-path>/Assets/HiraBotsBuildArtifacts/Resources/HiraBots/
+        // The base class is not aware of the complete folder structure, and is only concerned with .../Resources/HiraBots/
+
+        protected const string k_AssetsFolderName = "Assets";
+        protected const string k_HiraBotsBuildArtifactsFolderName = "HiraBotsBuildArtifacts";
+        protected const string k_ResourcesFolderName = "Resources";
+
+        protected const string k_BuildArtifactsFolderNameR = k_AssetsFolderName + "/" + k_HiraBotsBuildArtifactsFolderName;
+
+        protected const string k_BuildArtifactsResourcesFolderNameR = k_BuildArtifactsFolderNameR + "/" + k_ResourcesFolderName + "/" + k_MainSubfolderName;
+    }
+}
