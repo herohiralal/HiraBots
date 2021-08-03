@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// Tests for cross-checking compiled blackboard template data against original inputs.
+    /// </summary>
     [TestFixture]
     internal class BlackboardCompilationTests
     {
@@ -29,8 +32,7 @@ namespace HiraBots.Editor.Tests
         private const int k_FirstKeyDefaultValue = 0;
         private const bool k_SecondKeyDefaultValue = true;
         private static readonly Vector3 s_ThirdKeyDefaultValue = Vector3.one;
-        // ReSharper disable once InconsistentNaming
-        private ScriptableObject fourth_key_default_value;
+        private ScriptableObject m_FourthKeyDefaultValue;
         private const BlackboardKeyTraits k_FirstKeyTraits = BlackboardKeyTraits.None;
         private const BlackboardKeyTraits k_SecondKeyTraits = BlackboardKeyTraits.InstanceSynced;
         private const BlackboardKeyTraits k_ThirdKeyTraits = BlackboardKeyTraits.BroadcastEventOnUnexpectedChange;
@@ -43,11 +45,14 @@ namespace HiraBots.Editor.Tests
         private BlackboardKey m_First, m_Second, m_Third, m_Fourth;
         private BlackboardTemplate m_Parent, m_Child;
 
+        /// <summary>
+        /// Build the blackboard templates, validate them, and compile them.
+        /// </summary>
         [OneTimeSetUp]
         public void SetUp()
         {
-            fourth_key_default_value = ScriptableObject.CreateInstance<ScriptableObject>();
-            fourth_key_default_value.hideFlags = HideFlags.HideAndDontSave;
+            m_FourthKeyDefaultValue = ScriptableObject.CreateInstance<ScriptableObject>();
+            m_FourthKeyDefaultValue.hideFlags = HideFlags.HideAndDontSave;
 
             m_First = IntegerBlackboardKey.Build<IntegerBlackboardKey>(k_FirstKeyName, k_FirstKeyTraits, k_FirstKeyDefaultValue, HideFlags.HideAndDontSave);
 
@@ -55,7 +60,7 @@ namespace HiraBots.Editor.Tests
 
             m_Third = VectorBlackboardKey.Build<VectorBlackboardKey>(k_ThirdKeyName, k_ThirdKeyTraits, s_ThirdKeyDefaultValue, HideFlags.HideAndDontSave);
 
-            m_Fourth = ObjectBlackboardKey.Build<ObjectBlackboardKey>(k_FourthKeyName, k_FourthKeyTraits, fourth_key_default_value, HideFlags.HideAndDontSave);
+            m_Fourth = ObjectBlackboardKey.Build<ObjectBlackboardKey>(k_FourthKeyName, k_FourthKeyTraits, m_FourthKeyDefaultValue, HideFlags.HideAndDontSave);
 
             m_Parent = BlackboardTemplate.Build<BlackboardTemplate>(k_ParentTemplateName, null,
                 new[] {m_First, m_Second}, HideFlags.HideAndDontSave);
@@ -88,6 +93,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Free up compiled templates, and destroy the created objects.
+        /// </summary>
         [OneTimeTearDown]
         public void TearDown()
         {
@@ -102,12 +110,22 @@ namespace HiraBots.Editor.Tests
             Object.DestroyImmediate(m_Second);
             Object.DestroyImmediate(m_First);
 
-            Object.DestroyImmediate(fourth_key_default_value);
+            Object.DestroyImmediate(m_FourthKeyDefaultValue);
         }
 
-        private static bool AreEqual(in BlackboardKeyCompiledData a, in BlackboardKeyCompiledData b) =>
-            a.m_MemoryOffset == b.m_MemoryOffset && a.m_Index == b.m_Index && a.m_Traits == b.m_Traits && a.m_KeyType == b.m_KeyType;
+        // helper function to check if two BlackboardKeyCompiledData objects are equal.
+        private static bool AreEqual(in BlackboardKeyCompiledData a, in BlackboardKeyCompiledData b)
+        {
+            return
+                a.m_MemoryOffset == b.m_MemoryOffset
+                && a.m_Index == b.m_Index
+                && a.m_Traits == b.m_Traits
+                && a.m_KeyType == b.m_KeyType;
+        }
 
+        /// <summary>
+        /// Cross-check between compiled data stored on a key and the data stored on the blackboard template's compiled data.
+        /// </summary>
         [Test]
         public void TemplateKeyCompiledDataSyncValidation()
         {
@@ -123,6 +141,9 @@ namespace HiraBots.Editor.Tests
             Assert.IsTrue(AreEqual(childCompiledData[k_FourthKeyName], m_Fourth.compiledData));
         }
 
+        /// <summary>
+        /// Check whether the keys get compiled in the order of their sizes.
+        /// </summary>
         [Test]
         public void KeyIndexSyncValidation()
         {
@@ -133,6 +154,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_FourthKeyIndex, m_Fourth.compiledData.m_Index);
         }
 
+        /// <summary>
+        /// Cross-check key type between provided data and compiled data.
+        /// </summary>
         [Test]
         public void KeyTypeSyncValidation()
         {
@@ -142,6 +166,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_FourthKeyType, m_Fourth.compiledData.m_KeyType);
         }
 
+        /// <summary>
+        /// Cross-check key traits between provided data and compiled data.
+        /// </summary>
         [Test]
         public void KeyTraitsSyncValidation()
         {
@@ -151,6 +178,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_FourthKeyTraits, m_Fourth.compiledData.m_Traits);
         }
 
+        /// <summary>
+        /// Validate key counts.
+        /// </summary>
         [Test]
         public void KeyCountValidation()
         {
@@ -158,6 +188,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_ChildKeyCount, m_Child.compiledData.m_KeyCount);
         }
 
+        /// <summary>
+        /// Validate template sizes.
+        /// </summary>
         [Test]
         public void TemplateSizeValidation()
         {
@@ -165,6 +198,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_ChildTemplateSize, m_Child.compiledData.templateSize, "Child template size mismatch.");
         }
 
+        /// <summary>
+        /// Validate memory offsets.
+        /// </summary>
         [Test]
         public void MemoryOffsetValidation()
         {
@@ -175,6 +211,9 @@ namespace HiraBots.Editor.Tests
             Assert.AreEqual(k_ThirdKeyMemoryOffset, m_Third.compiledData.m_MemoryOffset);
         }
 
+        /// <summary>
+        /// Validate default values getting stored into compiled data on the parent template.
+        /// </summary>
         [Test]
         public unsafe void TemplateDefaultsValidationParent()
         {
@@ -191,6 +230,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Validate default values getting stored into compiled data on the child template.
+        /// </summary>
         [Test]
         public unsafe void TemplateDefaultsValidationChild()
         {
@@ -209,10 +251,13 @@ namespace HiraBots.Editor.Tests
                 Assert.AreEqual(s_ThirdKeyDefaultValue, thirdValue);
 
                 var fourthValue = BlackboardUnsafeHelpers.ReadObjectValue(templatePtr, m_Fourth.compiledData.m_MemoryOffset);
-                Assert.AreEqual(fourth_key_default_value, fourthValue);
+                Assert.AreEqual(m_FourthKeyDefaultValue, fourthValue);
             }
         }
 
+        /// <summary>
+        /// Confirm that instance synced keys are correctly synced between child and parent templates.
+        /// </summary>
         [Test]
         public unsafe void InstanceSyncedKeysSynchronizedBetweenChildAndParentTemplatesCheck()
         {
@@ -247,6 +292,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Validate the GetOwningTemplate() function, which gets the owning template of a key.
+        /// </summary>
         [Test]
         public void OwningTemplateValidation()
         {

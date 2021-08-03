@@ -1,5 +1,8 @@
 ﻿namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// An object to test out CookedDataSingleton.
+    /// </summary>
     internal partial class CookedDataTestObject : CookedDataSingleton<CookedDataTestObject>
     {
         [UnityEngine.SerializeField] internal int m_Value = 0;
@@ -15,6 +18,7 @@ namespace HiraBots.Editor.Tests
 
     internal partial class CookedDataTestObject
     {
+        // bind events to also cook CookedDataTestObject into the play-mode.
         [InitializeOnLoadMethod]
         private static void Initialize()
         {
@@ -24,7 +28,10 @@ namespace HiraBots.Editor.Tests
 
         private static void OnPlayModeStateChange(PlayModeStateChange state)
         {
-            if (state != PlayModeStateChange.ExitingEditMode) return;
+            if (state != PlayModeStateChange.ExitingEditMode)
+            {
+                return;
+            }
 
             CreateCookedData(out var cookedData);
             cookedData.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
@@ -33,6 +40,10 @@ namespace HiraBots.Editor.Tests
             EditorSerializationUtility.CookToTempEditorFolderAndForget(ref cookedData);
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="CookedDataTestObject"/>.
+        /// </summary>
+        /// <param name="cookedData"></param>
         internal static void CreateCookedData(out CookedDataTestObject cookedData)
         {
             cookedData = CreateInstance<CookedDataTestObject>();

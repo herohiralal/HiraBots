@@ -7,29 +7,31 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// Tests for validation checks of data input into a blackbaord.
+    /// </summary>
     [TestFixture]
-    public class BlackboardAccessValidationTests : BlackboardAccessTestBase
+    internal class BlackboardAccessValidationTests : BlackboardAccessTestBase
     {
-        [ExposedToHiraBots("7E11BA86-1F8E-4010-92C2-FC9482B52507")]
-        public enum PowerType : sbyte
-        {
-            Fire, Air, Earth, Water
-        }
-
-        private enum LongEnum : long
-        {
-        }
-
         [OneTimeSetUp]
-        public new void SetUp() => base.SetUp();
+        public new void SetUp()
+        {
+            base.SetUp();
+        }
 
         [OneTimeTearDown]
-        public new void TearDown() => base.TearDown();
+        public new void TearDown()
+        {
+            base.TearDown();
+        }
 
         private const string k_InvalidKeyName = "E1E5B7FC-5BE4-45BA-A84E-95821BBA9662";
 
         private const ushort k_InvalidMemoryOffset = ushort.MaxValue;
 
+        /// <summary>
+        /// Check how the blackboard handles when the caller passes in an invalid key name or an invalid memory offset.
+        /// </summary>
         [Test]
         public void InvalidKeyHandlingOnBlackboardComponent()
         {
@@ -99,6 +101,9 @@ namespace HiraBots.Editor.Tests
                 "Invalid Quaternion memory offset setter test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard handles when the caller asks for a wrong type of data.
+        /// </summary>
         [Test]
         public void InvalidTypeAccessHandlingOnBlackboardComponent()
         {
@@ -114,6 +119,9 @@ namespace HiraBots.Editor.Tests
                 "Invalid type write-access with memory offset test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard handles when the caller asks for an invalid enum type.
+        /// </summary>
         [Test]
         public void InvalidEnumTypeAccessHandlingOnBlackboardComponent()
         {
@@ -129,6 +137,9 @@ namespace HiraBots.Editor.Tests
                 "Invalid enum type write-access with memory offset test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard template handles when the caller passes in an invalid key name or an invalid memory offset.
+        /// </summary>
         [Test]
         public void InvalidKeyHandlingOnBlackboardCompiledData()
         {
@@ -196,6 +207,9 @@ namespace HiraBots.Editor.Tests
                 "Invalid instance synced Quaternion memory offset setter test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard template handles when the caller passes in a key that's not instance-synchronized.
+        /// </summary>
         [Test]
         public void NonInstanceSyncedKeyHandlingOnBlackboardCompiledData()
         {
@@ -209,6 +223,9 @@ namespace HiraBots.Editor.Tests
                 "Non instance synced key write-access with memory offset test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard template handles when the caller asks for a wrong type of data.
+        /// </summary>
         [Test]
         public void InvalidTypeAccessHandlingOnBlackboardCompiledData()
         {
@@ -222,6 +239,9 @@ namespace HiraBots.Editor.Tests
                 "Invalid type write-access with memory offset test failed.");
         }
 
+        /// <summary>
+        /// Check how the blackboard template handles when the caller asks for an invalid enum type.
+        /// </summary>
         [Test]
         public void InvalidEnumTypeAccessHandlingOnBlackboardCompiledData()
         {

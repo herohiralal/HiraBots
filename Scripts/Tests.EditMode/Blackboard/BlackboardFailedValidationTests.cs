@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// Determine that the blackboard templates fail validation when invalid input is provided.
+    /// </summary>
     [TestFixture]
     internal class BlackboardFailedValidationTests
     {
+        /// <summary>
+        /// Check for validation failure when a key is null.
+        /// </summary>
         [Test]
         public void NullKeyValidation()
         {
@@ -42,6 +48,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Check for validation failure for cyclical hierarchies.
+        /// </summary>
         [Test]
         public void CyclicalHierarchyValidation()
         {
@@ -79,6 +88,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Check for validation failure on name duplication.
+        /// </summary>
         [Test]
         public void DuplicateNameValidation()
         {

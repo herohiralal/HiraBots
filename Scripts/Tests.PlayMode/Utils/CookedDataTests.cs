@@ -3,15 +3,25 @@ using UnityEngine.TestTools;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// Tests to validate the data-cooking functionality.
+    /// </summary>
     [TestFixture]
     internal class CookedDataTests : IPrebuildSetup, IPostBuildCleanup
     {
+        /// <summary>
+        /// Confirm correct serialization in CookedDataTestObject.
+        /// </summary>
         [Test]
         public void SerializationAndDeserializationWorksCorrectly()
         {
             Assert.AreEqual(CookedDataTestObject.k_ValueToCook, CookedDataTestObject.instance.m_Value);
         }
 
+        /// <summary>
+        /// Confirm the existence of template collection instance, be it in play mode or in the build.
+        /// Also validate the sorting order in the template collection.
+        /// </summary>
         [Test]
         public void BlackboardTemplateCollectionIsCooked()
         {
@@ -19,12 +29,14 @@ namespace HiraBots.Editor.Tests
             Assert.IsTrue(btc != null, "BlackboardTemplateCollection must be cooked into play mode or build.");
 
             for (var i = 1; i < btc.count; i++)
+            {
                 Assert.IsTrue(btc[i].hierarchyIndex >= btc[i - 1].hierarchyIndex, "Blackboard template collection built without proper sorting.");
+            }
         }
 
         public void Setup()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR // cook the CookedDataTestObject into the build.
             CookedDataTestObject.CreateCookedData(out var data);
             
             EditorSerializationUtility.ConfirmTempBuildFolder();
@@ -34,9 +46,8 @@ namespace HiraBots.Editor.Tests
 
         public void Cleanup()
         {
-#if UNITY_EDITOR
+#if UNITY_EDITOR // remove the CookedDataTestObject.
             EditorSerializationUtility.DeleteFromTempBuildFolder<CookedDataTestObject>();
-            EditorSerializationUtility.DeleteTempBuildFolder();
 #endif
         }
     }

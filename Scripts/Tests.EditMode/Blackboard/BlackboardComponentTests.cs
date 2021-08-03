@@ -6,15 +6,27 @@ using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// Tests to check the public API for BlackboardComponent.
+    /// </summary>
     [TestFixture]
     internal class BlackboardComponentTests : BlackboardAccessTestBase
     {
         [OneTimeSetUp]
-        public new void SetUp() => base.SetUp();
+        public new void SetUp()
+        {
+            base.SetUp();
+        }
 
         [OneTimeTearDown]
-        public new void TearDown() => base.TearDown();
+        public new void TearDown()
+        {
+            base.TearDown();
+        }
 
+        /// <summary>
+        /// Validate blackboard creations from templates.
+        /// </summary>
         [Test]
         public void CreationValidation()
         {
@@ -47,6 +59,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Validate read/write on blackboard components.
+        /// </summary>
         [Test]
         public void SimpleReadWriteValidation()
         {
@@ -62,8 +77,8 @@ namespace HiraBots.Editor.Tests
             baboon.SetBooleanValueWithoutValidation(elementalistKeyData[healthLowKeyBoolean], true, true);
             Assert.IsTrue(baboon.GetBooleanValueWithoutValidation(healthLowKeyBoolean), "Boolean read-write failed.");
 
-            baboon.SetObjectValueWithoutValidation(elementalistKeyData[playerReferenceKeyObject], m_MockObject2, true);
-            Assert.IsTrue(m_MockObject2 == baboon.GetObjectValueWithoutValidation(playerReferenceKeyObject), "Object read-write failed.");
+            baboon.SetObjectValueWithoutValidation(elementalistKeyData[playerReferenceKeyObject], mockObject2, true);
+            Assert.IsTrue(mockObject2 == baboon.GetObjectValueWithoutValidation(playerReferenceKeyObject), "Object read-write failed.");
 
             var q = Quaternion.Euler(Random.Range(-10, 10), Random.Range(-10, 10), Random.Range(-10, 10));
             baboon.SetQuaternionValueWithoutValidation(elementalistKeyData[throwKeyQuaternion], q, true);
@@ -98,6 +113,9 @@ namespace HiraBots.Editor.Tests
             Assert.IsFalse(wizard.hasUnexpectedChanges, "Overwriting with same value dirtied the blackboard.");
         }
 
+        /// <summary>
+        /// Validate instance synchronization.
+        /// </summary>
         [Test]
         public void InstanceSyncValidation()
         {
@@ -116,6 +134,9 @@ namespace HiraBots.Editor.Tests
                 "Instance sync failed for a newly created key.");
         }
 
+        /// <summary>
+        /// Validate dirtying of the blackboard.
+        /// </summary>
         [Test]
         public void BlackboardDirtyingValidation()
         {

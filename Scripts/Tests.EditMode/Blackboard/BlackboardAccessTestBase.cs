@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace HiraBots.Editor.Tests
 {
+    /// <summary>
+    /// A generic unsigned 8-bit enum to be used for testing purposes.
+    /// </summary>
     [ExposedToHiraBots("5F9A54C1-F247-41B0-8D5E-D64DD26C8317")]
     internal enum GenericStatus : byte
     {
@@ -15,7 +18,27 @@ namespace HiraBots.Editor.Tests
         Max
     }
 
-    public abstract class BlackboardAccessTestBase
+    /// <summary>
+    /// A generic signed 8-bit enum to be used for testing purposes.
+    /// </summary>
+    [ExposedToHiraBots("7E11BA86-1F8E-4010-92C2-FC9482B52507")]
+    internal enum PowerType : sbyte
+    {
+        Fire, Air, Earth, Water
+    }
+
+    /// <summary>
+    /// A generic signed 64-bit enum to be used for testing purposes.
+    /// </summary>
+    internal enum LongEnum : long
+    {
+    }
+
+    /// <summary>
+    /// Base class for blackboard testing, which compiles the test blackboards in OneTimeSetUp
+    /// and frees them in OneTimeTearDown
+    /// </summary>
+    internal abstract class BlackboardAccessTestBase
     {
         internal BlackboardTemplate m_BaseCharacterTemplate = null;
         internal BlackboardTemplateCompiledData baseCharacterData => m_BaseCharacterTemplate.compiledData;
@@ -29,9 +52,9 @@ namespace HiraBots.Editor.Tests
         internal BlackboardTemplate m_ElementalistTemplate = null;
         internal BlackboardTemplateCompiledData elementalistData => m_ElementalistTemplate.compiledData;
 
-        internal ScriptableObject m_MockObject1 = null;
-        internal ScriptableObject m_MockObject2 = null;
-        internal ScriptableObject m_MockObject3 = null;
+        protected ScriptableObject mockObject1 { get; private set; } = null;
+        protected ScriptableObject mockObject2 { get; private set; } = null;
+        protected ScriptableObject mockObject3 { get; private set; } = null;
 
         protected ushort levelKeyInteger => baseCharacterData["Level"].m_MemoryOffset;
         protected ushort healthKeyFloat => baseCharacterData["Health"].m_MemoryOffset;
@@ -45,14 +68,17 @@ namespace HiraBots.Editor.Tests
         protected ushort throwKeyQuaternion => elementalistData["Throw"].m_MemoryOffset;
         protected ushort powerTypeKeyEnum => elementalistData["PowerType"].m_MemoryOffset;
 
+        /// <summary>
+        /// Validate and compile all blackboards.
+        /// </summary>
         protected void SetUp()
         {
-            m_MockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
-            m_MockObject1.hideFlags = HideFlags.HideAndDontSave;
-            m_MockObject2 = ScriptableObject.CreateInstance<ScriptableObject>();
-            m_MockObject2.hideFlags = HideFlags.HideAndDontSave;
-            m_MockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
-            m_MockObject3.hideFlags = HideFlags.HideAndDontSave;
+            mockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
+            mockObject1.hideFlags = HideFlags.HideAndDontSave;
+            mockObject2 = ScriptableObject.CreateInstance<ScriptableObject>();
+            mockObject2.hideFlags = HideFlags.HideAndDontSave;
+            mockObject3 = ScriptableObject.CreateInstance<ScriptableObject>();
+            mockObject3.hideFlags = HideFlags.HideAndDontSave;
 
             m_BaseCharacterTemplate = Resources.Load<BlackboardTemplate>("TestBaseCharacter");
             m_WarriorTemplate = Resources.Load<BlackboardTemplate>("TestWarrior");
@@ -64,11 +90,16 @@ namespace HiraBots.Editor.Tests
             Compile(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
         }
 
+        // check whether all the templates are loaded
         private static void CheckLoaded(params BlackboardTemplate[] templates)
         {
-            foreach (var template in templates) Assert.IsTrue(template != null, "Template could not be loaded.");
+            foreach (var template in templates)
+            {
+                Assert.IsTrue(template != null, "Template could not be loaded.");
+            }
         }
 
+        // check whether all the templates are validated
         private static void Validate(params BlackboardTemplate[] templates)
         {
             var validator = new BlackboardTemplateValidatorContext();
@@ -81,6 +112,7 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        // compile all the templates
         private static void Compile(params BlackboardTemplate[] templates)
         {
             var compiler = new BlackboardTemplateCompilerContext();
@@ -93,6 +125,9 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        /// <summary>
+        /// Free up all the allocations.
+        /// </summary>
         protected void TearDown()
         {
             Free(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
@@ -100,23 +135,33 @@ namespace HiraBots.Editor.Tests
 
             m_BaseCharacterTemplate = m_WarriorTemplate = m_MageTemplate = m_ElementalistTemplate = null;
 
-            Object.DestroyImmediate(m_MockObject3);
-            Object.DestroyImmediate(m_MockObject2);
-            Object.DestroyImmediate(m_MockObject1);
+            Object.DestroyImmediate(mockObject3);
+            Object.DestroyImmediate(mockObject2);
+            Object.DestroyImmediate(mockObject1);
         }
 
+        // free all the compiled templates
         private static void Free(params BlackboardTemplate[] templates)
         {
             foreach (var template in templates)
+            {
                 if (template != null)
+                {
                     template.Free();
+                }
+            }
         }
 
+        // unload all the loaded templates
         private static void Unload(params BlackboardTemplate[] templates)
         {
             foreach (var template in templates)
+            {
                 if (template != null)
+                {
                     Resources.UnloadAsset(template);
+                }
+            }
         }
     }
 }
