@@ -13,6 +13,7 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Enum;
         }
 
+        [Tooltip("The default value for this key that a blackboard would start with.")]
         [SerializeField] private DynamicEnum m_DefaultValue = default;
     }
 }

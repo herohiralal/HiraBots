@@ -13,6 +13,7 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Vector;
         }
 
+        [Tooltip("The default value for this key that a blackboard would start with.")]
         [SerializeField] private Vector3 m_DefaultValue = Vector3.zero;
     }
 }

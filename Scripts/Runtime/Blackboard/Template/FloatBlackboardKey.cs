@@ -13,6 +13,7 @@ namespace HiraBots
             m_KeyType = BlackboardKeyType.Float;
         }
 
+        [Tooltip("The default value for this key that a blackboard would start with.")]
         [SerializeField] private float m_DefaultValue = 0f;
     }
 }
