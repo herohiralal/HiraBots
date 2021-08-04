@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
+using Unity.Mathematics;
 using static HiraBots.BlackboardComponent;
 using Object = UnityEngine.Object;
 
@@ -82,22 +82,22 @@ namespace HiraBots.Editor.Tests
             InvalidSetterTest<ushort, Object, KeyNotFoundException>(baboon.SetObjectValue, k_InvalidMemoryOffset,
                 "Invalid Object memory offset setter test failed.");
 
-            InvalidGetterTest<string, Vector3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidKeyName,
+            InvalidGetterTest<string, float3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidKeyName,
                 "Invalid Vector key name getter test failed.");
-            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidMemoryOffset,
+            InvalidGetterTest<ushort, float3, KeyNotFoundException>(baboon.GetVectorValue, k_InvalidMemoryOffset,
                 "Invalid Vector memory offset getter test failed.");
-            InvalidSetterTest<string, Vector3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidKeyName,
+            InvalidSetterTest<string, float3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidKeyName,
                 "Invalid Vector key name setter test failed.");
-            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidMemoryOffset,
+            InvalidSetterTest<ushort, float3, KeyNotFoundException>(baboon.SetVectorValue, k_InvalidMemoryOffset,
                 "Invalid Vector memory offset setter test failed.");
 
-            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidKeyName,
+            InvalidGetterTest<string, quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidKeyName,
                 "Invalid Quaternion key name getter test failed.");
-            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidMemoryOffset,
+            InvalidGetterTest<ushort, quaternion, KeyNotFoundException>(baboon.GetQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid Quaternion memory offset getter test failed.");
-            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidKeyName,
+            InvalidSetterTest<string, quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidKeyName,
                 "Invalid Quaternion key name setter test failed.");
-            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidMemoryOffset,
+            InvalidSetterTest<ushort, quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid Quaternion memory offset setter test failed.");
         }
 
@@ -188,22 +188,22 @@ namespace HiraBots.Editor.Tests
             InvalidSetterTest<ushort, Object, KeyNotFoundException>(elementalistData.SetInstanceSyncedObjectValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Object memory offset setter test failed.");
 
-            InvalidGetterTest<string, Vector3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidKeyName,
+            InvalidGetterTest<string, float3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidKeyName,
                 "Invalid instance synced Vector key name getter test failed.");
-            InvalidGetterTest<ushort, Vector3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
+            InvalidGetterTest<ushort, float3, KeyNotFoundException>(elementalistData.GetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Vector memory offset getter test failed.");
-            InvalidSetterTest<string, Vector3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidKeyName,
+            InvalidSetterTest<string, float3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidKeyName,
                 "Invalid instance synced Vector key name setter test failed.");
-            InvalidSetterTest<ushort, Vector3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
+            InvalidSetterTest<ushort, float3, KeyNotFoundException>(elementalistData.SetInstanceSyncedVectorValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Vector memory offset setter test failed.");
 
-            InvalidGetterTest<string, Quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidKeyName,
+            InvalidGetterTest<string, quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidKeyName,
                 "Invalid instance synced Quaternion key name getter test failed.");
-            InvalidGetterTest<ushort, Quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
+            InvalidGetterTest<ushort, quaternion, KeyNotFoundException>(elementalistData.GetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Quaternion memory offset getter test failed.");
-            InvalidSetterTest<string, Quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidKeyName,
+            InvalidSetterTest<string, quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidKeyName,
                 "Invalid instance synced Quaternion key name setter test failed.");
-            InvalidSetterTest<ushort, Quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
+            InvalidSetterTest<ushort, quaternion, KeyNotFoundException>(elementalistData.SetInstanceSyncedQuaternionValue, k_InvalidMemoryOffset,
                 "Invalid instance synced Quaternion memory offset setter test failed.");
         }
 

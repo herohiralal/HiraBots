@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using NUnit.Framework;
+using Unity.Mathematics;
 using static HiraBots.BlackboardUnsafeHelpers;
+using Random = UnityEngine.Random;
 
 namespace HiraBots.Editor.Tests
 {
@@ -23,26 +25,28 @@ namespace HiraBots.Editor.Tests
         /// Validate boolean read/write.
         /// </summary>
         [Test]
-        public unsafe void BooleanReadWriteTest([Random(0, 1, 1)] byte b)
+        public unsafe void BooleanReadWriteTest()
         {
+            var b = Random.Range(0, 2) != 0;
+
             var value = b;
-            var stream = &value;
+            var stream = (byte*) &value;
 
-            var booleanValue = b != 0;
+            Assert.IsTrue(ReadBooleanValue(stream, 0) == b, "Read test failed.");
 
-            Assert.IsTrue(ReadBooleanValue(stream, 0) == booleanValue, "Read test failed.");
+            WriteBooleanValue(stream, 0, !b);
 
-            WriteBooleanValue(stream, 0, !booleanValue);
-
-            Assert.IsTrue(ReadBooleanValue(stream, 0) != booleanValue, "Write test failed.");
+            Assert.IsTrue(ReadBooleanValue(stream, 0) != b, "Write test failed.");
         }
 
         /// <summary>
         /// Validate enum read/write.
         /// </summary>
         [Test]
-        public unsafe void EnumReadWriteTest([Random(0, 1, 1)] byte i)
+        public unsafe void EnumReadWriteTest()
         {
+            var i = (byte) Random.Range(0, 2);
+
             var input = (GenericResult) i;
 
             ulong value = i;
@@ -60,8 +64,10 @@ namespace HiraBots.Editor.Tests
         /// Validate float read/write.
         /// </summary>
         [Test]
-        public unsafe void FloatReadWriteTest([Random(-5f, 5f, 1)] float f)
+        public unsafe void FloatReadWriteTest()
         {
+            var f = Random.Range(-5f, 5f);
+
             var value = f;
             var stream = (byte*) &value;
 
@@ -76,8 +82,10 @@ namespace HiraBots.Editor.Tests
         /// Validate integer read/write.
         /// </summary>
         [Test]
-        public unsafe void IntegerReadWriteTest([Random(-5, 5, 1)] int i)
+        public unsafe void IntegerReadWriteTest()
         {
+            var i = Random.Range(-5, 5);
+
             var value = i;
             var stream = (byte*) &value;
 
@@ -130,41 +138,34 @@ namespace HiraBots.Editor.Tests
         /// Validate quaternion read/write.
         /// </summary>
         [Test]
-        public unsafe void QuaternionReadWriteTest(
-            [Random(float.MinValue, float.MaxValue, 1)] float x,
-            [Random(float.MinValue, float.MaxValue, 1)] float y,
-            [Random(float.MinValue, float.MaxValue, 1)] float z,
-            [Random(float.MinValue, float.MaxValue, 1)] float w)
+        public unsafe void QuaternionReadWriteTest()
         {
-            var quaternion = new Quaternion(x, y, z, w);
-            var stream = (byte*) &quaternion;
+            var q = (quaternion) Random.rotation;
+            var stream = (byte*) &q;
 
-            Assert.AreEqual(quaternion, ReadQuaternionValue(stream, 0), "Read test failed.");
+            Assert.AreEqual(q, ReadQuaternionValue(stream, 0), "Read test failed.");
 
-            var newQuaternion = Quaternion.Euler(Vector3.one) * quaternion;
+            var newQuaternion = math.mul(quaternion.Euler(new float3(1, 1, 1)), q);
 
-            Assert.AreNotEqual(quaternion, newQuaternion, "New value test failed.");
+            Assert.AreNotEqual(q, newQuaternion, "New value test failed.");
 
             WriteQuaternionValue(stream, 0, newQuaternion);
 
-            Assert.AreEqual(newQuaternion, quaternion, "Write test failed.");
+            Assert.AreEqual(newQuaternion, q, "Write test failed.");
         }
 
         /// <summary>
         /// Validate vector read/write.
         /// </summary>
         [Test]
-        public unsafe void VectorReadWriteTest(
-            [Random(-5, 5, 1)] float x,
-            [Random(-5, 5, 1)] float y,
-            [Random(-5, 5, 1)] float z)
+        public unsafe void VectorReadWriteTest()
         {
-            var vector = new Vector3(x, y, z);
+            var vector = new float3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
             var stream = (byte*) &vector;
 
             Assert.AreEqual(vector, ReadVectorValue(stream, 0), "Read test failed.");
 
-            var newVector = vector + (100 * Vector3.one);
+            var newVector = vector + new float3(100, 100, 100);
 
             Assert.AreNotEqual(vector, newVector, "New value test failed.");
 

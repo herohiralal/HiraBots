@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using UnityEngine;
+using Unity.Mathematics;
 using Object = UnityEngine.Object;
 
 namespace HiraBots
@@ -56,7 +56,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static bool ReadBooleanValue(byte* stream, ushort offset)
         {
-            return ReadGenericValue<byte>(stream, offset).ToBoolean();
+            return ReadGenericValue<bool>(stream, offset);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static bool WriteBooleanValueAndGetChange(byte* stream, ushort offset, bool value)
         {
-            return WriteGenericValueAndGetChange<byte>(stream, offset, value.ToByte());
+            return WriteGenericValueAndGetChange<bool>(stream, offset, value);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void WriteBooleanValue(byte* stream, ushort offset, bool value)
         {
-            WriteGenericValue<byte>(stream, offset, value.ToByte());
+            WriteGenericValue<bool>(stream, offset, value);
         }
 
         #endregion
@@ -326,27 +326,27 @@ namespace HiraBots
         /// Read Vector value from a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static Vector3 ReadVectorValue(byte* stream, ushort offset)
+        internal static float3 ReadVectorValue(byte* stream, ushort offset)
         {
-            return ReadGenericValue<Vector3>(stream, offset);
+            return ReadGenericValue<float3>(stream, offset);
         }
 
         /// <summary>
         /// Write Vector value to a memory stream and determine whether it has changed from before.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteVectorValueAndGetChange(byte* stream, ushort offset, Vector3 value)
+        internal static bool WriteVectorValueAndGetChange(byte* stream, ushort offset, float3 value)
         {
-            return WriteGenericValueAndGetChange<Vector3>(stream, offset, value);
+            return WriteGenericValueAndGetChange<float3>(stream, offset, value);
         }
 
         /// <summary>
         /// Write Vector value to a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteVectorValue(byte* stream, ushort offset, Vector3 value)
+        internal static void WriteVectorValue(byte* stream, ushort offset, float3 value)
         {
-            WriteGenericValue<Vector3>(stream, offset, value);
+            WriteGenericValue<float3>(stream, offset, value);
         }
 
         #endregion
@@ -357,27 +357,27 @@ namespace HiraBots
         /// Read Quaternion value from a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static Quaternion ReadQuaternionValue(byte* stream, ushort offset)
+        internal static quaternion ReadQuaternionValue(byte* stream, ushort offset)
         {
-            return ReadGenericValue<Quaternion>(stream, offset);
+            return ReadGenericValue<quaternion>(stream, offset);
         }
 
         /// <summary>
         /// Write Quaternion value to a memory stream and determine whether it has changed from before.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool WriteQuaternionValueAndGetChange(byte* stream, ushort offset, Quaternion value)
+        internal static bool WriteQuaternionValueAndGetChange(byte* stream, ushort offset, quaternion value)
         {
-            return WriteGenericValueAndGetChange<Quaternion>(stream, offset, value);
+            return WriteGenericValueAndGetChange<quaternion>(stream, offset, value);
         }
 
         /// <summary>
         /// Write Quaternion value to a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static void WriteQuaternionValue(byte* stream, ushort offset, Quaternion value)
+        internal static void WriteQuaternionValue(byte* stream, ushort offset, quaternion value)
         {
-            WriteGenericValue<Quaternion>(stream, offset, value);
+            WriteGenericValue<quaternion>(stream, offset, value);
         }
 
         #endregion

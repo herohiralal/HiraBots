@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -77,7 +78,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Vector value on blackboard template using BlackboardKeyCompiledData without validating any input.
         /// </summary>
-        internal void SetInstanceSyncedVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value)
+        internal void SetInstanceSyncedVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, float3 value)
         {
             var memoryOffset = keyData.memoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
@@ -91,7 +92,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Quaternion value on blackboard template using BlackboardKeyCompiledData without validating any input.
         /// </summary>
-        internal void SetInstanceSyncedQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value)
+        internal void SetInstanceSyncedQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, quaternion value)
         {
             var memoryOffset = keyData.memoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);

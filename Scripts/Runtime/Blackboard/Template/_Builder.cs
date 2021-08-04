@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR // ideally manual creation must only be done for testing purposes as it skips validation checks
 using System.Reflection;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace HiraBots
@@ -111,7 +112,7 @@ namespace HiraBots
         /// <summary>
         /// Build a QuaternionBlackboardKey.
         /// </summary>
-        internal static QuaternionBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Vector3 defaultValue, HideFlags hideFlags = HideFlags.None)
+        internal static QuaternionBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float3 defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : QuaternionBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
@@ -125,7 +126,7 @@ namespace HiraBots
         /// <summary>
         /// Build a VectorBlackboardKey.
         /// </summary>
-        internal static VectorBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Vector3 defaultValue, HideFlags hideFlags = HideFlags.None)
+        internal static VectorBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float3 defaultValue, HideFlags hideFlags = HideFlags.None)
             where T : VectorBlackboardKey
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);

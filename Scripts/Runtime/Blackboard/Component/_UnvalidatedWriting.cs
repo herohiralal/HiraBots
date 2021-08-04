@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Mathematics;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -248,7 +249,7 @@ namespace HiraBots
         /// <summary>
         /// Set Vector value on blackboard using BlackboardKeyCompiledData without validating any input.
         /// </summary>
-        internal void SetVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, Vector3 value, bool expected = false)
+        internal void SetVectorValueWithoutValidation(in BlackboardKeyCompiledData keyData, float3 value, bool expected = false)
         {
             var memoryOffset = keyData.memoryOffset;
 
@@ -288,7 +289,7 @@ namespace HiraBots
         /// <summary>
         /// Set Quaternion value on blackboard using BlackboardKeyCompiledData without validating any input.
         /// </summary>
-        internal void SetQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, Quaternion value, bool expected = false)
+        internal void SetQuaternionValueWithoutValidation(in BlackboardKeyCompiledData keyData, quaternion value, bool expected = false)
         {
             var memoryOffset = keyData.memoryOffset;
 

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using Unity.Mathematics;
 using UnityEngine;
 using static HiraBots.BlackboardComponent;
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace HiraBots.Editor.Tests
 {
@@ -124,13 +126,13 @@ namespace HiraBots.Editor.Tests
 
             TryCreate(m_WarriorTemplate, out var knight);
 
-            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], Vector3.right);
-            Assert.AreEqual(Vector3.right, knight.GetVectorValueWithoutValidation(currentPlayerLocationKeyVector),
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], new float3(1, 0, 0));
+            Assert.AreEqual(new float3(1, 0, 0), knight.GetVectorValueWithoutValidation(currentPlayerLocationKeyVector),
                 "Instance syncing failed between base and warrior.");
 
             TryCreate(m_MageTemplate, out var wizard);
 
-            Assert.AreEqual(Vector3.right, wizard.GetVectorValueWithoutValidation(currentPlayerLocationKeyVector),
+            Assert.AreEqual(new float3(1, 0, 0), wizard.GetVectorValueWithoutValidation(currentPlayerLocationKeyVector),
                 "Instance sync failed for a newly created key.");
         }
 
@@ -143,7 +145,7 @@ namespace HiraBots.Editor.Tests
             TryCreate(m_BaseCharacterTemplate, out var civilian);
             var baseCharacterKeyData = baseCharacterData.memoryOffsetToKeyData;
 
-            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], Vector3.right);
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], new float3(1, 0, 0));
 
             Assert.IsTrue(civilian.hasUnexpectedChanges, "Simple dirtying test failed.");
             Assert.IsTrue(civilian.unexpectedChanges
@@ -154,7 +156,7 @@ namespace HiraBots.Editor.Tests
             Assert.IsFalse(civilian.hasUnexpectedChanges, "Clearing dirtying test failed.");
 
             TryCreate(m_ElementalistTemplate, out var baboon);
-            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], Vector3.zero, true);
+            civilian.SetVectorValueWithoutValidation(baseCharacterKeyData[currentPlayerLocationKeyVector], float3.zero, true);
 
             Assert.IsFalse(civilian.hasUnexpectedChanges, "Expectation parameter test failed.");
             Assert.IsTrue(baboon.hasUnexpectedChanges, "Instance synced dirtying test failed.");

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -9,11 +10,11 @@ namespace HiraBots
     {
         internal unsafe QuaternionBlackboardKey()
         {
-            m_SizeInBytesInternal = (byte) sizeof(Quaternion);
+            m_SizeInBytesInternal = (byte) sizeof(quaternion);
             m_KeyType = BlackboardKeyType.Quaternion;
         }
 
         [Tooltip("The default value for this key that a blackboard would start with.")]
-        [SerializeField] private Vector3 m_DefaultValue = Vector3.zero;
+        [SerializeField] private float3 m_DefaultValue = float3.zero;
     }
 }

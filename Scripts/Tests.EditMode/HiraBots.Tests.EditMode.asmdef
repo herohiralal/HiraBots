@@ -4,6 +4,7 @@
         "HiraBots.Runtime",
         "HiraBots.Editor",
         "HiraBots.Tests.PlayMode",
+        "Unity.Mathematics",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

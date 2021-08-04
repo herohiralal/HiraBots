@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -99,7 +100,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Vector value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedVectorValue(string key, Vector3 value)
+        internal void SetInstanceSyncedVectorValue(string key, float3 value)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             SetInstanceSyncedVectorValueWithoutValidation(in data, value);
@@ -108,7 +109,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Vector value on the blackboard template using the memory offset.
         /// </summary>
-        internal void SetInstanceSyncedVectorValue(ushort key, Vector3 value)
+        internal void SetInstanceSyncedVectorValue(ushort key, float3 value)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             SetInstanceSyncedVectorValueWithoutValidation(in data, value);
@@ -117,7 +118,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Quaternion value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedQuaternionValue(string key, Quaternion value)
+        internal void SetInstanceSyncedQuaternionValue(string key, quaternion value)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             SetInstanceSyncedQuaternionValueWithoutValidation(in data, value);
@@ -126,7 +127,7 @@ namespace HiraBots
         /// <summary>
         /// Set instance-synced Quaternion value on the blackboard template using the memory offset.
         /// </summary>
-        internal void SetInstanceSyncedQuaternionValue(ushort key, Quaternion value)
+        internal void SetInstanceSyncedQuaternionValue(ushort key, quaternion value)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             SetInstanceSyncedQuaternionValueWithoutValidation(in data, value);

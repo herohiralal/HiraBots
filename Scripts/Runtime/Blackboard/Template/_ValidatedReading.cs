@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -99,7 +100,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Vector value from the blackboard template using the key name.
         /// </summary>
-        internal Vector3 GetInstanceSyncedVectorValue(string key)
+        internal float3 GetInstanceSyncedVectorValue(string key)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             return GetInstanceSyncedVectorValueWithoutValidation(data.memoryOffset);
@@ -108,7 +109,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Vector value from the blackboard template using the memory offset.
         /// </summary>
-        internal Vector3 GetInstanceSyncedVectorValue(ushort key)
+        internal float3 GetInstanceSyncedVectorValue(ushort key)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             return GetInstanceSyncedVectorValueWithoutValidation(data.memoryOffset);
@@ -117,7 +118,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Quaternion value from the blackboard template using the key name.
         /// </summary>
-        internal Quaternion GetInstanceSyncedQuaternionValue(string key)
+        internal quaternion GetInstanceSyncedQuaternionValue(string key)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             return GetInstanceSyncedQuaternionValueWithoutValidation(data.memoryOffset);
@@ -126,7 +127,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Quaternion value from the blackboard template using the memory offset.
         /// </summary>
-        internal Quaternion GetInstanceSyncedQuaternionValue(ushort key)
+        internal quaternion GetInstanceSyncedQuaternionValue(ushort key)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             return GetInstanceSyncedQuaternionValueWithoutValidation(data.memoryOffset);

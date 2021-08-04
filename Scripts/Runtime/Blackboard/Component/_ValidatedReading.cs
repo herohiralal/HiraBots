@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -99,7 +100,7 @@ namespace HiraBots
         /// <summary>
         /// Get Vector value from the blackboard using the key name.
         /// </summary>
-        internal Vector3 GetVectorValue(string key)
+        internal float3 GetVectorValue(string key)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             return GetVectorValueWithoutValidation(data.memoryOffset);
@@ -108,7 +109,7 @@ namespace HiraBots
         /// <summary>
         /// Get Vector value from the blackboard using the memory offset.
         /// </summary>
-        internal Vector3 GetVectorValue(ushort key)
+        internal float3 GetVectorValue(ushort key)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             return GetVectorValueWithoutValidation(data.memoryOffset);
@@ -117,7 +118,7 @@ namespace HiraBots
         /// <summary>
         /// Get Quaternion value from the blackboard using the key name.
         /// </summary>
-        internal Quaternion GetQuaternionValue(string key)
+        internal quaternion GetQuaternionValue(string key)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             return GetQuaternionValueWithoutValidation(data.memoryOffset);
@@ -126,7 +127,7 @@ namespace HiraBots
         /// <summary>
         /// Get Quaternion value from the blackboard using the memory offset.
         /// </summary>
-        internal Quaternion GetQuaternionValue(ushort key)
+        internal quaternion GetQuaternionValue(ushort key)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             return GetQuaternionValueWithoutValidation(data.memoryOffset);

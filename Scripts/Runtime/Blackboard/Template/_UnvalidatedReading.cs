@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -47,7 +48,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Vector value from blackboard template using memory offset without validating any input.
         /// </summary>
-        internal Vector3 GetInstanceSyncedVectorValueWithoutValidation(ushort memoryOffset)
+        internal float3 GetInstanceSyncedVectorValueWithoutValidation(ushort memoryOffset)
         {
             return BlackboardUnsafeHelpers.ReadVectorValue(templateReadOnlyPtr, memoryOffset);
         }
@@ -55,7 +56,7 @@ namespace HiraBots
         /// <summary>
         /// Get instance-synced Quaternion value from blackboard template using memory offset without validating any input.
         /// </summary>
-        internal Quaternion GetInstanceSyncedQuaternionValueWithoutValidation(ushort memoryOffset)
+        internal quaternion GetInstanceSyncedQuaternionValueWithoutValidation(ushort memoryOffset)
         {
             return BlackboardUnsafeHelpers.ReadQuaternionValue(templateReadOnlyPtr, memoryOffset);
         }

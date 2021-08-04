@@ -9,7 +9,7 @@ namespace HiraBots
     {
         internal BooleanBlackboardKey()
         {
-            m_SizeInBytesInternal = sizeof(byte);
+            m_SizeInBytesInternal = sizeof(bool);
             m_KeyType = BlackboardKeyType.Boolean;
         }
 

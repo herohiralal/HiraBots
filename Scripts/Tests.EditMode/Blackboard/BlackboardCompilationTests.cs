@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace HiraBots.Editor.Tests
@@ -31,7 +32,7 @@ namespace HiraBots.Editor.Tests
         private const int k_ChildKeyCount = 4;
         private const int k_FirstKeyDefaultValue = 0;
         private const bool k_SecondKeyDefaultValue = true;
-        private static readonly Vector3 s_ThirdKeyDefaultValue = Vector3.one;
+        private static readonly float3 s_ThirdKeyDefaultValue = new float3(1, 1, 1);
         private ScriptableObject m_FourthKeyDefaultValue;
         private const BlackboardKeyTraits k_FirstKeyTraits = BlackboardKeyTraits.None;
         private const BlackboardKeyTraits k_SecondKeyTraits = BlackboardKeyTraits.InstanceSynced;

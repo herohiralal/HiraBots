@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -99,7 +100,7 @@ namespace HiraBots
         /// <summary>
         /// Set Vector value on the blackboard using the key name.
         /// </summary>
-        internal void SetVectorValue(string key, Vector3 value, bool expected = false)
+        internal void SetVectorValue(string key, float3 value, bool expected = false)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             SetVectorValueWithoutValidation(in data, value, expected);
@@ -108,7 +109,7 @@ namespace HiraBots
         /// <summary>
         /// Set Vector value on the blackboard using the memory offset.
         /// </summary>
-        internal void SetVectorValue(ushort key, Vector3 value, bool expected = false)
+        internal void SetVectorValue(ushort key, float3 value, bool expected = false)
         {
             ValidateInput(key, BlackboardKeyType.Vector, out var data);
             SetVectorValueWithoutValidation(in data, value, expected);
@@ -117,7 +118,7 @@ namespace HiraBots
         /// <summary>
         /// Set Quaternion value on the blackboard using the key name.
         /// </summary>
-        internal void SetQuaternionValue(string key, Quaternion value, bool expected = false)
+        internal void SetQuaternionValue(string key, quaternion value, bool expected = false)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             SetQuaternionValueWithoutValidation(in data, value, expected);
@@ -126,7 +127,7 @@ namespace HiraBots
         /// <summary>
         /// Set Quaternion value on the blackboard using the memory offset.
         /// </summary>
-        internal void SetQuaternionValue(ushort key, Quaternion value, bool expected = false)
+        internal void SetQuaternionValue(ushort key, quaternion value, bool expected = false)
         {
             ValidateInput(key, BlackboardKeyType.Quaternion, out var data);
             SetQuaternionValueWithoutValidation(in data, value, expected);
