@@ -65,6 +65,14 @@ namespace HiraBots
             m_Template = null;
         }
 
+        internal NativeArray<byte> GetCopy(Allocator allocator)
+        {
+            var length = m_Data.Length;
+            var copy = new NativeArray<byte>(length, allocator, NativeArrayOptions.UninitializedMemory);
+            UnsafeUtility.MemCpy(copy.GetUnsafePtr(), dataReadOnlyPtr, length);
+            return copy;
+        }
+
         /// <summary>
         /// Implicitly convert a BlackboardComponent to its public interface.
         /// </summary>
