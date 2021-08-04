@@ -13,5 +13,13 @@ namespace HiraBots
 
         [Tooltip("The keys within this blackboard template.")]
         [SerializeField, HideInInspector] private BlackboardKey[] m_Keys = new BlackboardKey[0];
+
+        /// <summary>
+        /// Implicitly convert a BlackboardTemplate to its public interface.
+        /// </summary>
+        public static implicit operator UnityEngine.BlackboardTemplate(BlackboardTemplate actualTemplate)
+        {
+            return new UnityEngine.BlackboardTemplate(actualTemplate);
+        }
     }
 }

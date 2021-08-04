@@ -64,5 +64,13 @@ namespace HiraBots
 
             m_Template = null;
         }
+
+        /// <summary>
+        /// Implicitly convert a BlackboardComponent to its public interface.
+        /// </summary>
+        public static implicit operator UnityEngine.BlackboardComponent(BlackboardComponent actualComponent)
+        {
+            return new UnityEngine.BlackboardComponent(actualComponent);
+        }
     }
 }
