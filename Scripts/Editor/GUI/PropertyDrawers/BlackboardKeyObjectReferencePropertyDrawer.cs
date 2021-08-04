@@ -14,7 +14,7 @@ namespace HiraBots.Editor
     {
         // property names
         private const string k_InstanceSyncedProperty = "m_InstanceSynced";
-        private const string k_EssentialToDecisionMakingProperty = "k_EssentialToDecisionMaking";
+        private const string k_EssentialToDecisionMakingProperty = "m_EssentialToDecisionMaking";
         private const string k_DefaultValueProperty = "m_DefaultValue";
 
         // using SerializedProperty.isExpanded has its pitfalls, such as being shared between all instances
