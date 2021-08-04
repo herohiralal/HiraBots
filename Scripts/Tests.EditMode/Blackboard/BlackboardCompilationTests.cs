@@ -24,10 +24,10 @@ namespace HiraBots.Editor.Tests
         private const int k_FourthKeyIndex = 2;
         private const int k_SecondKeyMemoryOffset = 0;
         private const int k_FirstKeyMemoryOffset = 1;
-        private const int k_FourthKeyMemoryOffset = 5;
-        private const int k_ThirdKeyMemoryOffset = 9;
-        private const int k_ParentTemplateSize = 5;
-        private const int k_ChildTemplateSize = 21;
+        private const int k_FourthKeyMemoryOffset = k_ParentTemplateSize + 0;
+        private const int k_ThirdKeyMemoryOffset = k_ParentTemplateSize + 4;
+        private const int k_ParentTemplateSize = (5 + 3) & ~3;
+        private static readonly unsafe int s_ChildTemplateSize = k_ParentTemplateSize + ((sizeof(float3) + sizeof(int) + 3) & ~3);
         private const int k_ParentKeyCount = 2;
         private const int k_ChildKeyCount = 4;
         private const int k_FirstKeyDefaultValue = 0;
@@ -196,7 +196,7 @@ namespace HiraBots.Editor.Tests
         public void TemplateSizeValidation()
         {
             Assert.AreEqual(k_ParentTemplateSize, m_Parent.compiledData.templateSize, "Child template size mismatch.");
-            Assert.AreEqual(k_ChildTemplateSize, m_Child.compiledData.templateSize, "Child template size mismatch.");
+            Assert.AreEqual(s_ChildTemplateSize, m_Child.compiledData.templateSize, "Child template size mismatch.");
         }
 
         /// <summary>

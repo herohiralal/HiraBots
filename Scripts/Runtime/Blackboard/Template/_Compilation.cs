@@ -247,7 +247,7 @@ namespace HiraBots
                 totalKeyCount += startingIndex;
             }
 
-            var template = new NativeArray<byte>(totalTemplateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            var template = new NativeArray<byte>(UnsafeHelpers.GetAlignedSize(totalTemplateSize), Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             var keyNameToMemoryOffset = new Dictionary<string, ushort>(totalKeyCount);
             var memoryOffsetToKeyData = new Dictionary<ushort, BlackboardKeyCompiledData>(totalKeyCount);
 

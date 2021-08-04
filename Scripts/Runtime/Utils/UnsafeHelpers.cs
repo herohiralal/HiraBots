@@ -10,15 +10,13 @@ namespace HiraBots
         private const MethodImplOptions k_Inline = MethodImplOptions.AggressiveInlining;
 
         /// <summary>
-        /// Convert a boolean to a byte.
+        /// Get aligned size to allocate.
         /// </summary>
         [MethodImpl(k_Inline)]
-        internal static bool ToBoolean(this byte b) => b != 0;
-
-        /// <summary>
-        /// Convert a byte to a boolean.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static byte ToByte(this bool b) => (byte) (b ? 1 : 0);
+        internal static int GetAlignedSize(int size)
+        {
+            // round to 4 bytes
+            return (size + 3) & ~3;
+        }
     }
 }
