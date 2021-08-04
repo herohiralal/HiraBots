@@ -7,9 +7,9 @@ namespace HiraBots
     /// </summary>
     internal partial class QuaternionBlackboardKey : BlackboardKey
     {
-        internal QuaternionBlackboardKey()
+        internal unsafe QuaternionBlackboardKey()
         {
-            m_SizeInBytesInternal = sizeof(float) * 4;
+            m_SizeInBytesInternal = (byte) sizeof(Quaternion);
             m_KeyType = BlackboardKeyType.Quaternion;
         }
 

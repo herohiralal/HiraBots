@@ -7,9 +7,9 @@ namespace HiraBots
     /// </summary>
     internal partial class VectorBlackboardKey : BlackboardKey
     {
-        internal VectorBlackboardKey()
+        internal unsafe VectorBlackboardKey()
         {
-            m_SizeInBytesInternal = sizeof(float) * 3;
+            m_SizeInBytesInternal = (byte) sizeof(Vector3);
             m_KeyType = BlackboardKeyType.Vector;
         }
 

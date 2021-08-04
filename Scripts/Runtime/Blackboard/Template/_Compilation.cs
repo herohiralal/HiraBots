@@ -127,9 +127,13 @@ namespace HiraBots
 
     internal unsafe partial class EnumBlackboardKey
     {
+        private enum ValueWriterHelper : byte
+        {
+        }
+
         protected override void CompileInternal(IBlackboardKeyCompilerContext context)
         {
-            BlackboardUnsafeHelpers.WriteRawEnumValue(context.address, 0, m_DefaultValue);
+            BlackboardUnsafeHelpers.WriteEnumValue<ValueWriterHelper>(context.address, 0, (ValueWriterHelper) m_DefaultValue.m_Value);
         }
     }
 

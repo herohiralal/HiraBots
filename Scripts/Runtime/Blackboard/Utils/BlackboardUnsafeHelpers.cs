@@ -110,37 +110,6 @@ namespace HiraBots
 
         #endregion
 
-        #region Raw Enum
-
-        /// <summary>
-        /// Read a raw 8-bit Enum value from a memory stream.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static byte ReadRawEnumValue(byte* stream, ushort offset)
-        {
-            return ReadGenericValue<byte>(stream, offset);
-        }
-
-        /// <summary>
-        /// Write a raw 8-bit Enum value to a memory stream and determine whether it has changed from before.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static bool WriteRawEnumValueAndGetChange(byte* stream, ushort offset, byte value)
-        {
-            return WriteGenericValueAndGetChange<byte>(stream, offset, value);
-        }
-
-        /// <summary>
-        /// Write a raw 8-bit Enum value to a memory stream.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void WriteRawEnumValue(byte* stream, ushort offset, byte value)
-        {
-            WriteGenericValue<byte>(stream, offset, value);
-        }
-
-        #endregion
-
         #region Float
 
         /// <summary>
@@ -359,12 +328,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static Vector3 ReadVectorValue(byte* stream, ushort offset)
         {
-            return new Vector3
-            (
-                ReadFloatValue(stream, offset),
-                ReadFloatValue(stream, (ushort) (offset + sizeof(float))),
-                ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float)))
-            );
+            return ReadGenericValue<Vector3>(stream, offset);
         }
 
         /// <summary>
@@ -373,10 +337,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static bool WriteVectorValueAndGetChange(byte* stream, ushort offset, Vector3 value)
         {
-            var x = WriteFloatValueAndGetChange(stream, offset, value.x);
-            var y = WriteFloatValueAndGetChange(stream, (ushort) (offset + sizeof(float)), value.y);
-            var z = WriteFloatValueAndGetChange(stream, (ushort) (offset + sizeof(float) + sizeof(float)), value.z);
-            return x || y || z;
+            return WriteGenericValueAndGetChange<Vector3>(stream, offset, value);
         }
 
         /// <summary>
@@ -385,9 +346,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void WriteVectorValue(byte* stream, ushort offset, Vector3 value)
         {
-            WriteFloatValue(stream, offset, value.x);
-            WriteFloatValue(stream, (ushort) (offset + sizeof(float)), value.y);
-            WriteFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float)), value.z);
+            WriteGenericValue<Vector3>(stream, offset, value);
         }
 
         #endregion
@@ -400,13 +359,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static Quaternion ReadQuaternionValue(byte* stream, ushort offset)
         {
-            return new Quaternion
-            (
-                ReadFloatValue(stream, offset),
-                ReadFloatValue(stream, (ushort) (offset + sizeof(float))),
-                ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float))),
-                ReadFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float) + sizeof(float)))
-            );
+            return ReadGenericValue<Quaternion>(stream, offset);
         }
 
         /// <summary>
@@ -415,11 +368,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static bool WriteQuaternionValueAndGetChange(byte* stream, ushort offset, Quaternion value)
         {
-            var x = WriteFloatValueAndGetChange(stream, offset, value.x);
-            var y = WriteFloatValueAndGetChange(stream, (ushort) (offset + sizeof(float)), value.y);
-            var z = WriteFloatValueAndGetChange(stream, (ushort) (offset + sizeof(float) + sizeof(float)), value.z);
-            var w = WriteFloatValueAndGetChange(stream, (ushort) (offset + sizeof(float) + sizeof(float) + sizeof(float)), value.w);
-            return x || y || z || w;
+            return WriteGenericValueAndGetChange<Quaternion>(stream, offset, value);
         }
 
         /// <summary>
@@ -428,10 +377,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void WriteQuaternionValue(byte* stream, ushort offset, Quaternion value)
         {
-            WriteFloatValue(stream, offset, value.x);
-            WriteFloatValue(stream, (ushort) (offset + sizeof(float)), value.y);
-            WriteFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float)), value.z);
-            WriteFloatValue(stream, (ushort) (offset + sizeof(float) + sizeof(float) + sizeof(float)), value.w);
+            WriteGenericValue<Quaternion>(stream, offset, value);
         }
 
         #endregion
