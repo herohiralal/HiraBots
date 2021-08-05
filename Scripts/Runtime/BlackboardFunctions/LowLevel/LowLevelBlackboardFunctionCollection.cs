@@ -38,7 +38,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Enumerator GetEnumerator()
         {
-            return new Enumerator(ByteStreamHelpers.JumpOver<int>(m_Address), count);
+            return new Enumerator(ByteStreamHelpers.JumpOver<int>(m_Address).AsAPointerOf<byte>(), count);
         }
 
         /// <summary>

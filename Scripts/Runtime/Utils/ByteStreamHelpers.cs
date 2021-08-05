@@ -83,7 +83,7 @@ namespace HiraBots
         /// Jump over zero types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver(byte* stream)
+        internal static JumpedPointer JumpOver(byte* stream)
         {
             return stream + CombinedSizes();
         }
@@ -92,7 +92,7 @@ namespace HiraBots
         /// Jump over one type.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver<TType1>(byte* stream)
+        internal static JumpedPointer JumpOver<TType1>(byte* stream)
             where TType1 : unmanaged
         {
             return stream + CombinedSizes<TType1>();
@@ -102,7 +102,7 @@ namespace HiraBots
         /// Jump over two types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver<TType1, TType2>(byte* stream)
+        internal static JumpedPointer JumpOver<TType1, TType2>(byte* stream)
             where TType1 : unmanaged
             where TType2 : unmanaged
         {
@@ -113,7 +113,7 @@ namespace HiraBots
         /// Jump over three types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver<TType1, TType2, TType3>(byte* stream)
+        internal static JumpedPointer JumpOver<TType1, TType2, TType3>(byte* stream)
             where TType1 : unmanaged
             where TType2 : unmanaged
             where TType3 : unmanaged
@@ -125,7 +125,7 @@ namespace HiraBots
         /// Jump over four types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver<TType1, TType2, TType3, TType4>(byte* stream)
+        internal static JumpedPointer JumpOver<TType1, TType2, TType3, TType4>(byte* stream)
             where TType1 : unmanaged
             where TType2 : unmanaged
             where TType3 : unmanaged
@@ -138,7 +138,7 @@ namespace HiraBots
         /// Jump over five types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* JumpOver<TType1, TType2, TType3, TType4, TType5>(byte* stream)
+        internal static JumpedPointer JumpOver<TType1, TType2, TType3, TType4, TType5>(byte* stream)
             where TType1 : unmanaged
             where TType2 : unmanaged
             where TType3 : unmanaged
@@ -146,6 +146,35 @@ namespace HiraBots
             where TType5 : unmanaged
         {
             return stream + CombinedSizes<TType1, TType2, TType3, TType4, TType5>();
+        }
+
+        /// <summary>
+        /// Intermediate structure for JumpOver functions, to improve readabilitiy.
+        /// </summary>
+        internal readonly struct JumpedPointer
+        {
+            private readonly void* m_Stream;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private JumpedPointer(void* stream)
+            {
+                m_Stream = stream;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static implicit operator JumpedPointer(void* stream)
+            {
+                return new JumpedPointer(stream);
+            }
+
+            /// <summary>
+            /// Cast the jumped pointer to a speecific type.
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal T* AsAPointerOf<T>() where T : unmanaged
+            {
+                return (T*) m_Stream;
+            }
         }
 
         #endregion
@@ -159,7 +188,7 @@ namespace HiraBots
         internal static ref TTarget Read<TTarget>(byte* stream)
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver(stream);
+            return ref *JumpOver(stream).AsAPointerOf<TTarget>();
         }
 
         /// <summary>
@@ -170,7 +199,7 @@ namespace HiraBots
             where TSkip1 : unmanaged
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver<TSkip1>(stream);
+            return ref *JumpOver<TSkip1>(stream).AsAPointerOf<TTarget>();
         }
 
         /// <summary>
@@ -182,7 +211,7 @@ namespace HiraBots
             where TSkip2 : unmanaged
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver<TSkip1, TSkip2>(stream);
+            return ref *JumpOver<TSkip1, TSkip2>(stream).AsAPointerOf<TTarget>();
         }
 
         /// <summary>
@@ -195,7 +224,7 @@ namespace HiraBots
             where TSkip3 : unmanaged
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver<TSkip1, TSkip2, TSkip3>(stream);
+            return ref *JumpOver<TSkip1, TSkip2, TSkip3>(stream).AsAPointerOf<TTarget>();
         }
 
         /// <summary>
@@ -209,7 +238,7 @@ namespace HiraBots
             where TSkip4 : unmanaged
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver<TSkip1, TSkip2, TSkip3, TSkip4>(stream);
+            return ref *JumpOver<TSkip1, TSkip2, TSkip3, TSkip4>(stream).AsAPointerOf<TTarget>();
         }
 
         /// <summary>
@@ -224,7 +253,7 @@ namespace HiraBots
             where TSkip5 : unmanaged
             where TTarget : unmanaged
         {
-            return ref *(TTarget*) JumpOver<TSkip1, TSkip2, TSkip3, TSkip4, TSkip5>(stream);
+            return ref *JumpOver<TSkip1, TSkip2, TSkip3, TSkip4, TSkip5>(stream).AsAPointerOf<TTarget>();
         }
 
         #endregion
@@ -238,7 +267,7 @@ namespace HiraBots
         internal static void Write<T>(ref byte* stream, T value) where T : unmanaged
         {
             Read<T>(stream) = value;
-            stream = JumpOver<T>(stream);
+            stream = JumpOver<T>(stream).AsAPointerOf<byte>();
         }
 
         #endregion

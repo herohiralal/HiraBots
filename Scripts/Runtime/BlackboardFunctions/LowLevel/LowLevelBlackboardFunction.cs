@@ -49,7 +49,7 @@ namespace HiraBots
         internal byte* memory
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<int, IntPtr>(m_Address);
+            get => ByteStreamHelpers.JumpOver<int, IntPtr>(m_Address).AsAPointerOf<byte>();
         }
     }
 }
