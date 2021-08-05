@@ -207,7 +207,7 @@ namespace HiraBots
         internal static Object ReadObjectValue(byte* stream, ushort offset)
         {
             var instanceID = ReadIntegerValue(stream, offset);
-            return (instanceID) == 0 ? null : Resources.InstanceIDToObject(instanceID);
+            return (instanceID) == 0 ? null : UnityEngine.Resources.InstanceIDToObject(instanceID);
         }
 
         /// <summary>
