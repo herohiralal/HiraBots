@@ -6,32 +6,22 @@ namespace HiraBots
     /// <summary>
     /// The context required to compile a blackboard key.
     /// </summary>
-    internal unsafe interface IBlackboardKeyCompilerContext
+    internal unsafe struct BlackboardKeyCompilerContext
     {
         /// <summary>
         /// The address to write the default value at.
         /// </summary>
-        byte* address { get; }
+        internal byte* address { get; set; }
 
         /// <summary>
         /// The index to cache.
         /// </summary>
-        ushort index { get; }
+        internal ushort index { get; set; }
 
         /// <summary>
         /// The memory offset to cache.
         /// </summary>
-        ushort memoryOffset { get; }
-
-        /// <summary>
-        /// The compiled data to provide.
-        /// </summary>
-        BlackboardKeyCompiledData compiledData { set; }
-
-        /// <summary>
-        /// The name of the key to provide.
-        /// </summary>
-        string name { set; }
+        internal ushort memoryOffset { get; set; }
     }
 
     internal abstract partial class BlackboardKey
@@ -51,7 +41,7 @@ namespace HiraBots
         /// <summary>
         /// Compile the blackboard template into more efficiently accessible runtime data.
         /// </summary>
-        internal void Compile(IBlackboardKeyCompilerContext context)
+        internal void Compile(ref BlackboardKeyCompilerContext context)
         {
             if (isCompiled)
             {
@@ -66,9 +56,7 @@ namespace HiraBots
 
             // provide all the necessary data to the context
             m_CompiledDataInternal = new BlackboardKeyCompiledData(context.memoryOffset, context.index, traits, m_KeyType);
-            context.compiledData = m_CompiledDataInternal;
-            context.name = name;
-            CompileInternal(context);
+            CompileInternal(ref context);
         }
 
         /// <summary>
@@ -80,7 +68,7 @@ namespace HiraBots
             m_CompiledDataInternal = BlackboardKeyCompiledData.none;
         }
 
-        protected abstract void CompileInternal(IBlackboardKeyCompilerContext context);
+        protected abstract void CompileInternal(ref BlackboardKeyCompilerContext context);
 
         protected virtual void FreeInternal()
         {
@@ -89,7 +77,7 @@ namespace HiraBots
 
     internal unsafe partial class BooleanBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteBooleanValue(context.address, 0, m_DefaultValue);
         }
@@ -97,11 +85,14 @@ namespace HiraBots
 
     internal unsafe partial class EnumBlackboardKey
     {
+        /// <summary>
+        /// Helper enum to convert a byte into an enum.
+        /// </summary>
         private enum ValueWriterHelper : byte
         {
         }
 
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteEnumValue<ValueWriterHelper>(context.address, 0, (ValueWriterHelper) m_DefaultValue.m_Value);
         }
@@ -109,7 +100,7 @@ namespace HiraBots
 
     internal unsafe partial class FloatBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteFloatValue(context.address, 0, m_DefaultValue);
         }
@@ -117,7 +108,7 @@ namespace HiraBots
 
     internal unsafe partial class IntegerBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteIntegerValue(context.address, 0, m_DefaultValue);
         }
@@ -125,7 +116,7 @@ namespace HiraBots
 
     internal unsafe partial class ObjectBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             // write the object value as default value to register it in the object cache
             // and then pin the object to freeze its count
@@ -145,7 +136,7 @@ namespace HiraBots
 
     internal unsafe partial class QuaternionBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, quaternion.Euler(m_DefaultValue));
         }
@@ -153,7 +144,7 @@ namespace HiraBots
 
     internal unsafe partial class VectorBlackboardKey
     {
-        protected override void CompileInternal(IBlackboardKeyCompilerContext context)
+        protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
             BlackboardUnsafeHelpers.WriteVectorValue(context.address, 0, m_DefaultValue);
         }

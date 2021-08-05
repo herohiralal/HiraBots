@@ -30,18 +30,18 @@ namespace HiraBots.Editor.Tests
                     booleanThrowaway
                 }, HideFlags.HideAndDontSave);
 
-            var validatorContext = new BlackboardTemplateValidatorContext();
+            var validator = new BlackboardTemplateValidator();
 
             try
             {
-                template.Validate(validatorContext);
+                var result = validator.Validate(template, out var errorText);
 
-                Assert.IsFalse(validatorContext.validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.emptyIndices.Contains(1), "Correct validation index not included in the report.");
+                Assert.IsFalse(result, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(errorText.Contains(BlackboardTemplateValidator.FormatErrorStringForEmptyIndex(1)),
+                    "Correct validation index not included in the report.");
             }
             finally
             {
-                validatorContext.Reset();
                 Object.DestroyImmediate(template);
                 Object.DestroyImmediate(floatThrowaway);
                 Object.DestroyImmediate(booleanThrowaway);
@@ -64,25 +64,24 @@ namespace HiraBots.Editor.Tests
 
             parentField.SetValue(first, second);
 
-            var validatorContext = new BlackboardTemplateValidatorContext();
+            var validator = new BlackboardTemplateValidator();
 
             try
             {
-                first.Validate(validatorContext);
+                var result = validator.Validate(first, out var errorText);
 
-                Assert.IsFalse(validatorContext.validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.recursionPoint == second, "Correct recursion point not included in the report.");
+                Assert.IsFalse(result, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(errorText.Contains(BlackboardTemplateValidator.FormatErrorStringForRecursionPoint(second)),
+                    "Correct recursion point not included in the report.");
 
-                validatorContext.Reset();
+                result = validator.Validate(second, out errorText);
 
-                second.Validate(validatorContext);
-
-                Assert.IsFalse(validatorContext.validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.recursionPoint == first, "Correct recursion point not included in the report.");
+                Assert.IsFalse(result, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(errorText.Contains(BlackboardTemplateValidator.FormatErrorStringForRecursionPoint(first)),
+                    "Correct recursion point not included in the report.");
             }
             finally
             {
-                validatorContext.Reset();
                 Object.DestroyImmediate(first);
                 Object.DestroyImmediate(second);
             }
@@ -107,18 +106,18 @@ namespace HiraBots.Editor.Tests
                     booleanThrowaway
                 }, HideFlags.HideAndDontSave);
 
-            var validatorContext = new BlackboardTemplateValidatorContext();
+            var validator = new BlackboardTemplateValidator();
 
             try
             {
-                template.Validate(validatorContext);
+                var result = validator.Validate(template, out var errorText);
 
-                Assert.IsFalse(validatorContext.validated, "Validation succeeded when it shouldn't have.");
-                Assert.IsTrue(validatorContext.duplicateKeys.Contains(("Dumb Key", template)), "Correct key name not included in the report.");
+                Assert.IsFalse(result, "Validation succeeded when it shouldn't have.");
+                Assert.IsTrue(errorText.Contains(BlackboardTemplateValidator.FormatErrorStringForDuplicateKey(template, "Dumb Key", template)),
+                    "Correct key name not included in the report.");
             }
             finally
             {
-                validatorContext.Reset();
                 Object.DestroyImmediate(template);
                 Object.DestroyImmediate(floatThrowaway);
                 Object.DestroyImmediate(booleanThrowaway);

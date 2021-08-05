@@ -29,7 +29,7 @@ namespace HiraBots.Editor
         /// <returns></returns>
         internal static bool TryGenerateBlackboardTemplateCollection(out BlackboardTemplateCollection output)
         {
-            var validator = new BlackboardValidator();
+            var validator = new BlackboardTemplateValidator();
 
             // objects used for testing are subclasses that get compiled away, leaving the asset itself as
             // not being determined a Blackboard Template
@@ -48,11 +48,13 @@ namespace HiraBots.Editor
 
             foreach (var template in templatesToCook)
             {
-                if (!validator.Execute(template, out var errorText))
+                if (validator.Validate(template, out var errorText))
                 {
-                    Debug.LogError(errorText, template);
-                    result = false;
+                    continue;
                 }
+
+                Debug.LogError(errorText, template);
+                result = false;
             }
 
             output = result ? BlackboardTemplateCollection.Create(templatesToCook) : null;

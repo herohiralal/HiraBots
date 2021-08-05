@@ -39,9 +39,9 @@ namespace HiraBots
         void AddSameNamedKey(string keyName, BlackboardTemplate owner);
 
         /// <summary>
-        /// Get the context to validate blackboard keys.
+        /// Add a key that failed its internal validation.
         /// </summary>
-        IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key);
+        void AddBadKey(BlackboardKey key);
     }
 
     internal partial class BlackboardTemplate
@@ -157,13 +157,22 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void IndividualKeyValidationCheck(IBlackboardTemplateValidatorContext context)
         {
+            var keyValidatorContext = new BlackboardKeyValidatorContext();
+            
             var count = m_Keys.Length;
             for (var i = 0; i < count; i++)
             {
                 var key = m_Keys[i];
                 if (key != null)
                 {
-                    key.Validate(context.GetKeyValidatorContext(key));
+                    keyValidatorContext.succeeded = true;
+
+                    key.Validate(ref keyValidatorContext);
+
+                    if (!keyValidatorContext.succeeded)
+                    {
+                        context.AddBadKey(key);
+                    }
                 }
             }
         }

@@ -102,26 +102,24 @@ namespace HiraBots.Editor.Tests
         // check whether all the templates are validated
         private static void Validate(params BlackboardTemplate[] templates)
         {
-            var validator = new BlackboardTemplateValidatorContext();
+            var validator = new BlackboardTemplateValidator();
 
             foreach (var template in templates)
             {
-                template.Validate(validator);
-                Assert.IsTrue(validator.validated, $"{template.name} could not be validated.");
-                validator.Reset();
+                var result = validator.Validate(template, out _);
+                Assert.IsTrue(result, $"{template.name} could not be validated.");
             }
         }
 
         // compile all the templates
         private static void Compile(params BlackboardTemplate[] templates)
         {
-            var compiler = new BlackboardTemplateCompilerContext();
+            var compiler = new BlackboardTemplateCompiler();
 
             foreach (var template in templates)
             {
-                template.Compile(compiler);
+                compiler.Compile(template);
                 Assert.IsTrue(template.isCompiled, $"{template.name} could not be compiled.");
-                compiler.Reset();
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace HiraBots
@@ -10,26 +11,7 @@ namespace HiraBots
     /// </summary>
     internal interface IBlackboardTemplateCompilerContext
     {
-        /// <summary>
-        /// Generate a key compiler context.
-        /// </summary>
-        void GenerateKeyCompilerContext(
-            NativeArray<byte> template,
-            Dictionary<string, ushort> keyNameToMemoryOffset,
-            Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData,
-            ushort startingIndex,
-            ushort startingMemoryOffset);
-
-        /// <summary>
-        /// The key compiler context (if generated).
-        /// </summary>
-        IBlackboardKeyCompilerContext keyCompilerContext { get; }
-
-        /// <summary>
-        /// Update the key compiler context for use with a new key.
-        /// </summary>
-        /// <param name="memoryOffsetDelta">The delta to shift the memory offset by.</param>
-        void UpdateKeyCompilerContext(ushort memoryOffsetDelta);
+        // nothing really
     }
 
     internal partial class BlackboardTemplate
@@ -47,7 +29,7 @@ namespace HiraBots
         /// <summary>
         /// Compile this blackboard template.
         /// </summary>
-        internal void Compile(IBlackboardTemplateCompilerContext context)
+        internal unsafe void Compile(IBlackboardTemplateCompilerContext context)
         {
             if (isCompiled)
             {
@@ -90,7 +72,8 @@ namespace HiraBots
                 totalKeyCount += startingIndex;
             }
 
-            var template = new NativeArray<byte>(UnsafeHelpers.GetAlignedSize(totalTemplateSize), Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            var template = new NativeArray<byte>(UnsafeHelpers.GetAlignedSize(totalTemplateSize),
+                Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             var keyNameToMemoryOffset = new Dictionary<string, ushort>(totalKeyCount);
             var memoryOffsetToKeyData = new Dictionary<ushort, BlackboardKeyCompiledData>(totalKeyCount);
 
@@ -110,16 +93,29 @@ namespace HiraBots
                 }
             }
 
-            // acquire key compiler context
-            context.GenerateKeyCompilerContext(template, keyNameToMemoryOffset, memoryOffsetToKeyData, startingIndex, startingMemoryOffset);
+            var templateAddress = (byte*) template.GetUnsafePtr();
+            var memoryOffset = startingMemoryOffset;
+            var index = startingIndex;
+
+            var keyCompilerContext = new BlackboardKeyCompilerContext();
 
             foreach (var key in m_Keys.OrderBy(k => k.sizeInBytes))
             {
-                key.Compile(context.keyCompilerContext);
-                context.UpdateKeyCompilerContext(key.sizeInBytes);
+                keyCompilerContext.address = templateAddress + memoryOffset;
+                keyCompilerContext.index = index;
+                keyCompilerContext.memoryOffset = memoryOffset;
+
+                key.Compile(ref keyCompilerContext);
+
+                keyNameToMemoryOffset.Add(key.name, memoryOffset);
+                memoryOffsetToKeyData.Add(memoryOffset, key.compiledData);
+
+                memoryOffset += key.sizeInBytes;
+                index++;
             }
 
-            compiledData = new BlackboardTemplateCompiledData(parentCompiledData, template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
+            compiledData = new BlackboardTemplateCompiledData(parentCompiledData,
+                template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
         }
 
         /// <summary>
@@ -127,7 +123,11 @@ namespace HiraBots
         /// </summary>
         internal void Free()
         {
-            foreach (var key in m_Keys) key.Free();
+            foreach (var key in m_Keys)
+            {
+                key.Free();
+            }
+
             compiledData = null;
         }
     }

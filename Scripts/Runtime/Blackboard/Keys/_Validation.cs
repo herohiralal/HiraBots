@@ -1,16 +1,14 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace HiraBots
+﻿namespace HiraBots
 {
     /// <summary>
     /// The context required to validate a blackboard key.
     /// </summary>
-    internal interface IBlackboardKeyValidatorContext
+    internal struct BlackboardKeyValidatorContext
     {
         /// <summary>
-        /// Mark the validation as unsuccessful.
+        /// Whether the validation succeeded.
         /// </summary>
-        void MarkUnsuccessful();
+        internal bool succeeded { get; set; }
     }
 
     internal abstract partial class BlackboardKey
@@ -18,11 +16,18 @@ namespace HiraBots
         /// <summary>
         /// Validate this blackboard key.
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Validate(IBlackboardKeyValidatorContext context)
+        internal void Validate(ref BlackboardKeyValidatorContext context)
         {
             if (m_KeyType == BlackboardKeyType.Invalid)
-                context.MarkUnsuccessful();
+            {
+                context.succeeded = false;
+            }
+
+            ValidateInternal(ref context);
+        }
+
+        protected virtual void ValidateInternal(ref BlackboardKeyValidatorContext context)
+        {
         }
     }
 }

@@ -71,26 +71,20 @@ namespace HiraBots.Editor.Tests
 
             // validate the blackboard templates first
             {
-                var validatorContext = new BlackboardTemplateValidatorContext();
+                var validator = new BlackboardTemplateValidator();
 
-                m_Parent.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.validated, "Parent blackboard template couldn't be validated. Test incomplete.");
+                var result = validator.Validate(m_Parent, out _);
+                Assert.IsTrue(result, "Parent blackboard template couldn't be validated. Test incomplete.");
 
-                validatorContext.Reset();
-
-                m_Child.Validate(validatorContext);
-                Assert.IsTrue(validatorContext.validated, "Child blackboard template couldn't be validated. Test incomplete.");
-
-                validatorContext.Reset();
+                result = validator.Validate(m_Child, out _);
+                Assert.IsTrue(result, "Child blackboard template couldn't be validated. Test incomplete.");
             }
 
             // compile
             {
-                var compilerContext = new BlackboardTemplateCompilerContext();
-                m_Parent.Compile(compilerContext);
-                compilerContext.Reset();
-                m_Child.Compile(compilerContext);
-                compilerContext.Reset();
+                var compiler = new BlackboardTemplateCompiler();
+                compiler.Compile(m_Parent);
+                compiler.Compile(m_Child);
             }
         }
 

@@ -21,7 +21,7 @@ namespace HiraBots
 
             Profiler.BeginSample("Blackboard Template Compilation");
 
-            var blackboardTemplateCompilerContext = new BlackboardTemplateCompilerContext();
+            var blackboardTemplateCompiler = new BlackboardTemplateCompiler();
 
             var btc = BlackboardTemplateCollection.instance;
             var btcCount = btc.count;
@@ -30,8 +30,7 @@ namespace HiraBots
                 // the assumption here is that the blackboard templates are arranged
                 // according to their hierarchy indices, to make sure a parent template
                 // does not get compiled before its child
-                btc[i].Compile(blackboardTemplateCompilerContext);
-                blackboardTemplateCompilerContext.Reset();
+                blackboardTemplateCompiler.Compile(btc[i]);
             }
 
             Profiler.EndSample();
