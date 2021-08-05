@@ -1,4 +1,5 @@
-﻿namespace HiraBots
+﻿#if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
+namespace HiraBots
 {
     /// <summary>
     /// The context required to validate a blackboard key.
@@ -31,3 +32,4 @@
         }
     }
 }
+#endif

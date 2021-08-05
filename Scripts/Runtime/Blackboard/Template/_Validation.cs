@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace HiraBots
@@ -178,3 +179,4 @@ namespace HiraBots
         }
     }
 }
+#endif

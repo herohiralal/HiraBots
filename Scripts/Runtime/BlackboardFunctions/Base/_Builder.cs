@@ -1,4 +1,5 @@
-﻿namespace UnityEngine
+﻿#if HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
+namespace UnityEngine
 {
     public abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
@@ -58,3 +59,4 @@
         }
     }
 }
+#endif

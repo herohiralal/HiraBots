@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -19,3 +20,4 @@ namespace HiraBots
         }
     }
 }
+#endif

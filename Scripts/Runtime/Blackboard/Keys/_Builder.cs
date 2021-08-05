@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#if HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
+using System.Reflection;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -136,3 +137,4 @@ namespace HiraBots
         }
     }
 }
+#endif
