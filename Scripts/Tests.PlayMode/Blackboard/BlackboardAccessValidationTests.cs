@@ -14,13 +14,13 @@ namespace HiraBots.Editor.Tests
     internal class BlackboardAccessValidationTests : BlackboardAccessTestBase
     {
         [OneTimeSetUp]
-        public void SetUp()
+        public virtual void SetUp()
         {
             base.SetUp(false);
         }
 
         [OneTimeTearDown]
-        public void TearDown()
+        public virtual void TearDown()
         {
             base.TearDown(false);
         }
