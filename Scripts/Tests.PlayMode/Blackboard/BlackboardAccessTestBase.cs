@@ -71,7 +71,7 @@ namespace HiraBots.Editor.Tests
         /// <summary>
         /// Validate and compile all blackboards.
         /// </summary>
-        protected void SetUp()
+        public void SetUp(bool shouldValidateAndCompile)
         {
             mockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
             mockObject1.hideFlags = HideFlags.HideAndDontSave;
@@ -86,8 +86,12 @@ namespace HiraBots.Editor.Tests
             m_ElementalistTemplate = Resources.Load<BlackboardTemplate>("TestElementalist");
 
             CheckLoaded(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
-            Validate(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
-            Compile(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
+
+            if (shouldValidateAndCompile)
+            {
+                Validate(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
+                Compile(m_BaseCharacterTemplate, m_WarriorTemplate, m_MageTemplate, m_ElementalistTemplate);
+            }
         }
 
         // check whether all the templates are loaded
@@ -126,10 +130,13 @@ namespace HiraBots.Editor.Tests
         /// <summary>
         /// Free up all the allocations.
         /// </summary>
-        protected void TearDown()
+        public void TearDown(bool shouldFreeAndUnload)
         {
-            Free(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
-            Unload(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
+            if (shouldFreeAndUnload)
+            {
+                Free(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
+                Unload(m_ElementalistTemplate, m_MageTemplate, m_WarriorTemplate, m_BaseCharacterTemplate);
+            }
 
             m_BaseCharacterTemplate = m_WarriorTemplate = m_MageTemplate = m_ElementalistTemplate = null;
 

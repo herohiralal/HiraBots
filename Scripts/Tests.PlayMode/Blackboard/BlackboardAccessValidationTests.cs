@@ -14,15 +14,15 @@ namespace HiraBots.Editor.Tests
     internal class BlackboardAccessValidationTests : BlackboardAccessTestBase
     {
         [OneTimeSetUp]
-        public new void SetUp()
+        public void SetUp()
         {
-            base.SetUp();
+            base.SetUp(false);
         }
 
         [OneTimeTearDown]
-        public new void TearDown()
+        public void TearDown()
         {
-            base.TearDown();
+            base.TearDown(false);
         }
 
         private const string k_InvalidKeyName = "E1E5B7FC-5BE4-45BA-A84E-95821BBA9662";

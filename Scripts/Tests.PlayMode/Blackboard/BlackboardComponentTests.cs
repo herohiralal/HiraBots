@@ -15,15 +15,15 @@ namespace HiraBots.Editor.Tests
     internal class BlackboardComponentTests : BlackboardAccessTestBase
     {
         [OneTimeSetUp]
-        public new void SetUp()
+        public void SetUp()
         {
-            base.SetUp();
+            base.SetUp(false);
         }
 
         [OneTimeTearDown]
-        public new void TearDown()
+        public void TearDown()
         {
-            base.TearDown();
+            base.TearDown(false);
         }
 
         /// <summary>
