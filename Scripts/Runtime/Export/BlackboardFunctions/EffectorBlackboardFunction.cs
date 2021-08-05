@@ -10,11 +10,11 @@ namespace UnityEngine
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelEffectorBlackboardFunction"/>.
     /// =====================================================================================================
     /// </summary>
-    public abstract class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
+    public abstract unsafe partial class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
     {
         protected override int memorySize => base.memorySize + ByteStreamHelpers.NoCombinedSizes(); // header includes nothing
 
-        protected internal override unsafe byte* AppendMemory(byte* stream)
+        protected internal override byte* AppendMemory(byte* stream)
         {
             stream = base.AppendMemory(stream);
             return stream;

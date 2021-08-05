@@ -10,7 +10,7 @@ namespace UnityEngine
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelBlackboardFunction"/>.
     /// =============================================================================================
     /// </summary>
-    public abstract unsafe class BlackboardFunction<TFunction> : ScriptableObject
+    public abstract unsafe partial class BlackboardFunction<TFunction> : ScriptableObject
         where TFunction : Delegate
     {
         /// <summary>

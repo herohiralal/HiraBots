@@ -3,6 +3,8 @@
     "references": [
         "HiraBots.Runtime",
         "HiraBots.Editor",
+        "Unity.Burst",
+        "Unity.Mathematics",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

@@ -10,14 +10,14 @@ namespace UnityEngine
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelDecoratorBlackboardFunction"/>.
     /// ======================================================================================================
     /// </summary>
-    public abstract class DecoratorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
+    public abstract unsafe partial class DecoratorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
     {
         [Tooltip("Whether to invert the result of this function.")]
         [SerializeField] private bool m_Invert = false;
 
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<bool>(); // header includes inversion
 
-        protected internal override unsafe byte* AppendMemory(byte* stream)
+        protected internal override byte* AppendMemory(byte* stream)
         {
             stream = base.AppendMemory(stream);
 

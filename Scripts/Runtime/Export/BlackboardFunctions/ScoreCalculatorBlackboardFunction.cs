@@ -8,7 +8,7 @@ namespace UnityEngine
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelScoreCalculatorBlackboardFunction"/>.
     /// ============================================================================================================
     /// </summary>
-    public abstract class ScoreCalculatorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
+    public abstract unsafe partial class ScoreCalculatorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
     {
         [Tooltip("The score to add to the total if the condition-check returns true (after inversion).")]
         [SerializeField] private float m_Score = 0f;
@@ -18,7 +18,7 @@ namespace UnityEngine
 
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<float, bool>(); // header includes inversion & score
 
-        protected internal override unsafe byte* AppendMemory(byte* stream)
+        protected internal override byte* AppendMemory(byte* stream)
         {
             stream = base.AppendMemory(stream);
 

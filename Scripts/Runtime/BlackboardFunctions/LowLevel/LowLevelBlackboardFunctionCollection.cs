@@ -47,7 +47,7 @@ namespace HiraBots
         internal struct Enumerator
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public Enumerator(byte* current, int count)
+            internal Enumerator(byte* current, int count)
             {
                 m_Current = current;
                 m_CurrentIndex = -1;
@@ -63,7 +63,7 @@ namespace HiraBots
             /// </summary>
             /// <returns>Whether the element is valid.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext()
+            internal bool MoveNext()
             {
                 if (++m_CurrentIndex >= m_Count)
                 {
@@ -78,7 +78,7 @@ namespace HiraBots
             /// <summary>
             /// Current element in the iterator.
             /// </summary>
-            public LowLevelBlackboardFunction current
+            internal LowLevelBlackboardFunction current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get => m_Current;
