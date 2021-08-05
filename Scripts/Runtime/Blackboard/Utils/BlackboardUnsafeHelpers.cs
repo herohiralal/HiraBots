@@ -260,7 +260,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void Pin(Object target)
         {
-            s_ObjectCache.SetFreeze(target.GetInstanceID(), true);
+            s_ObjectCache.SetFreeze(target == null ? 0 : target.GetInstanceID(), true);
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void Release(Object target)
         {
-            s_ObjectCache.SetFreeze(target.GetInstanceID(), false);
+            s_ObjectCache.SetFreeze(target == null ? 0 : target.GetInstanceID(), false);
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value)
         {
-            return WriteIntegerValueAndGetChange(stream, offset, value.GetInstanceID());
+            return WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace HiraBots
         [MethodImpl(k_Inline)]
         internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value)
         {
-            WriteIntegerValue(stream, offset, value.GetInstanceID());
+            WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
         }
 #endif
 

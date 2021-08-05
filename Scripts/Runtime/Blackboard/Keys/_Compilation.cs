@@ -129,7 +129,7 @@ namespace HiraBots
             // release the object to unfreeze its count
             // and then write the object value as null to unregister it from the object cache
             BlackboardUnsafeHelpers.Release(m_DefaultValue);
-            var instanceID = m_DefaultValue.GetInstanceID();
+            var instanceID = m_DefaultValue == null ? 0 : m_DefaultValue.GetInstanceID();
             BlackboardUnsafeHelpers.WriteObjectValue((byte*) &instanceID, 0, null);
         }
     }
