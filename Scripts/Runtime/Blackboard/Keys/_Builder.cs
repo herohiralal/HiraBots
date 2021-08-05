@@ -45,7 +45,6 @@ namespace HiraBots
             where T : EnumBlackboardKey where TEnumType : unmanaged, System.Enum
         {
             var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue.m_TypeIdentifier = "";
 
             var enumType = typeof(TEnumType);
             if (enumType.IsEnum)
