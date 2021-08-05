@@ -1,20 +1,8 @@
-﻿#if UNITY_EDITOR // ideally validation is only needed within the editor (either when building, or when exiting play mode)
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace HiraBots
 {
-    /// <summary>
-    /// The context required to validate a blackboard key.
-    /// </summary>
-    internal interface IBlackboardKeyValidatorContext
-    {
-        /// <summary>
-        /// Mark the validation as unsuccessful.
-        /// </summary>
-        void MarkUnsuccessful();
-    }
-
     /// <summary>
     /// The context required to validate a blackboard template.
     /// </summary>
@@ -54,19 +42,6 @@ namespace HiraBots
         /// Get the context to validate blackboard keys.
         /// </summary>
         IBlackboardKeyValidatorContext GetKeyValidatorContext(BlackboardKey key);
-    }
-
-    internal abstract partial class BlackboardKey
-    {
-        /// <summary>
-        /// Validate this blackboard key.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Validate(IBlackboardKeyValidatorContext context)
-        {
-            if (m_KeyType == BlackboardKeyType.Invalid)
-                context.MarkUnsuccessful();
-        }
     }
 
     internal partial class BlackboardTemplate
@@ -194,5 +169,3 @@ namespace HiraBots
         }
     }
 }
-
-#endif

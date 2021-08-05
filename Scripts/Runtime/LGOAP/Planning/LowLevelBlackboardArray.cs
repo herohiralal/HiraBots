@@ -33,7 +33,7 @@ namespace HiraBots
                                                                 $"(index) {index}.")
                     : output;
 #else
-                        return output;
+                return output;
 #endif
             }
         }

@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR // ideally manual creation must only be done for testing purposes as it skips validation checks
-namespace UnityEngine
+﻿namespace UnityEngine
 {
     public abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
@@ -59,4 +58,3 @@ namespace UnityEngine
         }
     }
 }
-#endif

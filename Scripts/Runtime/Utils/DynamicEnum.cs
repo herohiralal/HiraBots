@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 #if UNITY_EDITOR
 using System.Collections.Generic;
@@ -6,8 +7,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 #endif
-
-using UnityEngine;
 
 namespace HiraBots
 {
