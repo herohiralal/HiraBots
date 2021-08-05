@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace HiraBots
+namespace UnityEngine
 {
-    internal unsafe struct LowLevelBlackboard
+    public unsafe struct LowLevelBlackboard
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelBlackboard(byte* address, ushort length)
@@ -26,7 +26,7 @@ namespace HiraBots
         /// Access a variable from the blackboard.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ref T Access<T>(int memoryOffset) where T : unmanaged
+        public ref T Access<T>(int memoryOffset) where T : unmanaged
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (memoryOffset >= m_Length || memoryOffset + sizeof(T) > m_Length)
