@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using AOT;
+using NUnit.Framework;
 using Unity.Burst;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace HiraBots.Editor.Tests
 
             protected override FunctionPointer<FuncInt> function => s_FunctionPointer;
 
-            [BurstCompile(DisableDirectCall = true)]
+            [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(FuncInt))]
             private static int Square(void* blackboard)
             {
                 var value = (*(LowLevelBlackboard*) blackboard).Access<int>(0);
