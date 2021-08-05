@@ -29,7 +29,7 @@ namespace HiraBots
         internal int size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<int>(m_Address);
+            get => ByteStreamHelpers.JumpOverNothing(m_Address).AndAccess<int>();
         }
 
         // offset size
@@ -39,7 +39,7 @@ namespace HiraBots
         internal IntPtr functionPtr
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<int, IntPtr>(m_Address);
+            get => ByteStreamHelpers.JumpOver<int>(m_Address).AndAccess<IntPtr>();
         }
 
         // offset size & function
@@ -49,7 +49,7 @@ namespace HiraBots
         internal byte* memory
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<int, IntPtr>(m_Address).AsAPointerOf<byte>();
+            get => ByteStreamHelpers.JumpOver<int, IntPtr>(m_Address).AndGetAPointerOf<byte>();
         }
     }
 }

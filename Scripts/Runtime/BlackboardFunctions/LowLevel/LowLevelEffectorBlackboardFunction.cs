@@ -28,7 +28,7 @@ namespace HiraBots
         private byte* functionMemory
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver(m_Function.memory).AsAPointerOf<byte>();
+            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndGetAPointerOf<byte>();
         }
 
         /// <summary>

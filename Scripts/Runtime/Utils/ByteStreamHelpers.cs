@@ -10,7 +10,7 @@ namespace HiraBots
         /// Add the size of zero types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int CombinedSizes()
+        internal static int NoCombinedSizes()
         {
             return 0;
         }
@@ -83,9 +83,9 @@ namespace HiraBots
         /// Jump over zero types.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static JumpedPointer JumpOver(byte* stream)
+        internal static JumpedPointer JumpOverNothing(byte* stream)
         {
-            return stream + CombinedSizes();
+            return stream + NoCombinedSizes();
         }
 
         /// <summary>
@@ -168,92 +168,22 @@ namespace HiraBots
             }
 
             /// <summary>
-            /// Cast the jumped pointer to a speecific type.
+            /// Cast the jumped pointer to a specific type.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal T* AsAPointerOf<T>() where T : unmanaged
+            internal ref T AndAccess<T>() where T : unmanaged
+            {
+                return ref *AndGetAPointerOf<T>();
+            }
+
+            /// <summary>
+            /// Cast the jumped pointer to a specific type.
+            /// </summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal T* AndGetAPointerOf<T>() where T : unmanaged
             {
                 return (T*) m_Stream;
             }
-        }
-
-        #endregion
-
-        #region Read
-
-        /// <summary>
-        /// Read a value from the stream without any skips.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TTarget>(byte* stream)
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver(stream).AsAPointerOf<TTarget>();
-        }
-
-        /// <summary>
-        /// Read a value from the stream, skipping over one type of item.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TSkip1, TTarget>(byte* stream)
-            where TSkip1 : unmanaged
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver<TSkip1>(stream).AsAPointerOf<TTarget>();
-        }
-
-        /// <summary>
-        /// Read a value from the stream, skipping over two types of items.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TSkip1, TSkip2, TTarget>(byte* stream)
-            where TSkip1 : unmanaged
-            where TSkip2 : unmanaged
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver<TSkip1, TSkip2>(stream).AsAPointerOf<TTarget>();
-        }
-
-        /// <summary>
-        /// Read a value from the stream, skipping over three types of items.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TSkip1, TSkip2, TSkip3, TTarget>(byte* stream)
-            where TSkip1 : unmanaged
-            where TSkip2 : unmanaged
-            where TSkip3 : unmanaged
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver<TSkip1, TSkip2, TSkip3>(stream).AsAPointerOf<TTarget>();
-        }
-
-        /// <summary>
-        /// Read a value from the stream, skipping over four types of items.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TSkip1, TSkip2, TSkip3, TSkip4, TTarget>(byte* stream)
-            where TSkip1 : unmanaged
-            where TSkip2 : unmanaged
-            where TSkip3 : unmanaged
-            where TSkip4 : unmanaged
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver<TSkip1, TSkip2, TSkip3, TSkip4>(stream).AsAPointerOf<TTarget>();
-        }
-
-        /// <summary>
-        /// Read a value from the stream, skipping over five types of items.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTarget Read<TSkip1, TSkip2, TSkip3, TSkip4, TSkip5, TTarget>(byte* stream)
-            where TSkip1 : unmanaged
-            where TSkip2 : unmanaged
-            where TSkip3 : unmanaged
-            where TSkip4 : unmanaged
-            where TSkip5 : unmanaged
-            where TTarget : unmanaged
-        {
-            return ref *JumpOver<TSkip1, TSkip2, TSkip3, TSkip4, TSkip5>(stream).AsAPointerOf<TTarget>();
         }
 
         #endregion
@@ -266,8 +196,8 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Write<T>(ref byte* stream, T value) where T : unmanaged
         {
-            Read<T>(stream) = value;
-            stream = JumpOver<T>(stream).AsAPointerOf<byte>();
+            JumpOverNothing(stream).AndAccess<T>() = value;
+            stream = JumpOver<T>(stream).AndGetAPointerOf<byte>();
         }
 
         #endregion

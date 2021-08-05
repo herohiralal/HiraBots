@@ -26,14 +26,14 @@ namespace HiraBots
         private bool invert
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<bool>(m_Function.memory);
+            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndAccess<bool>();
         }
 
         // the function memory state
         private byte* functionMemory
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<bool>(m_Function.memory).AsAPointerOf<byte>();
+            get => ByteStreamHelpers.JumpOver<bool>(m_Function.memory).AndGetAPointerOf<byte>();
         }
 
         /// <summary>

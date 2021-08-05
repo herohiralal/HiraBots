@@ -28,7 +28,7 @@ namespace HiraBots
         internal int count
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<int>(m_Address);
+            get => ByteStreamHelpers.JumpOverNothing(m_Address).AndAccess<int>();
         }
 
         // offset count
@@ -38,7 +38,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Enumerator GetEnumerator()
         {
-            return new Enumerator(ByteStreamHelpers.JumpOver<int>(m_Address).AsAPointerOf<byte>(), count);
+            return new Enumerator(ByteStreamHelpers.JumpOver<int>(m_Address).AndGetAPointerOf<byte>(), count);
         }
 
         /// <summary>

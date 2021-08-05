@@ -10,7 +10,7 @@
     /// </summary>
     internal abstract class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
     {
-        protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes(); // header includes nothing
+        protected override int memorySize => base.memorySize + ByteStreamHelpers.NoCombinedSizes(); // header includes nothing
 
         internal override unsafe byte* AppendMemory(byte* stream)
         {

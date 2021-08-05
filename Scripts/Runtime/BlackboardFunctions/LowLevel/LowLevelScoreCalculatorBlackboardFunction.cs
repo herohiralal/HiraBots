@@ -26,21 +26,21 @@ namespace HiraBots
         private float score
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<float>(m_Function.memory);
+            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndAccess<float>();
         }
 
         // whether the result must be inverted
         private bool invert
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.Read<float, bool>(m_Function.memory);
+            get => ByteStreamHelpers.JumpOver<float>(m_Function.memory).AndAccess<bool>();
         }
 
         // the function memory state
         private byte* functionMemory
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<float, bool>(m_Function.memory).AsAPointerOf<byte>();
+            get => ByteStreamHelpers.JumpOver<float, bool>(m_Function.memory).AndGetAPointerOf<byte>();
         }
 
         /// <summary>
