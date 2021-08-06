@@ -2,7 +2,7 @@
 
 namespace UnityEngine
 {
-    public unsafe struct LowLevelBlackboard
+    public readonly unsafe struct LowLevelBlackboard
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelBlackboard(byte* address, ushort length)
@@ -15,7 +15,7 @@ namespace UnityEngine
         }
 
         // the address of the raw blackboard data
-        private byte* m_Address;
+        private readonly byte* m_Address;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         // the size of the blackboard

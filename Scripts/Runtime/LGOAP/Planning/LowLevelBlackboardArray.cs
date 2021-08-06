@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal unsafe struct LowLevelBlackboardArray
+    internal readonly unsafe struct LowLevelBlackboardArray
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelBlackboardArray(byte* address, ushort count, ushort size)
@@ -13,7 +13,7 @@ namespace HiraBots
             m_Size = size;
         }
 
-        private byte* m_Address;
+        private readonly byte* m_Address;
         internal ushort count { get; }
         private readonly ushort m_Size;
 
