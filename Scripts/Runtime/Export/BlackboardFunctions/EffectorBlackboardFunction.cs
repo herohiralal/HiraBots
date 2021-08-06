@@ -2,7 +2,7 @@
 
 namespace UnityEngine
 {
-    public unsafe delegate void EffectorDelegate(LowLevelBlackboard blackboard, byte* memory);
+    public unsafe delegate void EffectorDelegate(in LowLevelBlackboard blackboard, byte* memory);
 
     /// <summary>
     /// A effector that can be executed on a <see cref="LowLevelBlackboard"/>.
@@ -14,9 +14,9 @@ namespace UnityEngine
     {
         protected override int memorySize => base.memorySize + ByteStreamHelpers.NoCombinedSizes(); // header includes nothing
 
-        protected internal override byte* AppendMemory(byte* stream)
+        protected internal override byte* Compile(byte* stream)
         {
-            stream = base.AppendMemory(stream);
+            stream = base.Compile(stream);
             return stream;
         }
     }

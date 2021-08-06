@@ -26,7 +26,7 @@ namespace UnityEngine
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        protected internal virtual byte* AppendMemory(byte* stream)
+        protected internal virtual byte* Compile(byte* stream)
         {
             // no offset
             ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize());

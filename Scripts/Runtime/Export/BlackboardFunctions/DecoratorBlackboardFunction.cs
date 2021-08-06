@@ -2,7 +2,7 @@
 
 namespace UnityEngine
 {
-    public unsafe delegate bool DecoratorDelegate(LowLevelBlackboard blackboard, byte* memory);
+    public unsafe delegate bool DecoratorDelegate(in LowLevelBlackboard blackboard, byte* memory);
 
     /// <summary>
     /// A decorator that can be executed on a <see cref="LowLevelBlackboard"/>.
@@ -17,9 +17,9 @@ namespace UnityEngine
 
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<bool>(); // header includes inversion
 
-        protected internal override byte* AppendMemory(byte* stream)
+        protected internal override byte* Compile(byte* stream)
         {
-            stream = base.AppendMemory(stream);
+            stream = base.Compile(stream);
 
             // no offset
             ByteStreamHelpers.Write<bool>(ref stream, m_Invert);

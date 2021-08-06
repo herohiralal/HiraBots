@@ -69,9 +69,9 @@ namespace HiraBots.Editor.Tests
 
             protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // header includes the memory
 
-            protected internal override byte* AppendMemory(byte* stream)
+            protected internal override byte* Compile(byte* stream)
             {
-                stream = base.AppendMemory(stream);
+                stream = base.Compile(stream);
 
                 // no offset
                 ByteStreamHelpers.Write<Memory>(ref stream, new Memory(m_Value));
@@ -120,7 +120,7 @@ namespace HiraBots.Editor.Tests
                 // compile function
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
-                calculator.AppendMemory(functionAddress);
+                calculator.Compile(functionAddress);
                 var function = (LowLevelBlackboardFunction) functionAddress;
 
                 // cross-check memory size
@@ -157,7 +157,7 @@ namespace HiraBots.Editor.Tests
                 // compile function
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
-                calculator.AppendMemory(functionAddress);
+                calculator.Compile(functionAddress);
                 var function = (LowLevelBlackboardFunction) functionAddress;
 
                 // cross-check memory size

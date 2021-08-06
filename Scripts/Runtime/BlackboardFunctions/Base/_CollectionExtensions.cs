@@ -29,13 +29,13 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* AppendMemory<T>(this BlackboardFunction<T>[] functions, byte* stream) where T : Delegate
+        internal static byte* Compile<T>(this BlackboardFunction<T>[] functions, byte* stream) where T : Delegate
         {
             ByteStreamHelpers.Write<int>(ref stream, functions.Length); // count header
 
             foreach (var function in functions)
             {
-                stream = function.AppendMemory(stream);
+                stream = function.Compile(stream);
             }
 
             return stream;
@@ -62,10 +62,10 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* AppendMemory(this DecoratorBlackboardFunction[] functions, byte* stream)
+        internal static byte* Compile(this DecoratorBlackboardFunction[] functions, byte* stream)
         {
             // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.AppendMemory(functions, stream);
+            return BlackboardFunctionExtensions.Compile(functions, stream);
         }
     }
 
@@ -89,10 +89,10 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* AppendMemory(this EffectorBlackboardFunction[] functions, byte* stream)
+        internal static byte* Compile(this EffectorBlackboardFunction[] functions, byte* stream)
         {
             // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.AppendMemory(functions, stream);
+            return BlackboardFunctionExtensions.Compile(functions, stream);
         }
     }
 
@@ -116,10 +116,10 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* AppendMemory(this ScoreCalculatorBlackboardFunction[] functions, byte* stream)
+        internal static byte* Compile(this ScoreCalculatorBlackboardFunction[] functions, byte* stream)
         {
             // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.AppendMemory(functions, stream);
+            return BlackboardFunctionExtensions.Compile(functions, stream);
         }
     }
 }

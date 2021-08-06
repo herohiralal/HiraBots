@@ -18,9 +18,9 @@ namespace UnityEngine
 
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<float, bool>(); // header includes inversion & score
 
-        protected internal override byte* AppendMemory(byte* stream)
+        protected internal override byte* Compile(byte* stream)
         {
-            stream = base.AppendMemory(stream);
+            stream = base.Compile(stream);
 
             // no offset
             ByteStreamHelpers.Write<float>(ref stream, m_Score);
