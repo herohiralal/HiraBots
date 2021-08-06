@@ -9,8 +9,8 @@ namespace HiraBots
     {
         private struct Memory
         {
-            public ushort m_Offset;
-            public bool m_Value;
+            internal ushort m_Offset;
+            internal bool m_Value;
         }
 
         private static readonly FunctionPointer<DecoratorDelegate> s_Function;
@@ -21,8 +21,8 @@ namespace HiraBots
         }
 
         [Tooltip("The key to look up.")]
-        [SerializeField] private BlackboardKey m_Key = null;
-        // todo: create a blackboard key picking system which can filter based on type and a select blackboard
+        [SerializeField] private BlackboardTemplate.KeySelector m_Key =
+            new BlackboardTemplate.KeySelector{keyTypesFilter = BlackboardKeyType.Boolean};
 
         [Tooltip("The value to compare.")]
         [SerializeField] private bool m_Value = true;
@@ -54,6 +54,6 @@ namespace HiraBots
         }
 
         // pack memory
-        private Memory memory => new Memory {m_Offset = m_Key.compiledData.memoryOffset, m_Value = m_Value};
+        private Memory memory => new Memory {m_Offset = m_Key.selectedKey.compiledData.memoryOffset, m_Value = m_Value};
     }
 }

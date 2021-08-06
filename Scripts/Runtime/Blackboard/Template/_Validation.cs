@@ -190,6 +190,11 @@ namespace HiraBots
         /// The pool of allowed keys.
         /// </summary>
         internal HashSet<BlackboardKey> allowedKeyPool { get; set; }
+
+        /// <summary>
+        /// The allowed key types.
+        /// </summary>
+        internal BlackboardKeyType allowedKeyTypes { get; set; }
     }
 
     internal partial class BlackboardTemplate
@@ -215,7 +220,7 @@ namespace HiraBots
                 }
 
                 // validate key types filter
-                if (!m_KeyTypes.HasFlag(m_Key.keyType))
+                if (!context.allowedKeyTypes.HasFlag(m_Key.keyType))
                 {
                     context.succeeded = false;
                 }

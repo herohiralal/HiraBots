@@ -13,34 +13,46 @@ namespace HiraBots
         {
             [SerializeField, HideInInspector] private BlackboardKey m_Key;
 
-#if !(UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER)
-            internal void UpdateFilter(BlackboardTemplate _)
+            /// <summary>
+            /// The currently selected key.
+            /// </summary>
+            internal BlackboardKey selectedKey
             {
-                // intentionally unused
+                get => m_Key;
+                set => m_Key = value;
             }
 
-            internal void UpdateFilter(BlackboardKeyType _)
-            {
-                // intentionally unused
-            }
-#else
+#if UNITY_EDITOR
+            // filter data is only needed in the editor - the actual validation occurs based on
+            // the data provided by the owning object
+
             [SerializeField, HideInInspector] private BlackboardTemplate m_Template;
             [SerializeField, HideInInspector] private BlackboardKeyType m_KeyTypes;
 
             /// <summary>
             /// Update the template filter.
             /// </summary>
-            internal void UpdateFilter(BlackboardTemplate template)
+            internal BlackboardTemplate templateFilter
             {
-                m_Template = template;
+                set => m_Template = value;
             }
 
             /// <summary>
             /// Update the key types filter.
             /// </summary>
-            internal void UpdateFilter(BlackboardKeyType keyTypes)
+            internal BlackboardKeyType keyTypesFilter
             {
-                m_KeyTypes = keyTypes;
+                set => m_KeyTypes = value;
+            }
+#else
+            internal BlackboardTemplate templateFilter
+            {
+                set { }
+            }
+
+            internal BlackboardKeyType keyTypesFilter
+            {
+                set { }
             }
 #endif
         }
