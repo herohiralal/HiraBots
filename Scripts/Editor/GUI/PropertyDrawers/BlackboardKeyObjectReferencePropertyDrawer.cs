@@ -72,7 +72,15 @@ namespace HiraBots.Editor
 
                 // name field
                 currentRect.y += 21f;
-                GUIHelpers.DrawNameField(currentRect, value);
+                var nameProperty = so.FindProperty("m_Name");
+                if (nameProperty == null)
+                {
+                    EditorGUI.HelpBox(currentRect, "Missing name property", MessageType.Error);
+                }
+                else
+                {
+                    EditorGUI.PropertyField(currentRect, nameProperty);
+                }
 
                 // instance synced property field
                 currentRect.y += 21f;

@@ -54,30 +54,6 @@ namespace HiraBots.Editor
         }
 
         /// <summary>
-        /// Draw a name field for an object.
-        /// </summary>
-        /// <param name="rect">The position and size of the property.</param>
-        /// <param name="value">The target object.</param>
-        /// <param name="fieldName">The label to use.</param>
-        internal static void DrawNameField(Rect rect, Object value, string fieldName = "Name")
-        {
-            // prefix label
-            rect = EditorGUI.PrefixLabel(rect, ToGUIContent(fieldName));
-
-            // indenting handled by prefix label
-            using (new IndentNullifier(0))
-            {
-                EditorGUI.BeginChangeCheck();
-                var updatedName = EditorGUI.DelayedTextField(rect, GUIContent.none, value.name);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    Undo.RegisterCompleteObjectUndo(value, $"Renamed {value.name}");
-                    value.name = updatedName;
-                }
-            }
-        }
-
-        /// <summary>
         /// Draw a dynamic enum popup using a reflected enum type.
         /// </summary>
         /// <param name="position">The position and size of the property.</param>
