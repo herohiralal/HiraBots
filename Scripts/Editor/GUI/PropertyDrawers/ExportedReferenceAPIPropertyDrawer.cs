@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace HiraBots.Editor
 {
     [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate))]
-    internal class ExportedReferenceAPIDrawer : PropertyDrawer
+    internal class ExportedReferenceAPIPropertyDrawer : PropertyDrawer
     {
         private const string k_InternalPropertyName = "m_Value";
         private const string k_MissingInternalPropertyMessage = "Missing m_Value internal property.";
