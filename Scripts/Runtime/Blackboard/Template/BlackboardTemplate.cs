@@ -15,6 +15,24 @@ namespace HiraBots
         [SerializeField, HideInInspector] private BlackboardKey[] m_Keys = new BlackboardKey[0];
 
         /// <summary>
+        /// Get a set of keys present in the blackboard. Optionally, include/exclude inherited keys.
+        /// </summary>
+        internal void GetKeySet(System.Collections.Generic.HashSet<BlackboardKey> keys, bool includeInherited = true)
+        {
+            if (includeInherited && m_Parent != null)
+            {
+                // inherited
+                m_Parent.GetKeySet(keys);
+            }
+
+            // own
+            foreach (var key in m_Keys)
+            {
+                keys.Add(key);
+            }
+        }
+
+        /// <summary>
         /// Implicitly convert a BlackboardTemplate to its public interface.
         /// </summary>
         public static implicit operator UnityEngine.BlackboardTemplate(BlackboardTemplate actualTemplate)
