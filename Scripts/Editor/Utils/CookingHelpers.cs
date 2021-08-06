@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,18 +9,6 @@ namespace HiraBots.Editor
     /// </summary>
     internal static class CookingHelpers
     {
-        /// <summary>
-        /// Load and get all assets of a type.
-        /// </summary>
-        /// <typeparam name="T">The type to load all assets for.</typeparam>
-        internal static IEnumerable<T> LoadAndGetAllAssetsOfType<T>() where T : Object
-        {
-            return AssetDatabase
-                .FindAssets($"t:{typeof(T).FullName}")
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<T>);
-        }
-
         /// <summary>
         /// Validate all the blackboard templates in the project, and pack them into a collection.
         /// </summary>

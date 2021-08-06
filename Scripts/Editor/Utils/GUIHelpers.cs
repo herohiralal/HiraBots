@@ -124,24 +124,27 @@ namespace HiraBots.Editor
         /// <returns>Its respective theme color.</returns>
         internal static Color GetBlackboardKeyColor(Object value)
         {
-            switch (value)
+            if (!(value is BlackboardKey blackboardKey))
             {
-                case BooleanBlackboardKey _:
+                return Color.black;
+            }
+
+            switch (blackboardKey.keyType)
+            {
+                case BlackboardKeyType.Boolean:
                     return new Color(144f / 255, 0f / 255, 0f / 255);
-                case FloatBlackboardKey _:
+                case BlackboardKeyType.Float:
                     return new Color(122f / 255, 195f / 255, 51f / 255);
-                case EnumBlackboardKey _:
+                case BlackboardKeyType.Enum:
                     return new Color(0f / 255, 107f / 255, 97f / 255);
-                case IntegerBlackboardKey _:
+                case BlackboardKeyType.Integer:
                     return new Color(28f / 255, 220f / 255, 169f / 255);
-                case ObjectBlackboardKey _:
+                case BlackboardKeyType.Object:
                     return new Color(0f / 255, 166f / 255, 239f / 255);
-                case QuaternionBlackboardKey _:
+                case BlackboardKeyType.Quaternion:
                     return new Color(159f / 255, 100f / 255, 198f / 255);
-                case VectorBlackboardKey _:
+                case BlackboardKeyType.Vector:
                     return new Color(253f / 255, 201f / 255, 4f / 255);
-                case null:
-                    return Color.black;
                 default:
                     return Color.black;
             }

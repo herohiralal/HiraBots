@@ -10,7 +10,7 @@ namespace HiraBots
     {
         internal unsafe VectorBlackboardKey()
         {
-            m_SizeInBytesInternal = (byte) sizeof(float3);
+            m_SizeInBytes = (byte) sizeof(float3);
             m_KeyType = BlackboardKeyType.Vector;
         }
 

@@ -9,7 +9,7 @@ namespace HiraBots
     {
         internal IntegerBlackboardKey()
         {
-            m_SizeInBytesInternal = sizeof(int);
+            m_SizeInBytes = sizeof(int);
             m_KeyType = BlackboardKeyType.Integer;
         }
 

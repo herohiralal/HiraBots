@@ -19,9 +19,19 @@ namespace HiraBots
         /// </summary>
         internal void Validate(ref BlackboardKeyValidatorContext context)
         {
-            if (m_KeyType == BlackboardKeyType.Invalid)
+            switch (m_KeyType)
             {
-                context.succeeded = false;
+                case BlackboardKeyType.Boolean:
+                case BlackboardKeyType.Enum:
+                case BlackboardKeyType.Float:
+                case BlackboardKeyType.Integer:
+                case BlackboardKeyType.Object:
+                case BlackboardKeyType.Quaternion:
+                case BlackboardKeyType.Vector:
+                    break;
+                default:
+                    context.succeeded = false;
+                    break;
             }
 
             ValidateInternal(ref context);

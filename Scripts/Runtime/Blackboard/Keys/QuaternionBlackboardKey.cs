@@ -10,7 +10,7 @@ namespace HiraBots
     {
         internal unsafe QuaternionBlackboardKey()
         {
-            m_SizeInBytesInternal = (byte) sizeof(quaternion);
+            m_SizeInBytes = (byte) sizeof(quaternion);
             m_KeyType = BlackboardKeyType.Quaternion;
         }
 

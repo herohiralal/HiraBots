@@ -159,7 +159,7 @@ namespace HiraBots
         private void IndividualKeyValidationCheck(IBlackboardTemplateValidatorContext context)
         {
             var keyValidatorContext = new BlackboardKeyValidatorContext();
-            
+
             var count = m_Keys.Length;
             for (var i = 0; i < count; i++)
             {
@@ -174,6 +174,50 @@ namespace HiraBots
                     {
                         context.AddBadKey(key);
                     }
+                }
+            }
+        }
+    }
+
+    internal struct BlackboardTemplateKeySelectorValidatorContext
+    {
+        /// <summary>
+        /// Whether the validation succeeded.
+        /// </summary>
+        internal bool succeeded { get; set; }
+        
+        /// <summary>
+        /// The pool of allowed keys.
+        /// </summary>
+        internal HashSet<BlackboardKey> allowedKeyPool { get; set; }
+    }
+
+    internal partial class BlackboardTemplate
+    {
+        internal partial struct KeySelector
+        {
+            /// <summary>
+            /// Validate whether the selected key is compatible with the filters.
+            /// </summary>
+            internal void Validate(ref BlackboardTemplateKeySelectorValidatorContext context)
+            {
+                // validate key itself
+                if (m_Key == null)
+                {
+                    context.succeeded = false;
+                    return;
+                }
+
+                // validate template filter
+                if (!context.allowedKeyPool.Contains(m_Key))
+                {
+                    context.succeeded = false;
+                }
+
+                // validate key types filter
+                if (!m_KeyTypes.HasFlag(m_Key.keyType))
+                {
+                    context.succeeded = false;
                 }
             }
         }

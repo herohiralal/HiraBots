@@ -9,7 +9,7 @@ namespace HiraBots
     {
         internal EnumBlackboardKey()
         {
-            m_SizeInBytesInternal = sizeof(byte);
+            m_SizeInBytes = sizeof(byte);
             m_KeyType = BlackboardKeyType.Enum;
         }
 

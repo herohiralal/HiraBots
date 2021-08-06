@@ -14,12 +14,13 @@ namespace HiraBots
         /// <summary>
         /// The size a value of this key would take.
         /// </summary>
-        [NonSerialized] protected byte m_SizeInBytesInternal;
-        internal byte sizeInBytes => m_SizeInBytesInternal;
+        internal byte sizeInBytes => m_SizeInBytes;
+        [NonSerialized] protected byte m_SizeInBytes;
 
         /// <summary>
         /// The type of the value this key would be.
         /// </summary>
+        internal BlackboardKeyType keyType => m_KeyType;
         [NonSerialized] protected BlackboardKeyType m_KeyType;
     }
 }
