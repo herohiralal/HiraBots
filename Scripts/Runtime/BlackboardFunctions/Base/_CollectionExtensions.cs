@@ -94,31 +94,4 @@ namespace HiraBots
             return BlackboardFunctionExtensions.Compile(functions, stream);
         }
     }
-
-    /// <summary>
-    /// Helper functions to aid with a collection of score calculators.
-    /// ======================================================================================================================
-    /// Any changes to this class MUST be synchronized with <see cref="LowLevelScoreCalculatorBlackboardFunctionCollection"/>.
-    /// ======================================================================================================================
-    /// </summary>
-    internal static unsafe class ScoreCalculatorBlackboardFunctionExtensions
-    {
-        /// <summary>
-        /// Get aligned memory size for a collection of score calculators.
-        /// </summary>
-        internal static int GetAlignedMemorySize(this ScoreCalculatorBlackboardFunction[] functions)
-        {
-            // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.GetAlignedMemorySize(functions);
-        }
-
-        /// <summary>
-        /// Append the memory to the stream.
-        /// </summary>
-        internal static byte* Compile(this ScoreCalculatorBlackboardFunction[] functions, byte* stream)
-        {
-            // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.Compile(functions, stream);
-        }
-    }
 }

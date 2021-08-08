@@ -45,20 +45,5 @@ namespace HiraBots
             return output;
         }
     }
-
-    internal abstract partial class ScoreCalculatorBlackboardFunction
-    {
-        /// <summary>
-        /// Build a score calculator.
-        /// </summary>
-        protected static T Build<T>(string name, float score, bool invert, HideFlags hideFlags = HideFlags.None)
-            where T : ScoreCalculatorBlackboardFunction
-        {
-            var output = BlackboardFunction<DecoratorDelegate>.Build<T>(name, hideFlags);
-            output.m_Score = score;
-            output.m_Invert = invert;
-            return output;
-        }
-    }
 }
 #endif
