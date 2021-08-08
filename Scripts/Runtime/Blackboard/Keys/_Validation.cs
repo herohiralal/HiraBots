@@ -1,5 +1,5 @@
 ﻿#if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -54,7 +54,7 @@ namespace HiraBots
         /// <summary>
         /// The pool of allowed keys.
         /// </summary>
-        internal HashSet<BlackboardKey> allowedKeyPool { get; set; }
+        internal ReadOnlyHashSetAccessor<BlackboardKey> allowedKeyPool { get; set; }
 
         /// <summary>
         /// The allowed key types.

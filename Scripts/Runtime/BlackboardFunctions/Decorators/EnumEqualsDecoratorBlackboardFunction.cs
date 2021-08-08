@@ -5,17 +5,17 @@ using UnityEngine;
 namespace HiraBots
 {
     [BurstCompile]
-    internal unsafe partial class BooleanEqualsDecoratorBlackboardFunction : DecoratorBlackboardFunction
+    internal unsafe partial class EnumEqualsBlackboardFunction : DecoratorBlackboardFunction
     {
         private struct Memory
         {
             internal ushort m_Offset;
-            internal bool m_Value;
+            internal byte m_Value;
         }
 
         private static readonly FunctionPointer<DecoratorDelegate> s_Function;
 
-        static BooleanEqualsDecoratorBlackboardFunction()
+        static EnumEqualsBlackboardFunction()
         {
             s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
         }
@@ -24,7 +24,7 @@ namespace HiraBots
         [SerializeField] private BlackboardKey.Selector m_Key = default;
 
         [Tooltip("The value to compare.")]
-        [SerializeField] private bool m_Value = true;
+        [SerializeField] private DynamicEnum m_Value = default;
 
         // memory size override
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory
@@ -46,13 +46,13 @@ namespace HiraBots
 
         // actual function
         [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(DecoratorDelegate))]
-        private static bool ActualFunction(in LowLevelBlackboard blackboard, byte* memory)
+        private static bool ActualFunction(in LowLevelBlackboard blackboard, byte* rawMemory)
         {
-            var actualMemory = (Memory*) memory;
-            return blackboard.Access<bool>(actualMemory->m_Offset) == actualMemory->m_Value;
+            var memory = (Memory*) rawMemory;
+            return blackboard.Access<byte>(memory->m_Offset) == memory->m_Value;
         }
 
         // pack memory
-        private Memory memory => new Memory {m_Offset = m_Key.selectedKey.compiledData.memoryOffset, m_Value = m_Value};
+        private Memory memory => new Memory {m_Offset = m_Key.selectedKey.compiledData.memoryOffset, m_Value = m_Value.m_Value};
     }
 }

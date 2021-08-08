@@ -28,31 +28,35 @@ namespace HiraBots
 
             [SerializeField, HideInInspector] private BlackboardTemplate m_Template;
             [SerializeField, HideInInspector] private BlackboardKeyType m_KeyTypes;
-
-            /// <summary>
-            /// Update the template filter.
-            /// </summary>
-            internal BlackboardTemplate templateFilter
-            {
-                set => m_Template = value;
-            }
+            [SerializeField, HideInInspector] private bool m_IsValid;
 
             /// <summary>
             /// Update the key types filter.
             /// </summary>
             internal BlackboardKeyType keyTypesFilter
             {
-                set => m_KeyTypes = value;
-            }
-#else
-            internal BlackboardTemplate templateFilter
-            {
-                set { }
+                set
+                {
+                    m_KeyTypes = value;
+
+                    if (m_Key == null || value.HasFlag(m_Key.keyType))
+                    {
+                        m_IsValid = false;
+                    }
+                }
             }
 
-            internal BlackboardKeyType keyTypesFilter
+            /// <summary>
+            /// Update the template filter and pass in the set of keys associated with it.
+            /// </summary>
+            internal void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
             {
-                set { }
+                m_Template = newTemplate;
+
+                if (m_Key == null || (newTemplate != null && !keySet.Contains(m_Key)))
+                {
+                    m_IsValid = false;
+                }
             }
 #endif
         }

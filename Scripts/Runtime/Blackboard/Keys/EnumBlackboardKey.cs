@@ -15,5 +15,9 @@ namespace HiraBots
 
         [Tooltip("The default value for this key that a blackboard would start with.")]
         [SerializeField] private DynamicEnum m_DefaultValue = default;
+
+#if UNITY_EDITOR
+        internal string typeIdentifier => m_DefaultValue.m_TypeIdentifier;
+#endif
     }
 }
