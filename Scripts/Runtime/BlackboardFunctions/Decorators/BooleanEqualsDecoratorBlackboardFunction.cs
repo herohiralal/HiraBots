@@ -21,8 +21,8 @@ namespace HiraBots
         }
 
         [Tooltip("The key to look up.")]
-        [SerializeField] private BlackboardTemplate.KeySelector m_Key =
-            new BlackboardTemplate.KeySelector{keyTypesFilter = BlackboardKeyType.Boolean};
+        [SerializeField] private BlackboardKey.Selector m_Key =
+            new BlackboardKey.Selector{keyTypesFilter = BlackboardKeyType.Boolean};
 
         [Tooltip("The value to compare.")]
         [SerializeField] private bool m_Value = true;

@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal partial class BlackboardTemplate
+    internal partial class BlackboardKey
     {
         /// <summary>
         /// Lets the user select a key using a dropdown, based on the applied constraints.
         /// </summary>
         [Serializable]
-        internal partial struct KeySelector
+        internal partial struct Selector
         {
             [SerializeField, HideInInspector] private BlackboardKey m_Key;
 
