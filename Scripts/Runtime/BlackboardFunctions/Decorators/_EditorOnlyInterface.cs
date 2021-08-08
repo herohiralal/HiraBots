@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 
-#if UNITY_EDITOR
 namespace HiraBots
 {
     internal partial class AlwaysSucceedDecoratorBlackboardFunction
@@ -24,7 +24,7 @@ namespace HiraBots
         }
     }
 
-    internal partial class EnumEqualsBlackboardFunction
+    internal partial class EnumHasFlagsBlackboardFunction
     {
         protected override void OnValidate()
         {

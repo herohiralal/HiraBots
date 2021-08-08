@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HiraBots
 {
     [BurstCompile]
-    internal unsafe partial class EnumEqualsBlackboardFunction : DecoratorBlackboardFunction
+    internal unsafe partial class EnumHasFlagsBlackboardFunction : DecoratorBlackboardFunction
     {
         private struct Memory
         {
@@ -15,7 +15,7 @@ namespace HiraBots
 
         private static readonly FunctionPointer<DecoratorDelegate> s_Function;
 
-        static EnumEqualsBlackboardFunction()
+        static EnumHasFlagsBlackboardFunction()
         {
             s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
         }
@@ -23,7 +23,7 @@ namespace HiraBots
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardKey.Selector m_Key = default;
 
-        [Tooltip("The value to compare.")]
+        [Tooltip("The flags to compare.")]
         [SerializeField] private DynamicEnum m_Value = default;
 
         // memory size override
@@ -49,7 +49,7 @@ namespace HiraBots
         private static bool ActualFunction(in LowLevelBlackboard blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return blackboard.Access<byte>(memory->m_Offset) == memory->m_Value;
+            return (blackboard.Access<byte>(memory->m_Offset) & memory->m_Value) == memory->m_Value;
         }
 
         // pack memory
