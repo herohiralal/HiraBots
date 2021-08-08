@@ -11,6 +11,7 @@ namespace HiraBots.Editor
         private const string k_KeyPropertyName = "m_Key";
         private const string k_TemplatePropertyName = "m_Template";
         private const string k_KeyTypesPropertyName = "m_KeyTypes";
+        private const string k_IsValidPropertyName = "m_IsValid";
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -24,8 +25,9 @@ namespace HiraBots.Editor
             var keyProperty = property.FindPropertyRelative(k_KeyPropertyName);
             var templateProperty = property.FindPropertyRelative(k_TemplatePropertyName);
             var keyTypesProperty = property.FindPropertyRelative(k_KeyTypesPropertyName);
+            var isValidProperty = property.FindPropertyRelative(k_IsValidPropertyName);
 
-            if (keyProperty == null || templateProperty == null || keyTypesProperty == null)
+            if (keyProperty == null || templateProperty == null || keyTypesProperty == null || isValidProperty == null)
             {
                 EditorGUI.HelpBox(position, "Could not find one of the properties.", MessageType.Error);
                 return;
@@ -35,6 +37,18 @@ namespace HiraBots.Editor
 
             using (new IndentNullifier(0))
             {
+                if (!isValidProperty.boolValue)
+                {
+                    var errorIconPosition = position;
+                    errorIconPosition.width = 19f;
+                    position.width -= 21f;
+                    position.x += 21f;
+
+                    var errorIcon = (Texture2D) EditorGUIUtility.Load("console.erroricon");
+                    var errorMessage = new GUIContent(errorIcon, "Invalid selection.");
+                    GUI.Label(errorIconPosition, errorMessage, EditorStyles.helpBox);
+                }
+
                 var currentEvent = Event.current;
                 if (currentEvent.type == EventType.Repaint)
                 {
@@ -55,7 +69,12 @@ namespace HiraBots.Editor
                 if (EditorGUI.DropdownButton(position, GUIContent.none, FocusType.Passive, GUIStyle.none))
                 {
                     property.serializedObject.Update();
-                    GenerateMenu(keyProperty, templateProperty, keyTypesProperty).DropDown(position);
+                    GenerateMenu(
+                            keyProperty,
+                            templateProperty,
+                            keyTypesProperty,
+                            isValidProperty)
+                        .DropDown(position);
                 }
             }
         }
@@ -63,7 +82,8 @@ namespace HiraBots.Editor
         private static GenericMenu GenerateMenu(
             SerializedProperty keyProperty,
             SerializedProperty templateProperty,
-            SerializedProperty keyTypesProperty)
+            SerializedProperty keyTypesProperty,
+            SerializedProperty isValidProperty)
         {
             var menu = new GenericMenu();
 
@@ -76,6 +96,7 @@ namespace HiraBots.Editor
                 () =>
                 {
                     keyProperty.objectReferenceValue = null;
+                    isValidProperty.boolValue = false;
                     keyProperty.serializedObject.ApplyModifiedProperties();
                 });
 
@@ -120,6 +141,7 @@ namespace HiraBots.Editor
                         () =>
                         {
                             keyProperty.objectReferenceValue = key;
+                            isValidProperty.boolValue = true;
                             keyProperty.serializedObject.ApplyModifiedProperties();
                         });
                 }

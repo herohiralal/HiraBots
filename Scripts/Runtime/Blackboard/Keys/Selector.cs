@@ -39,7 +39,7 @@ namespace HiraBots
                 {
                     m_KeyTypes = value;
 
-                    if (m_Key == null || value.HasFlag(m_Key.keyType))
+                    if (m_Key == null || !value.HasFlag(m_Key.keyType))
                     {
                         m_IsValid = false;
                     }
