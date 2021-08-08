@@ -69,7 +69,7 @@ namespace HiraBots.Editor.Tests
 
             protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // header includes the memory
 
-            protected internal override byte* Compile(byte* stream)
+            internal override byte* Compile(byte* stream)
             {
                 stream = base.Compile(stream);
 

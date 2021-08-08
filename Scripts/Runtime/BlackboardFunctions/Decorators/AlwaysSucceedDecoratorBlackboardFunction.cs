@@ -1,11 +1,10 @@
 ﻿using AOT;
 using Unity.Burst;
-using UnityEngine;
 
 namespace HiraBots
 {
     [BurstCompile]
-    internal unsafe class AlwaysSucceedDecoratorBlackboardFunction : DecoratorBlackboardFunction
+    internal unsafe partial class AlwaysSucceedDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {
         private static readonly FunctionPointer<DecoratorDelegate> s_Function;
 

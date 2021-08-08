@@ -1,6 +1,6 @@
-﻿using HiraBots;
+﻿using UnityEngine;
 
-namespace UnityEngine
+namespace HiraBots
 {
     /// <summary>
     /// A score calculator that can be executed on a <see cref="LowLevelBlackboard"/>.
@@ -8,7 +8,7 @@ namespace UnityEngine
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelScoreCalculatorBlackboardFunction"/>.
     /// ============================================================================================================
     /// </summary>
-    public abstract unsafe partial class ScoreCalculatorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
+    internal abstract unsafe partial class ScoreCalculatorBlackboardFunction : BlackboardFunction<DecoratorDelegate>
     {
         [Tooltip("The score to add to the total if the condition-check returns true (after inversion).")]
         [SerializeField] private float m_Score = 0f;
@@ -18,7 +18,7 @@ namespace UnityEngine
 
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<float, bool>(); // header includes inversion & score
 
-        protected internal override byte* Compile(byte* stream)
+        internal override byte* Compile(byte* stream)
         {
             stream = base.Compile(stream);
 

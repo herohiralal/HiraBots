@@ -1,7 +1,9 @@
 ﻿#if HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
-namespace UnityEngine
+using UnityEngine;
+
+namespace HiraBots
 {
-    public abstract partial class BlackboardFunction<TFunction>
+    internal abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
     {
         /// <summary>
@@ -17,7 +19,7 @@ namespace UnityEngine
         }
     }
 
-    public abstract partial class DecoratorBlackboardFunction
+    internal abstract partial class DecoratorBlackboardFunction
     {
         /// <summary>
         /// Build a decorator.
@@ -31,7 +33,7 @@ namespace UnityEngine
         }
     }
 
-    public abstract partial class EffectorBlackboardFunction
+    internal abstract partial class EffectorBlackboardFunction
     {
         /// <summary>
         /// Build an effector.
@@ -44,7 +46,7 @@ namespace UnityEngine
         }
     }
 
-    public abstract partial class ScoreCalculatorBlackboardFunction
+    internal abstract partial class ScoreCalculatorBlackboardFunction
     {
         /// <summary>
         /// Build a score calculator.
