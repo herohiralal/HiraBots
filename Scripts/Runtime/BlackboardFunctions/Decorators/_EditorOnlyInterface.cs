@@ -24,7 +24,7 @@ namespace HiraBots
         }
     }
 
-    internal partial class EnumHasFlagsBlackboardFunction
+    internal partial class EnumHasFlagsDecoratorBlackboardFunction
     {
         protected override void OnValidate()
         {
@@ -36,6 +36,23 @@ namespace HiraBots
             {
                 m_Value.m_TypeIdentifier = enumKey.typeIdentifier;
             }
+        }
+
+        internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
+        {
+            base.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+
+            m_Key.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+        }
+    }
+    
+    internal partial class NumericalComparisonDecoratorBlackboardFunction
+    {
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            m_Key.keyTypesFilter = BlackboardKeyType.Numeric;
         }
 
         internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HiraBots
 {
     [BurstCompile]
-    internal unsafe partial class EnumHasFlagsBlackboardFunction : DecoratorBlackboardFunction
+    internal unsafe partial class EnumHasFlagsDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {
         private struct Memory
         {
@@ -15,7 +15,7 @@ namespace HiraBots
 
         private static readonly FunctionPointer<DecoratorDelegate> s_Function;
 
-        static EnumHasFlagsBlackboardFunction()
+        static EnumHasFlagsDecoratorBlackboardFunction()
         {
             s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
         }
