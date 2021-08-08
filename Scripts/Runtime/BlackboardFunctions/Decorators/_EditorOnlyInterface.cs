@@ -6,23 +6,6 @@ namespace HiraBots
     internal partial class AlwaysSucceedDecoratorBlackboardFunction
     {
     }
-    
-    internal partial class BooleanEqualsDecoratorBlackboardFunction
-    {
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            m_Key.keyTypesFilter = BlackboardKeyType.Boolean;
-        }
-
-        internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
-        {
-            base.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
-
-            m_Key.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
-        }
-    }
 
     internal partial class EnumHasFlagsDecoratorBlackboardFunction
     {
@@ -53,6 +36,23 @@ namespace HiraBots
             base.OnValidate();
 
             m_Key.keyTypesFilter = BlackboardKeyType.Numeric;
+        }
+
+        internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
+        {
+            base.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+
+            m_Key.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+        }
+    }
+    
+    internal partial class IsSetDecoratorBlackboardFunction
+    {
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            m_Key.keyTypesFilter = BlackboardKeyType.Boolean | BlackboardKeyType.Object | BlackboardKeyType.Quaternion | BlackboardKeyType.Vector;
         }
 
         internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
