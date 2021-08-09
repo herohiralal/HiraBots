@@ -1,18 +1,16 @@
-﻿using System;
-using AOT;
+﻿using AOT;
 using Unity.Burst;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace HiraBots
 {
     [BurstCompile]
-    internal unsafe partial class IsSetDecoratorBlackboardFunction : DecoratorBlackboardFunction
+    internal unsafe partial class ObjectEqualsDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {
         private struct Memory
         {
-            internal BlackboardKeyType m_KeyType;
             internal ushort m_Offset;
+            internal int m_InstanceID;
         }
 
         private static bool s_FunctionCompiled = false;
@@ -30,6 +28,9 @@ namespace HiraBots
 
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
+
+        [Tooltip("The value to compare.")]
+        [SerializeField] private Object m_Value = null;
 
         // memory size override
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory
@@ -54,24 +55,14 @@ namespace HiraBots
         private static bool ActualFunction(in LowLevelBlackboard blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-
-            var offset = memory->m_Offset;
-            switch (memory->m_KeyType)
-            {
-                case BlackboardKeyType.Boolean:
-                    return blackboard.Access<bool>(offset);
-                case BlackboardKeyType.Quaternion:
-                    var value4 = blackboard.Access<quaternion>(offset).value != quaternion.identity.value;
-                    return !value4.w || !value4.x || !value4.y || !value4.z;
-                case BlackboardKeyType.Vector:
-                    var value3 = blackboard.Access<float3>(offset) != float3.zero;
-                    return !value3.x || !value3.y || !value3.z;
-                default:
-                    throw new ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
-            }
+            return blackboard.Access<int>(memory->m_Offset) == memory->m_InstanceID;
         }
 
         // pack memory
-        private Memory memory => new Memory {m_KeyType = m_Key.selectedKey.keyType, m_Offset = m_Key.selectedKey.compiledData.memoryOffset};
+        private Memory memory => new Memory
+        {
+            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
+            m_InstanceID = m_Value == null ? 0 : m_Value.GetInstanceID()
+        };
     }
 }
