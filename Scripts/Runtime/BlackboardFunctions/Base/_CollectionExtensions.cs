@@ -28,7 +28,7 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* Compile<T>(this BlackboardFunction<T>[] functions, byte* stream) where T : Delegate
+        internal static byte* Compile<T>(this BlackboardFunction<T>[] functions, ref byte* stream) where T : Delegate
         {
             ByteStreamHelpers.Write<int>(ref stream, functions.Length); // count header
 
@@ -61,10 +61,10 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* Compile(this DecoratorBlackboardFunction[] functions, byte* stream)
+        internal static byte* Compile(this DecoratorBlackboardFunction[] functions, ref byte* stream)
         {
             // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.Compile(functions, stream);
+            return BlackboardFunctionExtensions.Compile(functions, ref stream);
         }
     }
 
@@ -88,10 +88,10 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal static byte* Compile(this EffectorBlackboardFunction[] functions, byte* stream)
+        internal static byte* Compile(this EffectorBlackboardFunction[] functions, ref byte* stream)
         {
             // ReSharper disable once CoVariantArrayConversion
-            return BlackboardFunctionExtensions.Compile(functions, stream);
+            return BlackboardFunctionExtensions.Compile(functions, ref stream);
         }
     }
 }
