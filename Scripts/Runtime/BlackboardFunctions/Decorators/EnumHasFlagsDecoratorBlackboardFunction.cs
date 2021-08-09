@@ -27,7 +27,7 @@ namespace HiraBots
         }
 
         [Tooltip("The key to look up.")]
-        [SerializeField] private BlackboardKey.Selector m_Key = default;
+        [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
         [Tooltip("The flags to compare.")]
         [SerializeField] private DynamicEnum m_Value = default;

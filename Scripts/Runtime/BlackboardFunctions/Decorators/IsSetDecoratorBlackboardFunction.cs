@@ -29,7 +29,7 @@ namespace HiraBots
         }
 
         [Tooltip("The key to look up.")]
-        [SerializeField] private BlackboardKey.Selector m_Key = default;
+        [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
         // memory size override
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory

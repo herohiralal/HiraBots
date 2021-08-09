@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    [CustomPropertyDrawer(typeof(BlackboardKey.Selector))]
+    [CustomPropertyDrawer(typeof(BlackboardTemplate.KeySelector))]
     public class BlackboardKeySelectorPropertyDrawer : PropertyDrawer
     {
         private const string k_KeyPropertyName = "m_Key";

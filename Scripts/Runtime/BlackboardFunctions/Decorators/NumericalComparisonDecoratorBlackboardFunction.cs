@@ -41,7 +41,7 @@ namespace HiraBots
         }
 
         [Tooltip("The key to look up.")]
-        [SerializeField] private BlackboardKey.Selector m_Key = default;
+        [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
         [Tooltip("The type of comparison to perform.")]
         [SerializeField] private ComparisonType m_ComparisonType = ComparisonType.AlmostEqualTo;
