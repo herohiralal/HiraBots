@@ -28,7 +28,18 @@ namespace HiraBots
             where T : DecoratorBlackboardFunction
         {
             var output = BlackboardFunction<DecoratorDelegate>.Build<T>(name, hideFlags);
-            output.m_Invert = invert;
+            output.m_Header = new Header {m_IsScoreCalculator = false, m_Invert = invert};
+            return output;
+        }
+
+        /// <summary>
+        /// Build a score calculator.
+        /// </summary>
+        protected static T Build<T>(string name, float score, bool invert, HideFlags hideFlags = HideFlags.None)
+            where T : DecoratorBlackboardFunction
+        {
+            var output = BlackboardFunction<DecoratorDelegate>.Build<T>(name, hideFlags);
+            output.m_Header = new Header {m_IsScoreCalculator = true, m_Score = score, m_Invert = invert};
             return output;
         }
     }
