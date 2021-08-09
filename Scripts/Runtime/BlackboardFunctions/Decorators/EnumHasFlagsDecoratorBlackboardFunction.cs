@@ -13,11 +13,17 @@ namespace HiraBots
             internal byte m_Value;
         }
 
-        private static readonly FunctionPointer<DecoratorDelegate> s_Function;
+        private static bool s_FunctionCompiled = false;
+        private static FunctionPointer<DecoratorDelegate> s_Function;
 
-        static EnumHasFlagsDecoratorBlackboardFunction()
+        protected override void OnEnable()
         {
-            s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
+            base.OnEnable();
+            if (!s_FunctionCompiled)
+            {
+                s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
+                s_FunctionCompiled = true;
+            }
         }
 
         [Tooltip("The key to look up.")]

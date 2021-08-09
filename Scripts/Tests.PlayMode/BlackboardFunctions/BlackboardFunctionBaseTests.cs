@@ -15,12 +15,18 @@ namespace HiraBots.Editor.Tests
         [BurstCompile(CompileSynchronously = true)]
         private class SquareCalculator : BlackboardFunction<FuncInt>
         {
-            private static readonly FunctionPointer<FuncInt> s_FunctionPointer;
+            private static bool s_FunctionCompiled = false;
+            private static FunctionPointer<FuncInt> s_FunctionPointer;
 
             // compile and store the function pointer
-            static SquareCalculator()
+            protected override void OnEnable()
             {
-                s_FunctionPointer = BurstCompiler.CompileFunctionPointer<FuncInt>(Square);
+                base.OnEnable();
+                if (!s_FunctionCompiled)
+                {
+                    s_FunctionPointer = BurstCompiler.CompileFunctionPointer<FuncInt>(Square);
+                    s_FunctionCompiled = true;
+                }
             }
 
             // override function pointer
@@ -56,12 +62,18 @@ namespace HiraBots.Editor.Tests
                 internal int value { get; }
             }
 
-            private static readonly FunctionPointer<Action> s_FunctionPointer;
+            private static bool s_FunctionCompiled = false;
+            private static FunctionPointer<Action> s_FunctionPointer;
 
             // compile and store the function pointer
-            static CubeCalculator()
+            protected override void OnEnable()
             {
-                s_FunctionPointer = BurstCompiler.CompileFunctionPointer<Action>(Cube);
+                base.OnEnable();
+                if (!s_FunctionCompiled)
+                {
+                    s_FunctionPointer = BurstCompiler.CompileFunctionPointer<Action>(Cube);
+                    s_FunctionCompiled = true;
+                }
             }
 
             // the value to cube

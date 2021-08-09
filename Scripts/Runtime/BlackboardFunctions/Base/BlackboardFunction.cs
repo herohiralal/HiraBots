@@ -14,6 +14,13 @@ namespace HiraBots
         where TFunction : Delegate
     {
         /// <summary>
+        /// All function pointers must be compiled within OnEnable().
+        /// </summary>
+        protected virtual void OnEnable()
+        {
+        }
+
+        /// <summary>
         /// The aligned memory size required by this function.
         /// </summary>
         internal int GetAlignedMemorySize() => UnsafeHelpers.GetAlignedSize(memorySize);
