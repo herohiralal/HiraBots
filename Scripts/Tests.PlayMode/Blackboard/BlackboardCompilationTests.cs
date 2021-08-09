@@ -55,18 +55,31 @@ namespace HiraBots.Editor.Tests
             m_FourthKeyDefaultValue = ScriptableObject.CreateInstance<ScriptableObject>();
             m_FourthKeyDefaultValue.hideFlags = HideFlags.HideAndDontSave;
 
-            m_First = IntegerBlackboardKey.Build<IntegerBlackboardKey>(k_FirstKeyName, k_FirstKeyTraits, k_FirstKeyDefaultValue, HideFlags.HideAndDontSave);
+            var first = k_FirstKeyName.BuildScriptableObject<IntegerBlackboardKey>();
+            first.BuildBlackboardKey(k_FirstKeyTraits);
+            first.BuildIntegerBlackboardKey(k_FirstKeyDefaultValue);
+            m_First = first;
 
-            m_Second = BooleanBlackboardKey.Build<BooleanBlackboardKey>(k_SecondKeyName, k_SecondKeyTraits, k_SecondKeyDefaultValue, HideFlags.HideAndDontSave);
+            var second = k_SecondKeyName.BuildScriptableObject<BooleanBlackboardKey>();
+            second.BuildBlackboardKey(k_SecondKeyTraits);
+            second.BuildBooleanBlackboardKey(k_SecondKeyDefaultValue);
+            m_Second = second;
 
-            m_Third = VectorBlackboardKey.Build<VectorBlackboardKey>(k_ThirdKeyName, k_ThirdKeyTraits, s_ThirdKeyDefaultValue, HideFlags.HideAndDontSave);
+            var third = k_ThirdKeyName.BuildScriptableObject<VectorBlackboardKey>();
+            third.BuildBlackboardKey(k_ThirdKeyTraits);
+            third.BuildVectorBlackboardKey(s_ThirdKeyDefaultValue);
+            m_Third = third;
 
-            m_Fourth = ObjectBlackboardKey.Build<ObjectBlackboardKey>(k_FourthKeyName, k_FourthKeyTraits, m_FourthKeyDefaultValue, HideFlags.HideAndDontSave);
+            var fourth = k_FourthKeyName.BuildScriptableObject<ObjectBlackboardKey>();
+            fourth.BuildBlackboardKey(k_FourthKeyTraits);
+            fourth.BuildObjectBlackboardKey(m_FourthKeyDefaultValue);
+            m_Fourth = fourth;
 
-            m_Parent = BlackboardTemplate.Build<BlackboardTemplate>(k_ParentTemplateName, null,
-                new[] {m_First, m_Second}, HideFlags.HideAndDontSave);
-            m_Child = BlackboardTemplate.Build<BlackboardTemplate>(k_ChildTemplateName, m_Parent,
-                new[] {m_Third, m_Fourth}, HideFlags.HideAndDontSave);
+            m_Parent = k_ParentTemplateName.BuildScriptableObject<BlackboardTemplate>();
+            m_Parent.BuildBlackboardTemplate(null, new[] {m_First, m_Second});
+
+            m_Child = k_ChildTemplateName.BuildScriptableObject<BlackboardTemplate>();
+            m_Child.BuildBlackboardTemplate(m_Parent, new[] {m_Third, m_Fourth});
 
 
             // validate the blackboard templates first

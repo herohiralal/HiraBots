@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEngine;
 
 namespace HiraBots.Editor.Tests
@@ -16,19 +15,21 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void NullKeyValidation()
         {
-            var floatThrowaway = FloatBlackboardKey.Build<FloatBlackboardKey>("Dumb Key",
-                BlackboardKeyTraits.None, 0f, HideFlags.HideAndDontSave);
+            var floatThrowaway = "Dumb Key".BuildScriptableObject<FloatBlackboardKey>();
+            floatThrowaway.BuildBlackboardKey(BlackboardKeyTraits.None);
+            floatThrowaway.BuildFloatBlackboardKey(0f);
 
-            var booleanThrowaway = BooleanBlackboardKey.Build<BooleanBlackboardKey>("Second Dumb Key",
-                BlackboardKeyTraits.None, false, HideFlags.HideAndDontSave);
+            var booleanThrowaway = "Second Dumb Key".BuildScriptableObject<BooleanBlackboardKey>();
+            booleanThrowaway.BuildBlackboardKey(BlackboardKeyTraits.None);
+            booleanThrowaway.BuildBooleanBlackboardKey(false);
 
-            var template = BlackboardTemplate
-                .Build<BlackboardTemplate>("NullKeyFailTestObject", null, new BlackboardKey[]
+            var template = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
+            template.BuildBlackboardTemplate(null, new BlackboardKey[]
                 {
                     floatThrowaway,
                     null,
                     booleanThrowaway
-                }, HideFlags.HideAndDontSave);
+                });
 
             var validator = new BlackboardTemplateValidator();
 
@@ -54,15 +55,10 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void CyclicalHierarchyValidation()
         {
-            var parentField = typeof(BlackboardTemplate).GetField("m_Parent", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.IsFalse(parentField == null, "Could not find parent field in blackboard template. Test incomplete.");
-
-            var first = BlackboardTemplate
-                .Build<BlackboardTemplate>("NullKeyFailTestObject", null, new BlackboardKey[0], HideFlags.HideAndDontSave);
-            var second = BlackboardTemplate
-                .Build<BlackboardTemplate>("NullKeyFailTestObject", first, new BlackboardKey[0], HideFlags.HideAndDontSave);
-
-            parentField.SetValue(first, second);
+            var first = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
+            var second = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
+            second.BuildBlackboardTemplate(first, new BlackboardKey[0]);
+            first.BuildBlackboardTemplate(second, new BlackboardKey[0]);
 
             var validator = new BlackboardTemplateValidator();
 
@@ -93,18 +89,20 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void DuplicateNameValidation()
         {
-            var floatThrowaway = FloatBlackboardKey.Build<FloatBlackboardKey>("Dumb Key",
-                BlackboardKeyTraits.None, 0f, HideFlags.HideAndDontSave);
+            var floatThrowaway = "Dumb Key".BuildScriptableObject<FloatBlackboardKey>();
+            floatThrowaway.BuildBlackboardKey(BlackboardKeyTraits.None);
+            floatThrowaway.BuildFloatBlackboardKey(0f);
 
-            var booleanThrowaway = BooleanBlackboardKey.Build<BooleanBlackboardKey>("Dumb Key",
-                BlackboardKeyTraits.None, false, HideFlags.HideAndDontSave);
+            var booleanThrowaway = "Dumb Key".BuildScriptableObject<BooleanBlackboardKey>();
+            booleanThrowaway.BuildBlackboardKey(BlackboardKeyTraits.None);
+            booleanThrowaway.BuildBooleanBlackboardKey(false);
 
-            var template = BlackboardTemplate
-                .Build<BlackboardTemplate>("NullKeyFailTestObject", null, new BlackboardKey[]
+            var template = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
+            template.BuildBlackboardTemplate(null, new BlackboardKey[]
                 {
                     floatThrowaway,
                     booleanThrowaway
-                }, HideFlags.HideAndDontSave);
+                });
 
             var validator = new BlackboardTemplateValidator();
 

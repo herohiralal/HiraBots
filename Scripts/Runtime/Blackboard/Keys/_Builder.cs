@@ -10,15 +10,10 @@ namespace HiraBots
         /// <summary>
         /// Build a BlackboardKey.
         /// </summary>
-        protected static T Build<T>(string name, BlackboardKeyTraits traits, HideFlags hideFlags = HideFlags.None)
-            where T : BlackboardKey
+        internal void BuildBlackboardKey(BlackboardKeyTraits traits)
         {
-            var output = CreateInstance<T>();
-            output.hideFlags = hideFlags;
-            output.name = name;
-            output.m_InstanceSynced = (traits & BlackboardKeyTraits.InstanceSynced) != 0;
-            output.m_EssentialToDecisionMaking = (traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
-            return output;
+            m_InstanceSynced = (traits & BlackboardKeyTraits.InstanceSynced) != 0;
+            m_EssentialToDecisionMaking = (traits & BlackboardKeyTraits.BroadcastEventOnUnexpectedChange) != 0;
         }
     }
 
@@ -27,12 +22,9 @@ namespace HiraBots
         /// <summary>
         /// Build a BooleanBlackboardKey.
         /// </summary>
-        internal static BooleanBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, bool defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : BooleanBlackboardKey
+        internal void BuildBooleanBlackboardKey(bool defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 
@@ -41,11 +33,9 @@ namespace HiraBots
         /// <summary>
         /// Build an EnumBlackboardKey.
         /// </summary>
-        internal static EnumBlackboardKey Build<T, TEnumType>(string name, BlackboardKeyTraits traits, TEnumType defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : EnumBlackboardKey where TEnumType : unmanaged, System.Enum
+        internal void BuildEnumBlackboardKey<TEnumType>(TEnumType defaultValue)
+            where TEnumType : unmanaged, System.Enum
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-
             var enumType = typeof(TEnumType);
             if (enumType.IsEnum)
             {
@@ -55,14 +45,13 @@ namespace HiraBots
                     var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
                     if (exposedToHiraBotsAttribute != null)
                     {
-                        output.m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.identifier;
+                        m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.identifier;
                     }
 #endif
                 }
             }
 
-            output.m_DefaultValue.m_Value = *(byte*) &defaultValue;
-            return output;
+            m_DefaultValue.m_Value = *(byte*) &defaultValue;
         }
     }
 
@@ -71,40 +60,31 @@ namespace HiraBots
         /// <summary>
         /// Build a FloatBlackboardKey.
         /// </summary>
-        internal static FloatBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : FloatBlackboardKey
+        internal void BuildFloatBlackboardKey(float defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 
     internal partial class IntegerBlackboardKey
     {
         /// <summary>
-        /// Build a IntegerBlackboardKey.
+        /// Build an IntegerBlackboardKey.
         /// </summary>
-        internal static IntegerBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, int defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : IntegerBlackboardKey
+        internal void BuildIntegerBlackboardKey(int defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 
     internal partial class ObjectBlackboardKey
     {
         /// <summary>
-        /// Build a ObjectBlackboardKey.
+        /// Build an ObjectBlackboardKey.
         /// </summary>
-        internal static ObjectBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, Object defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : ObjectBlackboardKey
+        internal void BuildObjectBlackboardKey(Object defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 
@@ -113,12 +93,9 @@ namespace HiraBots
         /// <summary>
         /// Build a QuaternionBlackboardKey.
         /// </summary>
-        internal static QuaternionBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float3 defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : QuaternionBlackboardKey
+        internal void BuildQuaternionBlackboardKey(float3 defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 
@@ -127,12 +104,9 @@ namespace HiraBots
         /// <summary>
         /// Build a VectorBlackboardKey.
         /// </summary>
-        internal static VectorBlackboardKey Build<T>(string name, BlackboardKeyTraits traits, float3 defaultValue, HideFlags hideFlags = HideFlags.None)
-            where T : VectorBlackboardKey
+        internal void BuildVectorBlackboardKey(float3 defaultValue)
         {
-            var output = BlackboardKey.Build<T>(name, traits, hideFlags);
-            output.m_DefaultValue = defaultValue;
-            return output;
+            m_DefaultValue = defaultValue;
         }
     }
 }

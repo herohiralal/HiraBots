@@ -39,13 +39,6 @@ namespace HiraBots.Editor.Tests
                 var value = blackboard.Access<int>(0);
                 return value * value;
             }
-
-            // build this function
-            internal new static T Build<T>(string name, HideFlags hideFlags = HideFlags.None)
-                where T : SquareCalculator
-            {
-                return BlackboardFunction<FuncInt>.Build<T>(name, hideFlags);
-            }
         }
 
         [BurstCompile(CompileSynchronously = true)]
@@ -103,13 +96,9 @@ namespace HiraBots.Editor.Tests
                 blackboard.Access<int>(0) = actualMemory->value * actualMemory->value * actualMemory->value;
             }
 
-            // build this function
-            internal static T Build<T>(string name, int value, HideFlags hideFlags = HideFlags.None)
-                where T : CubeCalculator
+            internal void BuildCubeCalculator(int value)
             {
-                var output = BlackboardFunction<Action>.Build<T>(name, hideFlags);
-                output.m_Value = value;
-                return output;
+                m_Value = value;
             }
         }
 
@@ -121,7 +110,7 @@ namespace HiraBots.Editor.Tests
         {
             var value = Random.Range(-10, 10);
 
-            var calculator = SquareCalculator.Build<SquareCalculator>("square calculator", HideFlags.HideAndDontSave);
+            var calculator = "square calculator".BuildScriptableObject<SquareCalculator>();
             try
             {
                 // create blackboard and assign value
@@ -159,7 +148,9 @@ namespace HiraBots.Editor.Tests
         {
             var value = Random.Range(-10, 10);
 
-            var calculator = CubeCalculator.Build<CubeCalculator>("square calculator", value, HideFlags.HideAndDontSave);
+            var calculator = "square calculator".BuildScriptableObject<CubeCalculator>();
+            calculator.BuildCubeCalculator(value);
+
             try
             {
                 // create blackboard and assign value

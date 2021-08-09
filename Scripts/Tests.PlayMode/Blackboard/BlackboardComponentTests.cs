@@ -32,8 +32,8 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void CreationValidation()
         {
-            var nonCompilingBlackboard = BlackboardTemplate.Build<BlackboardTemplate>("NonCompilingBlackboardTemplate",
-                null, new BlackboardKey[1], HideFlags.HideAndDontSave);
+            var nonCompilingBlackboard = "NonCompilingBlackboardTemplate".BuildScriptableObject<BlackboardTemplate>();
+            nonCompilingBlackboard.BuildBlackboardTemplate(null, new BlackboardKey[1]);
 
             try
             {
