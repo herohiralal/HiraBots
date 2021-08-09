@@ -23,12 +23,15 @@ namespace HiraBots
             }
 
 #if UNITY_EDITOR
+#pragma warning disable CS0414
             // filter data is only needed in the editor - the actual validation occurs based on
             // the data provided by the owning object
 
             [SerializeField, HideInInspector] private BlackboardTemplate m_Template;
             [SerializeField, HideInInspector] private BlackboardKeyType m_KeyTypes;
             [SerializeField, HideInInspector] private bool m_IsValid;
+
+#pragma warning restore CS0414
 
             /// <summary>
             /// Update the key types filter.
