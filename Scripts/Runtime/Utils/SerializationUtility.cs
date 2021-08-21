@@ -42,6 +42,20 @@
 #endif
         }
 
+        /// <summary>
+        /// Unload a cooked <see cref="CookedDataSingleton{T}"/>.
+        /// </summary>
+        /// <param name="value">The cooked object.</param>
+        /// <typeparam name="T">The type of object to unload.</typeparam>
+        internal static void UnloadCookedData<T>(T value) where T : CookedDataSingleton<T>
+        {
+#if UNITY_EDITOR
+            UnityEngine.Object.Destroy(value);
+#else
+            UnityEngine.Resources.UnloadAsset(value);
+#endif
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Convert file name to an address in the temporary editor folder.

@@ -54,6 +54,10 @@ namespace HiraBots
                 btc[i].Free();
             }
 
+            // get rid of template collection
+            // needed to work correctly when domain reload on play mode state change is disabled
+            BlackboardTemplateCollection.ClearInstance();
+
             BlackboardUnsafeHelpers.ClearObjectCache();
 
             Profiler.EndSample();

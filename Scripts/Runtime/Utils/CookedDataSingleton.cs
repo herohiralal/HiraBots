@@ -47,6 +47,19 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Clear the static instance.
+        /// This will force the instance to be re-read from wherever it was serialized, the next time it is accessed.
+        /// </summary>
+        internal static void ClearInstance()
+        {
+            // set field to null first, in case OnDestroy throws an exception
+            
+            var i = s_Instance;
+            s_Instance = null;
+            SerializationUtility.UnloadCookedData(i);
+        }
+
+        /// <summary>
         /// Get the filename to store this singleton at.
         /// </summary>
         internal static string fileName
