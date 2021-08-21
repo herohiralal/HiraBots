@@ -16,7 +16,7 @@ namespace HiraBots.Editor
             EditorSerializationUtility.ConfirmTempBuildFolder();
 
             // validate the blackboards and generate the template collection
-            var templateCollection = CookingHelpers.TryGenerateBlackboardTemplateCollection(out var result)
+            var templateCollection = CookingHelpers.TryGenerateInterpretedBlackboardTemplateCollection(out var result)
                 ? result
                 : throw new BuildFailedException("One or more blackboard templates have failed to compile.");
 

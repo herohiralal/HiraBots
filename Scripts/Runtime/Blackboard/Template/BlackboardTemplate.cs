@@ -14,6 +14,18 @@ namespace HiraBots
         [Tooltip("The keys within this blackboard template.")]
         [SerializeField, HideInInspector] private BlackboardKey[] m_Keys = new BlackboardKey[0];
 
+#if UNITY_EDITOR
+
+        [Tooltip("The backends to use.")]
+        [SerializeField, HideInInspector] private BackendType m_Backends = BackendType.RuntimeInterpreter;
+
+        /// <summary>
+        /// The effective backend to use.
+        /// </summary>
+        internal BackendType effectiveBackends => m_Parent != null ? m_Parent.effectiveBackends : m_Backends;
+
+#endif
+
         /// <summary>
         /// Get a set of keys present in the blackboard. Optionally, include/exclude inherited keys.
         /// </summary>

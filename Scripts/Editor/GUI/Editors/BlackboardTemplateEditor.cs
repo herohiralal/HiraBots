@@ -17,6 +17,7 @@ namespace HiraBots.Editor
         // property names
         private const string k_ParentProperty = "m_Parent";
         private const string k_KeysProperty = "m_Keys";
+        private const string k_BackendProperty = "m_Backends";
 
         // undo helper
         [SerializeField] private bool m_Dirty = false;
@@ -55,6 +56,13 @@ namespace HiraBots.Editor
             if (keysProperty == null || !keysProperty.isArray)
             {
                 EditorGUILayout.HelpBox("Could not find keys property.", MessageType.Error);
+                return;
+            }
+
+            var backendsProperty = serializedObject.FindProperty(k_BackendProperty);
+            if (backendsProperty == null || backendsProperty.propertyType != SerializedPropertyType.Enum)
+            {
+                EditorGUILayout.HelpBox("Could not find backends property.", MessageType.Error);
                 return;
             }
 
@@ -103,6 +111,23 @@ namespace HiraBots.Editor
 
                 // parent keys list
                 var parent = parentProperty.objectReferenceValue;
+
+                if (parent != null)
+                {
+                    var backends = ((BlackboardTemplate)parent).effectiveBackends + " (inherited)";
+                    EditorGUILayout.LabelField(
+                        GUIHelpers.ToGUIContent("Backends"),
+                        GUIHelpers.ToGUIContent(backends),
+                        EditorStyles.boldLabel);
+                }
+                else
+                {
+                    EditorGUILayout.PropertyField(backendsProperty);
+                    serializedObject.ApplyModifiedProperties();
+                }
+
+                EditorGUILayout.Space();
+
                 if (parent != null)
                 {
                     var inheritedKeysLabel = EditorGUILayout.GetControlRect();

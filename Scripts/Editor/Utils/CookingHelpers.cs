@@ -12,9 +12,7 @@ namespace HiraBots.Editor
         /// <summary>
         /// Validate all the blackboard templates in the project, and pack them into a collection.
         /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        internal static bool TryGenerateBlackboardTemplateCollection(out BlackboardTemplateCollection output)
+        internal static bool TryGenerateInterpretedBlackboardTemplateCollection(out BlackboardTemplateCollection output)
         {
             var validator = new BlackboardTemplateValidator();
 
@@ -28,6 +26,7 @@ namespace HiraBots.Editor
                 .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<BlackboardTemplate>)
+                .Where(bt => bt.effectiveBackends.HasFlag(BackendType.RuntimeInterpreter))
                 .OrderBy(bt => bt.hierarchyIndex)
                 .ToArray();
 

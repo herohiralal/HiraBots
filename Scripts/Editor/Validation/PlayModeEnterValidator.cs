@@ -26,7 +26,7 @@ namespace HiraBots.Editor
             EditorSerializationUtility.ConfirmTempEditorFolder();
 
             // validate the blackboards and generate the template collection
-            if (!CookingHelpers.TryGenerateBlackboardTemplateCollection(out var result))
+            if (!CookingHelpers.TryGenerateInterpretedBlackboardTemplateCollection(out var result))
             {
                 Debug.LogError($"One or more blackboard templates have failed to compile. " +
                                "You cannot enter play mode until they are fixed.");
