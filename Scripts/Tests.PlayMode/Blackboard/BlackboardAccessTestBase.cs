@@ -71,7 +71,7 @@ namespace HiraBots.Editor.Tests
         /// <summary>
         /// Validate and compile all blackboards.
         /// </summary>
-        public void SetUp(bool shouldValidateAndCompile)
+        protected void SetUp(bool shouldValidateAndCompile)
         {
             mockObject1 = ScriptableObject.CreateInstance<ScriptableObject>();
             mockObject1.hideFlags = HideFlags.HideAndDontSave;
@@ -118,11 +118,9 @@ namespace HiraBots.Editor.Tests
         // compile all the templates
         private static void Compile(params BlackboardTemplate[] templates)
         {
-            var compiler = new BlackboardTemplateCompiler();
-
             foreach (var template in templates)
             {
-                compiler.Compile(template);
+                template.Compile();
                 Assert.IsTrue(template.isCompiled, $"{template.name} could not be compiled.");
             }
         }
@@ -130,7 +128,7 @@ namespace HiraBots.Editor.Tests
         /// <summary>
         /// Free up all the allocations.
         /// </summary>
-        public void TearDown(bool shouldFreeAndUnload)
+        protected void TearDown(bool shouldFreeAndUnload)
         {
             if (shouldFreeAndUnload)
             {

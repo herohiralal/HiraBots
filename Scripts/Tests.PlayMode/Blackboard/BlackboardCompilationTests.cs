@@ -95,9 +95,8 @@ namespace HiraBots.Editor.Tests
 
             // compile
             {
-                var compiler = new BlackboardTemplateCompiler();
-                compiler.Compile(m_Parent);
-                compiler.Compile(m_Child);
+                m_Parent.Compile();
+                m_Child.Compile();
             }
         }
 

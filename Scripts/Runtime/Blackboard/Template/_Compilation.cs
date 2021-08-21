@@ -6,14 +6,6 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    /// <summary>
-    /// The context required to compile a blackboard template.
-    /// </summary>
-    internal interface IBlackboardTemplateCompilerContext
-    {
-        // nothing really
-    }
-
     internal partial class BlackboardTemplate
     {
         /// <summary>
@@ -29,7 +21,7 @@ namespace HiraBots
         /// <summary>
         /// Compile this blackboard template.
         /// </summary>
-        internal unsafe void Compile(IBlackboardTemplateCompilerContext context)
+        internal unsafe void Compile()
         {
             if (isCompiled)
             {
