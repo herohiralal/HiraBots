@@ -10,13 +10,13 @@ namespace HiraBots.Editor
     internal static class CookingHelpers
     {
         /// <summary>
-        /// Validate all the blackboard templates in the project, and pack them into a collection.
+        /// Validate all the runtime-interpreted blackboard templates in the project, and pack them into a collection.
         /// </summary>
         internal static bool TryGenerateInterpretedBlackboardTemplateCollection(out BlackboardTemplateCollection output)
         {
             var validator = new BlackboardTemplateValidator();
 
-            // objects used for testing are subclasses that get compiled away, leaving the asset itself as
+            // objects used for testing are subclasses that get conditionally compiled, leaving the asset itself as
             // not being determined a Blackboard Template
 
             // the templates get ordered by their hierarchy index because the runtime compiler assumes they're
@@ -44,6 +44,39 @@ namespace HiraBots.Editor
             }
 
             output = result ? BlackboardTemplateCollection.Create(templatesToCook) : null;
+            return result;
+        }
+
+        /// <summary>
+        /// Validate all the blackboard templates to generate code for, and pack them into an array.
+        /// </summary>
+        internal static bool TryGetBlackboardTemplatesToGenerateCodeFor(out (string path, BlackboardTemplate template)[] output)
+        {
+            var validator = new BlackboardTemplateValidator();
+
+            // no need to order the templates by hierarchy indices here, because it does not matter
+
+            var templatesToGenerateCodeFor = AssetDatabase
+                .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(path => (path, AssetDatabase.LoadAssetAtPath<BlackboardTemplate>(path)))
+                .Where(tuple => tuple.Item2.effectiveBackends.HasFlag(BackendType.CodeGenerator))
+                .ToArray();
+
+            var result = true;
+
+            foreach (var (_, template) in templatesToGenerateCodeFor)
+            {
+                if (validator.Validate(template, out var errorText))
+                {
+                    continue;
+                }
+
+                Debug.LogError(errorText, template);
+                result = false;
+            }
+
+            output = result ? templatesToGenerateCodeFor : null;
             return result;
         }
     }
