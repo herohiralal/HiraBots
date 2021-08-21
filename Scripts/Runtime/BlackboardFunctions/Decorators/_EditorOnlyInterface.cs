@@ -51,7 +51,7 @@ namespace HiraBots
         {
             base.OnValidate();
 
-            m_Key.keyTypesFilter = BlackboardKeyType.Boolean | BlackboardKeyType.Quaternion | BlackboardKeyType.Vector;
+            m_Key.keyTypesFilter = BlackboardKeyType.UnmanagedSettable;
         }
 
         internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
