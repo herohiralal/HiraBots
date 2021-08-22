@@ -49,7 +49,7 @@ namespace HiraBots
         {
             m_Template.RemoveInstanceSyncListener(this);
 
-            foreach (var keyData in m_Template.memoryOffsetToKeyData.values)
+            foreach (var keyData in m_Template.keyNameToKeyData.values)
             {
                 if (keyData.keyType == BlackboardKeyType.Object && !keyData.instanceSynced)
                 {

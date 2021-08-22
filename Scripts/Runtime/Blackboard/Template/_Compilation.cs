@@ -66,22 +66,16 @@ namespace HiraBots
 
             var template = new NativeArray<byte>(UnsafeHelpers.GetAlignedSize(totalTemplateSize),
                 Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-            var keyNameToMemoryOffset = new Dictionary<string, ushort>(totalKeyCount);
-            var memoryOffsetToKeyData = new Dictionary<ushort, BlackboardKeyCompiledData>(totalKeyCount);
+            var keyNameToKeyData = new Dictionary<string, BlackboardKeyCompiledData>(totalKeyCount);
 
             // update the created collections with the data from parent blackboard template
             if (parentCompiledData != null)
             {
                 parentCompiledData.CopyTemplateTo(template);
 
-                foreach (var kvp in parentCompiledData.keyNameToMemoryOffset)
+                foreach (var kvp in parentCompiledData.keyNameToKeyData)
                 {
-                    keyNameToMemoryOffset.Add(kvp.Key, kvp.Value);
-                }
-
-                foreach (var kvp in parentCompiledData.memoryOffsetToKeyData)
-                {
-                    memoryOffsetToKeyData.Add(kvp.Key, kvp.Value);
+                    keyNameToKeyData.Add(kvp.Key, kvp.Value);
                 }
             }
 
@@ -99,15 +93,14 @@ namespace HiraBots
 
                 key.Compile(ref keyCompilerContext);
 
-                keyNameToMemoryOffset.Add(key.name, memoryOffset);
-                memoryOffsetToKeyData.Add(memoryOffset, key.compiledData);
+                keyNameToKeyData.Add(key.name, key.compiledData);
 
                 memoryOffset += key.sizeInBytes;
                 index++;
             }
 
             compiledData = new BlackboardTemplateCompiledData(parentCompiledData,
-                template, keyNameToMemoryOffset, memoryOffsetToKeyData, totalKeyCount);
+                template, keyNameToKeyData, totalKeyCount);
         }
 
         /// <summary>

@@ -21,20 +21,6 @@ namespace HiraBots
             }
         }
 
-        // validate the input when provided with a memory offset
-        private void ValidateInput(ushort memoryOffset, BlackboardKeyType keyType, out BlackboardKeyCompiledData data)
-        {
-            if (!m_Template.memoryOffsetToKeyData.TryGetValue(memoryOffset, out data))
-            {
-                throw new KeyNotFoundException($"Invalid memory offset: {memoryOffset}");
-            }
-
-            if (data.keyType != keyType)
-            {
-                throw new InvalidCastException($"Type mismatch: {memoryOffset}. Requested - {keyType}. Actual - {data.keyType}");
-            }
-        }
-
         // validate the enum type
         private static unsafe void ValidateEnumType<T>() where T : unmanaged, Enum
         {

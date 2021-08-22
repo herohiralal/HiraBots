@@ -56,17 +56,17 @@ namespace HiraBots.Editor.Tests
         protected ScriptableObject mockObject2 { get; private set; } = null;
         protected ScriptableObject mockObject3 { get; private set; } = null;
 
-        protected ushort levelKeyInteger => baseCharacterData["Level"].memoryOffset;
-        protected ushort healthKeyFloat => baseCharacterData["Health"].memoryOffset;
-        protected ushort healthLowKeyBoolean => baseCharacterData["HealthLow"].memoryOffset;
-        protected ushort currentPlayerLocationKeyVector => baseCharacterData["CurrentPlayerLocation"].memoryOffset;
-        protected ushort playerReferenceKeyObject => baseCharacterData["PlayerReference"].memoryOffset;
-        protected ushort healthStatusKeyEnum => baseCharacterData["HealthStatus"].memoryOffset;
-        protected ushort staminaKeyFloat => warriorData["Stamina"].memoryOffset;
-        protected ushort manaKeyFloat => mageData["Mana"].memoryOffset;
-        protected ushort elementalPowerKeyInteger => elementalistData["ElementalPower"].memoryOffset;
-        protected ushort throwKeyQuaternion => elementalistData["Throw"].memoryOffset;
-        protected ushort powerTypeKeyEnum => elementalistData["PowerType"].memoryOffset;
+        protected const string k_LevelKeyInteger = "Level";
+        protected const string k_HealthKeyFloat = "Health";
+        protected const string k_HealthLowKeyBoolean = "HealthLow";
+        protected const string k_CurrentPlayerLocationKeyVector = "CurrentPlayerLocation";
+        protected const string k_PlayerReferenceKeyObject = "PlayerReference";
+        protected const string k_HealthStatusKeyEnum = "HealthStatus";
+        protected const string k_StaminaKeyFloat = "Stamina";
+        protected const string k_ManaKeyFloat = "Mana";
+        protected const string k_ElementalPowerKeyInteger = "ElementalPower";
+        protected const string k_ThrowKeyQuaternion = "Throw";
+        protected const string k_PowerTypeKeyEnum = "PowerType";
 
         /// <summary>
         /// Validate and compile all blackboards.

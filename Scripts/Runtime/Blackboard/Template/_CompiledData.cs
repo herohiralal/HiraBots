@@ -12,8 +12,7 @@ namespace HiraBots
     {
         private BlackboardTemplateCompiledData m_ParentCompiledData;
         private NativeArray<byte> m_Template = default;
-        private readonly Dictionary<string, ushort> m_KeyNameToMemoryOffset;
-        private readonly Dictionary<ushort, BlackboardKeyCompiledData> m_MemoryOffsetToKeyData;
+        private readonly Dictionary<string, BlackboardKeyCompiledData> m_KeyNameToKeyData;
 
         /// <summary>
         /// The number of keys within the blackboard template.
@@ -21,13 +20,12 @@ namespace HiraBots
         internal ushort keyCount { get; }
 
         internal BlackboardTemplateCompiledData(BlackboardTemplateCompiledData parentCompiledData, NativeArray<byte> template,
-            Dictionary<string, ushort> keyNameToMemoryOffset, Dictionary<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData, ushort keyCount)
+            Dictionary<string, BlackboardKeyCompiledData> keyNameToKeyData, ushort keyCount)
         {
             m_ParentCompiledData = parentCompiledData;
             m_ParentCompiledData?.AddInstanceSyncListener(this);
             m_Template = template;
-            m_KeyNameToMemoryOffset = keyNameToMemoryOffset;
-            m_MemoryOffsetToKeyData = memoryOffsetToKeyData;
+            m_KeyNameToKeyData = keyNameToKeyData;
             this.keyCount = keyCount;
         }
 
@@ -39,8 +37,7 @@ namespace HiraBots
             if (m_Template.IsCreated)
                 m_Template.Dispose();
 
-            m_KeyNameToMemoryOffset.Clear();
-            m_MemoryOffsetToKeyData.Clear();
+            m_KeyNameToKeyData.Clear();
         }
 
         // pointers to the template
@@ -56,23 +53,16 @@ namespace HiraBots
         }
 
         /// <summary>
-        /// Map from key name to memory offset.
-        /// </summary>
-        internal ReadOnlyDictionaryAccessor<string, ushort> keyNameToMemoryOffset =>
-            m_KeyNameToMemoryOffset;
-
-        /// <summary>
         /// Map from memory offset to key compiled data.
         /// </summary>
-        internal ReadOnlyDictionaryAccessor<ushort, BlackboardKeyCompiledData> memoryOffsetToKeyData =>
-            m_MemoryOffsetToKeyData;
+        internal ReadOnlyDictionaryAccessor<string, BlackboardKeyCompiledData> keyNameToKeyData =>
+            m_KeyNameToKeyData;
 
         /// <summary>
         /// Get key compiled data from a key name.
         /// </summary>
         internal BlackboardKeyCompiledData this[string keyName] =>
-            m_KeyNameToMemoryOffset.TryGetValue(keyName, out var memoryOffset)
-            && m_MemoryOffsetToKeyData.TryGetValue(memoryOffset, out var output)
+            m_KeyNameToKeyData.TryGetValue(keyName, out var output)
                 ? output
                 : BlackboardKeyCompiledData.none;
 
