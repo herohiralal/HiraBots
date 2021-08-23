@@ -14,11 +14,11 @@
             {
                 var file = m_EssentialToDecisionMaking
                     ? m_InstanceSynced
-                        ? "Blackboard/BlackboardStaticKeyAccessor"
-                        : "Blackboard/BlackboardKeyAccessor"
-                    : m_InstanceSynced
                         ? "Blackboard/BlackboardStaticEssentialKeyAccessor"
-                        : "Blackboard/BlackboardEssentialKeyAccessor";
+                        : "Blackboard/BlackboardEssentialKeyAccessor"
+                    : m_InstanceSynced
+                        ? "Blackboard/BlackboardStaticKeyAccessor"
+                        : "Blackboard/BlackboardKeyAccessor";
 
                 return CodeGenHelpers.ReadTemplate(file,
                     ("<BLACKBOARD-KEY-NAME>", name),
