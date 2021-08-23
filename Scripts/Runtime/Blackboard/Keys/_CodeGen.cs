@@ -8,18 +8,18 @@
                 ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
                 ("<BLACKBOARD-KEY-NAME>", name));
 
-        internal string defaultInitializerGeneratedCode =>
-            CodeGenHelpers.ReadTemplate("Blackboard/BlackboardDefaultInitializer",
-                ("<BLACKBOARD-KEY-NAME>", name),
-                ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode));
-
-        internal virtual string accessorGeneratedCode =>
+        internal string accessorGeneratedCode =>
             CodeGenHelpers.ReadTemplate("Blackboard/BlackboardKeyAccessor",
                 ("<BLACKBOARD-KEY-NAME>", name),
                 ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
+                ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode),
                 ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
                 ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
                 ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode));
+
+        internal string initializerGeneratedCode =>
+            CodeGenHelpers.ReadTemplate("Blackboard/BlackboardInitializer",
+                ("<BLACKBOARD-KEY-NAME>", name));
 
         protected abstract string unmanagedTypeName { get; }
         protected abstract string defaultValueGeneratedCode { get; }

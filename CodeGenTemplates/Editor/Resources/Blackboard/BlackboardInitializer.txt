@@ -1,0 +1,1 @@
+﻿                m_<BLACKBOARD-KEY-NAME> = this.m_<BLACKBOARD-KEY-NAME>

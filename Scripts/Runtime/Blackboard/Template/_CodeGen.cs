@@ -11,40 +11,21 @@ namespace HiraBots
             get
             {
                 var selfKeys = sortedKeysExcludingInherited.ToArray();
+                var allKeys = sortedKeysIncludingInherited.ToArray();
 
-                var fields = string.Join(Environment.NewLine, selfKeys.Select(k => k.unmanagedFieldGeneratedCode));
+                var fields = string.Join(Environment.NewLine, allKeys.Select(k => k.unmanagedFieldGeneratedCode));
 
-                var initializers = string.Join($",{Environment.NewLine}", selfKeys.Select(k => k.defaultInitializerGeneratedCode));
+                var accessors = string.Join(Environment.NewLine + Environment.NewLine, selfKeys.Select(k => k.accessorGeneratedCode));
 
-                var accessors = string.Join($"{Environment.NewLine}{Environment.NewLine}", selfKeys.Select(k => k.accessorGeneratedCode))
-                    .Replace("<BLACKBOARD-NAME>", name);
+                var initializers = string.Join(',' + Environment.NewLine, allKeys.Select(k => k.initializerGeneratedCode));
 
                 return CodeGenHelpers.ReadTemplate("Blackboard/Blackboard",
                     ("<BLACKBOARD-NAME>", name),
-                    ("<BLACKBOARD-PARENT-NAME>", m_Parent == null ? "GeneratedBlackboardTemplate" : m_Parent.name),
+                    ("<BLACKBOARD-PARENT-NAME>", m_Parent == null ? "Base" : m_Parent.name),
                     ("<BLACKBOARD-KEY-FIELDS>", fields),
-                    ("<BLACKBOARD-DEFAULT-INITIALIZERS>", initializers),
                     ("<BLACKBOARD-KEY-ACCESSORS>", accessors),
-                    ("<BLACKBOARD-PARENT-ACCESSORS>", GetParentAccessorGeneratedCode(hierarchyIndex)));
+                    ("<BLACKBOARD-INITIALIZERS>", initializers));
             }
-        }
-
-        private string GetParentAccessorGeneratedCode(int hierarchyIndexToCompare)
-        {
-            var inherited = m_Parent == null
-                ? ""
-                : m_Parent.GetParentAccessorGeneratedCode(hierarchyIndexToCompare) + Environment.NewLine + Environment.NewLine;
-
-            var parentAccess = "";
-            for (var i = 0; i < hierarchyIndexToCompare - hierarchyIndex; i++)
-            {
-                parentAccess += ".Parent";
-            }
-
-            return inherited +
-                   CodeGenHelpers.ReadTemplate("Blackboard/BlackboardParentAccessor",
-                       ("<BLACKBOARD-NAME>", name),
-                       ("<BLACKBOARD-PARENT-ACCESS>", parentAccess));
         }
     }
 }

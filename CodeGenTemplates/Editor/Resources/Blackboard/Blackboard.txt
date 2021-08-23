@@ -18,17 +18,6 @@ namespace UnityEngine
 {
     internal struct <BLACKBOARD-NAME>_GeneratedBlackboard
     {
-        internal static <BLACKBOARD-NAME>_GeneratedBlackboard defaultBlackboard { get; }
-
-        static <BLACKBOARD-NAME>_GeneratedBlackboard()
-        {
-            defaultBlackboard = new <BLACKBOARD-NAME>_GeneratedBlackboard
-            {
-                Parent = <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard.defaultBlackboard,
-<BLACKBOARD-DEFAULT-INITIALIZERS>
-            };
-        }
-
 #if UNITY_EDITOR
         private class UnmanagedAsserter<T> where T : unmanaged
         {
@@ -43,21 +32,19 @@ namespace UnityEngine
         }
 #endif
 
-        internal <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard Parent;
 <BLACKBOARD-KEY-FIELDS>
     }
 
-    public abstract partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponentBase : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponentBase
+    public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent
     {
-        internal abstract ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME> { get; }
-
 <BLACKBOARD-KEY-ACCESSORS>
-    }
 
-    public sealed partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-NAME>_GeneratedBlackboardComponentBase
-    {
-        private <BLACKBOARD-NAME>_GeneratedBlackboard m_Internal = <BLACKBOARD-NAME>_GeneratedBlackboard.defaultBlackboard;
-
-<BLACKBOARD-PARENT-ACCESSORS>
+        internal void GetRaw(out <BLACKBOARD-NAME>_GeneratedBlackboard bb)
+        {
+            bb = new <BLACKBOARD-NAME>_GeneratedBlackboard
+            {
+<BLACKBOARD-INITIALIZERS>
+            };
+        }
     }
 }
