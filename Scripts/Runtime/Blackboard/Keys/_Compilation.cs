@@ -120,17 +120,7 @@ namespace HiraBots
         {
             // write the object value as default value to register it in the object cache
             // and then pin the object to freeze its count
-            BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, m_DefaultValue);
-            BlackboardUnsafeHelpers.Pin(m_DefaultValue);
-        }
-
-        protected override void FreeInternal()
-        {
-            // release the object to unfreeze its count
-            // and then write the object value as null to unregister it from the object cache
-            BlackboardUnsafeHelpers.Release(m_DefaultValue);
-            var instanceID = m_DefaultValue == null ? 0 : m_DefaultValue.GetInstanceID();
-            BlackboardUnsafeHelpers.WriteObjectValue((byte*) &instanceID, 0, null);
+            BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, null);
         }
     }
 

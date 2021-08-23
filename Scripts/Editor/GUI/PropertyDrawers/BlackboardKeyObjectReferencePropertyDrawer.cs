@@ -111,7 +111,7 @@ namespace HiraBots.Editor
                 var defaultValueProperty = so.FindProperty(k_DefaultValueProperty);
                 if (defaultValueProperty == null)
                 {
-                    EditorGUI.HelpBox(currentRect, "Missing default value property.", MessageType.Error);
+                    EditorGUI.HelpBox(currentRect, "Unsupported default value property.", MessageType.Info);
                 }
                 else
                 {

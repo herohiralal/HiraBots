@@ -82,9 +82,8 @@ namespace HiraBots
         /// <summary>
         /// Build an ObjectBlackboardKey.
         /// </summary>
-        internal void BuildObjectBlackboardKey(Object defaultValue)
+        internal void BuildObjectBlackboardKey()
         {
-            m_DefaultValue = defaultValue;
         }
     }
 

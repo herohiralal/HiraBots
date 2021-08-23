@@ -52,8 +52,7 @@ namespace HiraBots.Editor.Tests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_FourthKeyDefaultValue = ScriptableObject.CreateInstance<ScriptableObject>();
-            m_FourthKeyDefaultValue.hideFlags = HideFlags.HideAndDontSave;
+            m_FourthKeyDefaultValue = null;
 
             var first = k_FirstKeyName.BuildScriptableObject<IntegerBlackboardKey>();
             first.BuildBlackboardKey(k_FirstKeyTraits);
@@ -72,7 +71,7 @@ namespace HiraBots.Editor.Tests
 
             var fourth = k_FourthKeyName.BuildScriptableObject<ObjectBlackboardKey>();
             fourth.BuildBlackboardKey(k_FourthKeyTraits);
-            fourth.BuildObjectBlackboardKey(m_FourthKeyDefaultValue);
+            fourth.BuildObjectBlackboardKey();
             m_Fourth = fourth;
 
             m_Parent = k_ParentTemplateName.BuildScriptableObject<BlackboardTemplate>();
