@@ -55,24 +55,5 @@ namespace HiraBots
         /// </summary>
         private IEnumerable<BlackboardKey> sortedKeysExcludingInherited =>
             m_Keys.OrderBy(k => k.sizeInBytes);
-
-        /// <summary>
-        /// Get keys (including inherited) sorted by their size in bytes.
-        /// </summary>
-        private IEnumerable<BlackboardKey> sortedKeysIncludingInherited
-        {
-            get
-            {
-                var empty = Enumerable.Empty<BlackboardKey>();
-
-                if (m_Parent != null)
-                {
-                    empty = empty.Concat(m_Parent.sortedKeysIncludingInherited);
-                }
-
-                empty = empty.Concat(sortedKeysExcludingInherited);
-                return empty;
-            }
-        }
     }
 }

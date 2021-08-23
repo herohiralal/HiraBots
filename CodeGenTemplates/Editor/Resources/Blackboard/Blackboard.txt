@@ -15,14 +15,15 @@ using Unity.Mathematics;
 
 namespace UnityEngine
 {
-    internal struct <BLACKBOARD-NAME>_GeneratedBlackboard
+    public struct <BLACKBOARD-NAME>_GeneratedBlackboard
     {
-        internal static <BLACKBOARD-NAME>_GeneratedBlackboard defaultBlackboard { get; }
+        public static <BLACKBOARD-NAME>_GeneratedBlackboard defaultBlackboard { get; }
 
         static <BLACKBOARD-NAME>_GeneratedBlackboard()
         {
             defaultBlackboard = new <BLACKBOARD-NAME>_GeneratedBlackboard
             {
+                Parent = <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard.defaultBlackboard,
 <BLACKBOARD-DEFAULT-INITIALIZERS>
             };
         }
@@ -32,29 +33,30 @@ namespace UnityEngine
         {
             private static void Execute()
             {
+                // if this line fails to compile it means that the generated blackboard
+                // is not unmanaged, which is a problem because it cannot be used for
+                // jobs and burst compilation
+
                 var checker = new UnmanagedAsserter<<BLACKBOARD-NAME>_GeneratedBlackboard>();
             }
         }
 #endif
 
+        public <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard Parent;
 <BLACKBOARD-KEY-FIELDS>
     }
 
-    public partial class <BLACKBOARD-NAME>_GeneratedBlackboardTemplate
+    public abstract partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponentBase : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponentBase
     {
-        private static readonly <BLACKBOARD-NAME>_GeneratedBlackboardTemplate s_Instance =
-            new <BLACKBOARD-NAME>_GeneratedBlackboardTemplate();
-
-        protected <BLACKBOARD-NAME>_GeneratedBlackboardTemplate()
-        {
-        }
-
-    }
-
-    public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent
-    {
-        private <BLACKBOARD-NAME>_GeneratedBlackboard m_Actual = <BLACKBOARD-NAME>_GeneratedBlackboard.defaultBlackboard;
+        protected abstract ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME> { get; }
 
 <BLACKBOARD-KEY-ACCESSORS>
+    }
+
+    public sealed partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-NAME>_GeneratedBlackboardComponentBase
+    {
+        private <BLACKBOARD-NAME>_GeneratedBlackboard m_Internal = <BLACKBOARD-NAME>_GeneratedBlackboard.defaultBlackboard;
+
+<BLACKBOARD-PARENT-ACCESSORS>
     }
 }

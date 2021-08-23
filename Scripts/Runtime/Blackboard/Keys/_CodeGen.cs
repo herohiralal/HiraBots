@@ -13,9 +13,19 @@
                 ("<BLACKBOARD-KEY-NAME>", name),
                 ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode));
 
+        internal virtual string accessorGeneratedCode =>
+            CodeGenHelpers.ReadTemplate("Blackboard/BlackboardKeyAccessor",
+                ("<BLACKBOARD-KEY-NAME>", name),
+                ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
+                ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
+                ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
+                ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode));
+
         protected abstract string unmanagedTypeName { get; }
         protected abstract string defaultValueGeneratedCode { get; }
-        internal abstract string actualTypeName { get; }
+        protected abstract string actualTypeName { get; }
+        protected virtual string unmanagedToActualGeneratedCode => "";
+        protected virtual string actualToUnmanagedGeneratedCode => "";
 #endif
     }
 
@@ -25,35 +35,39 @@
     {
         protected override string unmanagedTypeName => "bool";
         protected override string defaultValueGeneratedCode => m_DefaultValue ? "true" : "false";
-        internal override string actualTypeName => "bool";
+        protected override string actualTypeName => "bool";
     }
 
     internal partial class EnumBlackboardKey
     {
         protected override string unmanagedTypeName => "byte";
         protected override string defaultValueGeneratedCode => m_DefaultValue.m_Value.ToString();
-        internal override string actualTypeName => DynamicEnum.Helpers.identifierToType[m_DefaultValue.m_TypeIdentifier].FullName;
+        protected override string actualTypeName => DynamicEnum.Helpers.identifierToType[m_DefaultValue.m_TypeIdentifier].FullName;
+        protected override string unmanagedToActualGeneratedCode => $"({actualTypeName}) ";
+        protected override string actualToUnmanagedGeneratedCode => "(byte) ";
     }
 
     internal partial class FloatBlackboardKey
     {
         protected override string unmanagedTypeName => "float";
         protected override string defaultValueGeneratedCode => $"{m_DefaultValue}f";
-        internal override string actualTypeName => "float";
+        protected override string actualTypeName => "float";
     }
 
     internal partial class IntegerBlackboardKey
     {
         protected override string unmanagedTypeName => "int";
         protected override string defaultValueGeneratedCode => m_DefaultValue.ToString();
-        internal override string actualTypeName => "int";
+        protected override string actualTypeName => "int";
     }
 
     internal partial class ObjectBlackboardKey
     {
         protected override string unmanagedTypeName => "int";
         protected override string defaultValueGeneratedCode => "0";
-        internal override string actualTypeName => "Object";
+        protected override string actualTypeName => "Object";
+        protected override string unmanagedToActualGeneratedCode => "GeneratedBlackboardHelpers.InstanceIDToObject";
+        protected override string actualToUnmanagedGeneratedCode => "GeneratedBlackboardHelpers.ObjectToInstanceID";
     }
 
     internal partial class QuaternionBlackboardKey
@@ -63,7 +77,7 @@
         protected override string defaultValueGeneratedCode =>
             $"quaternion.Euler(new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f))";
 
-        internal override string actualTypeName => "Quaternion";
+        protected override string actualTypeName => "Quaternion";
     }
 
     internal partial class VectorBlackboardKey
@@ -73,7 +87,7 @@
         protected override string defaultValueGeneratedCode =>
             $"new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f)";
 
-        internal override string actualTypeName => "Vector3";
+        protected override string actualTypeName => "Vector3";
     }
 
 #endif

@@ -1,6 +1,7 @@
 ﻿{
     "name": "<CODEGEN-ASSEMBLY-NAME>",
     "references": [
+        "HiraBots.Runtime",
         "Unity.Burst",
         "Unity.Mathematics"
     ],

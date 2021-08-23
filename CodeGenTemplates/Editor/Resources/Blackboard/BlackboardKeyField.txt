@@ -1,1 +1,1 @@
-﻿        internal <BLACKBOARD-KEY-TYPE> m_<BLACKBOARD-KEY-NAME>;
+﻿        public <BLACKBOARD-KEY-TYPE> m_<BLACKBOARD-KEY-NAME>;

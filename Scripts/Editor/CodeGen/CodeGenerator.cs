@@ -4,18 +4,34 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    public struct SomeBlackboard
+    public struct BaseBlackboard
+    {
+        static BaseBlackboard()
+        {
+            defaultBlackboard = new BaseBlackboard
+            {
+                m_X = 3
+            };
+        }
+        
+        public static BaseBlackboard defaultBlackboard { get; }
+        public byte m_X;
+    }
+    
+    public unsafe struct SomeBlackboard
     {
         static SomeBlackboard()
         {
             defaultBlackboard = new SomeBlackboard
             {
+                m_ParentGeneratedBaseBlackboard = BaseBlackboard.defaultBlackboard,
                 m_Something = 3,
             };
         }
 
         public static SomeBlackboard defaultBlackboard { get; }
 
+        public BaseBlackboard m_ParentGeneratedBaseBlackboard;
         public int m_Something;
     }
     
@@ -39,18 +55,34 @@ namespace HiraBots.Editor
 
     public abstract partial class BaseBlackboardWrapper
     {
-        // accessor functions
+        protected abstract ref BaseBlackboard internalBaseBlackboard { get; }
     }
 
-    public partial class SomeBlackboardWrapper : BaseBlackboardWrapper
+    public partial class BaseBlackboardWrapperActual : BaseBlackboardWrapper
     {
-        private SomeBlackboard m_ActualBlackboard = SomeBlackboard.defaultBlackboard;
+        private BaseBlackboard m_Internal = BaseBlackboard.defaultBlackboard;
+
+        protected override ref BaseBlackboard internalBaseBlackboard => ref m_Internal;
+    }
+
+    public abstract partial class SomeBlackboardWrapper : BaseBlackboardWrapper
+    {
+        protected abstract ref SomeBlackboard internalSomeBlackboard { get; }
 
         public int Something
         {
-            get => m_ActualBlackboard.m_Something;
-            set => m_ActualBlackboard.m_Something = value;
+            get => internalSomeBlackboard.m_Something;
+            set => internalSomeBlackboard.m_Something = value;
         }
+    }
+
+    public partial class SomeBlackboardWrapperActual : SomeBlackboardWrapper
+    {
+        private SomeBlackboard m_Internal = SomeBlackboard.defaultBlackboard;
+        
+        protected override ref BaseBlackboard internalBaseBlackboard => ref m_Internal.m_ParentGeneratedBaseBlackboard;
+
+        protected override ref SomeBlackboard internalSomeBlackboard => ref m_Internal;
     }
     
     /// <summary>

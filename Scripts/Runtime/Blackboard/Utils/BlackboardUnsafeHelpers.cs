@@ -175,7 +175,15 @@ namespace HiraBots
         #region Object
 
 #if UNITY_2020_3_OR_NEWER // 2020.3 or newer can use Resources.InstanceIDToObject directly.
-        
+
+        /// <summary>
+        /// Get Object from InstanceID.
+        /// </summary>
+        internal static Object InstanceIDToObject(int input)
+        {
+            return UnityEngine.Resources.InstanceIDToObject(input);
+        }
+
         /// <summary>
         /// No-op replacement for a 2019.4 function.
         /// </summary>
@@ -248,6 +256,14 @@ namespace HiraBots
 #else
         // the object cache utility
         private static readonly UnityObjectCache s_ObjectCache = new UnityObjectCache(200);
+
+        /// <summary>
+        /// Get Object from InstanceID.
+        /// </summary>
+        internal static Object InstanceIDToObject(int input)
+        {
+            return s_ObjectCache.Read(input);
+        }
 
         /// <summary>
         /// Clear the Unity object cache.
