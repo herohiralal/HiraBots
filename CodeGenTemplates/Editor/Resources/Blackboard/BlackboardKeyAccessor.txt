@@ -1,0 +1,5 @@
+﻿        public <BLACKBOARD-KEY-TYPE> <BLACKBOARD-KEY-NAME> => m_Actual.m_<BLACKBOARD-KEY-NAME>;
+
+        public <BLACKBOARD-KEY-TYPE> Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-KEY-TYPE> value, bool expected = false)
+        {
+        }

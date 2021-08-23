@@ -1,0 +1,16 @@
+﻿{
+    "name": "<CODEGEN-ASSEMBLY-NAME>",
+    "references": [
+        "HiraBots.Runtime",
+        "Unity.Burst",
+        "Unity.Mathematics"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

@@ -8,8 +8,6 @@ namespace HiraBots.Editor
     {
         #region Folder Confirmation
 
-        protected static readonly string s_ProjectDirectoryA = Path.GetDirectoryName(Application.dataPath);
-
         /// <summary>
         /// Confirm the existence of the temporary editor-only folder.
         /// </summary>

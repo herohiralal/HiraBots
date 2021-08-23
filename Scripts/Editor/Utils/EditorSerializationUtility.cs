@@ -15,12 +15,19 @@
         // In the build, cooked objects are stored inside: <project-path>/Assets/HiraBotsBuildArtifacts/Resources/HiraBots/
         // The base class is not aware of the complete folder structure, and is only concerned with .../Resources/HiraBots/
 
+        protected static readonly string s_ProjectDirectoryA = System.IO.Path.GetDirectoryName(UnityEngine.Application.dataPath);
+
         protected const string k_AssetsFolderName = "Assets";
+
         protected const string k_HiraBotsBuildArtifactsFolderName = "HiraBotsBuildArtifacts";
         protected const string k_ResourcesFolderName = "Resources";
 
         protected const string k_BuildArtifactsFolderNameR = k_AssetsFolderName + "/" + k_HiraBotsBuildArtifactsFolderName;
 
         protected const string k_BuildArtifactsResourcesFolderNameR = k_BuildArtifactsFolderNameR + "/" + k_ResourcesFolderName + "/" + k_MainSubfolderName;
+
+        protected const string k_CodeGenFolderName = "_HiraBots.CodeGen";
+        protected const string k_CodeGenAssemblyName = "HiraBots.CodeGen";
+        protected const string k_CodeGenManualExtensionsFolderName = "ManualExtensions";
     }
 }

@@ -59,7 +59,7 @@ namespace HiraBots.Editor
             var templatesToGenerateCodeFor = AssetDatabase
                 .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
                 .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(path => (path, AssetDatabase.LoadAssetAtPath<BlackboardTemplate>(path)))
+                .Select(path => (System.IO.Path.ChangeExtension(path, "cs"), AssetDatabase.LoadAssetAtPath<BlackboardTemplate>(path)))
                 .Where(tuple => tuple.Item2.effectiveBackends.HasFlag(BackendType.CodeGenerator))
                 .ToArray();
 
