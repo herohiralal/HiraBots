@@ -1,6 +1,6 @@
 ﻿namespace UnityEngine
 {
-    public abstract class GeneratedBlackboardComponent
+    public abstract class GeneratedBlackboardComponent : IGeneratedBlackboardInstanceSyncListener
     {
         
     }

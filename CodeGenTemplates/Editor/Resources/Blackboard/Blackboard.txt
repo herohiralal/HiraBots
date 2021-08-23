@@ -10,6 +10,9 @@
 // </auto-generated>
 // ---------------------------------------------------------------------
 
+using System;
+using Unity.Mathematics;
+
 namespace UnityEngine
 {
     internal struct <BLACKBOARD-NAME>_GeneratedBlackboard
@@ -23,6 +26,16 @@ namespace UnityEngine
 <BLACKBOARD-DEFAULT-INITIALIZERS>
             };
         }
+
+#if UNITY_EDITOR
+        private class UnmanagedAsserter<T> where T : unmanaged
+        {
+            private static void Execute()
+            {
+                var checker = new UnmanagedAsserter<<BLACKBOARD-NAME>_GeneratedBlackboard>();
+            }
+        }
+#endif
 
 <BLACKBOARD-KEY-FIELDS>
     }
@@ -41,6 +54,7 @@ namespace UnityEngine
     public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent
     {
         private <BLACKBOARD-NAME>_GeneratedBlackboard m_Actual = <BLACKBOARD-NAME>_GeneratedBlackboard.defaultBlackboard;
+
 <BLACKBOARD-KEY-ACCESSORS>
     }
 }

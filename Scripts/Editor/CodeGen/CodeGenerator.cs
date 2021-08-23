@@ -76,7 +76,7 @@ namespace HiraBots.Editor
 
             foreach (var (path, template) in blackboardTemplates)
             {
-                generatedCode.Add((path, template.generatedCode));
+                generatedCode.Add((path, template.allGeneratedCode));
             }
 
             var generatedFiles = new string[generatedCode.Count];
