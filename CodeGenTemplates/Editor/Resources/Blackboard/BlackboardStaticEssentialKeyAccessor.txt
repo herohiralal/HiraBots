@@ -1,5 +1,4 @@
 ﻿        protected static <BLACKBOARD-KEY-TYPE> s_<BLACKBOARD-KEY-NAME>;
-        protected bool m_<BLACKBOARD-KEY-NAME>Changed;
 
         public static <BLACKBOARD-ACTUAL-KEY-TYPE> Static<BLACKBOARD-KEY-NAME>
         {
@@ -18,7 +17,7 @@
 
                 foreach (var component in s_ActiveComponents)
                 {
-                    component.m_<BLACKBOARD-KEY-NAME>Changed = true;
+                    component.m_UnexpectedChanges.Add("<BLACKBOARD-KEY-NAME>");
                 }
             }
         }

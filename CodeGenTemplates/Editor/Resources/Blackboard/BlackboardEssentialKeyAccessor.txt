@@ -1,5 +1,4 @@
 ﻿        protected <BLACKBOARD-KEY-TYPE> m_<BLACKBOARD-KEY-NAME>;
-        protected bool m_<BLACKBOARD-KEY-NAME>Changed;
 
         public <BLACKBOARD-ACTUAL-KEY-TYPE> <BLACKBOARD-KEY-NAME>
         {
@@ -20,6 +19,6 @@
 
             if (!expected)
             {
-                m_<BLACKBOARD-KEY-NAME>Changed = true;
+                m_UnexpectedChanges.Add("<BLACKBOARD-KEY-NAME>");
             }
         }
