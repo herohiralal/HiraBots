@@ -7,8 +7,9 @@ namespace HiraBots
     /// </summary>
     internal readonly struct BlackboardKeyCompiledData
     {
-        internal BlackboardKeyCompiledData(ushort memoryOffset, ushort index, BlackboardKeyTraits traits, BlackboardKeyType keyType)
+        internal BlackboardKeyCompiledData(string keyName, ushort memoryOffset, ushort index, BlackboardKeyTraits traits, BlackboardKeyType keyType)
         {
+            this.keyName = keyName;
             this.memoryOffset = memoryOffset;
             this.index = index;
             this.traits = traits;
@@ -21,7 +22,7 @@ namespace HiraBots
         internal static BlackboardKeyCompiledData none
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new BlackboardKeyCompiledData(ushort.MaxValue, ushort.MaxValue, BlackboardKeyTraits.None, BlackboardKeyType.Invalid);
+            get => new BlackboardKeyCompiledData("", ushort.MaxValue, ushort.MaxValue, BlackboardKeyTraits.None, BlackboardKeyType.Invalid);
         }
 
         /// <summary>
@@ -32,6 +33,8 @@ namespace HiraBots
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => keyType != BlackboardKeyType.Invalid;
         }
+
+        internal string keyName { get; }
 
         /// <summary>
         /// The memory offset of the key within all the keys that a blackboard template has.

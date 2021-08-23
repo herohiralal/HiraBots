@@ -55,7 +55,7 @@ namespace HiraBots
                          | (m_EssentialToDecisionMaking ? BlackboardKeyTraits.BroadcastEventOnUnexpectedChange : BlackboardKeyTraits.None);
 
             // provide all the necessary data to the context
-            m_CompiledDataInternal = new BlackboardKeyCompiledData(context.memoryOffset, context.index, traits, m_KeyType);
+            m_CompiledDataInternal = new BlackboardKeyCompiledData(name, context.memoryOffset, context.index, traits, m_KeyType);
             CompileInternal(ref context);
         }
 

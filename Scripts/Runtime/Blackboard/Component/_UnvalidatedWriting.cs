@@ -8,12 +8,12 @@ namespace HiraBots
     internal unsafe partial class BlackboardComponent : IInstanceSynchronizerListener
     {
         // list of memory offsets that have seen an unexpected change
-        private readonly System.Collections.Generic.List<ushort> m_UnexpectedChanges;
+        private readonly System.Collections.Generic.List<string> m_UnexpectedChanges;
 
         /// <summary>
         /// The unexpected changes present in the blackboard.
         /// </summary>
-        internal ReadOnlyListAccessor<ushort> unexpectedChanges => m_UnexpectedChanges;
+        internal ReadOnlyListAccessor<string> unexpectedChanges => m_UnexpectedChanges;
 
         /// <summary>
         /// Whether the blackboard component has unexpected changes.
@@ -40,7 +40,7 @@ namespace HiraBots
 
             if (keyData.broadcastEventOnUnexpectedChange)
             {
-                m_UnexpectedChanges.Add(memoryOffset);
+                m_UnexpectedChanges.Add(keyData.keyName);
             }
         }
 
@@ -77,7 +77,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -117,7 +117,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -157,7 +157,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -197,7 +197,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -239,7 +239,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -279,7 +279,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }
@@ -319,7 +319,7 @@ namespace HiraBots
                     {
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
-                            m_UnexpectedChanges.Add(memoryOffset);
+                            m_UnexpectedChanges.Add(keyData.keyName);
                         }
                     }
                 }

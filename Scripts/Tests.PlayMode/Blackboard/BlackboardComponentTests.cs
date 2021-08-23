@@ -108,7 +108,7 @@ namespace HiraBots.Editor.Tests
             knight.SetFloatValueWithoutValidation(staminaKeyFloatData, 1f);
             Assert.IsTrue(knight.hasUnexpectedChanges, "Simple dirtying failed.");
             Assert.IsTrue(knight.unexpectedChanges
-                .Contains(staminaKeyFloatData.memoryOffset), "Simple dirtying index validation failed.");
+                .Contains(staminaKeyFloatData.keyName), "Simple dirtying index validation failed.");
 
             TryCreate(m_MageTemplate, out var wizard);
 
@@ -151,13 +151,13 @@ namespace HiraBots.Editor.Tests
         {
             TryCreate(m_BaseCharacterTemplate, out var civilian);
             var currentPlayerLocationKeyVectorData = baseCharacterData[k_CurrentPlayerLocationKeyVector];
-            var currentPlayerLocationKeyVectorMemoryOffset = currentPlayerLocationKeyVectorData.memoryOffset;
+            var currentPlayerLocationKeyVectorKeyName = currentPlayerLocationKeyVectorData.keyName;
 
             civilian.SetVectorValueWithoutValidation(currentPlayerLocationKeyVectorData, new float3(1, 0, 0));
 
             Assert.IsTrue(civilian.hasUnexpectedChanges, "Simple dirtying test failed.");
             Assert.IsTrue(civilian.unexpectedChanges
-                .Contains(currentPlayerLocationKeyVectorMemoryOffset), "Simple dirtying test index validation failed.");
+                .Contains(currentPlayerLocationKeyVectorKeyName), "Simple dirtying test index validation failed.");
 
             civilian.ClearUnexpectedChanges();
 
@@ -169,7 +169,7 @@ namespace HiraBots.Editor.Tests
             Assert.IsFalse(civilian.hasUnexpectedChanges, "Expectation parameter test failed.");
             Assert.IsTrue(baboon.hasUnexpectedChanges, "Instance synced dirtying test failed.");
             Assert.IsTrue(baboon.unexpectedChanges
-                .Contains(currentPlayerLocationKeyVectorMemoryOffset), "Simple dirtying test index validation failed.");
+                .Contains(currentPlayerLocationKeyVectorKeyName), "Simple dirtying test index validation failed.");
         }
     }
 }
