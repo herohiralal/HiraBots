@@ -11,6 +11,7 @@
 // ---------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
@@ -37,6 +38,36 @@ namespace UnityEngine
 
     public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent
     {
+        private static readonly HashSet<<BLACKBOARD-NAME>_GeneratedBlackboardComponent> s_ActiveComponents =
+            new HashSet<<BLACKBOARD-NAME>_GeneratedBlackboardComponent>();
+
+        protected static void Register(<BLACKBOARD-NAME>_GeneratedBlackboardComponent component)
+        {
+            <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent.Register(component);
+            s_ActiveComponents.Add(component);
+        }
+
+        protected static void Unregister(<BLACKBOARD-NAME>_GeneratedBlackboardComponent component)
+        {
+            s_ActiveComponents.Remove(component);
+            <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent.Unregister(component);
+        }
+
+        protected <BLACKBOARD-NAME>_GeneratedBlackboardComponent()
+        {
+        }
+
+        public static void Create(out <BLACKBOARD-NAME>_GeneratedBlackboardComponent output)
+        {
+            output = new <BLACKBOARD-NAME>_GeneratedBlackboardComponent();
+            Register(output);
+        }
+
+        public override void Dispose()
+        {
+            Unregister(this);
+        }
+
 <BLACKBOARD-KEY-ACCESSORS>
 
         internal void GetRaw(out <BLACKBOARD-NAME>_GeneratedBlackboard bb)
