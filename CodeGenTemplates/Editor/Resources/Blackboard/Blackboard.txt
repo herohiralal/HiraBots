@@ -38,6 +38,13 @@ namespace UnityEngine
 
     public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent
     {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void OnInitialize()
+        {
+            s_ActiveComponents.Clear();
+<BLACKBOARD-STATIC-CLEANERS>
+        }
+
         private static readonly HashSet<<BLACKBOARD-NAME>_GeneratedBlackboardComponent> s_ActiveComponents =
             new HashSet<<BLACKBOARD-NAME>_GeneratedBlackboardComponent>();
 
@@ -55,6 +62,7 @@ namespace UnityEngine
 
         protected <BLACKBOARD-NAME>_GeneratedBlackboardComponent()
         {
+<BLACKBOARD-DEFAULT-VALUE-INITIALIZERS>
         }
 
         public static void Create(out <BLACKBOARD-NAME>_GeneratedBlackboardComponent output)

@@ -9,17 +9,30 @@
                 ("<BLACKBOARD-KEY-NAME>", name));
 
         internal string accessorGeneratedCode =>
-            CodeGenHelpers.ReadTemplate("Blackboard/BlackboardKeyAccessor",
+            CodeGenHelpers.ReadTemplate(m_InstanceSynced ? "Blackboard/BlackboardStaticKeyAccessor" : "Blackboard/BlackboardKeyAccessor",
                 ("<BLACKBOARD-KEY-NAME>", name),
                 ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
-                ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode),
                 ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
                 ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
                 ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode));
 
+        internal string staticCleanerGeneratedCode =>
+            m_InstanceSynced
+                ? CodeGenHelpers.ReadTemplate("Blackboard/BlackboardStaticCleaner",
+                    ("<BLACKBOARD-KEY-NAME>", name),
+                    ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode))
+                : "";
+
         internal string initializerGeneratedCode =>
-            CodeGenHelpers.ReadTemplate("Blackboard/BlackboardInitializer",
+            CodeGenHelpers.ReadTemplate(m_InstanceSynced ? "Blackboard/BlackboardStaticInitializer" : "Blackboard/BlackboardInitializer",
                 ("<BLACKBOARD-KEY-NAME>", name));
+
+        internal string defaultInitializerGeneratedCode =>
+            m_InstanceSynced
+                ? ""
+                : CodeGenHelpers.ReadTemplate("Blackboard/BlackboardDefaultValueInitializer",
+                    ("<BLACKBOARD-KEY-NAME>", name),
+                    ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode));
 
         protected abstract string unmanagedTypeName { get; }
         protected abstract string defaultValueGeneratedCode { get; }
