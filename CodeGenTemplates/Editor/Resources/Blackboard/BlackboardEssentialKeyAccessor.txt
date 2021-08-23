@@ -1,0 +1,25 @@
+﻿        protected <BLACKBOARD-KEY-TYPE> m_<BLACKBOARD-KEY-NAME>;
+        protected bool m_<BLACKBOARD-KEY-NAME>Changed;
+
+        public <BLACKBOARD-ACTUAL-KEY-TYPE> <BLACKBOARD-KEY-NAME>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => <BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(m_<BLACKBOARD-KEY-NAME>);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value, bool expected = false)
+        {
+            var actualValue = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
+            if (m_<BLACKBOARD-KEY-NAME><BLACKBOARD-KEY-EQUALITY-COMPARER>(actualValue))
+            {
+                return;
+            }
+
+            m_<BLACKBOARD-KEY-NAME> = actualValue;
+
+            if (!expected)
+            {
+                m_<BLACKBOARD-KEY-NAME>Changed = true;
+            }
+        }

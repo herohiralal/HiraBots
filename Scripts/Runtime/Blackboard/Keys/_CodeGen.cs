@@ -8,13 +8,27 @@
                 ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
                 ("<BLACKBOARD-KEY-NAME>", name));
 
-        internal string accessorGeneratedCode =>
-            CodeGenHelpers.ReadTemplate(m_InstanceSynced ? "Blackboard/BlackboardStaticKeyAccessor" : "Blackboard/BlackboardKeyAccessor",
-                ("<BLACKBOARD-KEY-NAME>", name),
-                ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
-                ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
-                ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
-                ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode));
+        internal string accessorGeneratedCode
+        {
+            get
+            {
+                var file = m_EssentialToDecisionMaking
+                    ? m_InstanceSynced
+                        ? "Blackboard/BlackboardStaticKeyAccessor"
+                        : "Blackboard/BlackboardKeyAccessor"
+                    : m_InstanceSynced
+                        ? "Blackboard/BlackboardStaticEssentialKeyAccessor"
+                        : "Blackboard/BlackboardEssentialKeyAccessor";
+
+                return CodeGenHelpers.ReadTemplate(file,
+                    ("<BLACKBOARD-KEY-NAME>", name),
+                    ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
+                    ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
+                    ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
+                    ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode),
+                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", equalityComparerGeneratedCode));
+            }
+        }
 
         internal string staticCleanerGeneratedCode =>
             m_InstanceSynced
@@ -39,6 +53,7 @@
         protected abstract string actualTypeName { get; }
         protected virtual string unmanagedToActualGeneratedCode => "";
         protected virtual string actualToUnmanagedGeneratedCode => "";
+        protected virtual string equalityComparerGeneratedCode => " == ";
 #endif
     }
 
@@ -91,6 +106,9 @@
             $"quaternion.Euler(new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f))";
 
         protected override string actualTypeName => "Quaternion";
+        protected override string unmanagedToActualGeneratedCode => "(Quaternion) ";
+        protected override string actualToUnmanagedGeneratedCode => "(quaternion) ";
+        protected override string equalityComparerGeneratedCode => ".Equals";
     }
 
     internal partial class VectorBlackboardKey
@@ -101,6 +119,9 @@
             $"new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f)";
 
         protected override string actualTypeName => "Vector3";
+        protected override string unmanagedToActualGeneratedCode => "(Vector3) ";
+        protected override string actualToUnmanagedGeneratedCode => "(float3) ";
+        protected override string equalityComparerGeneratedCode => ".Equals";
     }
 
 #endif
