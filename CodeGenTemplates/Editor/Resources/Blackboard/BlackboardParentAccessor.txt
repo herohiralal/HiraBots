@@ -1,1 +1,5 @@
-﻿        protected sealed override ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME> => ref m_Internal<BLACKBOARD-PARENT-ACCESS>;
+﻿        internal sealed override ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref m_Internal<BLACKBOARD-PARENT-ACCESS>;
+        }

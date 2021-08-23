@@ -1,5 +1,10 @@
-﻿        public <BLACKBOARD-ACTUAL-KEY-TYPE> <BLACKBOARD-KEY-NAME> => <BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(<BLACKBOARD-NAME>.m_<BLACKBOARD-KEY-NAME>);
+﻿        public <BLACKBOARD-ACTUAL-KEY-TYPE> <BLACKBOARD-KEY-NAME>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => <BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(<BLACKBOARD-NAME>.m_<BLACKBOARD-KEY-NAME>);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value, bool expected = false)
         {
             <BLACKBOARD-NAME>.m_<BLACKBOARD-KEY-NAME> = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);

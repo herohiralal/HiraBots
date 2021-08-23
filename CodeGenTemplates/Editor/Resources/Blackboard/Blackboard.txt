@@ -11,13 +11,14 @@
 // ---------------------------------------------------------------------
 
 using System;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 namespace UnityEngine
 {
-    public struct <BLACKBOARD-NAME>_GeneratedBlackboard
+    internal struct <BLACKBOARD-NAME>_GeneratedBlackboard
     {
-        public static <BLACKBOARD-NAME>_GeneratedBlackboard defaultBlackboard { get; }
+        internal static <BLACKBOARD-NAME>_GeneratedBlackboard defaultBlackboard { get; }
 
         static <BLACKBOARD-NAME>_GeneratedBlackboard()
         {
@@ -42,13 +43,13 @@ namespace UnityEngine
         }
 #endif
 
-        public <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard Parent;
+        internal <BLACKBOARD-PARENT-NAME>_GeneratedBlackboard Parent;
 <BLACKBOARD-KEY-FIELDS>
     }
 
     public abstract partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponentBase : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponentBase
     {
-        protected abstract ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME> { get; }
+        internal abstract ref <BLACKBOARD-NAME>_GeneratedBlackboard <BLACKBOARD-NAME> { get; }
 
 <BLACKBOARD-KEY-ACCESSORS>
     }
