@@ -21,12 +21,10 @@ namespace HiraBots
             internal ObjectCacheData(Object reference)
             {
                 m_Reference = reference;
-                m_Frozen = false;
                 m_Count = 1;
             }
 
             internal readonly Object m_Reference;
-            internal bool m_Frozen;
             internal uint m_Count;
         }
 
@@ -61,21 +59,6 @@ namespace HiraBots
         }
 
         /// <summary>
-        /// Disable the reference counting updates for a specific object.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void SetFreeze(int instanceID, bool value)
-        {
-            if (instanceID == 0 || !m_ObjectCache.TryGetValue(instanceID, out var dataToMakePersistent))
-            {
-                return;
-            }
-
-            dataToMakePersistent.m_Frozen = value;
-            m_ObjectCache[instanceID] = dataToMakePersistent;
-        }
-
-        /// <summary>
         /// Decrement a reference from the selected instance ID.
         /// </summary>
         /// <param name="instanceID"></param>
@@ -87,7 +70,7 @@ namespace HiraBots
                 return;
             }
 
-            dataToRemove.m_Count -= dataToRemove.m_Frozen ? 0u : 1u;
+            dataToRemove.m_Count -= 1;
 
             if (dataToRemove.m_Count == 0)
             {
@@ -115,7 +98,7 @@ namespace HiraBots
             
             if (m_ObjectCache.TryGetValue(instanceID, out var currentData))
             {
-                currentData.m_Count += currentData.m_Frozen ? 0u : 1u;
+                currentData.m_Count += 1;
                 m_ObjectCache[instanceID] = currentData;
             }
             else

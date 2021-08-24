@@ -208,22 +208,6 @@ namespace HiraBots
         }
 
         /// <summary>
-        /// No-op replacement for a 2019.4 function.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void Pin(Object _)
-        {
-        }
-
-        /// <summary>
-        /// No-op replacement for a 2019.4 function.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void Release(Object _)
-        {
-        }
-
-        /// <summary>
         /// Read Object value from a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
@@ -300,24 +284,6 @@ namespace HiraBots
         /// Clear the Unity object cache.
         /// </summary>
         internal static void ClearObjectCache() => s_ObjectCache.Clear();
-
-        /// <summary>
-        /// Freeze the reference counting on an object.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void Pin(Object target)
-        {
-            s_ObjectCache.SetFreeze(target == null ? 0 : target.GetInstanceID(), true);
-        }
-
-        /// <summary>
-        /// Unfreeze the reference counting on an object.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void Release(Object target)
-        {
-            s_ObjectCache.SetFreeze(target == null ? 0 : target.GetInstanceID(), false);
-        }
 
         /// <summary>
         /// Read Object value from a memory stream.
