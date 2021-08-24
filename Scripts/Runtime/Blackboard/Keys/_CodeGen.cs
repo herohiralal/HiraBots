@@ -26,7 +26,8 @@
                     ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeNameGeneratedCode),
                     ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode),
                     ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
-                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", GetEqualityComparerGeneratedCode(m_KeyType)));
+                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", GetEqualityComparerGeneratedCode(m_KeyType)),
+                    ("<BLACKBOARD-EXISTING-VALUE-CLEANER>", existingValueCleanerGeneratedCode));
             }
         }
 
@@ -167,6 +168,21 @@
                     return " == ";
             }
         }
+
+        private static string GetExistingValueCleaner(BlackboardKeyType type)
+        {
+            const string s = "GeneratedBlackboardHelpers.DisposeResourcesRelatedToExistingValue";
+
+            switch (type)
+            {
+                case BlackboardKeyType.Object:
+                    return s + "Actual";
+                default:
+                    return s;
+            }
+        }
+
+        protected virtual string existingValueCleanerGeneratedCode => GetExistingValueCleaner(m_KeyType);
 #endif
     }
 
@@ -197,7 +213,6 @@
 
     internal partial class ObjectBlackboardKey
     {
-        // todo: fix gc resource leak in key accessors
         protected override string defaultValueGeneratedCode => "0";
     }
 

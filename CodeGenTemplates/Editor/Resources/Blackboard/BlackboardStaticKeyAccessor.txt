@@ -9,6 +9,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void StaticSet<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value)
         {
+            <BLACKBOARD-EXISTING-VALUE-CLEANER>(s_<BLACKBOARD-KEY-NAME>);
             s_<BLACKBOARD-KEY-NAME> = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
         }
 

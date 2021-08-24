@@ -185,6 +185,21 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Get InstanceID from Object.
+        /// </summary>
+        internal static int ObjectToInstanceID(Object input)
+        {
+            return input.GetInstanceID();
+        }
+
+        /// <summary>
+        /// Remove existing handle from object cache.
+        /// </summary>
+        internal static void RemoveInstanceFromObjectCache(int _)
+        {
+        }
+
+        /// <summary>
         /// No-op replacement for a 2019.4 function.
         /// </summary>
         [MethodImpl(k_Inline)]
@@ -263,6 +278,22 @@ namespace HiraBots
         internal static Object InstanceIDToObject(int input)
         {
             return s_ObjectCache.Read(input);
+        }
+
+        /// <summary>
+        /// Get InstanceID from Object.
+        /// </summary>
+        internal static int ObjectToInstanceID(Object input)
+        {
+            return s_ObjectCache.Process(input);
+        }
+
+        /// <summary>
+        /// Remove existing handle from object cache.
+        /// </summary>
+        internal static void RemoveInstanceFromObjectCache(int instanceID)
+        {
+            s_ObjectCache.Remove(instanceID);
         }
 
         /// <summary>

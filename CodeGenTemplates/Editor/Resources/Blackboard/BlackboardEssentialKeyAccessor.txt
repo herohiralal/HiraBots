@@ -15,6 +15,7 @@
                 return;
             }
 
+            <BLACKBOARD-EXISTING-VALUE-CLEANER>(m_<BLACKBOARD-KEY-NAME>);
             m_<BLACKBOARD-KEY-NAME> = actualValue;
 
             if (!expected)

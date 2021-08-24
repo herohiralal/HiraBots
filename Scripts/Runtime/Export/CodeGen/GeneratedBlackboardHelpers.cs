@@ -11,7 +11,17 @@ namespace UnityEngine
 
         public static int ObjectToInstanceID(Object input)
         {
-            return input.GetInstanceID();
+            return BlackboardUnsafeHelpers.ObjectToInstanceID(input);
+        }
+
+        public static void DisposeResourcesRelatedToExistingValue<T>(T input)
+        {
+            // intentionally no-op
+        }
+
+        public static void DisposeResourcesRelatedToExistingValueActual(int instanceID)
+        {
+            BlackboardUnsafeHelpers.RemoveInstanceFromObjectCache(instanceID);
         }
     }
 }
