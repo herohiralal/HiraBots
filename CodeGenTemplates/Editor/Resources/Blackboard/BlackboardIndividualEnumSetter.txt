@@ -1,3 +1,4 @@
 ﻿                case "<BLACKBOARD-KEY-NAME>":
+                    var b = *(byte*) &value;
                     <BLACKBOARD-STATIC-ACCESSOR>Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(b));
                     break;

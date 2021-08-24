@@ -7,8 +7,6 @@
                 throw new OverflowException($"Invalid enum type: {typeof(T).FullName}. Only 8-bit enums are allowed.");
             }
 
-            byte b = *(byte*) &value;
-
             switch (key)
             {
 <BLACKBOARD-INDIVIDUAL-SETTERS>

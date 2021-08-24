@@ -39,7 +39,9 @@ namespace UnityEngine
     public partial class <BLACKBOARD-NAME>_GeneratedBlackboardComponent : <BLACKBOARD-PARENT-NAME>_GeneratedBlackboardComponent
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void OnInitialize()
+#pragma warning disable 109
+        public new static void StaticReset()
+#pragma warning restore 109
         {
             s_ActiveComponents.Clear();
 <BLACKBOARD-STATIC-CLEANERS>
