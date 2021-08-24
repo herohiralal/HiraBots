@@ -5,7 +5,7 @@
 #if UNITY_EDITOR
         internal string unmanagedFieldGeneratedCode =>
             CodeGenHelpers.ReadTemplate("Blackboard/BlackboardKeyField",
-                ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
+                ("<BLACKBOARD-KEY-TYPE>", GetUnmanagedTypeName(m_KeyType)),
                 ("<BLACKBOARD-KEY-NAME>", name));
 
         internal string accessorGeneratedCode
@@ -22,11 +22,11 @@
 
                 return CodeGenHelpers.ReadTemplate(file,
                     ("<BLACKBOARD-KEY-NAME>", name),
-                    ("<BLACKBOARD-KEY-TYPE>", unmanagedTypeName),
-                    ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeName),
-                    ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
+                    ("<BLACKBOARD-KEY-TYPE>", GetUnmanagedTypeName(m_KeyType)),
+                    ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeNameGeneratedCode),
                     ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode),
-                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", equalityComparerGeneratedCode));
+                    ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
+                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", GetEqualityComparerGeneratedCode(m_KeyType)));
             }
         }
 
@@ -48,12 +48,125 @@
                     ("<BLACKBOARD-KEY-NAME>", name),
                     ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode));
 
-        protected abstract string unmanagedTypeName { get; }
+        internal string GetStringAccessorGeneratedCode(BlackboardKeyType type, bool isStatic, string accessType)
+        {
+            string file;
+
+            if (isStatic && !m_InstanceSynced)
+            {
+                file = "Blackboard/BlackboardStaticIndividualFailedAccessor";
+            }
+            else if (type == m_KeyType)
+            {
+                file = m_KeyType == BlackboardKeyType.Enum
+                    ? $"Blackboard/BlackboardIndividualEnum{accessType}"
+                    : $"Blackboard/BlackboardIndividual{accessType}";
+            }
+            else
+            {
+                file = "Blackboard/BlackboardIndividualFailedAccessor";
+            }
+
+            return CodeGenHelpers.ReadTemplate(file,
+                ("<BLACKBOARD-KEY-NAME>", name),
+                ("<BLACKBOARD-STATIC-ACCESSOR>", isStatic ? "Static" : ""),
+                ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode),
+                ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode));
+        }
+
+        internal static string GetUnmanagedTypeName(BlackboardKeyType type)
+        {
+            switch (type)
+            {
+                case BlackboardKeyType.Boolean:
+                    return "bool";
+                case BlackboardKeyType.Enum:
+                    return "byte";
+                case BlackboardKeyType.Float:
+                    return "float";
+                case BlackboardKeyType.Integer:
+                    return "int";
+                case BlackboardKeyType.Object:
+                    return "int";
+                case BlackboardKeyType.Quaternion:
+                    return "quaternion";
+                case BlackboardKeyType.Vector:
+                    return "float3";
+                default:
+                    return "INTENTIONALLY PUT ERROR HERE BECAUSE UNSUPPORTED.";
+            }
+        }
+
         protected abstract string defaultValueGeneratedCode { get; }
-        protected abstract string actualTypeName { get; }
-        protected virtual string unmanagedToActualGeneratedCode => "";
-        protected virtual string actualToUnmanagedGeneratedCode => "";
-        protected virtual string equalityComparerGeneratedCode => " == ";
+
+        internal static string GetActualTypeName(BlackboardKeyType type)
+        {
+            switch (type)
+            {
+                case BlackboardKeyType.Boolean:
+                    return "bool";
+                case BlackboardKeyType.Float:
+                    return "float";
+                case BlackboardKeyType.Integer:
+                    return "int";
+                case BlackboardKeyType.Object:
+                    return "Object";
+                case BlackboardKeyType.Quaternion:
+                    return "Quaternion";
+                case BlackboardKeyType.Vector:
+                    return "Vector3";
+                default:
+                    return "INTENTIONALLY PUT ERROR HERE BECAUSE UNSUPPORTED.";
+            }
+        }
+
+        protected virtual string actualTypeNameGeneratedCode => GetActualTypeName(m_KeyType);
+
+        private static string GetUnmanagedToActualGeneratedCode(BlackboardKeyType type)
+        {
+            switch (type)
+            {
+                case BlackboardKeyType.Object:
+                    return "GeneratedBlackboardHelpers.InstanceIDToObject";
+                case BlackboardKeyType.Quaternion:
+                    return "(Quaternion) ";
+                case BlackboardKeyType.Vector:
+                    return "(Vector3) ";
+                default:
+                    return "";
+            }
+        }
+
+        protected virtual string unmanagedToActualGeneratedCode => GetUnmanagedToActualGeneratedCode(m_KeyType);
+
+        private static string GetActualToUnmanagedGeneratedCode(BlackboardKeyType type)
+        {
+            switch (type)
+            {
+                case BlackboardKeyType.Object:
+                    return "GeneratedBlackboardHelpers.ObjectToInstanceID";
+                case BlackboardKeyType.Quaternion:
+                    return "(quaternion) ";
+                case BlackboardKeyType.Vector:
+                    return "(float3) ";
+                default:
+                    return "";
+            }
+        }
+
+        protected virtual string actualToUnmanagedGeneratedCode => GetActualToUnmanagedGeneratedCode(m_KeyType);
+
+        private static string GetEqualityComparerGeneratedCode(BlackboardKeyType type)
+        {
+            switch (type)
+            {
+                case BlackboardKeyType.Quaternion:
+                case BlackboardKeyType.Vector:
+                    return ".Equals";
+                default:
+                    return " == ";
+            }
+        }
 #endif
     }
 
@@ -61,67 +174,43 @@
 
     internal partial class BooleanBlackboardKey
     {
-        protected override string unmanagedTypeName => "bool";
         protected override string defaultValueGeneratedCode => m_DefaultValue ? "true" : "false";
-        protected override string actualTypeName => "bool";
     }
 
     internal partial class EnumBlackboardKey
     {
-        protected override string unmanagedTypeName => "byte";
         protected override string defaultValueGeneratedCode => m_DefaultValue.m_Value.ToString();
-        protected override string actualTypeName => DynamicEnum.Helpers.identifierToType[m_DefaultValue.m_TypeIdentifier].FullName;
-        protected override string unmanagedToActualGeneratedCode => $"({actualTypeName}) ";
+        protected override string actualTypeNameGeneratedCode => DynamicEnum.Helpers.identifierToType[m_DefaultValue.m_TypeIdentifier].FullName;
+        protected override string unmanagedToActualGeneratedCode => $"({actualTypeNameGeneratedCode}) ";
         protected override string actualToUnmanagedGeneratedCode => "(byte) ";
     }
 
     internal partial class FloatBlackboardKey
     {
-        protected override string unmanagedTypeName => "float";
         protected override string defaultValueGeneratedCode => $"{m_DefaultValue}f";
-        protected override string actualTypeName => "float";
     }
 
     internal partial class IntegerBlackboardKey
     {
-        protected override string unmanagedTypeName => "int";
         protected override string defaultValueGeneratedCode => m_DefaultValue.ToString();
-        protected override string actualTypeName => "int";
     }
 
     internal partial class ObjectBlackboardKey
     {
-        protected override string unmanagedTypeName => "int";
+        // todo: fix gc resource leak in key accessors
         protected override string defaultValueGeneratedCode => "0";
-        protected override string actualTypeName => "Object";
-        protected override string unmanagedToActualGeneratedCode => "GeneratedBlackboardHelpers.InstanceIDToObject";
-        protected override string actualToUnmanagedGeneratedCode => "GeneratedBlackboardHelpers.ObjectToInstanceID";
     }
 
     internal partial class QuaternionBlackboardKey
     {
-        protected override string unmanagedTypeName => "quaternion";
-
         protected override string defaultValueGeneratedCode =>
             $"quaternion.Euler(new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f))";
-
-        protected override string actualTypeName => "Quaternion";
-        protected override string unmanagedToActualGeneratedCode => "(Quaternion) ";
-        protected override string actualToUnmanagedGeneratedCode => "(quaternion) ";
-        protected override string equalityComparerGeneratedCode => ".Equals";
     }
 
     internal partial class VectorBlackboardKey
     {
-        protected override string unmanagedTypeName => "float3";
-
         protected override string defaultValueGeneratedCode =>
             $"new float3({m_DefaultValue.x}f, {m_DefaultValue.y}f, {m_DefaultValue.z}f)";
-
-        protected override string actualTypeName => "Vector3";
-        protected override string unmanagedToActualGeneratedCode => "(Vector3) ";
-        protected override string actualToUnmanagedGeneratedCode => "(float3) ";
-        protected override string equalityComparerGeneratedCode => ".Equals";
     }
 
 #endif

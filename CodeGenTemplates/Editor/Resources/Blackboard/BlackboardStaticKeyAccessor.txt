@@ -4,11 +4,12 @@
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => <BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(s_<BLACKBOARD-KEY-NAME>);
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                s_<BLACKBOARD-KEY-NAME> = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
-            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void StaticSet<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value)
+        {
+            s_<BLACKBOARD-KEY-NAME> = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
         }
 
         public <BLACKBOARD-ACTUAL-KEY-TYPE> <BLACKBOARD-KEY-NAME>
@@ -20,5 +21,5 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value, bool expected = false)
         {
-            Static<BLACKBOARD-KEY-NAME> = value;
+            StaticSet<BLACKBOARD-KEY-NAME>(value);
         }

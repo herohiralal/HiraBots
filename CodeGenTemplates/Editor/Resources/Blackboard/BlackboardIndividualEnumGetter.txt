@@ -1,0 +1,3 @@
+﻿                case "<BLACKBOARD-KEY-NAME>":
+                    var b = (byte) <BLACKBOARD-STATIC-ACCESSOR><BLACKBOARD-KEY-NAME>;
+                    return *(T*) &b;

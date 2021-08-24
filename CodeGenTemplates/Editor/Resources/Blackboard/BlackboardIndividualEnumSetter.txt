@@ -1,0 +1,3 @@
+﻿                case "<BLACKBOARD-KEY-NAME>":
+                    <BLACKBOARD-STATIC-ACCESSOR>Set<BLACKBOARD-KEY-NAME>(<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(b));
+                    break;

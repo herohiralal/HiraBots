@@ -4,21 +4,22 @@
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => <BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>(s_<BLACKBOARD-KEY-NAME>);
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void StaticSet<BLACKBOARD-KEY-NAME>(<BLACKBOARD-ACTUAL-KEY-TYPE> value)
+        {
+            var actualValue = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
+            if (s_<BLACKBOARD-KEY-NAME><BLACKBOARD-KEY-EQUALITY-COMPARER>(actualValue))
             {
-                var actualValue = <BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>(value);
-                if (s_<BLACKBOARD-KEY-NAME><BLACKBOARD-KEY-EQUALITY-COMPARER>(actualValue))
-                {
-                    return;
-                }
+                return;
+            }
 
-                s_<BLACKBOARD-KEY-NAME> = actualValue;
+            s_<BLACKBOARD-KEY-NAME> = actualValue;
 
-                foreach (var component in s_ActiveComponents)
-                {
-                    component.m_UnexpectedChanges.Add("<BLACKBOARD-KEY-NAME>");
-                }
+            foreach (var component in s_ActiveComponents)
+            {
+                component.m_UnexpectedChanges.Add("<BLACKBOARD-KEY-NAME>");
             }
         }
 
@@ -34,11 +35,11 @@
             if (expected)
             {
                 Unregister(this);
-                Static<BLACKBOARD-KEY-NAME> = value;
+                StaticSet<BLACKBOARD-KEY-NAME>(value);
                 Register(this);
             }
             else
             {
-                Static<BLACKBOARD-KEY-NAME> = value;
+                StaticSet<BLACKBOARD-KEY-NAME>(value);
             }
         }

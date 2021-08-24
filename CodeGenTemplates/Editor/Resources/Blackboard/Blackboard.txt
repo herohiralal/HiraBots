@@ -85,5 +85,7 @@ namespace UnityEngine
 <BLACKBOARD-INITIALIZERS>
             };
         }
+
+<BLACKBOARD-STRING-ACCESSORS>
     }
 }
