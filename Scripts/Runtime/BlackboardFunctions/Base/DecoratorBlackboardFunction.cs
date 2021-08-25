@@ -34,7 +34,7 @@ namespace HiraBots
                                                  ? ByteStreamHelpers.CombinedSizes<bool>() // header includes inversion
                                                  : ByteStreamHelpers.CombinedSizes<float, bool>()); // header includes score and inversion
 
-        internal override byte* Compile(byte* stream)
+        public override byte* Compile(byte* stream)
         {
             stream = base.Compile(stream);
 

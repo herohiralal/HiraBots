@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Unity.Burst;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace HiraBots
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelBlackboardFunction"/>.
     /// =============================================================================================
     /// </summary>
-    internal abstract unsafe partial class BlackboardFunction<TFunction> : ScriptableObject, ILowLevelObjectProvider<LowLevelBlackboardFunction>
+    internal abstract unsafe partial class BlackboardFunction<TFunction> : ScriptableObject, ILowLevelObjectProvider
         where TFunction : Delegate
     {
         /// <summary>
@@ -24,7 +23,7 @@ namespace HiraBots
         /// <summary>
         /// The aligned memory size required by this function.
         /// </summary>
-        internal int GetAlignedMemorySize() => UnsafeHelpers.GetAlignedSize(memorySize);
+        public int GetAlignedMemorySize() => UnsafeHelpers.GetAlignedSize(memorySize);
 
         /// <summary>
         /// The memory size required by the function.
@@ -34,7 +33,7 @@ namespace HiraBots
         /// <summary>
         /// Append the memory to the stream.
         /// </summary>
-        internal virtual byte* Compile(byte* stream)
+        public virtual byte* Compile(byte* stream)
         {
             // no offset
             ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize());
@@ -50,11 +49,5 @@ namespace HiraBots
         /// The function-pointer 
         /// </summary>
         protected abstract FunctionPointer<TFunction> function { get; }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        int ILowLevelObjectProvider<LowLevelBlackboardFunction>.GetAlignedMemorySize() => GetAlignedMemorySize();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        byte* ILowLevelObjectProvider<LowLevelBlackboardFunction>.WriteLowLevelObjectAndJumpPast(byte* stream) => Compile(stream);
     }
 }

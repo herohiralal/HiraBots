@@ -12,7 +12,7 @@
     {
         protected override int memorySize => base.memorySize + ByteStreamHelpers.NoCombinedSizes(); // header includes nothing
 
-        internal override byte* Compile(byte* stream)
+        public override byte* Compile(byte* stream)
         {
             stream = base.Compile(stream);
             return stream;

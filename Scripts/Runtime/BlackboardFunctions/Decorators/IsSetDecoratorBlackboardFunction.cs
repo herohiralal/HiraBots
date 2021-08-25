@@ -35,7 +35,7 @@ namespace HiraBots
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory
 
         // compile override
-        internal override byte* Compile(byte* stream)
+        public override byte* Compile(byte* stream)
         {
             stream = base.Compile(stream);
 

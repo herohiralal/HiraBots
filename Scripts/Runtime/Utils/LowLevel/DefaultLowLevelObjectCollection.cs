@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -122,16 +123,13 @@ namespace HiraBots
         }
     }
 
-    internal readonly unsafe struct DefaultLowLevelObjectProviderCollection<TProvider, TElement, TConverter>
-        : ILowLevelObjectProvider<DefaultLowLevelObjectCollection<TElement, TConverter>>
-        where TProvider : ILowLevelObjectProvider<TElement>
-        where TElement : ILowLevelObject
-        where TConverter : IPointerToLowLevelObjectConverter<TElement>, new()
+    internal readonly unsafe struct DefaultLowLevelObjectProviderCollection<TProvider> : ILowLevelObjectProvider
+        where TProvider : ILowLevelObjectProvider
     {
-        private readonly TProvider[] m_Providers;
+        private readonly ReadOnlyArrayAccessor<TProvider> m_Providers;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal DefaultLowLevelObjectProviderCollection(TProvider[] providers)
+        internal DefaultLowLevelObjectProviderCollection(ReadOnlyArrayAccessor<TProvider> providers)
         {
             m_Providers = providers;
         }
@@ -150,17 +148,34 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte* WriteLowLevelObjectAndJumpPast(byte* stream)
+        public byte* Compile(byte* stream)
         {
             ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize()); // size header
-            ByteStreamHelpers.Write<int>(ref stream, m_Providers.Length); // count header
+            ByteStreamHelpers.Write<int>(ref stream, m_Providers.count); // count header
 
             foreach (var provider in m_Providers)
             {
-                stream = provider.WriteLowLevelObjectAndJumpPast(stream);
+                stream = provider.Compile(stream);
             }
 
             return stream;
+        }
+    }
+
+    internal static unsafe class DefaultLowLevelObjectProviderCollectionHelpers
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int GetAlignedMemorySize<T>(this T[] providers)
+            where T : ILowLevelObjectProvider
+        {
+            return new DefaultLowLevelObjectProviderCollection<T>(providers).GetAlignedMemorySize();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static byte* Compile<T>(this T[] providers, byte* stream)
+            where T : ILowLevelObjectProvider
+        {
+            return new DefaultLowLevelObjectProviderCollection<T>(providers).Compile(stream);
         }
     }
 }
