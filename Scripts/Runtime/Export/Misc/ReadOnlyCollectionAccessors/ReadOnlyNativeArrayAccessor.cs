@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace UnityEngine
 {
-    public readonly struct ReadOnlyNativeArrayAccessor<T> : IEnumerable<T> where T : unmanaged
+    public readonly struct ReadOnlyNativeArrayAccessor<T> : IEnumerable<T> where T : struct
     {
         // private constructor, because there's already an implicit cast operator
         private ReadOnlyNativeArrayAccessor(ref NativeArray<T> collection)
