@@ -32,7 +32,7 @@ namespace HiraBots
 
         // no offset
         /// <summary>
-        /// The total size occupied by this blackboard function.
+        /// The total size occupied by this action.
         /// </summary>
         public int size
         {

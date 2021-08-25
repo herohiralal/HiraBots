@@ -27,6 +27,10 @@ using LowLevelLGOAPActionCollectionActual =
     HiraBots.DefaultLowLevelObjectCollection<
         HiraBots.LowLevelLGOAPAction,
         HiraBots.LowLevelLGOAPAction.Converter>;
+using LowLevelLGOAPTargetCollectionActual =
+    HiraBots.DefaultLowLevelObjectCollection<
+        HiraBots.LowLevelLGOAPTarget,
+        HiraBots.LowLevelLGOAPTarget.Converter>;
 
 namespace HiraBots
 {
@@ -69,31 +73,31 @@ namespace HiraBots
         }
     }
 
-    internal readonly unsafe struct LGOAPTargetCollection
+    internal readonly unsafe struct LowLevelLGOAPTargetCollection
     {
-        private readonly LowLevelDecorator2DCollection m_Collection;
+        private readonly LowLevelLGOAPTargetCollectionActual m_Collection;
 
-        internal LowLevelDecorator2DCollection collection
+        internal LowLevelLGOAPTargetCollectionActual collection
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => m_Collection;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal LGOAPTargetCollection(LowLevelDecorator2DCollection actual)
+        internal LowLevelLGOAPTargetCollection(LowLevelLGOAPTargetCollectionActual actual)
         {
             m_Collection = actual;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal LGOAPTargetCollection(byte* stream) : this(new LowLevelDecorator2DCollection(stream))
+        internal LowLevelLGOAPTargetCollection(byte* stream) : this(new LowLevelLGOAPTargetCollectionActual(stream))
         {
         }
 
-        internal LowLevelDecoratorBlackboardFunctionCollection this[int index]
+        internal LowLevelLGOAPTarget this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new LowLevelDecoratorBlackboardFunctionCollection(m_Collection[index]);
+            get => m_Collection[index];
         }
     }
 
