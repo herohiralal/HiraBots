@@ -127,16 +127,12 @@ namespace HiraBots
         where TProvider : ILowLevelObjectProvider
     {
         private readonly ReadOnlyArrayAccessor<TProvider> m_Providers;
+        private readonly int m_Size;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal DefaultLowLevelObjectProviderCollection(ReadOnlyArrayAccessor<TProvider> providers)
         {
             m_Providers = providers;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetAlignedMemorySize()
-        {
             var size = ByteStreamHelpers.CombinedSizes<int, int>(); // size & count header
 
             foreach (var provider in m_Providers)
@@ -144,7 +140,13 @@ namespace HiraBots
                 size += provider.GetAlignedMemorySize();
             }
 
-            return UnsafeHelpers.GetAlignedSize(size);
+            m_Size = UnsafeHelpers.GetAlignedSize(size);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetAlignedMemorySize()
+        {
+            return m_Size;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -160,20 +162,13 @@ namespace HiraBots
         }
     }
 
-    internal static unsafe class DefaultLowLevelObjectProviderCollectionHelpers
+    internal static class DefaultLowLevelObjectProviderCollectionHelpers
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int GetAlignedMemorySize<T>(this T[] providers)
+        internal static DefaultLowLevelObjectProviderCollection<T> GetLowLevelObjectProviderCollection<T>(this T[] providers)
             where T : ILowLevelObjectProvider
         {
-            return new DefaultLowLevelObjectProviderCollection<T>(providers).GetAlignedMemorySize();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Compile<T>(this T[] providers, ref byte* stream)
-            where T : ILowLevelObjectProvider
-        {
-            new DefaultLowLevelObjectProviderCollection<T>(providers).Compile(ref stream);
+            return new DefaultLowLevelObjectProviderCollection<T>(providers);
         }
     }
 }
