@@ -29,10 +29,13 @@ namespace HiraBots
 
         [SerializeField] private Header m_Header = default;
 
-        protected override int memorySize => base.memorySize +
-                                             (m_Header.m_IsScoreCalculator
-                                                 ? ByteStreamHelpers.CombinedSizes<bool>() // header includes inversion
-                                                 : ByteStreamHelpers.CombinedSizes<float, bool>()); // header includes score and inversion
+        internal override void PrepareForCompilation()
+        {
+            base.PrepareForCompilation();
+            m_MemorySize += m_Header.m_IsScoreCalculator
+                ? ByteStreamHelpers.CombinedSizes<float, bool>() // score & inversion header
+                : ByteStreamHelpers.CombinedSizes<bool>(); // inversion header
+        }
 
         public override void Compile(ref byte* stream)
         {

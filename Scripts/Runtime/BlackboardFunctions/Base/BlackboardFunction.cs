@@ -9,23 +9,15 @@ namespace HiraBots
         /// <summary>
         /// The aligned memory size required by this function.
         /// </summary>
-        public int GetMemorySizeRequiredForCompilation() => m_CachedAlignedMemorySize;
+        public int GetMemorySizeRequiredForCompilation() => m_MemorySize;
 
         // cached memory size
-        private int m_CachedAlignedMemorySize = 0;
+        protected int m_MemorySize = 0;
 
         /// <summary>
         /// Prepare the object for compilation, such as caching variables.
         /// </summary>
-        internal virtual void PrepareForCompilation()
-        {
-            m_CachedAlignedMemorySize = memorySize;
-        }
-
-        /// <summary>
-        /// The memory size required by the function.
-        /// </summary>
-        protected virtual int memorySize => ByteStreamHelpers.CombinedSizes<int, IntPtr>(); // header includes size and function-pointer
+        internal abstract void PrepareForCompilation();
 
         /// <summary>
         /// Append the memory to the stream.
@@ -42,9 +34,11 @@ namespace HiraBots
     internal abstract unsafe partial class BlackboardFunction<TFunction> : BlackboardFunction
         where TFunction : Delegate
     {
-        /// <summary>
-        /// Append the memory to the stream.
-        /// </summary>
+        internal override void PrepareForCompilation()
+        {
+            m_MemorySize = ByteStreamHelpers.CombinedSizes<int, IntPtr>(); // size & function pointer header
+        }
+
         public override void Compile(ref byte* stream)
         {
             // no offset

@@ -62,6 +62,7 @@ namespace HiraBots.Editor.Tests
             internal override void PrepareForCompilation()
             {
                 base.PrepareForCompilation();
+                m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
                 if (!s_FunctionCompiled)
                 {
                     s_FunctionPointer = BurstCompiler.CompileFunctionPointer<Action>(Cube);
@@ -71,8 +72,6 @@ namespace HiraBots.Editor.Tests
 
             // the value to cube
             private int m_Value = 34;
-
-            protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // header includes the memory
 
             public override void Compile(ref byte* stream)
             {

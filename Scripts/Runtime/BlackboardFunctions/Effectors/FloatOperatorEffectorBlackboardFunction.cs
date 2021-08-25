@@ -30,6 +30,7 @@ namespace HiraBots
         internal override void PrepareForCompilation()
         {
             base.PrepareForCompilation();
+            m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
             if (!s_FunctionCompiled)
             {
                 s_Function = BurstCompiler.CompileFunctionPointer<EffectorDelegate>(ActualFunction);
@@ -45,9 +46,6 @@ namespace HiraBots
 
         [Tooltip("The second value to use for the operator.")]
         [SerializeField] private float m_Value = 0f;
-
-        // memory size override
-        protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory
 
         // compile override
         public override void Compile(ref byte* stream)
