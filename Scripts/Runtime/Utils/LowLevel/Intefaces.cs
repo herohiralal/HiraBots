@@ -29,7 +29,7 @@ namespace HiraBots
     }
 
     internal unsafe interface IPointerToLowLevelObjectConverter<out T>
-        where T : unmanaged, ILowLevelObject
+        where T : ILowLevelObject
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         T Convert(byte* address);

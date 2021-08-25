@@ -8,18 +8,25 @@ namespace HiraBots
         where TConverter : unmanaged, IPointerToLowLevelObjectConverter<TElement>
     {
         private readonly byte* m_Address;
-        public byte* address => m_Address;
+
+        public byte* address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Address;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private DefaultLowLevelObjectCollection(byte* address)
+        internal DefaultLowLevelObjectCollection(byte* address)
         {
             m_Address = address;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator DefaultLowLevelObjectCollection<TElement, TConverter>(byte* stream)
+        internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<DefaultLowLevelObjectCollection<TElement, TConverter>>
         {
-            return new DefaultLowLevelObjectCollection<TElement, TConverter>(stream);
+            public DefaultLowLevelObjectCollection<TElement, TConverter> Convert(byte* address)
+            {
+                return new DefaultLowLevelObjectCollection<TElement, TConverter>(address);
+            }
         }
 
         // no offset
@@ -91,10 +98,11 @@ namespace HiraBots
                     return false;
                 }
 
-                m_Current += ((LowLevelBlackboardFunction) m_Current).size;
+                m_Current += new LowLevelBlackboardFunction(m_Current).size;
                 return true;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public byte* GetCurrentElementLowLevel()
             {
                 return m_Current;
@@ -114,16 +122,12 @@ namespace HiraBots
         private readonly TProvider[] m_Providers;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private DefaultLowLevelObjectProviderCollection(TProvider[] providers)
+        internal DefaultLowLevelObjectProviderCollection(TProvider[] providers)
         {
             m_Providers = providers;
         }
 
-        public static implicit operator DefaultLowLevelObjectProviderCollection<TProvider>(TProvider[] providers)
-        {
-            return new DefaultLowLevelObjectProviderCollection<TProvider>(providers);
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetAlignedMemorySize()
         {
             var size = ByteStreamHelpers.CombinedSizes<int, int>(); // size & count header
@@ -136,6 +140,7 @@ namespace HiraBots
             return UnsafeHelpers.GetAlignedSize(size);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte* WriteLowLevelObjectAndJumpPast(byte* stream)
         {
             ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize()); // size header

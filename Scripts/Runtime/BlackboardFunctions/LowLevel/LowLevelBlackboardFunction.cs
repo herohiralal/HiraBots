@@ -6,27 +6,35 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a blackboard function.
     /// </summary>
-    internal readonly unsafe struct LowLevelBlackboardFunction
+    internal readonly unsafe struct LowLevelBlackboardFunction : ILowLevelObject
     {
         private readonly byte* m_Address;
+        public byte* address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Address;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LowLevelBlackboardFunction(byte* address)
+        internal LowLevelBlackboardFunction(byte* address)
         {
             m_Address = address;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator LowLevelBlackboardFunction(byte* stream)
+        internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<LowLevelBlackboardFunction>
         {
-            return new LowLevelBlackboardFunction(stream);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public LowLevelBlackboardFunction Convert(byte* address)
+            {
+                return new LowLevelBlackboardFunction(address);
+            }
         }
 
         // no offset
         /// <summary>
         /// The total size occupied by this blackboard function.
         /// </summary>
-        internal int size
+        public int size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ByteStreamHelpers.JumpOverNothing(m_Address).AndAccess<int>();

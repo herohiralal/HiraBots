@@ -6,20 +6,40 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a effector blackboard function.
     /// </summary>
-    internal readonly unsafe struct LowLevelEffectorBlackboardFunction
+    internal readonly unsafe struct LowLevelEffectorBlackboardFunction : ILowLevelObject
     {
         private readonly LowLevelBlackboardFunction m_Function;
 
+        public byte* address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Function.address;
+        }
+
+        public int size
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Function.size;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LowLevelEffectorBlackboardFunction(LowLevelBlackboardFunction function)
+        internal LowLevelEffectorBlackboardFunction(LowLevelBlackboardFunction function)
         {
             m_Function = function;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator LowLevelEffectorBlackboardFunction(LowLevelBlackboardFunction function)
+        internal LowLevelEffectorBlackboardFunction(byte* stream) : this(new LowLevelBlackboardFunction(stream))
         {
-            return new LowLevelEffectorBlackboardFunction(function);
+        }
+
+        internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<LowLevelEffectorBlackboardFunction>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public LowLevelEffectorBlackboardFunction Convert(byte* address)
+            {
+                return new LowLevelEffectorBlackboardFunction(address);
+            }
         }
 
         /// <summary>

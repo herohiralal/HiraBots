@@ -122,7 +122,7 @@ namespace HiraBots.Editor.Tests
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
                 calculator.Compile(functionAddress);
-                var function = (LowLevelBlackboardFunction) functionAddress;
+                var function = new LowLevelBlackboardFunction(functionAddress);
 
                 // cross-check memory size
                 Assert.AreEqual(memorySize, function.size, "Size mismatch between function and its low-level counterpart.");
@@ -161,7 +161,7 @@ namespace HiraBots.Editor.Tests
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
                 calculator.Compile(functionAddress);
-                var function = (LowLevelBlackboardFunction) functionAddress;
+                var function = new LowLevelBlackboardFunction(functionAddress);
 
                 // cross-check memory size
                 Assert.AreEqual(memorySize, function.size, "Size mismatch between function and its low-level counterpart.");

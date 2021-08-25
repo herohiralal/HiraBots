@@ -6,20 +6,40 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a decorator blackboard function.
     /// </summary>
-    internal readonly unsafe struct LowLevelDecoratorBlackboardFunction
+    internal readonly unsafe struct LowLevelDecoratorBlackboardFunction : ILowLevelObject
     {
         private readonly LowLevelBlackboardFunction m_Function;
 
+        public byte* address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Function.address;
+        }
+
+        public int size
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Function.size;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LowLevelDecoratorBlackboardFunction(LowLevelBlackboardFunction function)
+        internal LowLevelDecoratorBlackboardFunction(LowLevelBlackboardFunction function)
         {
             m_Function = function;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator LowLevelDecoratorBlackboardFunction(LowLevelBlackboardFunction function)
+        internal LowLevelDecoratorBlackboardFunction(byte* stream) : this(new LowLevelBlackboardFunction(stream))
         {
-            return new LowLevelDecoratorBlackboardFunction(function);
+        }
+
+        internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<LowLevelDecoratorBlackboardFunction>
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public LowLevelDecoratorBlackboardFunction Convert(byte* address)
+            {
+                return new LowLevelDecoratorBlackboardFunction(address);
+            }
         }
 
         // whether the result must be inverted
