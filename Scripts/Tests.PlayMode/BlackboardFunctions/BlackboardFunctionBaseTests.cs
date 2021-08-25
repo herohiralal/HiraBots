@@ -120,7 +120,7 @@ namespace HiraBots.Editor.Tests
                 blackboard.Access<int>(0) = value;
 
                 // compile function
-                var memorySize = calculator.GetAlignedMemorySize();
+                var memorySize = calculator.GetMemorySizeRequiredForCompilation();
                 var functionAddress = stackalloc byte[memorySize];
                 var functionAddressCopy = functionAddress; // create a copy because Compile() will forward the pointer
                 calculator.Compile(ref functionAddressCopy);
@@ -161,7 +161,7 @@ namespace HiraBots.Editor.Tests
                 var blackboard = new LowLevelBlackboard(blackboardAddress, sizeof(int));
 
                 // compile function
-                var memorySize = calculator.GetAlignedMemorySize();
+                var memorySize = calculator.GetMemorySizeRequiredForCompilation();
                 var functionAddress = stackalloc byte[memorySize];
                 var functionAddressCopy = functionAddress; // create a copy because Compile() will forward the pointer
                 calculator.Compile(ref functionAddressCopy);

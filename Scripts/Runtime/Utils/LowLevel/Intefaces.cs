@@ -22,7 +22,7 @@ namespace HiraBots
     internal unsafe interface ILowLevelObjectProvider
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        int GetAlignedMemorySize();
+        int GetMemorySizeRequiredForCompilation();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void Compile(ref byte* stream);

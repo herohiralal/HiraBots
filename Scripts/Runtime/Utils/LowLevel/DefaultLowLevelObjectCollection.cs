@@ -137,14 +137,14 @@ namespace HiraBots
 
             foreach (var provider in m_Providers)
             {
-                size += provider.GetAlignedMemorySize();
+                size += provider.GetMemorySizeRequiredForCompilation();
             }
 
-            m_Size = UnsafeHelpers.GetAlignedSize(size);
+            m_Size = size;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int GetAlignedMemorySize()
+        public int GetMemorySizeRequiredForCompilation()
         {
             return m_Size;
         }
@@ -152,7 +152,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Compile(ref byte* stream)
         {
-            ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize()); // size header
+            ByteStreamHelpers.Write<int>(ref stream, GetMemorySizeRequiredForCompilation()); // size header
             ByteStreamHelpers.Write<int>(ref stream, m_Providers.count); // count header
 
             foreach (var provider in m_Providers)

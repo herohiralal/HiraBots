@@ -9,7 +9,7 @@ namespace HiraBots
         /// <summary>
         /// The aligned memory size required by this function.
         /// </summary>
-        public int GetAlignedMemorySize() => m_CachedAlignedMemorySize;
+        public int GetMemorySizeRequiredForCompilation() => m_CachedAlignedMemorySize;
 
         // cached memory size
         private int m_CachedAlignedMemorySize = 0;
@@ -19,7 +19,7 @@ namespace HiraBots
         /// </summary>
         internal virtual void PrepareForCompilation()
         {
-            m_CachedAlignedMemorySize = UnsafeHelpers.GetAlignedSize(memorySize);
+            m_CachedAlignedMemorySize = memorySize;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace HiraBots
         public override void Compile(ref byte* stream)
         {
             // no offset
-            ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize());
+            ByteStreamHelpers.Write<int>(ref stream, GetMemorySizeRequiredForCompilation());
 
             // offset sizeof(int)
             ByteStreamHelpers.Write<IntPtr>(ref stream, function.Value);
