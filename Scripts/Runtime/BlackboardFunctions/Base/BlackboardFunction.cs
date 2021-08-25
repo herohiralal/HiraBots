@@ -11,7 +11,7 @@ namespace HiraBots
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelBlackboardFunction"/>.
     /// =============================================================================================
     /// </summary>
-    internal abstract unsafe partial class BlackboardFunction<TFunction> : ScriptableObject, ILowLevelObjectProvider
+    internal abstract unsafe partial class BlackboardFunction<TFunction> : ScriptableObject, ILowLevelObjectProvider<LowLevelBlackboardFunction>
         where TFunction : Delegate
     {
         /// <summary>
@@ -52,9 +52,9 @@ namespace HiraBots
         protected abstract FunctionPointer<TFunction> function { get; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        int ILowLevelObjectProvider.GetAlignedMemorySize() => GetAlignedMemorySize();
+        int ILowLevelObjectProvider<LowLevelBlackboardFunction>.GetAlignedMemorySize() => GetAlignedMemorySize();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        byte* ILowLevelObjectProvider.WriteLowLevelObjectAndJumpPast(byte* stream) => Compile(stream);
+        byte* ILowLevelObjectProvider<LowLevelBlackboardFunction>.WriteLowLevelObjectAndJumpPast(byte* stream) => Compile(stream);
     }
 }

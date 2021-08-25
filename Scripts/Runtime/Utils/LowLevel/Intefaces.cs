@@ -19,7 +19,8 @@ namespace HiraBots
         }
     }
 
-    internal unsafe interface ILowLevelObjectProvider
+    internal unsafe interface ILowLevelObjectProvider<TElement>
+        where TElement : ILowLevelObject
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         int GetAlignedMemorySize();

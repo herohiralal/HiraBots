@@ -122,8 +122,11 @@ namespace HiraBots
         }
     }
 
-    internal readonly unsafe struct DefaultLowLevelObjectProviderCollection<TProvider> : ILowLevelObjectProvider
-        where TProvider : ILowLevelObjectProvider
+    internal readonly unsafe struct DefaultLowLevelObjectProviderCollection<TProvider, TElement, TConverter>
+        : ILowLevelObjectProvider<DefaultLowLevelObjectCollection<TElement, TConverter>>
+        where TProvider : ILowLevelObjectProvider<TElement>
+        where TElement : ILowLevelObject
+        where TConverter : IPointerToLowLevelObjectConverter<TElement>, new()
     {
         private readonly TProvider[] m_Providers;
 
