@@ -23,22 +23,32 @@ namespace HiraBots
 
         // no offset
         /// <summary>
-        /// The number of elements within this collection.
+        /// The size of this collection.
         /// </summary>
-        internal int count
+        internal int size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ByteStreamHelpers.JumpOverNothing(m_Address).AndAccess<int>();
         }
 
-        // offset count
+        // offset size
+        /// <summary>
+        /// The number of elements within this collection.
+        /// </summary>
+        internal int count
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ByteStreamHelpers.JumpOver<int>(m_Address).AndAccess<int>();
+        }
+
+        // offset size & count
         /// <summary>
         /// Get an enumerator to iterate over this collection.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Enumerator GetEnumerator()
         {
-            return new Enumerator(ByteStreamHelpers.JumpOver<int>(m_Address).AndGetAPointerOf<byte>(), count);
+            return new Enumerator(ByteStreamHelpers.JumpOver<int, int>(m_Address).AndGetAPointerOf<byte>(), count);
         }
 
         /// <summary>

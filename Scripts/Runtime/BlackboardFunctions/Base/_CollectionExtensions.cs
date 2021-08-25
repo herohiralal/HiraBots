@@ -15,7 +15,7 @@ namespace HiraBots
         /// </summary>
         internal static int GetAlignedMemorySize<T>(this BlackboardFunction<T>[] functions) where T : Delegate
         {
-            var size = ByteStreamHelpers.CombinedSizes<int>(); // count header
+            var size = ByteStreamHelpers.CombinedSizes<int, int>(); // size & header
 
             foreach (var function in functions)
             {
@@ -30,6 +30,7 @@ namespace HiraBots
         /// </summary>
         internal static byte* Compile<T>(this BlackboardFunction<T>[] functions, ref byte* stream) where T : Delegate
         {
+            ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize<T>(functions)); // size header
             ByteStreamHelpers.Write<int>(ref stream, functions.Length); // count header
 
             foreach (var function in functions)

@@ -22,6 +22,15 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// The size of this collection.
+        /// </summary>
+        internal int size
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_FunctionCollection.size;
+        }
+
+        /// <summary>
         /// Execute the decorator collection on a blackboard.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
