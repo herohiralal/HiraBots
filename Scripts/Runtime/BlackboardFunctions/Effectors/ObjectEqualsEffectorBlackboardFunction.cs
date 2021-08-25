@@ -16,9 +16,9 @@ namespace HiraBots
         private static bool s_FunctionCompiled = false;
         private static FunctionPointer<EffectorDelegate> s_Function;
 
-        protected override void OnEnable()
+        internal override void PrepareForCompilation()
         {
-            base.OnEnable();
+            base.PrepareForCompilation();
             if (!s_FunctionCompiled)
             {
                 s_Function = BurstCompiler.CompileFunctionPointer<EffectorDelegate>(ActualFunction);
@@ -36,15 +36,14 @@ namespace HiraBots
         protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // pack memory
 
         // compile override
-        public override byte* Compile(byte* stream)
+        public override void Compile(ref byte* stream)
         {
-            stream = base.Compile(stream);
+            base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
-            return stream;
         }
 
         // function override

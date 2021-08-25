@@ -148,17 +148,15 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte* Compile(byte* stream)
+        public void Compile(ref byte* stream)
         {
             ByteStreamHelpers.Write<int>(ref stream, GetAlignedMemorySize()); // size header
             ByteStreamHelpers.Write<int>(ref stream, m_Providers.count); // count header
 
             foreach (var provider in m_Providers)
             {
-                stream = provider.Compile(stream);
+                provider.Compile(ref stream);
             }
-
-            return stream;
         }
     }
 
@@ -172,10 +170,10 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte* Compile<T>(this T[] providers, byte* stream)
+        internal static void Compile<T>(this T[] providers, ref byte* stream)
             where T : ILowLevelObjectProvider
         {
-            return new DefaultLowLevelObjectProviderCollection<T>(providers).Compile(stream);
+            new DefaultLowLevelObjectProviderCollection<T>(providers).Compile(ref stream);
         }
     }
 }

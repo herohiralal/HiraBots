@@ -25,7 +25,7 @@ namespace HiraBots
         int GetAlignedMemorySize();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        byte* Compile(byte* stream);
+        void Compile(ref byte* stream);
     }
 
     internal unsafe interface IPointerToLowLevelObjectConverter<out T>

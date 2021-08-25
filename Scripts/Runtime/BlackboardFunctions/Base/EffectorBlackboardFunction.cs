@@ -8,14 +8,8 @@
     /// Any changes to this class MUST be synchronized with <see cref="LowLevelEffectorBlackboardFunction"/>.
     /// =====================================================================================================
     /// </summary>
-    internal abstract unsafe partial class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
+    internal abstract partial class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
     {
-        protected override int memorySize => base.memorySize + ByteStreamHelpers.NoCombinedSizes(); // header includes nothing
-
-        public override byte* Compile(byte* stream)
-        {
-            stream = base.Compile(stream);
-            return stream;
-        }
+        // contains no extra header so no overridden memory size of compilation
     }
 }

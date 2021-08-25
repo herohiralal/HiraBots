@@ -9,9 +9,9 @@ namespace HiraBots
         private static bool s_FunctionCompiled = false;
         private static FunctionPointer<DecoratorDelegate> s_Function;
 
-        protected override void OnEnable()
+        internal override void PrepareForCompilation()
         {
-            base.OnEnable();
+            base.PrepareForCompilation();
             if (!s_FunctionCompiled)
             {
                 s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);

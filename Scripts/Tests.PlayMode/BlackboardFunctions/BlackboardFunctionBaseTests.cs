@@ -13,15 +13,15 @@ namespace HiraBots.Editor.Tests
         private delegate void Action(in LowLevelBlackboard blackboard, byte* memory);
 
         [BurstCompile(CompileSynchronously = true)]
-        private class SquareCalculator : BlackboardFunction<FuncInt>
+        private sealed class SquareCalculator : BlackboardFunction<FuncInt>
         {
             private static bool s_FunctionCompiled = false;
             private static FunctionPointer<FuncInt> s_FunctionPointer;
 
             // compile and store the function pointer
-            protected override void OnEnable()
+            internal override void PrepareForCompilation()
             {
-                base.OnEnable();
+                base.PrepareForCompilation();
                 if (!s_FunctionCompiled)
                 {
                     s_FunctionPointer = BurstCompiler.CompileFunctionPointer<FuncInt>(Square);
@@ -42,7 +42,7 @@ namespace HiraBots.Editor.Tests
         }
 
         [BurstCompile(CompileSynchronously = true)]
-        private class CubeCalculator : BlackboardFunction<Action>
+        private sealed class CubeCalculator : BlackboardFunction<Action>
         {
             // the memory to be stored by this function
             private readonly struct Memory
@@ -59,9 +59,9 @@ namespace HiraBots.Editor.Tests
             private static FunctionPointer<Action> s_FunctionPointer;
 
             // compile and store the function pointer
-            protected override void OnEnable()
+            internal override void PrepareForCompilation()
             {
-                base.OnEnable();
+                base.PrepareForCompilation();
                 if (!s_FunctionCompiled)
                 {
                     s_FunctionPointer = BurstCompiler.CompileFunctionPointer<Action>(Cube);
@@ -74,15 +74,14 @@ namespace HiraBots.Editor.Tests
 
             protected override int memorySize => base.memorySize + ByteStreamHelpers.CombinedSizes<Memory>(); // header includes the memory
 
-            public override byte* Compile(byte* stream)
+            public override void Compile(ref byte* stream)
             {
-                stream = base.Compile(stream);
+                base.Compile(ref stream);
 
                 // no offset
                 ByteStreamHelpers.Write<Memory>(ref stream, new Memory(m_Value));
 
                 // offset sizeof(Memory)
-                return stream;
             }
 
             // override function pointer
@@ -111,6 +110,8 @@ namespace HiraBots.Editor.Tests
             var value = Random.Range(-10, 10);
 
             var calculator = "square calculator".BuildScriptableObject<SquareCalculator>();
+            calculator.PrepareForCompilation();
+
             try
             {
                 // create blackboard and assign value
@@ -121,7 +122,8 @@ namespace HiraBots.Editor.Tests
                 // compile function
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
-                calculator.Compile(functionAddress);
+                var functionAddressCopy = functionAddress; // create a copy because Compile() will forward the pointer
+                calculator.Compile(ref functionAddressCopy);
                 var function = new LowLevelBlackboardFunction(functionAddress);
 
                 // cross-check memory size
@@ -150,6 +152,7 @@ namespace HiraBots.Editor.Tests
 
             var calculator = "square calculator".BuildScriptableObject<CubeCalculator>();
             calculator.BuildCubeCalculator(value);
+            calculator.PrepareForCompilation();
 
             try
             {
@@ -160,7 +163,8 @@ namespace HiraBots.Editor.Tests
                 // compile function
                 var memorySize = calculator.GetAlignedMemorySize();
                 var functionAddress = stackalloc byte[memorySize];
-                calculator.Compile(functionAddress);
+                var functionAddressCopy = functionAddress; // create a copy because Compile() will forward the pointer
+                calculator.Compile(ref functionAddressCopy);
                 var function = new LowLevelBlackboardFunction(functionAddress);
 
                 // cross-check memory size

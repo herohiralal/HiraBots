@@ -34,9 +34,9 @@ namespace HiraBots
                                                  ? ByteStreamHelpers.CombinedSizes<bool>() // header includes inversion
                                                  : ByteStreamHelpers.CombinedSizes<float, bool>()); // header includes score and inversion
 
-        public override byte* Compile(byte* stream)
+        public override void Compile(ref byte* stream)
         {
-            stream = base.Compile(stream);
+            base.Compile(ref stream);
 
             if (m_Header.m_IsScoreCalculator)
             {
@@ -48,7 +48,6 @@ namespace HiraBots
             ByteStreamHelpers.Write<bool>(ref stream, m_Header.m_Invert);
 
             // offset sizeof(bool) or offset sizeof(float) + sizeof(bool)
-            return stream;
         }
     }
 }
