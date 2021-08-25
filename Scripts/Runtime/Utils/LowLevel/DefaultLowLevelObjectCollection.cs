@@ -98,7 +98,7 @@ namespace HiraBots
                     return false;
                 }
 
-                m_Current += new LowLevelBlackboardFunction(m_Current).size;
+                m_Current += new TConverter().Convert(m_Current).size;
                 return true;
             }
 
@@ -106,6 +106,12 @@ namespace HiraBots
             public byte* GetCurrentElementLowLevel()
             {
                 return m_Current;
+            }
+
+            public int currentIndex
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => m_CurrentIndex;
             }
 
             public TElement current

@@ -72,6 +72,12 @@ namespace HiraBots
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         byte* GetCurrentElementLowLevel();
+
+        int currentIndex
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get;
+        }
     }
 
     internal interface ILowLevelEnumerator<out TElement> : ILowLevelEnumerator
