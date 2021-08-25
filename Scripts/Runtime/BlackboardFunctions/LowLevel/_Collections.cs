@@ -14,6 +14,48 @@ using LowLevelEffectorCollection =
 
 namespace HiraBots
 {
+    internal readonly unsafe struct LowLevelBlackboardCollection
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal LowLevelBlackboardCollection(byte* address, ushort count, ushort size)
+        {
+            m_Address = address;
+            m_Count = count;
+            m_Size = size;
+        }
+
+        private readonly byte* m_Address;
+        private readonly ushort m_Count;
+        private readonly ushort m_Size;
+
+        internal ushort count
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => m_Count;
+        }
+
+        /// <summary>
+        /// Access a blackboard from the collection.
+        /// </summary>
+        internal LowLevelBlackboard this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                var output = new LowLevelBlackboard(m_Address + (m_Size * index), m_Size);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                return index >= count
+                    ? throw new System.IndexOutOfRangeException($"Index out of range[0-{count}) - " +
+                                                                $"(index) {index}.")
+                    : output;
+#else
+                return output;
+#endif
+            }
+        }
+    }
+
     internal readonly unsafe struct LowLevelDecoratorBlackboardFunctionCollection
     {
         private readonly LowLevelDecoratorCollection m_Collection;

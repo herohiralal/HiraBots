@@ -4,8 +4,8 @@ namespace HiraBots
 {
     internal readonly unsafe struct DefaultLowLevelObjectCollection<TElement, TConverter>
         : ILowLevelObjectCollection<TElement, DefaultLowLevelObjectCollection<TElement, TConverter>.Enumerator>
-        where TElement : unmanaged, ILowLevelObject
-        where TConverter : unmanaged, IPointerToLowLevelObjectConverter<TElement>
+        where TElement : ILowLevelObject
+        where TConverter : IPointerToLowLevelObjectConverter<TElement>, new()
     {
         private readonly byte* m_Address;
 

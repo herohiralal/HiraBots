@@ -48,7 +48,7 @@ namespace HiraBots
     }
 
     internal interface ILowLevelObjectCollection<out TElement> : ILowLevelObjectCollection
-        where TElement : unmanaged, ILowLevelObject
+        where TElement : ILowLevelObject
     {
         TElement this[int index]
         {
@@ -58,7 +58,7 @@ namespace HiraBots
     }
 
     internal interface ILowLevelObjectCollection<out TElement, out TEnumerator> : ILowLevelObjectCollection<TElement>
-        where TElement : unmanaged, ILowLevelObject
+        where TElement : ILowLevelObject
         where TEnumerator : ILowLevelEnumerator<TElement>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,7 +75,7 @@ namespace HiraBots
     }
 
     internal interface ILowLevelEnumerator<out TElement> : ILowLevelEnumerator
-        where TElement : unmanaged, ILowLevelObject
+        where TElement : ILowLevelObject
     {
         TElement current
         {
