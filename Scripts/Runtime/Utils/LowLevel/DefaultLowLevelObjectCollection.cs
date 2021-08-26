@@ -170,5 +170,12 @@ namespace HiraBots
         {
             return new DefaultLowLevelObjectProviderCollection<T>(providers);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static DefaultLowLevelObjectProviderCollection<T> GetLowLevelObjectProviderCollection<T>(this ReadOnlyArrayAccessor<T> providers)
+            where T : ILowLevelObjectProvider
+        {
+            return new DefaultLowLevelObjectProviderCollection<T>(providers);
+        }
     }
 }
