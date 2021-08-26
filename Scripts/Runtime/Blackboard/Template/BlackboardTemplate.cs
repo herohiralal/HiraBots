@@ -7,7 +7,6 @@ namespace HiraBots
     /// <summary>
     /// A blackboard template to make blackboard components out of.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Blackboard", menuName = "HiraBots/Blackboard")]
     internal partial class BlackboardTemplate : ScriptableObject
     {
         [Tooltip("The parent template of this one. A blackboard template inherits all of its parents' keys.")]

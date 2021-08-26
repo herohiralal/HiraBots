@@ -14,6 +14,18 @@ namespace HiraBots.Editor
     [CustomEditor(typeof(BlackboardTemplate), true)]
     internal class BlackboardTemplateEditor : UnityEditor.Editor
     {
+        [MenuItem("Assets/Create/HiraBots/Blackboard", false)]
+        private static void CreateBlackboard()
+        {
+            AssetDatabaseUtility.CreateNewObject<BlackboardTemplate>("NewBlackboard");
+        }
+
+        [MenuItem("Assets/Create/HiraBots/Blackboard", true)]
+        private static bool CanCreateBlackboard()
+        {
+            return !EditorApplication.isPlayingOrWillChangePlaymode;
+        }
+
         // property names
         private const string k_ParentProperty = "m_Parent";
         private const string k_KeysProperty = "m_Keys";
