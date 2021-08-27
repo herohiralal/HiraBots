@@ -29,23 +29,59 @@ namespace HiraBots.Editor
         // property names
         private const string k_ParentProperty = "m_Parent";
         private const string k_KeysProperty = "m_Keys";
-        private const string k_BackendProperty = "m_Backends";
+        private const string k_BackendsProperty = "m_Backends";
 
         // undo helper
         [SerializeField] private bool m_Dirty = false;
-        private MultiAssetFileHelper m_MultiAssetFileHelper = null;
         private ReorderableList m_ReorderableList = null;
+
+        private SerializedProperty m_ParentProperty;
+        private SerializedProperty m_KeysProperty;
+        private SerializedProperty m_BackendsProperty;
+        private string m_Errors = "";
 
         private void OnEnable()
         {
+            // try find parent property
+            m_ParentProperty = serializedObject.FindProperty(k_ParentProperty);
+            if (m_ParentProperty == null || m_ParentProperty.propertyType != SerializedPropertyType.ObjectReference)
+            {
+                m_Errors += "\nCould not find parent property.";
+            }
+
+            // try find keys property
+            m_KeysProperty = serializedObject.FindProperty(k_KeysProperty);
+            if (m_KeysProperty == null || !m_KeysProperty.isArray)
+            {
+                m_Errors += "\nCould not find keys property.";
+            }
+
+            // try to find backends property
+            m_BackendsProperty = serializedObject.FindProperty(k_BackendsProperty);
+            if (m_BackendsProperty == null || m_BackendsProperty.propertyType != SerializedPropertyType.Enum)
+            {
+                m_Errors += "\nCould not find backends property.";
+            }
+
+            m_ReorderableList = new ReorderableList(serializedObject, m_KeysProperty,
+                true, true, true, true)
+            {
+                drawHeaderCallback = DrawKeyListHeader,
+                onAddDropdownCallback = OnAddDropdown,
+                onRemoveCallback = OnRemove,
+                elementHeightCallback = GetKeyHeight,
+                drawElementCallback = DrawSelfKey,
+                drawElementBackgroundCallback = DrawElementBackground
+            };
+
             Undo.undoRedoPerformed += OnUndoPerformed;
         }
 
         private void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoPerformed;
-            m_MultiAssetFileHelper = null;
             m_ReorderableList = null;
+            m_Errors = "";
         }
 
         private void OnUndoPerformed()
@@ -55,30 +91,11 @@ namespace HiraBots.Editor
 
         public override void OnInspectorGUI()
         {
-            // try find parent property
-            var parentProperty = serializedObject.FindProperty(k_ParentProperty);
-            if (parentProperty == null || parentProperty.propertyType != SerializedPropertyType.ObjectReference)
+            if (m_Errors != "")
             {
-                EditorGUILayout.HelpBox("Could not find parent property.", MessageType.Error);
+                EditorGUILayout.HelpBox(m_Errors, MessageType.Error);
                 return;
             }
-
-            // try find keys property
-            var keysProperty = serializedObject.FindProperty(k_KeysProperty);
-            if (keysProperty == null || !keysProperty.isArray)
-            {
-                EditorGUILayout.HelpBox("Could not find keys property.", MessageType.Error);
-                return;
-            }
-
-            var backendsProperty = serializedObject.FindProperty(k_BackendProperty);
-            if (backendsProperty == null || backendsProperty.propertyType != SerializedPropertyType.Enum)
-            {
-                EditorGUILayout.HelpBox("Could not find backends property.", MessageType.Error);
-                return;
-            }
-
-            InitializeIfRequired(keysProperty);
 
             var editingDisabled = EditorApplication.isPlayingOrWillChangePlaymode;
 
@@ -89,7 +106,7 @@ namespace HiraBots.Editor
 
             if (m_Dirty)
             {
-                m_MultiAssetFileHelper.SynchronizeFileToCollection();
+                // todo: update collection
                 m_Dirty = false;
             }
 
@@ -99,21 +116,21 @@ namespace HiraBots.Editor
                 serializedObject.Update();
 
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(parentProperty);
+                EditorGUILayout.PropertyField(m_ParentProperty);
                 if (EditorGUI.EndChangeCheck())
                 {
                     using (new UndoMerger("Changed Blackboard Parent"))
                     {
                         serializedObject.ApplyModifiedProperties();
-                        var newParent = parentProperty.objectReferenceValue;
+                        var newParent = m_ParentProperty.objectReferenceValue;
                         if (CheckForCyclicalDependency(target))
                         {
-                            parentProperty.objectReferenceValue = null;
+                            m_ParentProperty.objectReferenceValue = null;
                             Debug.LogError($"Cyclical dependency created in blackboard {target.name}. Removing parent.");
                         }
                         else if (newParent != null && CheckForCyclicalDependency(target))
                         {
-                            parentProperty.objectReferenceValue = null;
+                            m_ParentProperty.objectReferenceValue = null;
                             Debug.LogError($"Cyclical dependency created in blackboard {newParent.name}. Removing parent.");
                         }
 
@@ -121,18 +138,18 @@ namespace HiraBots.Editor
                     }
                 }
 
-                EditorGUILayout.PropertyField(backendsProperty);
+                EditorGUILayout.PropertyField(m_BackendsProperty);
                 serializedObject.ApplyModifiedProperties();
 
                 // parent keys list
-                var parent = parentProperty.objectReferenceValue;
+                var parent = m_ParentProperty.objectReferenceValue;
 
                 if (parent != null)
                 {
-                    var selfBackends = backendsProperty.intValue;
+                    var selfBackends = m_BackendsProperty.intValue;
                     var parentSerializedObject = new SerializedObject(parent);
                     parentSerializedObject.Update();
-                    var parentBackends = parentSerializedObject.FindProperty(k_BackendProperty).intValue;
+                    var parentBackends = parentSerializedObject.FindProperty(k_BackendsProperty).intValue;
                     parentSerializedObject.Dispose();
 
                     if ((parentBackends & selfBackends) != selfBackends)
@@ -168,33 +185,11 @@ namespace HiraBots.Editor
             }
         }
 
-        private void InitializeIfRequired(SerializedProperty keysProperty)
-        {
-            if (m_MultiAssetFileHelper == null)
-            {
-                m_MultiAssetFileHelper = new MultiAssetFileHelper(target, serializedObject, keysProperty);
-            }
-
-            if (m_ReorderableList == null)
-            {
-                m_ReorderableList = new ReorderableList(serializedObject, keysProperty, true, true, true, true)
-                {
-                    drawHeaderCallback = DrawKeyListHeader,
-                    onAddDropdownCallback = OnAddDropdown,
-                    onRemoveCallback = OnRemove,
-                    elementHeightCallback = GetKeyHeight,
-                    drawElementCallback = DrawSelfKey,
-                    drawElementBackgroundCallback = DrawElementBackground
-                };
-            }
-        }
-
         private void DrawElementBackground(Rect rect, int index, bool isActive, bool isFocused)
         {
             if (index >= 0)
             {
-                var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
-                var value = property.objectReferenceValue;
+                var value = m_KeysProperty.GetArrayElementAtIndex(index).objectReferenceValue;
 
                 rect.y -= 2;
                 rect.height -= 2;
@@ -213,14 +208,12 @@ namespace HiraBots.Editor
 
         private float GetKeyHeight(int index)
         {
-            var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
-            return EditorGUI.GetPropertyHeight(property) + 4;
+            return EditorGUI.GetPropertyHeight(m_KeysProperty.GetArrayElementAtIndex(index)) + 4;
         }
 
         private void DrawSelfKey(Rect rect, int index, bool isActive, bool isFocused)
         {
-            var property = serializedObject.FindProperty(k_KeysProperty).GetArrayElementAtIndex(index);
-            EditorGUI.PropertyField(rect, property, GUIContent.none, true);
+            EditorGUI.PropertyField(rect, m_KeysProperty.GetArrayElementAtIndex(index), GUIContent.none, true);
         }
 
         private static void DrawKeyListHeader(Rect rect)
@@ -232,12 +225,11 @@ namespace HiraBots.Editor
         private void OnAddDropdown(Rect buttonRect, ReorderableList list)
         {
             var menu = new GenericMenu();
-            var prop = serializedObject.FindProperty(k_KeysProperty);
 
             foreach (var type in TypeCache.GetTypesDerivedFrom<BlackboardKey>().Where(t => !t.IsAbstract && !t.IsInterface))
             {
                 menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[type]), false,
-                    () => AssetDatabaseUtility.AddInlinedObject(target, serializedObject, prop, type));
+                    () => AssetDatabaseUtility.AddInlinedObject(target, serializedObject, m_KeysProperty, type));
             }
 
             menu.ShowAsContext();
@@ -245,8 +237,7 @@ namespace HiraBots.Editor
 
         private void OnRemove(ReorderableList list)
         {
-            var prop = serializedObject.FindProperty(k_KeysProperty);
-            AssetDatabaseUtility.RemoveInlinedObject(target, serializedObject, prop, list.index);
+            AssetDatabaseUtility.RemoveInlinedObject(target, serializedObject, m_KeysProperty, list.index);
         }
 
         // check for cyclical dependency created within the template
