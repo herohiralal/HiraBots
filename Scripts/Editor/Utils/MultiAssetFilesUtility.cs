@@ -78,11 +78,7 @@ namespace HiraBots.Editor
 
             m_SerializedObject.ApplyModifiedProperties();
 
-            using (new UndoMerger($"Destroy {objectToRemove.name}"))
-            {
-                AssetDatabase.RemoveObjectFromAsset(objectToRemove);
-                Undo.DestroyObjectImmediate(objectToRemove);
-            }
+            Undo.DestroyObjectImmediate(objectToRemove);
 
             EditorUtility.SetDirty(m_Target);
             AssetDatabase.SaveAssets();
