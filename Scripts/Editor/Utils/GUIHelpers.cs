@@ -245,7 +245,10 @@ namespace HiraBots.Editor
         /// <returns>Its respective faded theme color.</returns>
         internal static Color GetBlackboardKeyColorFaded(Object value)
         {
-            return GetBlackboardKeyColor(value) * 0.35f;
+            Color.RGBToHSV(GetBlackboardKeyColor(value), out var h, out var s, out var v);
+            s *= 0.35f;
+            v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+            return Color.HSVToRGB(h, s, v);
         }
     }
 }
