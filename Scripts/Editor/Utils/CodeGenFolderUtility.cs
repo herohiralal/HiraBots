@@ -26,6 +26,9 @@ namespace HiraBots.Editor
 
         #endregion
 
+        /// <summary>
+        /// Create codegen asmdef.
+        /// </summary>
         internal static void CreateCodeGenAssemblyDefinition()
         {
             var path = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName, k_CodeGenAssemblyName + ".asmdef");
@@ -44,10 +47,14 @@ namespace HiraBots.Editor
                 "// ===================================================\n");
         }
 
+        /// <summary>
+        /// Save generated code to a relative path within the codegen folder.
+        /// </summary>
         internal static void GenerateCode(string pathR, string contents)
         {
             var directory = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName);
 
+            // create directory as required
             var subfolders = pathR.Split('/');
             var current = directory;
             for (var i = 0; i < subfolders.Length - 1; i++) // skip over the last element, which is the file name
@@ -58,11 +65,16 @@ namespace HiraBots.Editor
                     Directory.CreateDirectory(current);
             }
 
+            // append filename & extension
             var path = Path.Combine(current, subfolders[subfolders.Length - 1]);
 
+            // write
             File.WriteAllText(path, contents);
         }
 
+        /// <summary>
+        /// Clean up orphaned files/folders and write a manifest for all the generated files.
+        /// </summary>
         internal static void CleanupAndGenerateManifest(string generatedFiles)
         {
             generatedFiles += $"\n{k_CodeGenManualExtensionsFolderName}/info.txt" +
@@ -75,9 +87,10 @@ namespace HiraBots.Editor
 
             var potentiallyUselessFolders = new HashSet<string>();
 
+            // remove useless files
             foreach (var uselessFile in previouslyWrittenFiles.Where(s => !generatedFiles.Contains(s)))
             {
-                UnityEngine.Debug.Log($"Process file: {uselessFile}");
+                UnityEngine.Debug.Log($"Remove orphaned file: {uselessFile}");
                 var actualFile = Path.Combine(directory, uselessFile);
 
                 if (File.Exists(actualFile))
@@ -90,6 +103,7 @@ namespace HiraBots.Editor
                     File.Delete(actualFile + ".meta");
                 }
 
+                // get the folder hierarchy of the file and mark all those folders as potentially useless
                 var subfolders = uselessFile.Split('/');
                 var current = "";
                 for (var i = 0; i < subfolders.Length - 1; i++) // skip over the last element, which is the file name
@@ -99,9 +113,10 @@ namespace HiraBots.Editor
                 }
             }
 
+            // remove useless folders
             foreach (var uselessFolder in potentiallyUselessFolders.Where(s => !generatedFiles.Contains(s)))
             {
-                UnityEngine.Debug.Log($"Process folder: {uselessFolder}");
+                UnityEngine.Debug.Log($"Remove orphaned folder: {uselessFolder}");
                 var actualFolder = Path.Combine(directory, uselessFolder);
 
                 if (Directory.Exists(actualFolder))
@@ -116,6 +131,7 @@ namespace HiraBots.Editor
                 }
             }
 
+            // write manifest
             File.WriteAllText(manifestLocation, generatedFiles);
         }
     }

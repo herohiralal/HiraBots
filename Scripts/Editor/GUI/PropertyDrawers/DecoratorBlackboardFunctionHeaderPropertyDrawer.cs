@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Property drawer for a header of a decorator blackboard function.
+    /// Changes whether the score variable is shown or not.
+    /// </summary>
     [CustomPropertyDrawer(typeof(DecoratorBlackboardFunction.Header))]
     internal class DecoratorBlackboardFunctionHeaderPropertyDrawer : PropertyDrawer
     {
@@ -24,6 +28,7 @@ namespace HiraBots.Editor
             var scoreProperty = property.FindPropertyRelative(k_ScorePropertyName);
             var invertProperty = property.FindPropertyRelative(k_InvertPropertyName);
 
+            // validate sub-properties
             if (isScoreCalculatorProperty == null || scoreProperty == null || invertProperty == null)
             {
                 EditorGUI.HelpBox(position, $"Could not find one or more properties.", MessageType.Error);
@@ -32,6 +37,7 @@ namespace HiraBots.Editor
 
             position.height = 19f;
 
+            // check value of score calculator property
             if (isScoreCalculatorProperty.boolValue)
             {
                 EditorGUI.PropertyField(position, scoreProperty);

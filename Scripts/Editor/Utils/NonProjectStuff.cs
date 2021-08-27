@@ -5,8 +5,14 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Extras that aren't a part of the actual project.
+    /// </summary>
     internal static class NonProjectRelatedUtilities
     {
+        /// <summary>
+        /// Print the number of lines of code in the package.
+        /// </summary>
         [MenuItem("HiraBots/Print Lines Of Code")]
         private static void PrintLinesOfCode()
         {

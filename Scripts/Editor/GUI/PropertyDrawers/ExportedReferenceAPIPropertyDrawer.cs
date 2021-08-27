@@ -5,6 +5,10 @@ using UnityEngine.UIElements;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Property drawer for a HiraBot object field.
+    /// Optionally, can disable editing when in Play Mode.
+    /// </summary>
     [CustomPropertyDrawer(typeof(DisallowPlayModeEdit))]
     [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate))]
     internal class ExportedReferenceAPIPropertyDrawer : PropertyDrawer

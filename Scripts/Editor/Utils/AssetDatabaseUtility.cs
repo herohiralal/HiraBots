@@ -56,8 +56,15 @@ namespace HiraBots.Editor
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, name, null, null);
         }
 
-        // does not perform any serialized object update/apply
-
+        /// <summary>
+        /// Set the serialized property to a new object, and add it to the same file as the target.
+        /// </summary>
+        /// <param name="target">The target object to add the file to.</param>
+        /// <param name="serializedObject">Serialized object.</param>
+        /// <param name="property">The object reference (or array of object references) property to add the object to.</param>
+        /// <param name="t">The type of object to create.</param>
+        /// <param name="name">Name of the newly created object.</param>
+        /// <param name="hideFlags">HideFlags for the newly created object.</param>
         internal static void AddInlinedObject(
             Object target,
             SerializedObject serializedObject,
@@ -114,6 +121,13 @@ namespace HiraBots.Editor
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Remove an inlined object reference.
+        /// </summary>
+        /// <param name="target">The target object to remove the file from.</param>
+        /// <param name="serializedObject">The serialized object.</param>
+        /// <param name="property">The object reference (or array of object references) property to remove the object from.</param>
+        /// <param name="arrayIndex">If the property is an array, the index at which to remove the object.</param>
         internal static void RemoveInlinedObject(
             Object target,
             SerializedObject serializedObject,
@@ -166,6 +180,11 @@ namespace HiraBots.Editor
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Add missing objects to the file and remove orphaned objects from the file.
+        /// </summary>
+        /// <param name="target">The main object.</param>
+        /// <param name="objectsThatMustBeInFile">The objects that must be in the file.</param>
         internal static void SynchronizeFileToCompoundObject(Object target, HashSet<Object> objectsThatMustBeInFile)
         {
             var path = AssetDatabase.GetAssetPath(target);

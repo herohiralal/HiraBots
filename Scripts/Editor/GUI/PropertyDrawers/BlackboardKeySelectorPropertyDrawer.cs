@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
+    /// <summary>
+    /// Property drawer for a blackboard key selector.
+    /// </summary>
     [CustomPropertyDrawer(typeof(BlackboardTemplate.KeySelector))]
     public class BlackboardKeySelectorPropertyDrawer : PropertyDrawer
     {
