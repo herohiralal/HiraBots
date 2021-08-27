@@ -62,8 +62,10 @@ namespace HiraBots
                 case OperationType.RemoveFlags:
                     blackboard.Access<byte>(offset) &= value;
                     break;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 default:
                     throw new System.ArgumentOutOfRangeException();
+#endif
             }
         }
     }

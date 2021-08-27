@@ -42,7 +42,11 @@ namespace HiraBots
                     var value3 = blackboard.Access<float3>(offset) != float3.zero;
                     return !value3.x || !value3.y || !value3.z;
                 default:
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                     throw new ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
+#else
+                    return false;
+#endif
             }
         }
     }

@@ -82,8 +82,10 @@ namespace HiraBots
                 case OperationType.BitwiseXor:
                     blackboard.Access<int>(offset) ^= value;
                     break;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 default:
                     throw new System.ArgumentOutOfRangeException();
+#endif
             }
         }
     }

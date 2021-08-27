@@ -61,8 +61,10 @@ namespace HiraBots
                         case BlackboardKeyType.Vector:
                             blackboard.Access<float3>(offset) = 1;
                             break;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                         default:
                             throw new System.ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
+#endif
                     }
 
                     break;
@@ -78,13 +80,17 @@ namespace HiraBots
                         case BlackboardKeyType.Vector:
                             blackboard.Access<float3>(offset) = float3.zero;
                             break;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                         default:
                             throw new System.ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
+#endif
                     }
 
                     break;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 default:
                     throw new System.ArgumentOutOfRangeException($"Unknown operation type: {memory->m_OperationType}");
+#endif
             }
         }
     }

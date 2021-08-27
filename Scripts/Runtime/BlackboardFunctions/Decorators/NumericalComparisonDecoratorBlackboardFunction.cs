@@ -76,7 +76,11 @@ namespace HiraBots
                 case ComparisonType.LesserThanEqualTo:
                     return blackboardValue <= compareTo;
                 default:
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                     throw new System.ArgumentOutOfRangeException($"Unknown comparison type: {memory->m_ComparisonType}");
+#else
+                    return false;
+#endif
             }
         }
     }
