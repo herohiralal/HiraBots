@@ -6,9 +6,10 @@ namespace HiraBots
         /// <summary>
         /// Build a BlackboardTemplate.
         /// </summary>
-        internal void BuildBlackboardTemplate(BlackboardTemplate parent, BlackboardKey[] keys)
+        internal void BuildBlackboardTemplate(BlackboardTemplate parent, BackendType backend, BlackboardKey[] keys)
         {
             m_Parent = parent;
+            m_Backends = backend;
             m_Keys = keys;
         }
     }

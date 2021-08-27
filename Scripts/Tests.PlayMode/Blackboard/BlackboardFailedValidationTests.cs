@@ -9,6 +9,36 @@ namespace HiraBots.Editor.Tests
     [TestFixture]
     internal class BlackboardFailedValidationTests
     {
+        [Test]
+        public void IncompatibleBackendValidation()
+        {
+            var parent = "Parent".BuildScriptableObject<BlackboardTemplate>();
+            parent.BuildBlackboardTemplate(null, BackendType.CodeGenerator, new BlackboardKey[0]);
+
+            var child = "Child".BuildScriptableObject<BlackboardTemplate>();
+            child.BuildBlackboardTemplate(parent, BackendType.RuntimeInterpreter, new BlackboardKey[0]);
+
+            var validator = new BlackboardTemplateValidator();
+
+            try
+            {
+                Assert.IsTrue(validator.Validate(parent, out _), "Parent failed to validate, could not complete test.");
+
+                var result = validator.Validate(child, out var errorText);
+
+                Assert.IsFalse(result, "Validation succeeded when it shouldn't have.");
+
+                var requiredError = BlackboardTemplateValidator
+                    .FormatErrorStringForUnsupportedBackends(BackendType.RuntimeInterpreter);
+                Assert.IsTrue(errorText.Contains(requiredError), "Correct missing backend not included in the report.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(parent);
+                Object.DestroyImmediate(child);
+            }
+        }
+
         /// <summary>
         /// Check for validation failure when a key is null.
         /// </summary>
@@ -24,7 +54,7 @@ namespace HiraBots.Editor.Tests
             booleanThrowaway.BuildBooleanBlackboardKey(false);
 
             var template = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
-            template.BuildBlackboardTemplate(null, new BlackboardKey[]
+            template.BuildBlackboardTemplate(null, BackendType.RuntimeInterpreter, new BlackboardKey[]
                 {
                     floatThrowaway,
                     null,
@@ -57,8 +87,8 @@ namespace HiraBots.Editor.Tests
         {
             var first = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
             var second = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
-            second.BuildBlackboardTemplate(first, new BlackboardKey[0]);
-            first.BuildBlackboardTemplate(second, new BlackboardKey[0]);
+            second.BuildBlackboardTemplate(first, BackendType.RuntimeInterpreter, new BlackboardKey[0]);
+            first.BuildBlackboardTemplate(second, BackendType.RuntimeInterpreter, new BlackboardKey[0]);
 
             var validator = new BlackboardTemplateValidator();
 
@@ -98,7 +128,7 @@ namespace HiraBots.Editor.Tests
             booleanThrowaway.BuildBooleanBlackboardKey(false);
 
             var template = "NullKeyFailTestObject".BuildScriptableObject<BlackboardTemplate>();
-            template.BuildBlackboardTemplate(null, new BlackboardKey[]
+            template.BuildBlackboardTemplate(null, BackendType.RuntimeInterpreter, new BlackboardKey[]
                 {
                     floatThrowaway,
                     booleanThrowaway

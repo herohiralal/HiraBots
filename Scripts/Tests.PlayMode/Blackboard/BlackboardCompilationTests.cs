@@ -75,10 +75,10 @@ namespace HiraBots.Editor.Tests
             m_Fourth = fourth;
 
             m_Parent = k_ParentTemplateName.BuildScriptableObject<BlackboardTemplate>();
-            m_Parent.BuildBlackboardTemplate(null, new[] {m_First, m_Second});
+            m_Parent.BuildBlackboardTemplate(null, BackendType.RuntimeInterpreter, new[] {m_First, m_Second});
 
             m_Child = k_ChildTemplateName.BuildScriptableObject<BlackboardTemplate>();
-            m_Child.BuildBlackboardTemplate(m_Parent, new[] {m_Third, m_Fourth});
+            m_Child.BuildBlackboardTemplate(m_Parent, BackendType.RuntimeInterpreter, new[] {m_Third, m_Fourth});
 
 
             // validate the blackboard templates first
