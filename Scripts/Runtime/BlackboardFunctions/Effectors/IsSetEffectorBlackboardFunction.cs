@@ -22,39 +22,19 @@ namespace HiraBots
             internal OperationType m_OperationType;
         }
 
-        private static bool s_FunctionCompiled = false;
-        private static FunctionPointer<EffectorDelegate> s_Function;
-
-        internal override void PrepareForCompilation()
-        {
-            base.PrepareForCompilation();
-            m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
-            if (!s_FunctionCompiled)
-            {
-                s_Function = BurstCompiler.CompileFunctionPointer<EffectorDelegate>(ActualFunction);
-                s_FunctionCompiled = true;
-            }
-        }
-
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
         [Tooltip("The type of operation to perform.")]
         [SerializeField] private OperationType m_OperationType = OperationType.Set;
 
-        // compile override
-        public override void Compile(ref byte* stream)
+        // pack memory
+        private Memory memory => new Memory
         {
-            base.Compile(ref stream);
-
-            // no offset
-            ByteStreamHelpers.Write(ref stream, memory);
-
-            // offset sizeof(Memory)
-        }
-
-        // function override
-        protected override FunctionPointer<EffectorDelegate> function => s_Function;
+            m_KeyType = m_Key.selectedKey.keyType,
+            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
+            m_OperationType = m_OperationType
+        };
 
         // actual function
         [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(EffectorDelegate))]
@@ -104,13 +84,5 @@ namespace HiraBots
                     throw new System.ArgumentOutOfRangeException($"Unknown operation type: {memory->m_OperationType}");
             }
         }
-
-        // pack memory
-        private Memory memory => new Memory
-        {
-            m_KeyType = m_Key.selectedKey.keyType,
-            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
-            m_OperationType = m_OperationType
-        };
     }
 }

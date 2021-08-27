@@ -15,36 +15,11 @@ namespace HiraBots
             internal ushort m_Offset;
         }
 
-        private static bool s_FunctionCompiled = false;
-        private static FunctionPointer<DecoratorDelegate> s_Function;
-
-        internal override void PrepareForCompilation()
-        {
-            base.PrepareForCompilation();
-            m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
-            if (!s_FunctionCompiled)
-            {
-                s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
-                s_FunctionCompiled = true;
-            }
-        }
-
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
-        // compile override
-        public override void Compile(ref byte* stream)
-        {
-            base.Compile(ref stream);
-
-            // no offset
-            ByteStreamHelpers.Write(ref stream, memory);
-
-            // offset sizeof(Memory)
-        }
-
-        // function override
-        protected override FunctionPointer<DecoratorDelegate> function => s_Function;
+        // pack memory
+        private Memory memory => new Memory {m_KeyType = m_Key.selectedKey.keyType, m_Offset = m_Key.selectedKey.compiledData.memoryOffset};
 
         // actual function
         [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(DecoratorDelegate))]
@@ -67,8 +42,5 @@ namespace HiraBots
                     throw new ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
             }
         }
-
-        // pack memory
-        private Memory memory => new Memory {m_KeyType = m_Key.selectedKey.keyType, m_Offset = m_Key.selectedKey.compiledData.memoryOffset};
     }
 }

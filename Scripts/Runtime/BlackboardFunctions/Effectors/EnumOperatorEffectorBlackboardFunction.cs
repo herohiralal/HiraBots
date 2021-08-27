@@ -22,20 +22,6 @@ namespace HiraBots
             internal byte m_Value;
         }
 
-        private static bool s_FunctionCompiled = false;
-        private static FunctionPointer<EffectorDelegate> s_Function;
-
-        internal override void PrepareForCompilation()
-        {
-            base.PrepareForCompilation();
-            m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
-            if (!s_FunctionCompiled)
-            {
-                s_Function = BurstCompiler.CompileFunctionPointer<EffectorDelegate>(ActualFunction);
-                s_FunctionCompiled = true;
-            }
-        }
-
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
@@ -45,19 +31,13 @@ namespace HiraBots
         [Tooltip("The second value to use for the operator.")]
         [SerializeField] private DynamicEnum m_Value = default;
 
-        // compile override
-        public override void Compile(ref byte* stream)
+        // pack memory
+        private Memory memory => new Memory
         {
-            base.Compile(ref stream);
-
-            // no offset
-            ByteStreamHelpers.Write(ref stream, memory);
-
-            // offset sizeof(Memory)
-        }
-
-        // function override
-        protected override FunctionPointer<EffectorDelegate> function => s_Function;
+            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
+            m_OperationType = m_OperationType,
+            m_Value = m_Value
+        };
 
         // actual function
         [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(EffectorDelegate))]
@@ -83,13 +63,5 @@ namespace HiraBots
                     throw new System.ArgumentOutOfRangeException();
             }
         }
-
-        // pack memory
-        private Memory memory => new Memory
-        {
-            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
-            m_OperationType = m_OperationType,
-            m_Value = m_Value
-        };
     }
 }

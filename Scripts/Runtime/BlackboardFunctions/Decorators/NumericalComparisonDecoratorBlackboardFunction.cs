@@ -27,20 +27,6 @@ namespace HiraBots
             internal float m_Tolerance;
         }
 
-        private static bool s_FunctionCompiled = false;
-        private static FunctionPointer<DecoratorDelegate> s_Function;
-
-        internal override void PrepareForCompilation()
-        {
-            base.PrepareForCompilation();
-            m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
-            if (!s_FunctionCompiled)
-            {
-                s_Function = BurstCompiler.CompileFunctionPointer<DecoratorDelegate>(ActualFunction);
-                s_FunctionCompiled = true;
-            }
-        }
-
         [Tooltip("The key to look up.")]
         [SerializeField] private BlackboardTemplate.KeySelector m_Key = default;
 
@@ -53,19 +39,15 @@ namespace HiraBots
         [Tooltip("The allowed tolerance if the comparison type is equal to.")]
         [SerializeField] private float m_EqualityTolerance = 0.1f;
 
-        // compile override
-        public override void Compile(ref byte* stream)
+        // pack memory
+        private Memory memory => new Memory
         {
-            base.Compile(ref stream);
-
-            // no offset
-            ByteStreamHelpers.Write(ref stream, memory);
-
-            // offset sizeof(Memory)
-        }
-
-        // function override
-        protected override FunctionPointer<DecoratorDelegate> function => s_Function;
+            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
+            m_IntegerKey = m_Key.selectedKey.keyType == BlackboardKeyType.Integer,
+            m_ComparisonType = m_ComparisonType,
+            m_CompareTo = m_Value,
+            m_Tolerance = m_EqualityTolerance
+        };
 
         // actual function
         [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(DecoratorDelegate))]
@@ -94,15 +76,5 @@ namespace HiraBots
                     throw new System.ArgumentOutOfRangeException($"Unknown comparison type: {memory->m_ComparisonType}");
             }
         }
-
-        // pack memory
-        private Memory memory => new Memory
-        {
-            m_Offset = m_Key.selectedKey.compiledData.memoryOffset,
-            m_IntegerKey = m_Key.selectedKey.keyType == BlackboardKeyType.Integer,
-            m_ComparisonType = m_ComparisonType,
-            m_CompareTo = m_Value,
-            m_Tolerance = m_EqualityTolerance
-        };
     }
 }
