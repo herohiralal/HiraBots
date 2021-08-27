@@ -232,11 +232,12 @@ namespace HiraBots.Editor
         private void OnAddDropdown(Rect buttonRect, ReorderableList list)
         {
             var menu = new GenericMenu();
+            var prop = serializedObject.FindProperty(k_KeysProperty);
 
             foreach (var type in TypeCache.GetTypesDerivedFrom<BlackboardKey>().Where(t => !t.IsAbstract && !t.IsInterface))
             {
                 menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[type]), false,
-                    () => m_MultiAssetFileHelper.AddNewObject(type));
+                    () => AssetDatabaseUtility.AddInlinedObject(target, serializedObject, prop, type));
             }
 
             menu.ShowAsContext();
@@ -244,7 +245,8 @@ namespace HiraBots.Editor
 
         private void OnRemove(ReorderableList list)
         {
-            m_MultiAssetFileHelper.RemoveObject(list.index);
+            var prop = serializedObject.FindProperty(k_KeysProperty);
+            AssetDatabaseUtility.RemoveInlinedObject(target, serializedObject, prop, list.index);
         }
 
         // check for cyclical dependency created within the template

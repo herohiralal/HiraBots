@@ -36,55 +36,6 @@ namespace HiraBots.Editor
         private SerializedProperty m_ArrayProperty;
 
         /// <summary>
-        /// Add an object to the collection (and to the file).
-        /// </summary>
-        /// <param name="t">The type of object to add.</param>
-        internal void AddNewObject(Type t)
-        {
-            m_SerializedObject.Update();
-
-            var index = m_ArrayProperty.arraySize;
-
-            var newObject = ScriptableObject.CreateInstance(t);
-            newObject.name = t.Name;
-            newObject.hideFlags |= HideFlags.HideInHierarchy | HideFlags.HideInInspector;
-            Undo.RegisterCreatedObjectUndo(newObject, $"Add {t.Name} Object");
-
-            AssetDatabase.AddObjectToAsset(newObject, m_Target);
-
-            m_ArrayProperty.arraySize++;
-            var newObjectProperty = m_ArrayProperty.GetArrayElementAtIndex(index);
-            newObjectProperty.objectReferenceValue = newObject;
-
-            m_SerializedObject.ApplyModifiedProperties();
-
-            EditorUtility.SetDirty(m_Target);
-            AssetDatabase.SaveAssets();
-        }
-
-        /// <summary>
-        /// Remove an object from the collection (and from the file).
-        /// </summary>
-        /// <param name="index">The index of the object within the collection.</param>
-        internal void RemoveObject(int index)
-        {
-            m_SerializedObject.Update();
-
-            var property = m_ArrayProperty.GetArrayElementAtIndex(index);
-            var objectToRemove = property.objectReferenceValue;
-
-            property.objectReferenceValue = null;
-            m_ArrayProperty.DeleteArrayElementAtIndex(index);
-
-            m_SerializedObject.ApplyModifiedProperties();
-
-            Undo.DestroyObjectImmediate(objectToRemove);
-
-            EditorUtility.SetDirty(m_Target);
-            AssetDatabase.SaveAssets();
-        }
-
-        /// <summary>
         /// Synchronize the file to the collection by removing orphaned assets and adding absent assets.
         /// </summary>
         internal void SynchronizeFileToCollection()
