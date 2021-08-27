@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using Unity.Burst;
+﻿using Unity.Burst;
 
 namespace HiraBots
 {
@@ -147,4 +146,3 @@ namespace HiraBots
         protected override FunctionPointer<DecoratorDelegate> function => s_Function;
     }
 }
-#endif
