@@ -82,6 +82,7 @@ namespace HiraBots.Editor
             Undo.undoRedoPerformed -= OnUndoPerformed;
             m_ReorderableList = null;
             m_Errors = "";
+            m_Dirty = false;
         }
 
         private void OnUndoPerformed()
@@ -106,8 +107,15 @@ namespace HiraBots.Editor
 
             if (m_Dirty)
             {
-                // todo: update collection
+                serializedObject.Update();
+                var hs = new HashSet<Object>(
+                    m_KeysProperty
+                        .ToSerializedArrayProperty()
+                        .Select(p => p.objectReferenceValue));
+
+                AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, hs);
                 m_Dirty = false;
+                serializedObject.ApplyModifiedProperties();
             }
 
             // parent property field

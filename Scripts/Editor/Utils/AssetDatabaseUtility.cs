@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
@@ -162,6 +164,42 @@ namespace HiraBots.Editor
             // update editor
             EditorUtility.SetDirty(target);
             AssetDatabase.SaveAssets();
+        }
+
+        internal static void SynchronizeFileToCompoundObject(Object target, HashSet<Object> objectsThatMustBeInFile)
+        {
+            var path = AssetDatabase.GetAssetPath(target);
+            var subAssets = new HashSet<Object>(AssetDatabase.LoadAllAssetsAtPath(path));
+            subAssets.Remove(target); // don't remove the fucking main object from the file again
+
+            var assetDirty = false;
+
+            foreach (var subAsset in subAssets.Where(subAsset => !objectsThatMustBeInFile.Contains(subAsset)))
+            {
+                Debug.Log($"Object clean-up: removed {subAsset.name} from {path}.");
+                AssetDatabase.RemoveObjectFromAsset(subAsset);
+                assetDirty = true;
+            }
+
+            foreach (var requiredObject in objectsThatMustBeInFile.Where(rObj => rObj != null && !subAssets.Contains(rObj)))
+            {
+                if (AssetDatabase.Contains(requiredObject))
+                {
+                    Debug.LogError($"Object clean-up: could not add {requiredObject.name} to {path}. It's already an asset.");
+                }
+                else
+                {
+                    Debug.Log($"Object clean-up: added {requiredObject.name} to {path}.");
+                    AssetDatabase.AddObjectToAsset(requiredObject, path);
+                    assetDirty = true;
+                }
+            }
+
+            if (assetDirty)
+            {
+                EditorUtility.SetDirty(target);
+                AssetDatabase.SaveAssets();
+            }
         }
     }
 }
