@@ -24,6 +24,7 @@ namespace HiraBots
 
         private void Reset()
         {
+            m_MissingBackends = BackendType.None;
             m_ErrorString.Clear();
             m_Validated = true;
             m_CyclicalHierarchyCheckHelper.Clear();
@@ -36,6 +37,9 @@ namespace HiraBots
 
         // the current status
         private bool m_Validated;
+
+        // the backends missing in the parent
+        private BackendType m_MissingBackends;
 
         // the recursion point
         private BlackboardTemplate m_RecursionPoint;
@@ -72,6 +76,11 @@ namespace HiraBots
 
             m_ErrorString.AppendLine($"Failed to validate blackboard template {target.name}.\n\n");
 
+            if (m_MissingBackends != BackendType.None)
+            {
+                m_ErrorString.AppendLine(FormatErrorStringForUnsupportedBackends(m_MissingBackends));
+            }
+
             if (m_RecursionPoint != null)
             {
                 m_ErrorString.AppendLine(FormatErrorStringForRecursionPoint(m_RecursionPoint));
@@ -94,6 +103,11 @@ namespace HiraBots
 
             errorText = m_ErrorString.ToString();
             return false;
+        }
+
+        internal static string FormatErrorStringForUnsupportedBackends(BackendType missingBackends)
+        {
+            return $"Parent blackboard template does not support the following backends: {missingBackends}.";
         }
 
         /// <summary>
@@ -130,6 +144,12 @@ namespace HiraBots
         }
 
         //================================= validator context interface
+
+        BackendType IBlackboardTemplateValidatorContext.missingBackends
+        {
+            get => m_MissingBackends;
+            set => m_MissingBackends = value;
+        }
 
         HashSet<BlackboardTemplate> IBlackboardTemplateValidatorContext.cyclicalHierarchyCheckHelper => m_CyclicalHierarchyCheckHelper;
 

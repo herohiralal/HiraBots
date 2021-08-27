@@ -21,7 +21,7 @@ namespace HiraBots
         /// <summary>
         /// The effective backend to use.
         /// </summary>
-        internal BackendType effectiveBackends => m_Parent != null ? m_Parent.effectiveBackends : m_Backends;
+        internal BackendType backends => m_Backends;
 
         /// <summary>
         /// Get a set of keys present in the blackboard. Optionally, include/exclude inherited keys.

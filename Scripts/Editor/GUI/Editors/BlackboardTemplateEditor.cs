@@ -121,21 +121,25 @@ namespace HiraBots.Editor
                     }
                 }
 
+                EditorGUILayout.PropertyField(backendsProperty);
+                serializedObject.ApplyModifiedProperties();
+
                 // parent keys list
                 var parent = parentProperty.objectReferenceValue;
 
                 if (parent != null)
                 {
-                    var backends = ((BlackboardTemplate)parent).effectiveBackends + " (inherited)";
-                    EditorGUILayout.LabelField(
-                        GUIHelpers.ToGUIContent("Backends"),
-                        GUIHelpers.ToGUIContent(backends),
-                        EditorStyles.boldLabel);
-                }
-                else
-                {
-                    EditorGUILayout.PropertyField(backendsProperty);
-                    serializedObject.ApplyModifiedProperties();
+                    var selfBackends = backendsProperty.intValue;
+                    var parentSerializedObject = new SerializedObject(parent);
+                    parentSerializedObject.Update();
+                    var parentBackends = parentSerializedObject.FindProperty(k_BackendProperty).intValue;
+                    parentSerializedObject.Dispose();
+
+                    if ((parentBackends & selfBackends) != selfBackends)
+                    {
+                        EditorGUILayout.HelpBox("The parent must contain all the backends" +
+                                                " that this blackboard template requires.", MessageType.Error);
+                    }
                 }
 
                 EditorGUILayout.Space();

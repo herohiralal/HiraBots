@@ -26,7 +26,7 @@ namespace HiraBots.Editor
                 .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<BlackboardTemplate>)
-                .Where(bt => bt.effectiveBackends.HasFlag(BackendType.RuntimeInterpreter))
+                .Where(bt => bt.backends.HasFlag(BackendType.RuntimeInterpreter))
                 .OrderBy(bt => bt.hierarchyIndex)
                 .ToArray();
 
@@ -60,7 +60,7 @@ namespace HiraBots.Editor
                 .FindAssets($"t:{typeof(BlackboardTemplate).FullName}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(path => (System.IO.Path.ChangeExtension(path, "cs"), AssetDatabase.LoadAssetAtPath<BlackboardTemplate>(path)))
-                .Where(tuple => tuple.Item2.effectiveBackends.HasFlag(BackendType.CodeGenerator))
+                .Where(tuple => tuple.Item2.backends.HasFlag(BackendType.CodeGenerator))
                 .ToArray();
 
             var result = true;

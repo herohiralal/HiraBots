@@ -16,6 +16,11 @@ namespace HiraBots
         void MarkUnsuccessful();
 
         /// <summary>
+        /// Whether the backends are unsupported.
+        /// </summary>
+        BackendType missingBackends { get; set; }
+
+        /// <summary>
         /// Get a cached hashset to check for cyclical hierarchy.
         /// </summary>
         HashSet<BlackboardTemplate> cyclicalHierarchyCheckHelper { get; }
@@ -58,10 +63,41 @@ namespace HiraBots
         /// </summary>
         internal void Validate(IBlackboardTemplateValidatorContext context)
         {
+            BackendCheck(context);
             CyclicalHierarchyCheck(context);
             EmptyKeyCheck(context);
             SameNamedOrDuplicateKeyCheck(context);
             IndividualKeyValidationCheck(context);
+        }
+
+        /// <summary>
+        /// Check whether the parent template contains all the backends this template requires.
+        /// </summary>
+        private void BackendCheck(IBlackboardTemplateValidatorContext context)
+        {
+            if (m_Parent != null)
+            {
+                var parentBackends = m_Parent.m_Backends;
+                var selfBackends = m_Backends;
+
+                var missingBackends = 0;
+
+                if (selfBackends.HasFlag(BackendType.RuntimeInterpreter) && !parentBackends.HasFlag(BackendType.RuntimeInterpreter))
+                {
+                    missingBackends |= (int) BackendType.RuntimeInterpreter;
+                }
+
+                if (selfBackends.HasFlag(BackendType.CodeGenerator) && !parentBackends.HasFlag(BackendType.CodeGenerator))
+                {
+                    missingBackends |= (int) BackendType.CodeGenerator;
+                }
+
+                if (missingBackends != 0)
+                {
+                    context.MarkUnsuccessful();
+                    context.missingBackends = (BackendType) missingBackends;
+                }
+            }
         }
 
         /// <summary>
