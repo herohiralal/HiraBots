@@ -5,11 +5,14 @@ using UnityEngine.UIElements;
 
 namespace HiraBots.Editor
 {
+    [CustomPropertyDrawer(typeof(DisallowPlayModeEdit))]
     [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate))]
     internal class ExportedReferenceAPIPropertyDrawer : PropertyDrawer
     {
         private const string k_InternalPropertyName = "m_Value";
         private const string k_MissingInternalPropertyMessage = "Missing m_Value internal property.";
+
+        private bool disallowEdit => attribute is DisallowPlayModeEdit && EditorApplication.isPlayingOrWillChangePlaymode;
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -22,14 +25,14 @@ namespace HiraBots.Editor
             var propertyField = new PropertyField(internalProperty, property.displayName) {tooltip = property.tooltip};
             propertyField.Bind(property.serializedObject);
 
-            propertyField.SetEnabled(!EditorApplication.isPlayingOrWillChangePlaymode);
+            propertyField.SetEnabled(!disallowEdit);
 
             return propertyField;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            using (new GUIEnabledChanger(GUI.enabled && !EditorApplication.isPlayingOrWillChangePlaymode))
+            using (new GUIEnabledChanger(GUI.enabled && !disallowEdit))
             {
                 var internalProperty = property.FindPropertyRelative(k_InternalPropertyName);
                 if (internalProperty == null)
