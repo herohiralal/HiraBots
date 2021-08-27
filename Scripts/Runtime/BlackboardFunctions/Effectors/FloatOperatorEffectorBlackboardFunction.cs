@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Perform a unary operation on a float.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class FloatOperatorEffectorBlackboardFunction : EffectorBlackboardFunction
     {

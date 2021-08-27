@@ -6,6 +6,9 @@ namespace HiraBots
 {
     internal partial class BlackboardTemplate
     {
+        /// <summary>
+        /// Get all generated code for this blackboard template.
+        /// </summary>
         public string allGeneratedCode
         {
             get

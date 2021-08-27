@@ -17,6 +17,9 @@ namespace HiraBots
         [SerializeField] private DynamicEnum m_DefaultValue = default;
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// (EDITOR-ONLY) The type identifier associated with this enum key.
+        /// </summary>
         internal string typeIdentifier => m_DefaultValue.m_TypeIdentifier;
 #endif
     }

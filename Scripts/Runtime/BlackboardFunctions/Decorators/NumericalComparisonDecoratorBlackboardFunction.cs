@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Checks the comparison of two numerical values.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class NumericalComparisonDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {

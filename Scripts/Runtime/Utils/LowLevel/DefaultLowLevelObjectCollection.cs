@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// A low-level representation of a collection of low-level representations.
+    /// </summary>
     internal readonly unsafe struct DefaultLowLevelObjectCollection<TElement, TConverter>
         : ILowLevelObjectCollection<TElement, DefaultLowLevelObjectCollection<TElement, TConverter>.Enumerator>
         where TElement : ILowLevelObject
@@ -123,6 +126,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// This helper object creates a low-level representation of a collection from a collection of providers.
+    /// </summary>
     internal readonly unsafe struct DefaultLowLevelObjectProviderCollection<TProvider> : ILowLevelObjectProvider
         where TProvider : ILowLevelObjectProvider
     {
@@ -162,8 +168,14 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// Helper extension functions to convert an array of providers into a low-level provider collection.
+    /// </summary>
     internal static class DefaultLowLevelObjectProviderCollectionHelpers
     {
+        /// <summary>
+        /// Convert a low-level object provider array into a low-level provider collection.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static DefaultLowLevelObjectProviderCollection<T> GetLowLevelObjectProviderCollection<T>(this T[] providers)
             where T : ILowLevelObjectProvider
@@ -171,6 +183,9 @@ namespace HiraBots
             return new DefaultLowLevelObjectProviderCollection<T>(providers);
         }
 
+        /// <summary>
+        /// Convert a low-level object provider read-only array into a low-level provider collection.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static DefaultLowLevelObjectProviderCollection<T> GetLowLevelObjectProviderCollection<T>(this ReadOnlyArrayAccessor<T> providers)
             where T : ILowLevelObjectProvider

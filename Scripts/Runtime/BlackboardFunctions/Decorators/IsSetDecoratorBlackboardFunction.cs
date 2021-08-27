@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Checks whether a certain boolean, quaternion, or a vector value is set.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class IsSetDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {

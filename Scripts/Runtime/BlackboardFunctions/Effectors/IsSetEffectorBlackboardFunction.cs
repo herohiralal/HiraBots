@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Perform a set/unset operation on a boolean, a quaternion, or a vector.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class IsSetEffectorBlackboardFunction : EffectorBlackboardFunction
     {

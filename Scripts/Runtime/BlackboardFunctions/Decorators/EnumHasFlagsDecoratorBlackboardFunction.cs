@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Checks whether an enum has a certain value, or contains certain bitmasks.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class EnumHasFlagsDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {

@@ -9,6 +9,9 @@ namespace HiraBots.Editor.Tests
     [TestFixture]
     internal class BlackboardFailedValidationTests
     {
+        /// <summary>
+        /// Check for validation failure when the parent is missing a backend.
+        /// </summary>
         [Test]
         public void IncompatibleBackendValidation()
         {

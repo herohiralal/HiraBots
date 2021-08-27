@@ -3,11 +3,17 @@
     internal partial class BlackboardKey
     {
 #if UNITY_EDITOR
+        /// <summary>
+        /// Generate code for all the unmanaged fields.
+        /// </summary>
         internal string unmanagedFieldGeneratedCode =>
             CodeGenHelpers.ReadTemplate("Blackboard/BlackboardKeyField",
                 ("<BLACKBOARD-KEY-TYPE>", GetUnmanagedTypeName(m_KeyType)),
                 ("<BLACKBOARD-KEY-NAME>", name));
 
+        /// <summary>
+        /// Generate code for all the direct accessors.
+        /// </summary>
         internal string accessorGeneratedCode
         {
             get
@@ -31,6 +37,9 @@
             }
         }
 
+        /// <summary>
+        /// Generate code for cleaning up static variables on RuntimeInitializeOnLoad
+        /// </summary>
         internal string staticCleanerGeneratedCode =>
             m_InstanceSynced
                 ? CodeGenHelpers.ReadTemplate("Blackboard/BlackboardStaticCleaner",
@@ -38,10 +47,16 @@
                     ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode))
                 : "";
 
+        /// <summary>
+        /// Generate code for initializers.
+        /// </summary>
         internal string initializerGeneratedCode =>
             CodeGenHelpers.ReadTemplate(m_InstanceSynced ? "Blackboard/BlackboardStaticInitializer" : "Blackboard/BlackboardInitializer",
                 ("<BLACKBOARD-KEY-NAME>", name));
 
+        /// <summary>
+        /// Generate code for default initializers.
+        /// </summary>
         internal string defaultInitializerGeneratedCode =>
             m_InstanceSynced
                 ? ""
@@ -49,6 +64,12 @@
                     ("<BLACKBOARD-KEY-NAME>", name),
                     ("<BLACKBOARD-DEFAULT-VALUE>", defaultValueGeneratedCode));
 
+        /// <summary>
+        /// Generate code for string accessors.
+        /// </summary>
+        /// <param name="type">The key type.</param>
+        /// <param name="isStatic">Whether the accessor is static.</param>
+        /// <param name="accessType">Whether it's a setter or a getter.</param>
         internal string GetStringAccessorGeneratedCode(BlackboardKeyType type, bool isStatic, string accessType)
         {
             string file;
@@ -75,6 +96,9 @@
                 ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode));
         }
 
+        /// <summary>
+        /// Get the unmanaged type name for a blackboard key type..
+        /// </summary>
         internal static string GetUnmanagedTypeName(BlackboardKeyType type)
         {
             switch (type)
@@ -98,8 +122,14 @@
             }
         }
 
+        /// <summary>
+        /// Generate code for setting the default value.
+        /// </summary>
         protected abstract string defaultValueGeneratedCode { get; }
 
+        /// <summary>
+        /// Get the actual type name that the user wants the variable as.
+        /// </summary>
         internal static string GetActualTypeName(BlackboardKeyType type)
         {
             switch (type)
@@ -121,8 +151,14 @@
             }
         }
 
+        /// <summary>
+        /// Accessor to override default function.
+        /// </summary>
         protected virtual string actualTypeNameGeneratedCode => GetActualTypeName(m_KeyType);
 
+        /// <summary>
+        /// Get the converter from unmanaged to the actual type.
+        /// </summary>
         private static string GetUnmanagedToActualGeneratedCode(BlackboardKeyType type)
         {
             switch (type)
@@ -138,8 +174,14 @@
             }
         }
 
+        /// <summary>
+        /// Accessor to override the default function.
+        /// </summary>
         protected virtual string unmanagedToActualGeneratedCode => GetUnmanagedToActualGeneratedCode(m_KeyType);
 
+        /// <summary>
+        /// Get the converter from actual to unmanaged type.
+        /// </summary>
         private static string GetActualToUnmanagedGeneratedCode(BlackboardKeyType type)
         {
             switch (type)
@@ -155,8 +197,14 @@
             }
         }
 
+        /// <summary>
+        /// Accessor to override the default function.
+        /// </summary>
         protected virtual string actualToUnmanagedGeneratedCode => GetActualToUnmanagedGeneratedCode(m_KeyType);
 
+        /// <summary>
+        /// Get the equality comparer.
+        /// </summary>
         private static string GetEqualityComparerGeneratedCode(BlackboardKeyType type)
         {
             switch (type)
@@ -169,6 +217,9 @@
             }
         }
 
+        /// <summary>
+        /// Get the method to clean existing value. Primarily used to dispose an Object value cached in a dictionary.
+        /// </summary>
         private static string GetExistingValueCleaner(BlackboardKeyType type)
         {
             const string s = "GeneratedBlackboardHelpers.DisposeResourcesRelatedToExistingValue";
@@ -182,6 +233,9 @@
             }
         }
 
+        /// <summary>
+        /// Accessor to override the default function.
+        /// </summary>
         protected virtual string existingValueCleanerGeneratedCode => GetExistingValueCleaner(m_KeyType);
 #endif
     }

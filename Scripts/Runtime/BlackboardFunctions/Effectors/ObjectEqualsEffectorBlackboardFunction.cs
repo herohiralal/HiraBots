@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Perform assignment operation on a certain object.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class ObjectEqualsEffectorBlackboardFunction : EffectorBlackboardFunction
     {

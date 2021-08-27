@@ -14,6 +14,9 @@ using LowLevelEffectorCollection =
 
 namespace HiraBots
 {
+    /// <summary>
+    /// A collection of blackboards, arranged in an array.
+    /// </summary>
     internal readonly unsafe struct LowLevelBlackboardCollection
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,6 +59,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// A collection of low level decorators.
+    /// </summary>
     internal readonly unsafe struct LowLevelDecoratorBlackboardFunctionCollection
     {
         private readonly LowLevelDecoratorCollection m_Collection;
@@ -94,6 +100,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// A collection of low level score-calculators.
+    /// </summary>
     internal readonly unsafe struct LowLevelScoreCalculatorBlackboardFunctionCollection
     {
         private readonly LowLevelScoreCalculatorCollection m_Collection;
@@ -129,6 +138,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// A collection of low-level effectors.
+    /// </summary>
     internal readonly unsafe struct LowLevelEffectorBlackboardFunctionCollection
     {
         private readonly LowLevelEffectorCollection m_Collection;

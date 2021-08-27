@@ -34,6 +34,9 @@ using LowLevelLGOAPTargetCollectionActual =
 
 namespace HiraBots
 {
+    /// <summary>
+    /// A collection of low-level LGOAP insistence.
+    /// </summary>
     internal readonly unsafe struct LowLevelLGOAPInsistenceCollection
     {
         private readonly LowLevelScoreCalculator2DCollection m_Collection;
@@ -55,6 +58,10 @@ namespace HiraBots
         {
         }
 
+        /// <summary>
+        /// Get the index of goal which has the highest insistence.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal int GetMaxInsistenceIndex(LowLevelBlackboard blackboard)
         {
             var index = -1;
@@ -73,6 +80,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// Low-level representation of a collection of LGOAP targets.
+    /// </summary>
     internal readonly unsafe struct LowLevelLGOAPTargetCollection
     {
         private readonly LowLevelLGOAPTargetCollectionActual m_Collection;
@@ -94,6 +104,9 @@ namespace HiraBots
         {
         }
 
+        /// <summary>
+        /// Access a specific low-level LGOAP target by index.
+        /// </summary>
         internal LowLevelLGOAPTarget this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,6 +114,9 @@ namespace HiraBots
         }
     }
 
+    /// <summary>
+    /// Low-level representation of a collection of LGOAP actions.
+    /// </summary>
     internal readonly unsafe struct LowLevelLGOAPActionCollection
     {
         private readonly LowLevelLGOAPActionCollectionActual m_Collection;
@@ -122,6 +138,9 @@ namespace HiraBots
         {
         }
 
+        /// <summary>
+        /// Get an enumerator to enumerate over the actions.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelLGOAPActionCollectionActual.Enumerator GetEnumerator()
         {

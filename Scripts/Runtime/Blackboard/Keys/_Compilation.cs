@@ -118,8 +118,6 @@ namespace HiraBots
     {
         protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
-            // write the object value as default value to register it in the object cache
-            // and then pin the object to freeze its count
             BlackboardUnsafeHelpers.WriteObjectValue(context.address, 0, null);
         }
     }

@@ -10,6 +10,11 @@ namespace HiraBots
         {
         }
 
+        /// <summary>
+        /// Callback to allow updating template in key selectors.
+        /// </summary>
+        /// <param name="newTemplate">The new template.</param>
+        /// <param name="keySet">The allowed key-set (including parent keys).</param>
         internal virtual void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
         {
         }

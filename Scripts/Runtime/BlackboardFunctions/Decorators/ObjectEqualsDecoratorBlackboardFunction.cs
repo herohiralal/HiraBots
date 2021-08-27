@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    /// <summary>
+    /// Checks whether an object has a certain value.
+    /// </summary>
     [BurstCompile]
     internal unsafe partial class ObjectEqualsDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {
