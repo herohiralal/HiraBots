@@ -123,7 +123,9 @@ namespace HiraBots.Editor
         /// <param name="o">The value of the object reference.</param>
         /// <param name="getColor">Calculate background color.</param>
         /// <param name="getTypeName">Calculate a formatted type-name.</param>
-        internal static bool DrawInlinedObjectReferenceHeader(Rect position, Object o, Func<Object, Color> getColor, Func<Object, string> getTypeName)
+        internal static bool DrawInlinedObjectReferenceHeader<TObject>(Rect position, TObject o, Func<TObject, Color> getColor,
+            Func<TObject, string> getTypeName)
+            where TObject : Object
         {
             var instanceID = o.GetInstanceID();
             if (!s_ExpansionStatus.TryGetValue(instanceID, out var expanded))
@@ -210,14 +212,9 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="value">The key object.</param>
         /// <returns>Its respective theme color.</returns>
-        internal static Color GetBlackboardKeyColor(Object value)
+        internal static Color GetBlackboardKeyColor(BlackboardKey value)
         {
-            if (!(value is BlackboardKey blackboardKey))
-            {
-                return Color.black;
-            }
-
-            switch (blackboardKey.keyType)
+            switch (value.keyType)
             {
                 case BlackboardKeyType.Boolean:
                     return new Color(144f / 255, 0f / 255, 0f / 255);
@@ -243,7 +240,7 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="value">The key object.</param>
         /// <returns>Its respective faded theme color.</returns>
-        internal static Color GetBlackboardKeyColorFaded(Object value)
+        internal static Color GetBlackboardKeyColorFaded(BlackboardKey value)
         {
             Color.RGBToHSV(GetBlackboardKeyColor(value), out var h, out var s, out var v);
             s *= 0.35f;

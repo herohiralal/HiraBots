@@ -197,7 +197,7 @@ namespace HiraBots.Editor
         {
             if (index >= 0)
             {
-                var value = m_KeysProperty.GetArrayElementAtIndex(index).objectReferenceValue;
+                var value = m_KeysProperty.GetArrayElementAtIndex(index).objectReferenceValue as BlackboardKey;
 
                 rect.y -= 2;
                 rect.height -= 2;

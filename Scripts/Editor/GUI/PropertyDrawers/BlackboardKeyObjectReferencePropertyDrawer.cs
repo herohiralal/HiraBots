@@ -41,7 +41,7 @@ namespace HiraBots.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             // try find object
-            var value = property.objectReferenceValue;
+            var value = property.objectReferenceValue as BlackboardKey;
 
             if (value == null)
             {
