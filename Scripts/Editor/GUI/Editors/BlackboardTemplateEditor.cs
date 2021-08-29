@@ -167,26 +167,12 @@ namespace HiraBots.Editor
                     }
                 }
 
-                EditorGUILayout.Space();
-
                 if (parent != null)
                 {
-                    var inheritedKeysLabel = EditorGUILayout.GetControlRect();
-                    if (Event.current.type == EventType.Repaint)
-                    {
-                        ReorderableList.defaultBehaviours.headerBackground.Draw(inheritedKeysLabel,
-                            false, false, false, false);
-                    }
-
-                    inheritedKeysLabel.x += 25;
-                    inheritedKeysLabel.width -= 25;
-                    EditorGUI.LabelField(inheritedKeysLabel, GUIHelpers.ToGUIContent("Inherited Keys"), EditorStyles.boldLabel);
-
-                    using (new GUIEnabledChanger(false))
-                    {
-                        DrawKeysFor(new SerializedObject(parent));
-                    }
+                    DrawHeaderAndReadOnlyKeysFor("Inherited Keys", parent);
                 }
+
+                EditorGUILayout.Space();
 
                 // self keys list
                 m_ReorderableList.DoLayoutList();
@@ -267,9 +253,36 @@ namespace HiraBots.Editor
             return false;
         }
 
-        // draw keys for a specific object (used to draw all keys for each parent)
-        private static void DrawKeysFor(SerializedObject o)
+        /// <summary>
+        /// Draw header and keys for a specific blackboard.
+        /// </summary>
+        /// <param name="header">The header to use.</param>
+        /// <param name="bt">The target blackboard template.</param>
+        internal static void DrawHeaderAndReadOnlyKeysFor(string header, Object bt)
         {
+            EditorGUILayout.Space();
+
+            var inheritedKeysLabel = EditorGUILayout.GetControlRect();
+            if (Event.current.type == EventType.Repaint)
+            {
+                ReorderableList.defaultBehaviours.headerBackground.Draw(inheritedKeysLabel,
+                    false, false, false, false);
+            }
+
+            inheritedKeysLabel.x += 25;
+            inheritedKeysLabel.width -= 25;
+            EditorGUI.LabelField(inheritedKeysLabel, GUIHelpers.ToGUIContent(header), EditorStyles.boldLabel);
+
+            using (new GUIEnabledChanger(false))
+            {
+                DrawKeysFor(bt);
+            }
+        }
+
+        // draw keys for a specific object (used to draw all keys for each parent)
+        private static void DrawKeysFor(Object bt)
+        {
+            var o = new SerializedObject(bt);
             o.Update();
 
             var parent = o.FindProperty(k_ParentProperty).objectReferenceValue;
@@ -277,8 +290,10 @@ namespace HiraBots.Editor
             {
                 // draw the keys for the parent before drawing them for self
                 // this way, the order is better maintained
-                DrawKeysFor(new SerializedObject(parent));
+                DrawKeysFor(parent);
             }
+
+            EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.ToGUIContent(bt.name), EditorStyles.boldLabel);
 
             var keysProperty = o.FindProperty(k_KeysProperty);
 
