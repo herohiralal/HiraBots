@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal class LGOAPTask : ScriptableObject
+    internal partial class LGOAPTask : ScriptableObject
     {
         [SerializeField, HideInInspector] private LGOAPAction m_Action = LGOAPAction.empty;
         internal ref LGOAPAction action => ref m_Action;
