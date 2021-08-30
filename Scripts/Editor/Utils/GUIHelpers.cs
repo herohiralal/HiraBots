@@ -38,7 +38,7 @@ namespace HiraBots.Editor
             }
 
             s_Instance = helper;
-            s_SerializedObjectsForExpandedInlinedObjects = new Dictionary<Object, SerializedObject>();
+            s_SerializedObjectsForExpandedInlinedObjects = new Dictionary<Object, CustomSerializedObject>();
 
             // cache its serialized object representation
             for (var i = s_Instance.m_ExpandedInlinedObjects.Count - 1; i >= 0; i--)
@@ -51,7 +51,7 @@ namespace HiraBots.Editor
                     continue;
                 }
 
-                s_SerializedObjectsForExpandedInlinedObjects.Add(o, new SerializedObject(o));
+                s_SerializedObjectsForExpandedInlinedObjects.Add(o, GetCustomSerializedObject(o));
             }
         }
 
@@ -59,7 +59,7 @@ namespace HiraBots.Editor
         // of a blackboard template, which means that on a blackboard template with a parent, if you expand
         // a key of index 3, every parent in its chain of hierarchy will get index 3 expanded, which will be
         // reflected in the parent keys section of the blackboard template.
-        private static Dictionary<Object, SerializedObject> s_SerializedObjectsForExpandedInlinedObjects;
+        private static Dictionary<Object, CustomSerializedObject> s_SerializedObjectsForExpandedInlinedObjects;
         private static InlinedObjectReferencesHelper s_Instance;
 
         [SerializeField] private List<Object> m_ExpandedInlinedObjects = new List<Object>(0);
@@ -78,7 +78,7 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="o">The value of the object reference.</param>
         /// <param name="so">The serialized object representation, if it is expanded.</param>
-        internal static bool IsExpanded(Object o, out SerializedObject so)
+        internal static bool IsExpanded(Object o, out CustomSerializedObject so)
         {
             return s_SerializedObjectsForExpandedInlinedObjects.TryGetValue(o, out so);
         }
@@ -91,7 +91,7 @@ namespace HiraBots.Editor
         /// <param name="theme">Background color.</param>
         /// <param name="subtitle">Subtitle to use.</param>
         /// <param name="so">The serialized object for an expanded object.</param>
-        internal static bool DrawHeader<TObject>(Rect position, TObject o, Color theme, string subtitle, out SerializedObject so)
+        internal static bool DrawHeader<TObject>(Rect position, TObject o, Color theme, string subtitle, out CustomSerializedObject so)
             where TObject : Object
         {
             var expanded = IsExpanded(o, out so);
@@ -109,7 +109,7 @@ namespace HiraBots.Editor
                     if (expanded)
                     {
                         s_Instance.m_ExpandedInlinedObjects.Add(o);
-                        so = new SerializedObject(o);
+                        so = GetCustomSerializedObject(o);
                         s_SerializedObjectsForExpandedInlinedObjects.Add(o, so);
                     }
                     else
@@ -136,6 +136,21 @@ namespace HiraBots.Editor
             }
 
             return expanded;
+        }
+
+        private static CustomSerializedObject GetCustomSerializedObject(Object o)
+        {
+            switch (o)
+            {
+                case null:
+                    throw new ArgumentException("Cannot create a CustomSerializedObject from a null object.", nameof(o));
+                case BlackboardTemplate c:
+                    return new BlackboardTemplate.Serialized(c);
+                case BlackboardKey c:
+                    return new BlackboardKey.Serialized(c);
+                default:
+                    return new CustomSerializedObject(new SerializedObject(o));
+            }
         }
     }
 

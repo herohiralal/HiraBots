@@ -11,11 +11,6 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardKey))]
     internal class BlackboardKeyObjectReferencePropertyDrawer : PropertyDrawer
     {
-        // property names
-        private const string k_InstanceSyncedProperty = "m_InstanceSynced";
-        private const string k_EssentialToDecisionMakingProperty = "m_EssentialToDecisionMaking";
-        private const string k_DefaultValueProperty = "m_DefaultValue";
-
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var value = property.objectReferenceValue;
@@ -58,60 +53,44 @@ namespace HiraBots.Editor
             // draw header, and check if it's expanded
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
                 BlackboardGUIHelpers.GetBlackboardKeyColorFaded(value), BlackboardGUIHelpers.GetFormattedName(value),
-                out var so))
+                out var cso) && cso is BlackboardKey.Serialized serializedObject)
             {
+                if (serializedObject.hasError)
+                {
+                    currentRect.y += 22f;
+                    EditorGUI.HelpBox(currentRect, serializedObject.error, MessageType.Error);
+                    return;
+                }
+
+                serializedObject.Update();
+
                 currentRect.y += 1f;
                 currentRect.height = 19f;
 
                 // name field
                 currentRect.y += 21f;
-                var nameProperty = so.FindProperty("m_Name");
-                if (nameProperty == null)
-                {
-                    EditorGUI.HelpBox(currentRect, "Missing name property", MessageType.Error);
-                }
-                else
-                {
-                    EditorGUI.PropertyField(currentRect, nameProperty);
-                }
+                EditorGUI.PropertyField(currentRect, serializedObject.name);
 
                 // instance synced property field
                 currentRect.y += 21f;
-                var instanceSyncedProperty = so.FindProperty(k_InstanceSyncedProperty);
-                if (instanceSyncedProperty == null)
-                {
-                    EditorGUI.HelpBox(currentRect, "Missing instance sync property.", MessageType.Error);
-                }
-                else
-                {
-                    EditorGUI.PropertyField(currentRect, instanceSyncedProperty);
-                }
+                EditorGUI.PropertyField(currentRect, serializedObject.instanceSynced);
 
                 // essential to decision-making property field
                 currentRect.y += 21f;
-                var essentialToDecisionMakingProperty = so.FindProperty(k_EssentialToDecisionMakingProperty);
-                if (essentialToDecisionMakingProperty == null)
-                {
-                    EditorGUI.HelpBox(currentRect, "Missing essential to decision making property.", MessageType.Error);
-                }
-                else
-                {
-                    EditorGUI.PropertyField(currentRect, essentialToDecisionMakingProperty);
-                }
+                EditorGUI.PropertyField(currentRect, serializedObject.essentialToDecisionMaking);
 
                 // default value property field
                 currentRect.y += 21f;
-                var defaultValueProperty = so.FindProperty(k_DefaultValueProperty);
-                if (defaultValueProperty == null)
+                if (serializedObject.defaultValue == null)
                 {
                     EditorGUI.HelpBox(currentRect, "Unsupported default value property.", MessageType.Info);
                 }
                 else
                 {
-                    EditorGUI.PropertyField(currentRect, defaultValueProperty);
+                    EditorGUI.PropertyField(currentRect, serializedObject.defaultValue);
                 }
 
-                so.ApplyModifiedProperties();
+                serializedObject.ApplyModifiedProperties();
             }
         }
     }

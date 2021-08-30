@@ -54,42 +54,25 @@ namespace HiraBots
                     return p;
                 }
 
-                SerializedPropertyType? elementPropTypeIfArray;
-                string elementTypeIfArray;
-                if (!p.isArray)
+                if (!GetElementType(p, out var elementPropTypeIfArray, out var elementTypeIfArray))
                 {
                     elementPropTypeIfArray = null;
                     elementTypeIfArray = null;
                 }
-                else
-                {
-                    var lastIndex = p.arraySize++;
-                    var elementProperty = p.GetArrayElementAtIndex(lastIndex);
-                    elementPropTypeIfArray = elementProperty.propertyType;
-                    elementTypeIfArray = elementProperty.type;
-                    p.arraySize--;
-                }
 
-                SerializedPropertyType? propTypeToCompare;
-                string typeToCompare;
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse - in case more filters are added, might need this
+                var propTypeToCompare = !isCollection.HasValue
+                    ? null
+                    : isCollection.Value
+                        ? elementPropTypeIfArray
+                        : p.propertyType;
 
-                switch (isCollection)
-                {
-                    // ReSharper disable HeuristicUnreachableCode
-                    case null:
-                        propTypeToCompare = null;
-                        typeToCompare = null;
-                        break;
-                    // ReSharper restore HeuristicUnreachableCode
-                    case true:
-                        propTypeToCompare = elementPropTypeIfArray;
-                        typeToCompare = elementTypeIfArray;
-                        break;
-                    case false:
-                        propTypeToCompare = p.propertyType;
-                        typeToCompare = p.type;
-                        break;
-                }
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse - in case more filters are added, might need this
+                var typeToCompare  = !isCollection.HasValue
+                    ? null
+                    : isCollection.Value
+                        ? elementTypeIfArray
+                        : p.type;
 
                 switch (propTypeToCompare)
                 {
@@ -128,20 +111,15 @@ namespace HiraBots
                     return p;
                 }
 
-                SerializedPropertyType? elementTypeIfArray;
-                if (!p.isArray)
+                if (!GetElementType(p, out var elementTypeIfArray, out _))
                 {
                     elementTypeIfArray = null;
                 }
-                else
-                {
-                    var lastIndex = p.arraySize++;
-                    elementTypeIfArray = p.GetArrayElementAtIndex(lastIndex).propertyType;
-                    p.arraySize--;
-                }
 
-                bool collectionValidity;
-                bool typeValidity;
+                // ReSharper disable once RedundantAssignment - Unity won't compile without assignment
+                var collectionValidity = false;
+                // ReSharper disable once RedundantAssignment - Unity won't compile without assignment
+                var typeValidity = false;
 
                 switch (isCollection)
                 {
@@ -194,6 +172,23 @@ namespace HiraBots
             }
 
             return null;
+        }
+
+        // get the type of element
+        private static bool GetElementType(SerializedProperty p, out SerializedPropertyType? propType, out string type)
+        {
+            if (!p.isArray)
+            {
+                (propType, type) = (null, null);
+                return false;
+            }
+
+            var lastIndex = p.arraySize++;
+            var elementProperty = p.GetArrayElementAtIndex(lastIndex);
+            (propType, type) = (elementProperty.propertyType, elementProperty.type);
+            p.arraySize--;
+
+            return true;
         }
 
         /// <summary>
