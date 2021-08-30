@@ -9,14 +9,14 @@ namespace HiraBots
     /// </summary>
     internal partial class BlackboardTemplate : ScriptableObject
     {
+        [Tooltip("The backends to use.")]
+        [SerializeField, HideInInspector] private BackendType m_Backends = BackendType.RuntimeInterpreter;
+
         [Tooltip("The parent template of this one. A blackboard template inherits all of its parents' keys.")]
         [SerializeField, HideInInspector] private BlackboardTemplate m_Parent = null;
 
         [Tooltip("The keys within this blackboard template.")]
         [SerializeField, HideInInspector] private BlackboardKey[] m_Keys = new BlackboardKey[0];
-
-        [Tooltip("The backends to use.")]
-        [SerializeField, HideInInspector] private BackendType m_Backends = BackendType.RuntimeInterpreter;
 
         /// <summary>
         /// The effective backend to use.
