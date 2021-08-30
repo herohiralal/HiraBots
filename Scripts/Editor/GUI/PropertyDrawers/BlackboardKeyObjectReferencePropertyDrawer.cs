@@ -25,7 +25,7 @@ namespace HiraBots.Editor
                 return 21f;
             }
 
-            var expanded = GUIHelpers.GetInlinedObjectReferenceExpansionStatus(value.GetInstanceID());
+            var expanded = InlinedObjectReferencesHelper.IsExpanded(value);
 
             return !expanded
                 ? 21f
@@ -56,10 +56,10 @@ namespace HiraBots.Editor
             currentRect.height = 21f;
 
             // draw header, and check if it's expanded
-            if (GUIHelpers.DrawInlinedObjectReferenceHeader(currentRect, value, BlackboardGUIHelpers.GetBlackboardKeyColorFaded, BlackboardGUIHelpers.GetFormattedName))
+            if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
+                BlackboardGUIHelpers.GetBlackboardKeyColorFaded(value), BlackboardGUIHelpers.GetFormattedName(value),
+                out var so))
             {
-                var so = new SerializedObject(value);
-
                 currentRect.y += 1f;
                 currentRect.height = 19f;
 
@@ -112,7 +112,6 @@ namespace HiraBots.Editor
                 }
 
                 so.ApplyModifiedProperties();
-                so.Dispose();
             }
         }
     }

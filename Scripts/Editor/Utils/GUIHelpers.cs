@@ -9,6 +9,137 @@ using Object = UnityEngine.Object;
 namespace HiraBots.Editor
 {
     /// <summary>
+    /// Helper class to draw inlined Object references.
+    /// </summary>
+    internal class InlinedObjectReferencesHelper : ScriptableObject
+    {
+        [InitializeOnLoadMethod]
+        private static void Initialize()
+        {
+            // get the singleton instance somehow
+            var helpers = Resources.FindObjectsOfTypeAll<InlinedObjectReferencesHelper>();
+            InlinedObjectReferencesHelper helper;
+            switch (helpers.Length)
+            {
+                case 0:
+                    helper = CreateInstance<InlinedObjectReferencesHelper>();
+                    helper.hideFlags = HideFlags.HideAndDontSave & ~HideFlags.DontSaveInEditor;
+                    break;
+                case 1:
+                    helper = helpers[0];
+                    break;
+                default:
+                    helper = helpers[0];
+                    for (var i = 1; i < helpers.Length; i++)
+                    {
+                        DestroyImmediate(helper);
+                    }
+                    break;
+            }
+
+            s_Instance = helper;
+            s_SerializedObjectsForExpandedInlinedObjects = new Dictionary<Object, SerializedObject>();
+
+            // cache its serialized object representation
+            for (var i = s_Instance.m_ExpandedInlinedObjects.Count - 1; i >= 0; i--)
+            {
+                var o = s_Instance.m_ExpandedInlinedObjects[i];
+
+                if (o == null)
+                {
+                    s_Instance.m_ExpandedInlinedObjects.RemoveAt(i);
+                    continue;
+                }
+
+                s_SerializedObjectsForExpandedInlinedObjects.Add(o, new SerializedObject(o));
+            }
+        }
+
+        // using SerializedProperty.isExpanded has its pitfalls, such as being shared between all instances
+        // of a blackboard template, which means that on a blackboard template with a parent, if you expand
+        // a key of index 3, every parent in its chain of hierarchy will get index 3 expanded, which will be
+        // reflected in the parent keys section of the blackboard template.
+        private static Dictionary<Object, SerializedObject> s_SerializedObjectsForExpandedInlinedObjects;
+        private static InlinedObjectReferencesHelper s_Instance;
+
+        [SerializeField] private List<Object> m_ExpandedInlinedObjects = new List<Object>(0);
+
+        /// <summary>
+        /// Check whether an inlined object reference is expanded.
+        /// </summary>
+        /// <param name="o">The value of the object reference.</param>
+        internal static bool IsExpanded(Object o)
+        {
+            return s_SerializedObjectsForExpandedInlinedObjects.ContainsKey(o);
+        }
+
+        /// <summary>
+        /// Check whether an inlined object reference is expanded.
+        /// </summary>
+        /// <param name="o">The value of the object reference.</param>
+        /// <param name="so">The serialized object representation, if it is expanded.</param>
+        internal static bool IsExpanded(Object o, out SerializedObject so)
+        {
+            return s_SerializedObjectsForExpandedInlinedObjects.TryGetValue(o, out so);
+        }
+
+        /// <summary>
+        /// Draw a header for inlined object references.
+        /// </summary>
+        /// <param name="position">The position and size of the property.</param>
+        /// <param name="o">The value of the object reference.</param>
+        /// <param name="theme">Background color.</param>
+        /// <param name="subtitle">Subtitle to use.</param>
+        /// <param name="so">The serialized object for an expanded object.</param>
+        internal static bool DrawHeader<TObject>(Rect position, TObject o, Color theme, string subtitle, out SerializedObject so)
+            where TObject : Object
+        {
+            var expanded = IsExpanded(o, out so);
+
+            var totalPos = position;
+            totalPos.x -= 15f;
+            totalPos.width += 15f;
+
+            using (new GUIEnabledChanger(true))
+            {
+                if (EditorGUI.BeginFoldoutHeaderGroup(position, expanded, GUIContent.none) != expanded)
+                {
+                    expanded = !expanded;
+
+                    if (expanded)
+                    {
+                        s_Instance.m_ExpandedInlinedObjects.Add(o);
+                        so = new SerializedObject(o);
+                        s_SerializedObjectsForExpandedInlinedObjects.Add(o, so);
+                    }
+                    else
+                    {
+                        s_SerializedObjectsForExpandedInlinedObjects[o].Dispose();
+                        s_SerializedObjectsForExpandedInlinedObjects.Remove(o);
+                        s_Instance.m_ExpandedInlinedObjects.Remove(o);
+                    }
+                }
+
+                // background
+                position.height -= 2f;
+                EditorGUI.DrawRect(position, theme);
+                position.height += 2f;
+                    
+                // name
+                position.x += 10f;
+                position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(o.name), EditorStyles.boldLabel);
+                    
+                // type
+                EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(subtitle), EditorStyles.miniLabel);
+
+                EditorGUI.EndFoldoutHeaderGroup();
+            }
+
+            return expanded;
+        }
+    }
+
+    /// <summary>
     /// Helper functionality for IMGUI.
     /// </summary>
     [InitializeOnLoad]
@@ -35,13 +166,6 @@ namespace HiraBots.Editor
 
         // cache the DynamicPopup MethodInfo to not repeatedly search for it for every call
         private static readonly MethodInfo s_DynamicPopupMethodInfo;
-
-        // get instance id's of all expanded elements
-        // using SerializedProperty.isExpanded has its pitfalls, such as being shared between all instances
-        // of a blackboard template, which means that on a blackboard template with a parent, if you expand
-        // a key of index 3, every parent in its chain of hierarchy will get index 3 expanded, which will be
-        // reflected in the parent keys section of the blackboard template.
-        private static readonly Dictionary<int, bool> s_ExpansionStatus = new Dictionary<int, bool>(40);
 
         /// <summary>
         /// Get cached GUIContent for a label string.
@@ -108,83 +232,6 @@ namespace HiraBots.Editor
 
             // store the value back
             *(T*) value = enumOutput;
-        }
-
-        internal static bool GetInlinedObjectReferenceExpansionStatus(int instanceID)
-        {
-            s_ExpansionStatus.TryGetValue(instanceID, out var value);
-            return value;
-        }
-
-        /// <summary>
-        /// Draw a header for inlined object references.
-        /// </summary>
-        /// <param name="position">The position and size of the property.</param>
-        /// <param name="o">The value of the object reference.</param>
-        /// <param name="getColor">Calculate background color.</param>
-        /// <param name="getTypeName">Calculate a formatted type-name.</param>
-        internal static bool DrawInlinedObjectReferenceHeader<TObject>(Rect position, TObject o, Func<TObject, Color> getColor,
-            Func<TObject, string> getTypeName)
-            where TObject : Object
-        {
-            var instanceID = o.GetInstanceID();
-            if (!s_ExpansionStatus.TryGetValue(instanceID, out var expanded))
-            {
-                s_ExpansionStatus.Add(instanceID, false);
-                expanded = false;
-            }
-
-            var totalPos = position;
-            totalPos.x -= 15f;
-            totalPos.width += 15f;
-
-            using (new GUIEnabledChanger(true)) // user expanding the header won't cause any problems
-            {
-                var e = Event.current;
-                if (e.type == EventType.Repaint)
-                {
-                    EditorGUI.BeginFoldoutHeaderGroup(position, expanded, GUIContent.none);
-                    EditorGUI.EndFoldoutHeaderGroup();
-
-                    // background
-                    position.height -= 2f;
-                    EditorGUI.DrawRect(position, getColor(o));
-                    position.height += 2f;
-
-                    // name
-                    position.x += 10f;
-                    position = EditorGUI.PrefixLabel(position, ToGUIContent(o.name), EditorStyles.boldLabel);
-
-                    // type
-                    EditorGUI.LabelField(position, ToGUIContent(getTypeName(o)), EditorStyles.miniLabel);
-                }
-                else if (e.type == EventType.MouseDown && totalPos.Contains(e.mousePosition) && e.button == 0)
-                {
-                    expanded = !expanded;
-                    GUI.changed = true;
-                    e.Use();
-                    // do not disable this, otherwise the moment a foldout opens, it'll be longer
-                    // than the next element in a reorderable list
-                }
-                else if (e.type == EventType.KeyDown)
-                {
-                    var controlID = GUIUtility.GetControlID("FoldoutHeader".GetHashCode(), FocusType.Keyboard, totalPos);
-                    if (GUIUtility.keyboardControl == controlID)
-                    {
-                        var keyCode = e.keyCode;
-                        if ((keyCode == KeyCode.LeftArrow && expanded) || (keyCode == KeyCode.RightArrow && !expanded))
-                        {
-                            expanded = !expanded;
-                            GUI.changed = true;
-                            e.Use();
-                        }
-                    }
-                }
-            }
-
-            // expansion
-            s_ExpansionStatus[instanceID] = expanded;
-            return expanded;
         }
     }
 
