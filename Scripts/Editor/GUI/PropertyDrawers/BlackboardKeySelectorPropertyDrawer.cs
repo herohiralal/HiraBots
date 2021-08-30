@@ -71,12 +71,12 @@ namespace HiraBots.Editor
                 // actual dropdown
                 if (EditorGUI.DropdownButton(position, GUIContent.none, FocusType.Passive, GUIStyle.none))
                 {
-                    property.serializedObject.Update();
                     GenerateMenu(
                             keyProperty,
                             templateProperty,
                             keyTypesProperty,
-                            isValidProperty)
+                            isValidProperty,
+                            property.serializedObject.targetObjects)
                         .DropDown(position);
                 }
             }
@@ -86,8 +86,12 @@ namespace HiraBots.Editor
             SerializedProperty keyProperty,
             SerializedProperty templateProperty,
             SerializedProperty keyTypesProperty,
-            SerializedProperty isValidProperty)
+            SerializedProperty isValidProperty,
+            Object[] targetObjects)
         {
+            var keyPropertyPath = keyProperty.propertyPath;
+            var isValidPropertyPath = isValidProperty.propertyPath;
+
             var menu = new GenericMenu();
 
             var currentKey = (BlackboardKey) keyProperty.objectReferenceValue;
@@ -98,9 +102,12 @@ namespace HiraBots.Editor
                 currentKey == null,
                 () =>
                 {
-                    keyProperty.objectReferenceValue = null;
-                    isValidProperty.boolValue = false;
-                    keyProperty.serializedObject.ApplyModifiedProperties();
+                    var so = new SerializedObject(targetObjects);
+                    so.Update();
+                    so.FindProperty(keyPropertyPath).objectReferenceValue = null;
+                    so.FindProperty(isValidPropertyPath).boolValue = false;
+                    so.ApplyModifiedProperties();
+                    so.Dispose();
                 });
 
             menu.AddSeparator("");
@@ -143,9 +150,12 @@ namespace HiraBots.Editor
                         false,
                         () =>
                         {
-                            keyProperty.objectReferenceValue = key;
-                            isValidProperty.boolValue = true;
-                            keyProperty.serializedObject.ApplyModifiedProperties();
+                            var so = new SerializedObject(targetObjects);
+                            so.Update();
+                            so.FindProperty(keyPropertyPath).objectReferenceValue = key;
+                            so.FindProperty(isValidPropertyPath).boolValue = true;
+                            so.ApplyModifiedProperties();
+                            so.Dispose();
                         });
                 }
             }

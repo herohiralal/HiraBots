@@ -112,6 +112,7 @@ namespace HiraBots.Editor
                 }
 
                 so.ApplyModifiedProperties();
+                so.Dispose();
             }
         }
     }

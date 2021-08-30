@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
@@ -150,7 +151,7 @@ namespace HiraBots.Editor
                     // type selection dropdown
                     if (EditorGUI.DropdownButton(buttonPosition, GUIContent.none, FocusType.Passive))
                     {
-                        GenerateMenu(typeIdentifierProperty).DropDown(buttonPosition);
+                        GenerateMenu(typeIdentifierProperty, property.serializedObject.targetObjects).DropDown(buttonPosition);
                     }
                 }
 
@@ -177,8 +178,11 @@ namespace HiraBots.Editor
         /// Generate a dropdown menu for when the user presses the button to set enum type.
         /// </summary>
         /// <param name="property">The property to modify.</param>
-        private static GenericMenu GenerateMenu(SerializedProperty property)
+        /// <param name="targetObjects">The target objects to update the values on.</param>
+        private static GenericMenu GenerateMenu(SerializedProperty property, Object[] targetObjects)
         {
+            var path = property.propertyPath;
+
             var currentValue = property.stringValue;
             var menu = new GenericMenu();
 
@@ -187,8 +191,11 @@ namespace HiraBots.Editor
                 currentValue == "",
                 () =>
                 {
-                    property.stringValue = "";
-                    property.serializedObject.ApplyModifiedProperties();
+                    var so = new SerializedObject(targetObjects);
+                    so.Update();
+                    so.FindProperty(path).stringValue = "";
+                    so.ApplyModifiedProperties();
+                    so.Dispose();
                 });
 
             // display current value as unknown if it cannot be discerned
@@ -209,8 +216,11 @@ namespace HiraBots.Editor
                     currentValue == identifier,
                     () =>
                     {
-                        property.stringValue = identifier;
-                        property.serializedObject.ApplyModifiedProperties();
+                        var so = new SerializedObject(targetObjects);
+                        so.Update();
+                        so.FindProperty(path).stringValue = identifier;
+                        so.ApplyModifiedProperties();
+                        so.Dispose();
                     });
             }
 
