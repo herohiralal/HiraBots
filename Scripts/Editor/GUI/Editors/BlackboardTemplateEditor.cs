@@ -121,6 +121,11 @@ namespace HiraBots.Editor
             // parent property field
             using (new GUIEnabledChanger(!editingDisabled))
             {
+
+                serializedObject.Update();
+                EditorGUILayout.PropertyField(m_BackendsProperty);
+                serializedObject.ApplyModifiedProperties();
+
                 serializedObject.Update();
 
                 EditorGUI.BeginChangeCheck();
@@ -145,9 +150,6 @@ namespace HiraBots.Editor
                         serializedObject.ApplyModifiedProperties();
                     }
                 }
-
-                EditorGUILayout.PropertyField(m_BackendsProperty);
-                serializedObject.ApplyModifiedProperties();
 
                 // parent keys list
                 var parent = m_ParentProperty.objectReferenceValue;
@@ -265,7 +267,7 @@ namespace HiraBots.Editor
             var inheritedKeysLabel = EditorGUILayout.GetControlRect();
             if (Event.current.type == EventType.Repaint)
             {
-                ReorderableList.defaultBehaviours.headerBackground.Draw(inheritedKeysLabel,
+                ((GUIStyle) "RL Header").Draw(inheritedKeysLabel,
                     false, false, false, false);
             }
 
