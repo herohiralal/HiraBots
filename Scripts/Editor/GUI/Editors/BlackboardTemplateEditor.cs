@@ -23,47 +23,18 @@ namespace HiraBots.Editor
         [MenuItem("Assets/Create/HiraBots/Blackboard", true)]
         private static bool CanCreateBlackboard()
         {
+            // only allow blackboard creation in edit mode
             return !EditorApplication.isPlayingOrWillChangePlaymode;
         }
 
-        // property names
-        private const string k_ParentProperty = "m_Parent";
-        private const string k_KeysProperty = "m_Keys";
-        private const string k_BackendsProperty = "m_Backends";
-
         // undo helper
         [SerializeField] private bool m_Dirty = false;
+        private BlackboardTemplate.Serialized m_SerializedObject = null;
         private ReorderableList m_ReorderableList = null;
-
-        private SerializedProperty m_ParentProperty;
-        private SerializedProperty m_KeysProperty;
-        private SerializedProperty m_BackendsProperty;
-        private string m_Errors = "";
 
         private void OnEnable()
         {
-            // try find parent property
-            m_ParentProperty = serializedObject.FindProperty(k_ParentProperty);
-            if (m_ParentProperty == null || m_ParentProperty.propertyType != SerializedPropertyType.ObjectReference)
-            {
-                m_Errors += "\nCould not find parent property.";
-            }
-
-            // try find keys property
-            m_KeysProperty = serializedObject.FindProperty(k_KeysProperty);
-            if (m_KeysProperty == null || !m_KeysProperty.isArray)
-            {
-                m_Errors += "\nCould not find keys property.";
-            }
-
-            // try to find backends property
-            m_BackendsProperty = serializedObject.FindProperty(k_BackendsProperty);
-            if (m_BackendsProperty == null || m_BackendsProperty.propertyType != SerializedPropertyType.Enum)
-            {
-                m_Errors += "\nCould not find backends property.";
-            }
-
-            m_ReorderableList = new ReorderableList(serializedObject, m_KeysProperty,
+            m_ReorderableList = new ReorderableList(serializedObject, null,
                 true, true, true, true)
             {
                 drawHeaderCallback = DrawKeyListHeader,
@@ -81,8 +52,9 @@ namespace HiraBots.Editor
         {
             Undo.undoRedoPerformed -= OnUndoPerformed;
             m_ReorderableList = null;
-            m_Errors = "";
+            m_SerializedObject = null;
             m_Dirty = false;
+            InlinedObjectReferencesHelper.Collapse(target);
         }
 
         private void OnUndoPerformed()
@@ -92,92 +64,144 @@ namespace HiraBots.Editor
 
         public override void OnInspectorGUI()
         {
-            if (m_Errors != "")
+            InlinedObjectReferencesHelper.Expand((BlackboardTemplate) target, out var cso);
+
+            if (cso is BlackboardTemplate.Serialized sbt)
             {
-                EditorGUILayout.HelpBox(m_Errors, MessageType.Error);
-                return;
-            }
+                m_SerializedObject = sbt;
 
-            var editingDisabled = EditorApplication.isPlayingOrWillChangePlaymode;
-
-            if (editingDisabled)
-            {
-                EditorGUILayout.HelpBox("Blackboard Templates are read-only while in play mode.", MessageType.Warning);
-            }
-
-            if (m_Dirty)
-            {
-                serializedObject.Update();
-                var hs = new HashSet<Object>(
-                    m_KeysProperty
-                        .ToSerializedArrayProperty()
-                        .Select(p => p.objectReferenceValue));
-
-                AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, hs);
-                m_Dirty = false;
-                serializedObject.ApplyModifiedProperties();
-            }
-
-            // parent property field
-            using (new GUIEnabledChanger(!editingDisabled))
-            {
-
-                serializedObject.Update();
-                EditorGUILayout.PropertyField(m_BackendsProperty);
-                serializedObject.ApplyModifiedProperties();
-
-                serializedObject.Update();
-
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(m_ParentProperty);
-                if (EditorGUI.EndChangeCheck())
+                if (m_SerializedObject.hasError)
                 {
-                    using (new UndoMerger("Changed Blackboard Parent"))
+                    EditorGUILayout.HelpBox(m_SerializedObject.error, MessageType.Error);
+                    return;
+                }
+
+                m_ReorderableList.serializedProperty = m_SerializedObject.keys;
+
+                var editingAllowed = !EditorApplication.isPlayingOrWillChangePlaymode;
+
+                if (!editingAllowed)
+                {
+                    EditorGUILayout.HelpBox("Blackboard Templates are read-only while in play mode.", MessageType.Warning);
+                }
+
+                if (m_Dirty)
+                {
+                    m_SerializedObject.Update();
+                    var hs = new HashSet<Object>(
+                        m_SerializedObject.keys
+                            .ToSerializedArrayProperty()
+                            .Select(p => p.objectReferenceValue));
+
+                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, hs);
+                    m_Dirty = false;
+                    m_SerializedObject.ApplyModifiedProperties();
+                }
+
+                using (new GUIEnabledChanger(editingAllowed))
+                {
+                    // backends property field
+                    m_SerializedObject.Update();
+                    EditorGUILayout.PropertyField(m_SerializedObject.backends);
+                    m_SerializedObject.ApplyModifiedProperties();
+
+                    // parent property field
+                    m_SerializedObject.Update();
+                    var newParent = EditorGUILayout.ObjectField(
+                        GUIHelpers.TempContent(m_SerializedObject.parent.displayName,
+                            m_SerializedObject.parent.tooltip),
+                        m_SerializedObject.parent.objectReferenceValue,
+                        typeof(BlackboardTemplate),
+                        false);
+                    if (!ReferenceEquals(newParent, m_SerializedObject.parent.objectReferenceValue))
                     {
-                        serializedObject.ApplyModifiedProperties();
-                        var newParent = m_ParentProperty.objectReferenceValue;
-                        if (CheckForCyclicalDependency(target))
+                        if (m_SerializedObject.CanBeAssignedParent((BlackboardTemplate) newParent))
                         {
-                            m_ParentProperty.objectReferenceValue = null;
+                            m_SerializedObject.parent.objectReferenceValue = newParent;
+                        }
+                        else
+                        {
                             Debug.LogError($"Cyclical dependency created in blackboard {target.name}. Removing parent.");
                         }
-                        else if (newParent != null && CheckForCyclicalDependency(target))
+
+                        m_SerializedObject.ApplyModifiedProperties();
+                        m_SerializedObject.UpdateParentSerializedObjects();
+                    }
+
+                    var hasParent = m_SerializedObject.parent.objectReferenceValue != null;
+
+                    // backends check
+                    if (hasParent)
+                    {
+                        var selfBackends = (int) m_SerializedObject.target.backends;
+                        var parentBackends = (int) m_SerializedObject.hierarchy[0].backends;
+
+                        if ((parentBackends & selfBackends) != selfBackends)
                         {
-                            m_ParentProperty.objectReferenceValue = null;
-                            Debug.LogError($"Cyclical dependency created in blackboard {newParent.name}. Removing parent.");
+                            EditorGUILayout.HelpBox("The parent must contain all the backends" +
+                                                    " that this blackboard template requires.", MessageType.Error);
+                        }
+                    }
+
+                    // parent keys list
+                    if (hasParent)
+                    {
+                        EditorGUILayout.Space();
+
+                        var inheritedKeysLabel = EditorGUILayout.GetControlRect();
+                        if (Event.current.type == EventType.Repaint)
+                        {
+                            ReorderableList.defaultBehaviours.headerBackground.Draw(inheritedKeysLabel,
+                                false, false, false, false);
                         }
 
-                        serializedObject.ApplyModifiedProperties();
+                        inheritedKeysLabel.x += 25;
+                        inheritedKeysLabel.width -= 25;
+                        EditorGUI.LabelField(inheritedKeysLabel, GUIHelpers.TempContent("Inherited Keys"), EditorStyles.boldLabel);
+
+                        using (new IndentNullifier(EditorGUI.indentLevel + 1))
+                        {
+                            DrawReadOnlyHierarchyFor(m_SerializedObject, false);
+                        }
                     }
+
+                    // self keys list
+                    EditorGUILayout.Space();
+                    m_ReorderableList.DoLayoutList();
                 }
+            }
+        }
 
-                // parent keys list
-                var parent = m_ParentProperty.objectReferenceValue;
+        internal static void DrawReadOnlyHierarchyFor(BlackboardTemplate.Serialized sbt, bool includeSelf)
+        {
+            var hierarchy = sbt.hierarchy;
+            for (var i = hierarchy.count - 1; i >= 0; i--)
+            {
+                DrawHeaderAndReadOnlyKeysFor(hierarchy.count - i - 1, hierarchy[i]);
+            }
 
-                if (parent != null)
+            if (includeSelf)
+            {
+                DrawHeaderAndReadOnlyKeysFor(hierarchy.count, sbt.target);
+            }
+        }
+
+        private static void DrawHeaderAndReadOnlyKeysFor(int index, BlackboardTemplate bt)
+        {
+            if (InlinedObjectReferencesHelper
+                .DrawHeader(EditorGUI.IndentedRect(EditorGUILayout.GetControlRect()),
+                    bt,
+                    BlackboardGUIHelpers.blackboardHeaderColor,
+                    index.ToString(),
+                    out var cso) && cso is BlackboardTemplate.Serialized sbt)
+            {
+                using (new GUIEnabledChanger(false))
                 {
-                    var selfBackends = m_BackendsProperty.intValue;
-                    var parentSerializedObject = new SerializedObject(parent);
-                    parentSerializedObject.Update();
-                    var parentBackends = parentSerializedObject.FindProperty(k_BackendsProperty).intValue;
-                    parentSerializedObject.Dispose();
-
-                    if ((parentBackends & selfBackends) != selfBackends)
+                    foreach (var key in sbt.keys.ToSerializedArrayProperty())
                     {
-                        EditorGUILayout.HelpBox("The parent must contain all the backends" +
-                                                " that this blackboard template requires.", MessageType.Error);
+                        EditorGUILayout.PropertyField(key);
                     }
                 }
-
-                if (parent != null)
-                {
-                    DrawHeaderAndReadOnlyKeysFor("Inherited Keys", parent);
-                }
-
-                EditorGUILayout.Space();
-
-                // self keys list
-                m_ReorderableList.DoLayoutList();
             }
         }
 
@@ -185,7 +209,7 @@ namespace HiraBots.Editor
         {
             if (index >= 0)
             {
-                var value = m_KeysProperty.GetArrayElementAtIndex(index).objectReferenceValue as BlackboardKey;
+                var value = m_SerializedObject.keys.GetArrayElementAtIndex(index).objectReferenceValue as BlackboardKey;
 
                 rect.y -= 2;
                 rect.height -= 2;
@@ -204,12 +228,12 @@ namespace HiraBots.Editor
 
         private float GetKeyHeight(int index)
         {
-            return EditorGUI.GetPropertyHeight(m_KeysProperty.GetArrayElementAtIndex(index)) + 4;
+            return EditorGUI.GetPropertyHeight(m_SerializedObject.keys.GetArrayElementAtIndex(index)) + 4;
         }
 
         private void DrawSelfKey(Rect rect, int index, bool isActive, bool isFocused)
         {
-            EditorGUI.PropertyField(rect, m_KeysProperty.GetArrayElementAtIndex(index), GUIContent.none, true);
+            EditorGUI.PropertyField(rect, m_SerializedObject.keys.GetArrayElementAtIndex(index), GUIContent.none, true);
         }
 
         private static void DrawKeyListHeader(Rect rect)
@@ -225,7 +249,11 @@ namespace HiraBots.Editor
             foreach (var type in TypeCache.GetTypesDerivedFrom<BlackboardKey>().Where(t => !t.IsAbstract && !t.IsInterface))
             {
                 menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[type]), false,
-                    () => AssetDatabaseUtility.AddInlinedObject(target, serializedObject, m_KeysProperty, type));
+                    () => AssetDatabaseUtility
+                        .AddInlinedObject(m_SerializedObject.target,
+                            (SerializedObject) m_SerializedObject,
+                            m_SerializedObject.keys,
+                            type));
             }
 
             menu.ShowAsContext();
@@ -233,78 +261,11 @@ namespace HiraBots.Editor
 
         private void OnRemove(ReorderableList list)
         {
-            AssetDatabaseUtility.RemoveInlinedObject(target, serializedObject, m_KeysProperty, list.index);
-        }
-
-        // check for cyclical dependency created within the template
-        private static bool CheckForCyclicalDependency(Object a)
-        {
-            var processedObjects = new List<Object>();
-
-            do
-            {
-                if (processedObjects.Any(o => o == a))
-                {
-                    return true;
-                }
-
-                processedObjects.Add(a);
-                a = new SerializedObject(a).FindProperty(k_ParentProperty).objectReferenceValue;
-            } while (a != null);
-
-            return false;
-        }
-
-        /// <summary>
-        /// Draw header and keys for a specific blackboard.
-        /// </summary>
-        /// <param name="header">The header to use.</param>
-        /// <param name="bt">The target blackboard template.</param>
-        internal static void DrawHeaderAndReadOnlyKeysFor(string header, Object bt)
-        {
-            EditorGUILayout.Space();
-
-            var inheritedKeysLabel = EditorGUILayout.GetControlRect();
-            if (Event.current.type == EventType.Repaint)
-            {
-                ((GUIStyle) "RL Header").Draw(inheritedKeysLabel,
-                    false, false, false, false);
-            }
-
-            inheritedKeysLabel.x += 25;
-            inheritedKeysLabel.width -= 25;
-            EditorGUI.LabelField(inheritedKeysLabel, GUIHelpers.ToGUIContent(header), EditorStyles.boldLabel);
-
-            using (new GUIEnabledChanger(false))
-            {
-                DrawKeysFor(bt);
-            }
-        }
-
-        // draw keys for a specific object (used to draw all keys for each parent)
-        private static void DrawKeysFor(Object bt)
-        {
-            var o = new SerializedObject(bt);
-            o.Update();
-
-            var parent = o.FindProperty(k_ParentProperty).objectReferenceValue;
-            if (parent != null)
-            {
-                // draw the keys for the parent before drawing them for self
-                // this way, the order is better maintained
-                DrawKeysFor(parent);
-            }
-
-            EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.ToGUIContent(bt.name), EditorStyles.boldLabel);
-
-            var keysProperty = o.FindProperty(k_KeysProperty);
-
-            var size = keysProperty.arraySize;
-
-            for (var i = 0; i < size; i++)
-            {
-                EditorGUILayout.PropertyField(keysProperty.GetArrayElementAtIndex(i));
-            }
+            AssetDatabaseUtility
+                .RemoveInlinedObject(m_SerializedObject.target,
+                    (SerializedObject) m_SerializedObject,
+                    m_SerializedObject.keys,
+                    list.index);
         }
     }
 }

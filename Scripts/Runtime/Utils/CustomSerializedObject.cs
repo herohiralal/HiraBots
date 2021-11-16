@@ -68,7 +68,7 @@ namespace HiraBots
                         : p.propertyType;
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse - in case more filters are added, might need this
-                var typeToCompare  = !isCollection.HasValue
+                var typeToCompare = !isCollection.HasValue
                     ? null
                     : isCollection.Value
                         ? elementTypeIfArray
@@ -77,15 +77,29 @@ namespace HiraBots
                 switch (propTypeToCompare)
                 {
                     case null:
-                    case SerializedPropertyType.Generic when typeToCompare == nameof(T):
-                    case SerializedPropertyType.ObjectReference when typeToCompare == $"PPtr<${nameof(T)}>":
                         return p;
+
+                    case SerializedPropertyType.Generic:
+                        if (typeToCompare == typeof(T).Name)
+                        {
+                            return p;
+                        }
+
+                        break;
+
+                    case SerializedPropertyType.ObjectReference:
+                        if (typeToCompare == $"PPtr<${typeof(T).Name}>")
+                        {
+                            return p;
+                        }
+
+                        break;
                 }
             }
 
             if (essential)
             {
-                m_Error += $"Could not find property: {propertyPath}";
+                m_Error += $"[Could not find property: {propertyPath}] ";
             }
 
             return null;
@@ -168,7 +182,7 @@ namespace HiraBots
 
             if (essential)
             {
-                m_Error += $"Could not find property: {propertyPath}";
+                m_Error += $"[Could not find property: {propertyPath}] ";
             }
 
             return null;
@@ -213,6 +227,11 @@ namespace HiraBots
         internal bool ApplyModifiedPropertiesWithoutUndo()
         {
             return m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        public static explicit operator SerializedObject(CustomSerializedObject cso)
+        {
+            return cso.m_SerializedObject;
         }
     }
 

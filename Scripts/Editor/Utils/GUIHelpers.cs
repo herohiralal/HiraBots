@@ -84,6 +84,40 @@ namespace HiraBots.Editor
         }
 
         /// <summary>
+        /// Expand an inlined object reference without drawing its header.
+        /// </summary>
+        /// <param name="o">The value of the object reference.</param>
+        /// <param name="so">The serialized object for an expanded object.</param>
+        internal static void Expand<TObject>(TObject o, out CustomSerializedObject so)
+            where TObject : Object
+        {
+            if (IsExpanded(o, out so))
+            {
+                return;
+            }
+
+            s_Instance.m_ExpandedInlinedObjects.Add(o);
+            so = GetCustomSerializedObject(o);
+            s_SerializedObjectsForExpandedInlinedObjects.Add(o, so);
+        }
+
+        /// <summary>
+        /// Collapse an inlined object reference without drawing its header.
+        /// </summary>
+        /// <param name="o">The value of the object reference.</param>
+        internal static void Collapse(Object o)
+        {
+            if (!IsExpanded(o, out _))
+            {
+                return;
+            }
+
+            s_SerializedObjectsForExpandedInlinedObjects[o].Dispose();
+            s_SerializedObjectsForExpandedInlinedObjects.Remove(o);
+            s_Instance.m_ExpandedInlinedObjects.Remove(o);
+        }
+
+        /// <summary>
         /// Draw a header for inlined object references.
         /// </summary>
         /// <param name="position">The position and size of the property.</param>
@@ -91,7 +125,7 @@ namespace HiraBots.Editor
         /// <param name="theme">Background color.</param>
         /// <param name="subtitle">Subtitle to use.</param>
         /// <param name="so">The serialized object for an expanded object.</param>
-        internal static bool DrawHeader<TObject>(Rect position, TObject o, Color theme, string subtitle, out CustomSerializedObject so)
+        internal static bool DrawHeader<TObject>(Rect position, TObject o, Color? theme, string subtitle, out CustomSerializedObject so)
             where TObject : Object
         {
             var expanded = IsExpanded(o, out so);
@@ -108,29 +142,31 @@ namespace HiraBots.Editor
 
                     if (expanded)
                     {
-                        s_Instance.m_ExpandedInlinedObjects.Add(o);
-                        so = GetCustomSerializedObject(o);
-                        s_SerializedObjectsForExpandedInlinedObjects.Add(o, so);
+                        Expand(o, out so);
                     }
                     else
                     {
-                        s_SerializedObjectsForExpandedInlinedObjects[o].Dispose();
-                        s_SerializedObjectsForExpandedInlinedObjects.Remove(o);
-                        s_Instance.m_ExpandedInlinedObjects.Remove(o);
+                        Collapse(o);
                     }
                 }
 
                 // background
-                position.height -= 2f;
-                EditorGUI.DrawRect(position, theme);
-                position.height += 2f;
-                    
+                if (theme.HasValue)
+                {
+                    position.height -= 2f;
+                    EditorGUI.DrawRect(position, theme.Value);
+                    position.height += 2f;
+                }
+
                 // name
                 position.x += 10f;
                 position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(o.name), EditorStyles.boldLabel);
                     
                 // type
-                EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(subtitle), EditorStyles.miniLabel);
+                if (subtitle != null)
+                {
+                    EditorGUI.LabelField(position, GUIHelpers.ToGUIContent(subtitle), EditorStyles.miniLabel);
+                }
 
                 EditorGUI.EndFoldoutHeaderGroup();
             }
@@ -167,6 +203,8 @@ namespace HiraBots.Editor
         {
             s_GUIContentCache = new Dictionary<string, GUIContent>();
 
+            s_TempContent = new GUIContent(null, null, null);
+
             s_DynamicPopupMethodInfo = typeof(GUIHelpers)
                 .GetMethod(
                     nameof(DynamicEnumPopupInternal),
@@ -181,6 +219,9 @@ namespace HiraBots.Editor
 
         // cache the DynamicPopup MethodInfo to not repeatedly search for it for every call
         private static readonly MethodInfo s_DynamicPopupMethodInfo;
+
+        // temp GUI content like Unity's internal implementation in EditorGUIUtility
+        private static readonly GUIContent s_TempContent;
 
         /// <summary>
         /// Get cached GUIContent for a label string.
@@ -197,6 +238,17 @@ namespace HiraBots.Editor
             content = new GUIContent(value);
             s_GUIContentCache.Add(value, content);
             return content;
+        }
+
+        /// <summary>
+        /// Get a temporary GUIContent to avoid allocations.
+        /// </summary>
+        internal static GUIContent TempContent(string text = null, string tooltip = null)
+        {
+            s_TempContent.text = text;
+            s_TempContent.image = null;
+            s_TempContent.tooltip = tooltip;
+            return s_TempContent;
         }
 
         /// <summary>
@@ -267,6 +319,17 @@ namespace HiraBots.Editor
         internal static string GetFormattedName(Object value)
         {
             return formattedNames[value.GetType()];
+        }
+
+        internal static Color blackboardHeaderColor
+        {
+            get
+            {
+                var c = new Color(80f / 255, 61f / 255, 66f / 255);
+                Color.RGBToHSV(c, out var h, out var s, out var v);
+                v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+                return Color.HSVToRGB(h, s, v);
+            }
         }
 
         /// <summary>
