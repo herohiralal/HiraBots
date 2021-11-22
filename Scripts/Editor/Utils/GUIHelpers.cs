@@ -161,7 +161,7 @@ namespace HiraBots.Editor
                 // name
                 position.x += 10f;
                 position = EditorGUI.PrefixLabel(position, GUIHelpers.ToGUIContent(o.name), EditorStyles.boldLabel);
-                    
+
                 // type
                 if (subtitle != null)
                 {
@@ -212,6 +212,8 @@ namespace HiraBots.Editor
                     null,
                     new[] { typeof(Rect), typeof(GUIContent), typeof(IntPtr) },
                     null);
+
+            s_EmptyStringHashSet = new HashSet<string>();
         }
 
         // cache to convert string text to GUI, no need to repeatedly create it
@@ -222,6 +224,9 @@ namespace HiraBots.Editor
 
         // temp GUI content like Unity's internal implementation in EditorGUIUtility
         private static readonly GUIContent s_TempContent;
+
+        // empty hash-set for use with auto property drawer
+        private static readonly HashSet<string> s_EmptyStringHashSet;
 
         /// <summary>
         /// Get cached GUIContent for a label string.
@@ -299,6 +304,84 @@ namespace HiraBots.Editor
 
             // store the value back
             *(T*) value = enumOutput;
+        }
+
+        internal static void DrawDefaultPropertyDrawers(SerializedObject serializedObject, bool includeNameField = true, HashSet<string> propertiesToSkip = null)
+        {
+            var rect = EditorGUILayout.GetControlRect(true, GetTotalHeightForPropertyDrawers(serializedObject, includeNameField, propertiesToSkip));
+            DrawDefaultPropertyDrawers(rect, serializedObject, includeNameField, propertiesToSkip);
+        }
+
+        internal static float GetTotalHeightForPropertyDrawers(SerializedObject serializedObject, bool includeNameField = true, HashSet<string> propertiesToSkip = null)
+        {
+            if (propertiesToSkip == null)
+            {
+                propertiesToSkip = s_EmptyStringHashSet;
+            }
+
+            var height = 0f;
+
+            var iterator = serializedObject.GetIterator();
+            iterator.NextVisible(true); // skip over "m_Script"
+            iterator.Next(false); // "m_Name"
+            if (includeNameField)
+            {
+                height += EditorGUI.GetPropertyHeight(iterator) + 2f;
+            }
+
+            iterator.Next(false); // skip over "m_EditorClassIdentifier"
+
+            while (iterator.Next(false))
+            {
+                if (propertiesToSkip.Contains(iterator.name))
+                {
+                    continue;
+                }
+
+                height += EditorGUI.GetPropertyHeight(iterator) + 2f;
+            }
+
+            return height;
+        }
+
+        internal static void DrawDefaultPropertyDrawers(Rect rect, SerializedObject serializedObject, bool includeNameField = true, HashSet<string> propertiesToSkip = null)
+        {
+            if (propertiesToSkip == null)
+            {
+                propertiesToSkip = s_EmptyStringHashSet;
+            }
+
+            serializedObject.Update();
+
+            var iterator = serializedObject.GetIterator();
+            iterator.NextVisible(true); // skip over "m_Script"
+            iterator.Next(false); // "m_Name"
+            if (includeNameField)
+            {
+                rect.height = EditorGUI.GetPropertyHeight(iterator);
+
+                EditorGUI.PropertyField(rect, iterator, true);
+
+                rect.y += rect.height + 2f;
+            }
+
+            iterator.Next(false); // skip over "m_EditorClassIdentifier"
+
+            while (iterator.Next(false))
+            {
+                if (propertiesToSkip.Contains(iterator.name))
+                {
+                    continue;
+                }
+
+                rect.height = EditorGUI.GetPropertyHeight(iterator);
+
+                EditorGUI.PropertyField(rect, iterator, true);
+
+                rect.y += rect.height + 2f;
+            }
+
+            serializedObject.ApplyModifiedProperties();
         }
     }
 

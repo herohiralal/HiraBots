@@ -3,6 +3,17 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    internal abstract partial class BlackboardFunction
+    {
+        internal abstract class Serialized<T> : CustomSerializedObject<T>
+            where T : BlackboardFunction
+        {
+            protected Serialized(T obj) : base(obj)
+            {
+            }
+        }
+    }
+
     internal abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
     {

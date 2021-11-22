@@ -6,7 +6,7 @@ namespace HiraBots
 {
     // this base class only exists to not have to specify a generic one everywhere.
     // it contains all the non-function-specific interface
-    internal abstract unsafe class BlackboardFunction : ScriptableObject, ILowLevelObjectProvider
+    internal abstract unsafe partial class BlackboardFunction : ScriptableObject, ILowLevelObjectProvider
     {
         /// <summary>
         /// The aligned memory size required by this function.
