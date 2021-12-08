@@ -354,6 +354,16 @@ namespace HiraBots.Editor
                 d.OnBlackboardUpdate(newObject);
             }
         }
+
+        private static readonly LGOAPGoalROLDrawer s_Instance = new LGOAPGoalROLDrawer();
+
+        internal static ReorderableList Bind(LGOAPDomain.Serialized serializedObject)
+        {
+            var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.topLayer,
+                true, true, true, true);
+            s_Instance.Bind(rol, serializedObject, serializedObject.topLayer);
+            return rol;
+        }
     }
 
     internal class LGOAPAbstractTaskROLDrawer : InlinedObjectReferenceROLDrawer<LGOAPTask, LGOAPDomain>
@@ -370,6 +380,44 @@ namespace HiraBots.Editor
             if (serializedObject is LGOAPDomain.Serialized d)
             {
                 d.OnBlackboardUpdate(newObject);
+            }
+        }
+
+        private static readonly LGOAPAbstractTaskROLDrawer s_Instance = new LGOAPAbstractTaskROLDrawer();
+
+        private static ReorderableList Bind(LGOAPDomain.Serialized serializedObject, int index)
+        {
+            var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.intermediateLayers[index],
+                true, true, true, true);
+            s_Instance.Bind(rol, serializedObject, serializedObject.intermediateLayers[index]);
+            return rol;
+        }
+
+        internal static ReorderableList[] Bind(LGOAPDomain.Serialized serializedObject)
+        {
+            var count = serializedObject.intermediateLayersCount;
+            var lists = new ReorderableList[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                lists[i] = Bind(serializedObject, i);
+            }
+
+            return lists;
+        }
+
+        internal static void Rebind(ref ReorderableList[] lists, LGOAPDomain.Serialized serializedObject)
+        {
+            var updatedCount = serializedObject.intermediateLayersCount;
+            var originalCount = lists.Length;
+
+            Array.Resize(ref lists, updatedCount);
+
+            var difference = updatedCount - originalCount;
+
+            for (var i = 0; i < difference; i++)
+            {
+                lists[originalCount + i] = Bind(serializedObject, originalCount + i);
             }
         }
     }
@@ -389,6 +437,16 @@ namespace HiraBots.Editor
             {
                 d.OnBlackboardUpdate(newObject);
             }
+        }
+
+        private static readonly LGOAPTaskROLDrawer s_Instance = new LGOAPTaskROLDrawer();
+
+        internal static ReorderableList Bind(LGOAPDomain.Serialized serializedObject)
+        {
+            var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.bottomLayer,
+                true, true, true, true);
+            s_Instance.Bind(rol, serializedObject, serializedObject.bottomLayer);
+            return rol;
         }
     }
 }
