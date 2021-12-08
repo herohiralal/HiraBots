@@ -34,23 +34,13 @@ namespace HiraBots.Editor
 
         private void OnEnable()
         {
-            m_ReorderableList = new ReorderableList(serializedObject, null,
-                true, true, true, true)
-            {
-                drawHeaderCallback = DrawKeyListHeader,
-                onAddDropdownCallback = OnAddDropdown,
-                onRemoveCallback = OnRemove,
-                elementHeightCallback = GetKeyHeight,
-                drawElementCallback = DrawSelfKey,
-                drawElementBackgroundCallback = DrawElementBackground
-            };
-
             Undo.undoRedoPerformed += OnUndoPerformed;
         }
 
         private void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoPerformed;
+            BlackboardKeyInlinedObjectReferenceROLDrawer.Unbind(m_ReorderableList);
             m_ReorderableList = null;
             m_SerializedObject = null;
             m_Dirty = false;
@@ -76,7 +66,10 @@ namespace HiraBots.Editor
                     return;
                 }
 
-                m_ReorderableList.serializedProperty = m_SerializedObject.keys;
+                if (m_ReorderableList == null)
+                {
+                    m_ReorderableList = BlackboardKeyInlinedObjectReferenceROLDrawer.Bind(sbt);
+                }
 
                 var editingAllowed = !EditorApplication.isPlayingOrWillChangePlaymode;
 
@@ -107,13 +100,11 @@ namespace HiraBots.Editor
 
                     // parent property field
                     m_SerializedObject.Update();
-                    var newParent = EditorGUILayout.ObjectField(
-                        GUIHelpers.TempContent(m_SerializedObject.parent.displayName,
-                            m_SerializedObject.parent.tooltip),
-                        m_SerializedObject.parent.objectReferenceValue,
-                        typeof(BlackboardTemplate),
-                        false);
-                    if (!ReferenceEquals(newParent, m_SerializedObject.parent.objectReferenceValue))
+                    var oldParent = m_SerializedObject.parent.objectReferenceValue;
+                    EditorGUILayout.PropertyField(m_SerializedObject.parent);
+                    var newParent = m_SerializedObject.parent.objectReferenceValue;
+                    m_SerializedObject.parent.objectReferenceValue = oldParent;
+                    if (!ReferenceEquals(newParent, oldParent))
                     {
                         if (m_SerializedObject.CanBeAssignedParent((BlackboardTemplate) newParent))
                         {
@@ -161,7 +152,7 @@ namespace HiraBots.Editor
 
                         using (new IndentNullifier(EditorGUI.indentLevel + 1))
                         {
-                            DrawReadOnlyHierarchyFor(m_SerializedObject, false);
+                            DrawReadOnlyHierarchyFor(m_SerializedObject);
                         }
                     }
 
@@ -170,19 +161,22 @@ namespace HiraBots.Editor
                     m_ReorderableList.DoLayoutList();
                 }
             }
+            else
+            {
+                if (m_ReorderableList != null)
+                {
+                    BlackboardKeyInlinedObjectReferenceROLDrawer.Unbind(m_ReorderableList);
+                    m_ReorderableList = null;
+                }
+            }
         }
 
-        internal static void DrawReadOnlyHierarchyFor(BlackboardTemplate.Serialized sbt, bool includeSelf)
+        private static void DrawReadOnlyHierarchyFor(BlackboardTemplate.Serialized sbt)
         {
             var hierarchy = sbt.hierarchy;
             for (var i = hierarchy.count - 1; i >= 0; i--)
             {
                 DrawHeaderAndReadOnlyKeysFor(hierarchy.count - i - 1, hierarchy[i]);
-            }
-
-            if (includeSelf)
-            {
-                DrawHeaderAndReadOnlyKeysFor(hierarchy.count, sbt.target);
             }
         }
 
@@ -203,69 +197,6 @@ namespace HiraBots.Editor
                     }
                 }
             }
-        }
-
-        private void DrawElementBackground(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            if (index >= 0)
-            {
-                var value = m_SerializedObject.keys.GetArrayElementAtIndex(index).objectReferenceValue as BlackboardKey;
-
-                rect.y -= 2;
-                rect.height -= 2;
-
-                // default reorderable list background
-                rect.x += 20f;
-                rect.width -= 20f;
-                ReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, true, true);
-
-                // override a portion with a colour
-                rect.x -= 20f;
-                rect.width = 20f;
-                EditorGUI.DrawRect(rect, BlackboardGUIHelpers.GetBlackboardKeyColor(value));
-            }
-        }
-
-        private float GetKeyHeight(int index)
-        {
-            return EditorGUI.GetPropertyHeight(m_SerializedObject.keys.GetArrayElementAtIndex(index)) + 4;
-        }
-
-        private void DrawSelfKey(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            EditorGUI.PropertyField(rect, m_SerializedObject.keys.GetArrayElementAtIndex(index), GUIContent.none, true);
-        }
-
-        private static void DrawKeyListHeader(Rect rect)
-        {
-            rect.x += 20;
-            EditorGUI.LabelField(rect, "Self Keys", EditorStyles.boldLabel);
-        }
-
-        private void OnAddDropdown(Rect buttonRect, ReorderableList list)
-        {
-            var menu = new GenericMenu();
-
-            foreach (var type in TypeCache.GetTypesDerivedFrom<BlackboardKey>().Where(t => !t.IsAbstract && !t.IsInterface))
-            {
-                menu.AddItem(GUIHelpers.ToGUIContent(BlackboardGUIHelpers.formattedNames[type]), false,
-                    () => AssetDatabaseUtility
-                        .AddInlinedObject(m_SerializedObject.target,
-                            (SerializedObject) m_SerializedObject,
-                            m_SerializedObject.keys,
-                            type));
-            }
-
-            menu.ShowAsContext();
-        }
-
-        private void OnRemove(ReorderableList list)
-        {
-            AssetDatabaseUtility
-                .RemoveInlinedObject(m_SerializedObject.target,
-                    (SerializedObject) m_SerializedObject,
-                    m_SerializedObject.keys,
-                    list.index);
         }
     }
 }
