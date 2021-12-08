@@ -161,14 +161,6 @@ namespace HiraBots.Editor
                     m_ReorderableList.DoLayoutList();
                 }
             }
-            else
-            {
-                if (m_ReorderableList != null)
-                {
-                    BlackboardKeyInlinedObjectReferenceROLDrawer.Unbind(m_ReorderableList);
-                    m_ReorderableList = null;
-                }
-            }
         }
 
         private static void DrawReadOnlyHierarchyFor(BlackboardTemplate.Serialized sbt)
