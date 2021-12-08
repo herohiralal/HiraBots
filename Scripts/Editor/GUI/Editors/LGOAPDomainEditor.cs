@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -106,6 +108,13 @@ namespace HiraBots.Editor
                         m_SerializedObject.OnBlackboardUpdate();
                     }
 
+                    m_SerializedObject.Update();
+                    m_SerializedObject.intermediateLayersCount = EditorGUILayout.IntSlider(m_SerializedObject.intermediateLayersCount, 0, 2);
+                    if (m_SerializedObject.ApplyModifiedProperties())
+                    {
+                        m_Dirty = true;
+                    }
+
                     var currentBlackboard = m_SerializedObject.blackboard.objectReferenceValue as BlackboardTemplate;
                     if (currentBlackboard == null)
                     {
@@ -128,45 +137,89 @@ namespace HiraBots.Editor
                     // }
 
                     EditorGUILayout.Space();
-
-                    BindTopLayerROL(m_SerializedObject);
-
-                    m_SerializedObject.Update();
-                    m_SerializedObject.topLayerROL.DoLayoutList();
-                    m_SerializedObject.ApplyModifiedProperties();
                 }
             }
         }
 
-        private static void BindTopLayerROL(LGOAPDomain.Serialized serializedObject)
+        private void LogAssetWithADuplicateReference() => Debug.LogFormat(LogType.Exception, LogOption.None, target,
+            $"{target.name} contains duplicate references to the same asset, which must not happen in a compound object.");
+
+        private HashSet<Object> assetsThatMustBeInFile
         {
-            var topLayerROL = serializedObject.topLayerROL;
-
-            topLayerROL.drawHeaderCallback = r =>
+            get
             {
-                r.x += 20f;
-                EditorGUI.LabelField(r, "Target", EditorStyles.boldLabel);
-            };
+                var hs = new HashSet<Object>();
 
-            topLayerROL.onAddCallback = l =>
-            {
-                AssetDatabaseUtility.AddInlinedObject(serializedObject.target, (SerializedObject) serializedObject,
-                    serializedObject.topLayer, typeof(LGOAPGoal));
-            };
+                foreach (var goal in m_SerializedObject.topLayer.ToSerializedArrayProperty().Select(p => (LGOAPGoal) p.objectReferenceValue))
+                {
+                    hs.Add(goal);
 
-            topLayerROL.onRemoveCallback = l =>
-            {
-                InlinedObjectReferencesHelper.Collapse(serializedObject.topLayer.GetArrayElementAtIndex(l.index).objectReferenceValue);
+                    foreach (var d in goal.insistence.m_Insistence)
+                    {
+                        hs.Add(d);
+                    }
 
-                AssetDatabaseUtility.RemoveInlinedObject(serializedObject.target, (SerializedObject) serializedObject,
-                    serializedObject.topLayer, l.index);
-            };
+                    foreach (var d in goal.target.m_Target)
+                    {
+                        hs.Add(d);
+                    }
+                }
 
-            topLayerROL.elementHeightCallback = i =>
-                EditorGUI.GetPropertyHeight(serializedObject.topLayer.GetArrayElementAtIndex(i)) + 4;
+                foreach (var intermediateLayer in m_SerializedObject.intermediateLayers)
+                {
+                    foreach (var task in intermediateLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
+                    {
+                        hs.Add(task);
 
-            topLayerROL.drawElementCallback = (r, i, a, f) =>
-                EditorGUI.PropertyField(r, serializedObject.topLayer.GetArrayElementAtIndex(i), GUIContent.none, true);
+                        foreach (var d in task.action.m_Precondition)
+                        {
+                            hs.Add(d);
+                        }
+
+                        foreach (var d in task.action.m_Cost)
+                        {
+                            hs.Add(d);
+                        }
+
+                        foreach (var d in task.action.m_Effect)
+                        {
+                            hs.Add(d);
+                        }
+
+                        foreach (var d in task.target.m_Target)
+                        {
+                            hs.Add(d);
+                        }
+                    }
+                }
+
+                foreach (var task in m_SerializedObject.bottomLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
+                {
+                    hs.Add(task);
+
+                    foreach (var d in task.action.m_Precondition)
+                    {
+                        hs.Add(d);
+                    }
+
+                    foreach (var d in task.action.m_Cost)
+                    {
+                        hs.Add(d);
+                    }
+
+                    foreach (var d in task.action.m_Effect)
+                    {
+                        hs.Add(d);
+                    }
+
+                    foreach (var d in task.target.m_Target)
+                    {
+                        hs.Add(d);
+                    }
+                }
+
+                return hs;
+            }
         }
     }
 }

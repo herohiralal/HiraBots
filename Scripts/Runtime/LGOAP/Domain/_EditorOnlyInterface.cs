@@ -1,7 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace HiraBots
@@ -23,22 +22,64 @@ namespace HiraBots
                 topLayer = GetProperty<LGOAPGoal>($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_Goals)}",
                     true, true);
 
-                topLayerROL = new ReorderableList((SerializedObject) this, topLayer,
-                    true, true, true, true);
-
-                intermediateLayers = GetProperty<LGOAPTaskLayer>(nameof(m_IntermediateLayers),
+                intermediateLayersProperty = GetProperty<LGOAPTaskLayer>(nameof(m_IntermediateLayers),
                     true, true);
 
                 bottomLayer = GetProperty<LGOAPTask>($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_Tasks)}",
                     true, true);
+
+                if (intermediateLayersProperty != null)
+                {
+                    var intermediateLayerCount = intermediateLayersProperty.arraySize;
+                    m_IntermediateLayerProperties = new SerializedProperty[intermediateLayerCount];
+                    for (var i = 0; i < intermediateLayerCount; i++)
+                    {
+                        m_IntermediateLayerProperties[i] = GetIntermediateLayerProperty(i);
+                    }
+                }
             }
 
             internal SerializedProperty backends { get; }
             internal SerializedProperty blackboard { get; }
             internal SerializedProperty topLayer { get; }
-            internal ReorderableList topLayerROL { get; }
-            internal SerializedProperty intermediateLayers { get; }
+            private SerializedProperty intermediateLayersProperty { get; }
+            internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayers => m_IntermediateLayerProperties.ReadOnly();
             internal SerializedProperty bottomLayer { get; }
+
+            internal int intermediateLayersCount
+            {
+                get => intermediateLayersProperty.arraySize;
+                set
+                {
+                    var originalCount = intermediateLayersProperty.arraySize;
+
+                    if (originalCount != value)
+                    {
+                        intermediateLayersProperty.arraySize = value;
+                        System.Array.Resize(ref m_IntermediateLayerProperties, value);
+
+                        var difference = value - originalCount;
+
+                        for (var i = 0; i < difference; i++) // if original count was bigger, difference will be negative and the loop will be ignored
+                        {
+                            var p = GetIntermediateLayerProperty(originalCount + i);
+
+                            if (p != null)
+                            {
+                                p.arraySize = 0;
+                            }
+
+                            m_IntermediateLayerProperties[originalCount + i] = p;
+                        }
+                    }
+                }
+            }
+
+            private SerializedProperty GetIntermediateLayerProperty(int x)
+            {
+                return GetProperty<LGOAPTask>($"{nameof(m_IntermediateLayers)}.Array.data[{x}].{nameof(LGOAPTaskLayer.m_Tasks)}",
+                    true, true);
+            }
 
             private ReadOnlyHashSetAccessor<BlackboardKey> keySet
             {
