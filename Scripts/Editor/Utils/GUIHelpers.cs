@@ -55,6 +55,13 @@ namespace HiraBots.Editor
             }
         }
 
+        [MenuItem("HiraBots/Flush Inlined Objects Cache")]
+        private static void FlushCache()
+        {
+            s_Instance.m_ExpandedInlinedObjects.Clear();
+            s_SerializedObjectsForExpandedInlinedObjects.Clear();
+        }
+
         // using SerializedProperty.isExpanded has its pitfalls, such as being shared between all instances
         // of a blackboard template, which means that on a blackboard template with a parent, if you expand
         // a key of index 3, every parent in its chain of hierarchy will get index 3 expanded, which will be
