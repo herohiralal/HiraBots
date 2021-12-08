@@ -29,11 +29,6 @@ namespace HiraBots
 
         [SerializeField, HideInInspector] private Header m_Header = default;
 
-        /// <summary>
-        /// Whether this decorator is used as a score calculator.
-        /// </summary>
-        internal ref bool isScoreCalculator => ref m_Header.m_IsScoreCalculator;
-
         internal override void PrepareForCompilation()
         {
             base.PrepareForCompilation();
