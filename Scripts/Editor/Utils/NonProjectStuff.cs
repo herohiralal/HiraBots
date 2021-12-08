@@ -25,21 +25,23 @@ namespace HiraBots.Editor
 
             var packagePath = Path.Combine(projectDirectory, "Packages", "com.rohanjadav.hirabots");
 
-            var textFilesLineCount = GetLinesOfText(Directory.GetFiles(packagePath, "*.txt",
-                SearchOption.AllDirectories));
+            var txtFiles = Directory.GetFiles(packagePath, "*.txt", SearchOption.AllDirectories);
+            var textFilesLineCount = GetLinesOfText(txtFiles.ReadOnly());
+            var txtFilesCount = txtFiles.Length;
 
-            var locCount = GetLinesOfText(Directory.GetFiles(packagePath, "*.cs",
-                SearchOption.AllDirectories));
+            var csFiles = Directory.GetFiles(packagePath, "*.cs", SearchOption.AllDirectories);
+            var locCount = GetLinesOfText(csFiles.ReadOnly());
+            var csFilesCount = csFiles.Length;
 
             Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null,
                 "<color=green><b>Search completed!</b></color> - Click here to view.\n" +
                 "\n" +
                 "\n" +
-                $"<b>Total Lines:</b> {textFilesLineCount + locCount}\n" +
+                $"<b>Total Lines:</b> {textFilesLineCount + locCount} across {txtFilesCount + csFilesCount} file(s)\n" +
                 "\n" +
-                $"<b>*.txt Lines:</b> {textFilesLineCount}\n" +
+                $"<b>*.txt Lines:</b> {textFilesLineCount} across {txtFilesCount} file(s)\n" +
                 "\n" +
-                $"<b>*.cs Lines:</b> {locCount}");
+                $"<b>*.cs Lines:</b> {locCount} across {csFilesCount} file(s)");
         }
 
         private static int GetLinesOfText(ReadOnlyArrayAccessor<string> files)
