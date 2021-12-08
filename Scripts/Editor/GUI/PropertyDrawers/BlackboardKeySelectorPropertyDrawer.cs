@@ -52,24 +52,9 @@ namespace HiraBots.Editor
                     GUI.Label(errorIconPosition, errorMessage, EditorStyles.helpBox);
                 }
 
-                var currentEvent = Event.current;
-                if (currentEvent.type == EventType.Repaint)
-                {
-                    // get a name
-                    var currentKey = keyProperty.objectReferenceValue;
-                    var name = currentKey == null ? "None" : currentKey.name;
-
-                    // get control id
-                    var controlID = GUIUtility.GetControlID("EditorPopup".GetHashCode(), FocusType.Keyboard, position);
-
-                    // hover state
-                    var hover = position.Contains(currentEvent.mousePosition);
-
-                    EditorStyles.popup.Draw(position, new GUIContent(name), controlID, false, hover);
-                }
-
-                // actual dropdown
-                if (EditorGUI.DropdownButton(position, GUIContent.none, FocusType.Passive, GUIStyle.none))
+                var currentKey = keyProperty.objectReferenceValue;
+                var currentKeyTextToDisplay = GUIHelpers.TempContent(currentKey == null ? "None" : currentKey.name);
+                if (EditorGUI.DropdownButton(position, currentKeyTextToDisplay, FocusType.Keyboard, EditorStyles.popup))
                 {
                     GenerateMenu(
                             keyProperty,
