@@ -342,7 +342,7 @@ namespace HiraBots.Editor
         }
     }
 
-    internal class LGOAPGoalROLDrawer : InlinedObjectReferenceROLDrawer<LGOAPGoal, LGOAPDomain>
+    internal class LGOAPGoalROLDrawer : LGOAPComponentROLDrawer<LGOAPGoal>
     {
         private LGOAPGoalROLDrawer() : base("Goals")
         {
@@ -369,7 +369,7 @@ namespace HiraBots.Editor
         }
     }
 
-    internal class LGOAPAbstractTaskROLDrawer : InlinedObjectReferenceROLDrawer<LGOAPTask, LGOAPDomain>
+    internal class LGOAPAbstractTaskROLDrawer : LGOAPComponentROLDrawer<LGOAPTask>
     {
         private LGOAPAbstractTaskROLDrawer() : base("Abstract Tasks")
         {
@@ -425,7 +425,7 @@ namespace HiraBots.Editor
         }
     }
 
-    internal class LGOAPTaskROLDrawer : InlinedObjectReferenceROLDrawer<LGOAPTask, LGOAPDomain>
+    internal class LGOAPTaskROLDrawer : LGOAPComponentROLDrawer<LGOAPTask>
     {
         private LGOAPTaskROLDrawer() : base("Tasks")
         {

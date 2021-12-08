@@ -42,7 +42,8 @@ namespace HiraBots.Editor
             currentRect.width -= 20f;
             currentRect.height = 21f;
 
-            if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value, Color.black, "some",
+            if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
+                BlackboardFunctionGUIHelpers.GetBlackboardFunctionColorFaded(value), null,
                 out var cso) && cso is BlackboardFunction.Serialized serializedObject)
             {
                 if (serializedObject.hasError)

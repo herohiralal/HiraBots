@@ -53,7 +53,7 @@ namespace HiraBots.Editor
 
             // draw header, and check if it's expanded
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
-                null, null,
+                LGOAPDomainGUIHelpers.GetComponentColorFaded(value), null,
                 out var cso) && cso is LGOAPTask.Serialized serializedObject)
             {
                 if (serializedObject.hasError)
