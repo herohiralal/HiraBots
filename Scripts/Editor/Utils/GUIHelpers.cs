@@ -248,10 +248,10 @@ namespace HiraBots.Editor
         /// <summary>
         /// Get a temporary GUIContent to avoid allocations.
         /// </summary>
-        internal static GUIContent TempContent(string text = null, string tooltip = null)
+        internal static GUIContent TempContent(string text = null, string tooltip = null, Texture image = null)
         {
             s_TempContent.text = text;
-            s_TempContent.image = null;
+            s_TempContent.image = image;
             s_TempContent.tooltip = tooltip;
             return s_TempContent;
         }
@@ -395,15 +395,15 @@ namespace HiraBots.Editor
         /// </summary>
         internal static ReadOnlyDictionaryAccessor<Type, string> formattedNames { get; } = TypeCache
             .GetTypesDerivedFrom<BlackboardKey>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
             .ToDictionary(blackboardKeyType => blackboardKeyType,
-                blackboardKeyType => blackboardKeyType.Name.Replace("Blackboard", " "))
+                blackboardKeyType => blackboardKeyType.Name
+                    .Replace("Blackboard", " "))
             .ReadOnly();
 
-        internal static string GetFormattedName(Object value)
-        {
-            return formattedNames[value.GetType()];
-        }
-
+        /// <summary>
+        /// Resolve a theme colour for a blackboard.
+        /// </summary>
         internal static Color blackboardHeaderColor
         {
             get
@@ -451,6 +451,118 @@ namespace HiraBots.Editor
         internal static Color GetBlackboardKeyColorFaded(BlackboardKey value)
         {
             Color.RGBToHSV(GetBlackboardKeyColor(value), out var h, out var s, out var v);
+            s *= 0.35f;
+            v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+            return Color.HSVToRGB(h, s, v);
+        }
+    }
+
+    /// <summary>
+    /// Helper class for Blackboard Function GUI.
+    /// </summary>
+    internal static class BlackboardFunctionGUIHelpers
+    {
+        /// <summary>
+        /// Format a Type.Name to a more readable version.
+        /// </summary>
+        internal static ReadOnlyDictionaryAccessor<Type, string> formattedDecoratorNames { get; } = TypeCache
+            .GetTypesDerivedFrom<DecoratorBlackboardFunction>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .ToDictionary(f => f,
+                f => f.Name
+                    .Replace("DecoratorBlackboardFunction", ""))
+            .ReadOnly();
+
+        /// <summary>
+        /// Format a Type.Name to a more readable version.
+        /// </summary>
+        internal static ReadOnlyDictionaryAccessor<Type, string> formattedScoreCalculatorNames { get; } = TypeCache
+            .GetTypesDerivedFrom<DecoratorBlackboardFunction>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .ToDictionary(f => f,
+                f => f.Name
+                    .Replace("DecoratorBlackboardFunction", "")
+                    .Replace("AlwaysSucceed", "BaseScore"))
+            .ReadOnly();
+
+        /// <summary>
+        /// Format a Type.Name to a more readable version.
+        /// </summary>
+        internal static ReadOnlyDictionaryAccessor<Type, string> formattedEffectorNames { get; } = TypeCache
+            .GetTypesDerivedFrom<EffectorBlackboardFunction>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .ToDictionary(f => f,
+                f => f.Name
+                    .Replace("EffectorBlackboardFunction", ""))
+            .ReadOnly();
+
+        /// <summary>
+        /// Resolve a theme colour for a blackboard function.
+        /// </summary>
+        /// <param name="value">The function object.</param>
+        /// <returns>Its respective theme color.</returns>
+        internal static Color GetBlackboardFunctionColor(BlackboardFunction value)
+        {
+            switch (value)
+            {
+                case DecoratorBlackboardFunction c when !c.isScoreCalculator:
+                    return new Color(202f / 255, 232f / 255, 150f / 255);
+                case DecoratorBlackboardFunction c when c.isScoreCalculator:
+                    return new Color(238f / 255, 150f / 255, 75f / 255);
+                case EffectorBlackboardFunction _:
+                    return new Color(239f / 255, 71f / 255, 111f / 255);
+                default:
+                    return Color.black;
+            }
+        }
+
+        /// <summary>
+        /// Resolve a faded theme colour for a blackboard function.
+        /// </summary>
+        /// <param name="value">The function object.</param>
+        /// <returns>Its respective faded theme color.</returns>
+        internal static Color GetBlackboardFunctionColorFaded(BlackboardFunction value)
+        {
+            Color.RGBToHSV(GetBlackboardFunctionColor(value), out var h, out var s, out var v);
+            s *= 0.35f;
+            v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+            return Color.HSVToRGB(h, s, v);
+        }
+    }
+
+    /// <summary>
+    /// Helper class for LGOAP Domain GUI.
+    /// </summary>
+    internal static class LGOAPDomainGUIHelpers
+    {
+        /// <summary>
+        /// Resolve a theme colour for an LGOAP domain component
+        /// </summary>
+        /// <param name="value">The component object.</param>
+        /// <returns>Its respective theme color.</returns>
+        internal static Color GetComponentColor(ScriptableObject value)
+        {
+            switch (value)
+            {
+                case LGOAPGoal _:
+                    return new Color(0f / 255, 62f / 255, 160f / 255);
+                case LGOAPTask c when c.isAbstract:
+                    return new Color(14f / 255, 153f / 255, 126f / 255);
+                case LGOAPTask c when !c.isAbstract:
+                    return new Color(121f / 255, 52f / 255, 167f / 255);
+                default:
+                    return Color.black;
+            }
+        }
+
+        /// <summary>
+        /// Resolve a theme colour for a faded LGOAP domain component
+        /// </summary>
+        /// <param name="value">The component object.</param>
+        /// <returns>Its respective faded theme color.</returns>
+        internal static Color GetComponentColorFaded(ScriptableObject value)
+        {
+            Color.RGBToHSV(GetComponentColor(value), out var h, out var s, out var v);
             s *= 0.35f;
             v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
             return Color.HSVToRGB(h, s, v);

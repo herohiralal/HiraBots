@@ -52,7 +52,7 @@ namespace HiraBots.Editor
 
             // draw header, and check if it's expanded
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
-                BlackboardGUIHelpers.GetBlackboardKeyColorFaded(value), BlackboardGUIHelpers.GetFormattedName(value),
+                BlackboardGUIHelpers.GetBlackboardKeyColorFaded(value), BlackboardGUIHelpers.formattedNames[value.GetType()],
                 out var cso) && cso is BlackboardKey.Serialized serializedObject)
             {
                 if (serializedObject.hasError)
