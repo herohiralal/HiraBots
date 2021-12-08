@@ -150,6 +150,16 @@ namespace HiraBots.Editor
         {
         }
 
+        protected override void ProcessCreatedObject(CustomSerializedObject<TTargetSerializedObject> serializedObject, BlackboardFunction newObject)
+        {
+            InlinedObjectReferencesHelper.Expand(newObject, out var cso);
+
+            if (cso is BlackboardFunction.Serialized sbf)
+            {
+                sbf.Validate();
+            }
+        }
+
         protected override Color GetThemeColor(BlackboardFunction value)
         {
             return BlackboardFunctionGUIHelpers.GetBlackboardFunctionColor(value);
@@ -164,7 +174,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
@@ -193,7 +203,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
@@ -222,7 +232,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
 
             if (serializedObject is LGOAPTask.Serialized task)
@@ -251,7 +261,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
 
             if (serializedObject is LGOAPTask.Serialized task)
@@ -280,7 +290,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
 
             if (serializedObject is LGOAPTask.Serialized task)
             {
@@ -308,7 +318,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
 
             if (serializedObject is LGOAPTask.Serialized task)
@@ -336,6 +346,11 @@ namespace HiraBots.Editor
         {
         }
 
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, T newObject)
+        {
+            InlinedObjectReferencesHelper.Expand(newObject, out _);
+        }
+
         protected override Color GetThemeColor(T value)
         {
             return LGOAPDomainGUIHelpers.GetComponentColor(value);
@@ -350,7 +365,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, LGOAPGoal newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
 
             if (serializedObject is LGOAPDomain.Serialized d)
             {
@@ -377,7 +392,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, LGOAPTask newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             newObject.isAbstract = true;
 
             if (serializedObject is LGOAPDomain.Serialized d)
@@ -433,7 +448,7 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, LGOAPTask newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out _);
+            base.ProcessCreatedObject(serializedObject, newObject);
             newObject.isAbstract = false;
 
             if (serializedObject is LGOAPDomain.Serialized d)

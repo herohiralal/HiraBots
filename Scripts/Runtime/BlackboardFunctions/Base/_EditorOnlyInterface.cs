@@ -5,10 +5,19 @@ namespace HiraBots
 {
     internal abstract partial class BlackboardFunction
     {
+        protected virtual void OnValidate()
+        {
+        }
+
         internal abstract class Serialized : CustomSerializedObject<BlackboardFunction>
         {
             protected Serialized(BlackboardFunction obj) : base(obj)
             {
+            }
+
+            internal void Validate()
+            {
+                target.OnValidate();
             }
         }
 
@@ -25,10 +34,6 @@ namespace HiraBots
     internal abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
     {
-        protected virtual void OnValidate()
-        {
-        }
-
         internal new abstract class Serialized : BlackboardFunction.Serialized
         {
             protected Serialized(BlackboardFunction<TFunction> obj) : base(obj)
