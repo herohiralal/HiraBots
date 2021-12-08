@@ -89,7 +89,7 @@ namespace HiraBots.Editor
                 currentRect.y += 5f;
 
                 // cost
-                currentRect.y += 21f;
+                currentRect.y += currentRect.height;
                 currentRect.height = serializedObject.taskCostROL.GetHeight();
                 serializedObject.taskCostROL.DoList(currentRect);
 
@@ -97,7 +97,7 @@ namespace HiraBots.Editor
                 currentRect.y += 5f;
 
                 // effect
-                currentRect.y += 21f;
+                currentRect.y += currentRect.height;
                 currentRect.height = serializedObject.taskEffectROL.GetHeight();
                 serializedObject.taskEffectROL.DoList(currentRect);
 
