@@ -180,10 +180,25 @@ namespace HiraBots.Editor
             {
                 case null:
                     throw new ArgumentException("Cannot create a CustomSerializedObject from a null object.", nameof(o));
+
                 case BlackboardTemplate c:
                     return new BlackboardTemplate.Serialized(c);
                 case BlackboardKey c:
                     return new BlackboardKey.Serialized(c);
+
+                case DecoratorBlackboardFunction c:
+                    return new DecoratorBlackboardFunction.Serialized(c);
+                case EffectorBlackboardFunction c:
+                    return new EffectorBlackboardFunction.Serialized(c);
+
+                case LGOAPGoal c:
+                    return new LGOAPGoal.Serialized(c);
+                case LGOAPTask c:
+                    return new LGOAPTask.Serialized(c);
+
+                case LGOAPDomain c:
+                    return new LGOAPDomain.Serialized(c);
+
                 default:
                     return new CustomSerializedObject(new SerializedObject(o));
             }
