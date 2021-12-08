@@ -65,7 +65,8 @@ namespace HiraBots.Editor
         /// <param name="t">The type of object to create.</param>
         /// <param name="name">Name of the newly created object.</param>
         /// <param name="hideFlags">HideFlags for the newly created object.</param>
-        internal static void AddInlinedObject(
+        /// <returns>Newly created object.</returns>
+        internal static Object AddInlinedObject(
             Object target,
             SerializedObject serializedObject,
             SerializedProperty property,
@@ -119,6 +120,8 @@ namespace HiraBots.Editor
             // update editor
             EditorUtility.SetDirty(target);
             AssetDatabase.SaveAssets();
+
+            return newObject;
         }
 
         /// <summary>
