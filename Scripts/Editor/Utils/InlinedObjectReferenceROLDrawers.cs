@@ -97,13 +97,16 @@ namespace HiraBots.Editor
 
         internal static void Unbind(ReorderableList rol)
         {
-            rol.drawHeaderCallback = null;
-            rol.onAddDropdownCallback = null;
-            rol.onAddCallback = null;
-            rol.onRemoveCallback = null;
-            rol.elementHeightCallback = null;
-            rol.drawElementCallback = null;
-            rol.drawElementBackgroundCallback = null;
+            if (rol != null)
+            {
+                rol.drawHeaderCallback = null;
+                rol.onAddDropdownCallback = null;
+                rol.onAddCallback = null;
+                rol.onRemoveCallback = null;
+                rol.elementHeightCallback = null;
+                rol.drawElementCallback = null;
+                rol.drawElementBackgroundCallback = null;
+            }
         }
 
         protected virtual void ProcessCreatedObject(CustomSerializedObject<TTargetSerializedObject> serializedObject, TInlinedReference newObject)

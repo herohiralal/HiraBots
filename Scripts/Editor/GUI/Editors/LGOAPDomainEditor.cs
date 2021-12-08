@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -45,6 +46,9 @@ namespace HiraBots.Editor
         // undo helper
         [SerializeField] private bool m_Dirty = false;
         private LGOAPDomain.Serialized m_SerializedObject = null;
+        private ReorderableList m_TopLayer = null;
+        private ReorderableList[] m_IntermediateLayers = null;
+        private ReorderableList m_BottomLayer = null;
 
         private void OnEnable()
         {
@@ -54,8 +58,19 @@ namespace HiraBots.Editor
         private void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoPerformed;
+
+            LGOAPGoalROLDrawer.Unbind(m_TopLayer);
+
+            foreach (var l in m_IntermediateLayers)
+            {
+                LGOAPAbstractTaskROLDrawer.Unbind(l);
+            }
+
+            LGOAPTaskROLDrawer.Unbind(m_BottomLayer);
+
             m_SerializedObject = null;
             m_Dirty = false;
+            InlinedObjectReferencesHelper.Collapse(target);
         }
 
         private void OnUndoPerformed()
@@ -75,6 +90,21 @@ namespace HiraBots.Editor
                 {
                     EditorGUILayout.HelpBox(m_SerializedObject.error, MessageType.Error);
                     return;
+                }
+
+                if (m_TopLayer == null)
+                {
+                    m_TopLayer = LGOAPGoalROLDrawer.Bind(domain);
+                }
+
+                if (m_IntermediateLayers == null)
+                {
+                    m_IntermediateLayers = LGOAPAbstractTaskROLDrawer.Bind(domain);
+                }
+
+                if (m_BottomLayer == null)
+                {
+                    m_BottomLayer = LGOAPTaskROLDrawer.Bind(domain);
                 }
 
                 var editingAllowed = !EditorApplication.isPlayingOrWillChangePlaymode;
@@ -100,19 +130,23 @@ namespace HiraBots.Editor
                     EditorGUILayout.PropertyField(m_SerializedObject.backends);
                     m_SerializedObject.ApplyModifiedProperties();
 
+                    // intermediate layers count field
+                    m_SerializedObject.Update();
+                    m_SerializedObject.intermediateLayersCount = EditorGUILayout.IntSlider(
+                        GUIHelpers.TempContent("Intermediate Layers Count", "The number of intermediate layers in this domain."),
+                        m_SerializedObject.intermediateLayersCount, 0, 2);
+                    if (m_SerializedObject.ApplyModifiedProperties())
+                    {
+                        m_Dirty = true;
+                        LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
+                    }
+
                     // blackboard property field
                     m_SerializedObject.Update();
                     EditorGUILayout.PropertyField(m_SerializedObject.blackboard);
                     if (m_SerializedObject.ApplyModifiedProperties())
                     {
                         m_SerializedObject.OnBlackboardUpdate();
-                    }
-
-                    m_SerializedObject.Update();
-                    m_SerializedObject.intermediateLayersCount = EditorGUILayout.IntSlider(m_SerializedObject.intermediateLayersCount, 0, 2);
-                    if (m_SerializedObject.ApplyModifiedProperties())
-                    {
-                        m_Dirty = true;
                     }
 
                     var currentBlackboard = m_SerializedObject.blackboard.objectReferenceValue as BlackboardTemplate;
@@ -122,27 +156,23 @@ namespace HiraBots.Editor
                         return;
                     }
 
-                    // intermediate layer count field
-                    // m_SerializedObject.Update();
-                    // var intermediateLayerCountGUIContent = GUIHelpers.TempContent("Intermediate Layer Count", "The number of intermediate layers.");
-                    // var originalIntermediateLayerCount = m_SerializedObject.intermediateLayers.arraySize;
-                    // var newIntermediateLayerCount =
-                    //     EditorGUILayout.IntSlider(intermediateLayerCountGUIContent, m_SerializedObject.intermediateLayers.arraySize, 0, 5);
-                    // if (originalIntermediateLayerCount < newIntermediateLayerCount)
-                    // {
-                    //     for (var i = originalIntermediateLayerCount; i < newIntermediateLayerCount; i++)
-                    //     {
-                    //         
-                    //     }
-                    // }
+                    EditorGUILayout.Space();
+
+                    m_TopLayer.DoLayoutList();
 
                     EditorGUILayout.Space();
+
+                    foreach (var l in m_IntermediateLayers)
+                    {
+                        l.DoLayoutList();
+
+                        EditorGUILayout.Space();
+                    }
+
+                    m_BottomLayer.DoLayoutList();
                 }
             }
         }
-
-        private void LogAssetWithADuplicateReference() => Debug.LogFormat(LogType.Exception, LogOption.None, target,
-            $"{target.name} contains duplicate references to the same asset, which must not happen in a compound object.");
 
         private HashSet<Object> assetsThatMustBeInFile
         {
