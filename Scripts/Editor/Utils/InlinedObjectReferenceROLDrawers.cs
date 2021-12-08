@@ -75,6 +75,11 @@ namespace HiraBots.Editor
 
             rol.drawElementBackgroundCallback = (r, i, a, f) =>
             {
+                if (i < 0)
+                {
+                    return;
+                }
+
                 r.y -= 2;
                 r.height -= 2;
 
