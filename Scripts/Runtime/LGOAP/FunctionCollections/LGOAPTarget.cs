@@ -12,6 +12,6 @@ namespace HiraBots
         };
 
         [Tooltip("The conditions that must be satisfied for this goal/task to be fulfilled.")]
-        [SerializeField, HideInInspector] private DecoratorBlackboardFunction[] m_Target;
+        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Target;
     }
 }

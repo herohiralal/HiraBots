@@ -12,6 +12,6 @@ namespace HiraBots
         };
 
         [Tooltip("The amount of insistence this goal has.")]
-        [SerializeField, HideInInspector] private DecoratorBlackboardFunction[] m_Insistence;
+        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Insistence;
     }
 }

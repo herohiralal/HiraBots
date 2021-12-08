@@ -14,12 +14,12 @@ namespace HiraBots
         };
 
         [Tooltip("The conditions that must be satisfied for this task to be valid.")]
-        [SerializeField, HideInInspector] private DecoratorBlackboardFunction[] m_Precondition;
+        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Precondition;
 
         [Tooltip("The amount of cost this task entails.")]
-        [SerializeField, HideInInspector] private DecoratorBlackboardFunction[] m_Cost;
+        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Cost;
 
         [Tooltip("The effect this action has upon the execution of this task.")]
-        [SerializeField, HideInInspector] private EffectorBlackboardFunction[] m_Effect;
+        [SerializeField, HideInInspector] internal EffectorBlackboardFunction[] m_Effect;
     }
 }

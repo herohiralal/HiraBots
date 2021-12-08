@@ -27,7 +27,7 @@ namespace HiraBots
             [SerializeField] internal bool m_Invert;
         }
 
-        [SerializeField] private Header m_Header = default;
+        [SerializeField, HideInInspector] private Header m_Header = default;
 
         internal override void PrepareForCompilation()
         {

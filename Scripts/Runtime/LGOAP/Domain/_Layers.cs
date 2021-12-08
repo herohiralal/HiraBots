@@ -11,7 +11,7 @@ namespace HiraBots
             m_Goals = new LGOAPGoal[0]
         };
 
-        [SerializeField] private LGOAPGoal[] m_Goals;
+        [SerializeField, HideInInspector] internal LGOAPGoal[] m_Goals;
 
         internal void PrepareForCompilation()
         {
@@ -30,7 +30,7 @@ namespace HiraBots
             m_Tasks = new LGOAPTask[0]
         };
 
-        [SerializeField] private LGOAPTask[] m_Tasks;
+        [SerializeField, HideInInspector] internal LGOAPTask[] m_Tasks;
 
         internal void PrepareForCompilation()
         {
