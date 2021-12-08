@@ -36,6 +36,15 @@ namespace HiraBots
         internal string error => m_Error;
 
         /// <summary>
+        /// Append an error regarding a missing property.
+        /// </summary>
+        /// <param name="propertyPath">Name of the missing property.</param>
+        protected void AppendMissingPropertyError(string propertyPath)
+        {
+            m_Error += $"[Could not find property: {propertyPath}] ";
+        }
+
+        /// <summary>
         /// Cache a non-primitive serialized property.
         /// </summary>
         /// <param name="propertyPath">The path of the property.</param>
@@ -99,7 +108,7 @@ namespace HiraBots
 
             if (essential)
             {
-                m_Error += $"[Could not find property: {propertyPath}] ";
+                AppendMissingPropertyError(propertyPath);
             }
 
             return null;
@@ -182,7 +191,7 @@ namespace HiraBots
 
             if (essential)
             {
-                m_Error += $"[Could not find property: {propertyPath}] ";
+                AppendMissingPropertyError(propertyPath);
             }
 
             return null;
