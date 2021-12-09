@@ -8,6 +8,9 @@ namespace HiraBots
         [SerializeField, HideInInspector] private string m_Subtitle = "";
         internal ref string subtitle => ref m_Subtitle;
 
+        [SerializeField, HideInInspector] protected string m_Description = "";
+        internal string description => m_Description;
+
         protected virtual void OnValidate()
         {
         }
@@ -51,6 +54,8 @@ namespace HiraBots
         /// Whether this decorator is used as a score calculator.
         /// </summary>
         internal ref bool isScoreCalculator => ref m_Header.m_IsScoreCalculator;
+
+        protected string scoreString => $"{(m_Header.m_Score >= 0 ? '+' : '-')}{m_Header.m_Score}.";
 
         internal new class Serialized : BlackboardFunction<DecoratorDelegate>.Serialized
         {

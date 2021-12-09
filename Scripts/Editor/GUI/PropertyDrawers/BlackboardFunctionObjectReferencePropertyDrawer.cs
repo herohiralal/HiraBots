@@ -7,7 +7,7 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardFunction), true)]
     internal class BlackboardFunctionObjectReferencePropertyDrawer : PropertyDrawer
     {
-        private HashSet<string> propertiesToSkip = new HashSet<string> { "m_Subtitle" };
+        private HashSet<string> propertiesToSkip = new HashSet<string> { "m_Subtitle", "m_Description" };
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -21,7 +21,7 @@ namespace HiraBots.Editor
             var expanded = InlinedObjectReferencesHelper.IsExpanded(value, out var cso);
 
             return !expanded
-                ? 21f
+                ? 21f + 21f
                 : 0f
                   + 21f // header
                   + GUIHelpers.GetTotalHeightForPropertyDrawers((SerializedObject) cso, true, propertiesToSkip)
@@ -60,6 +60,24 @@ namespace HiraBots.Editor
                 currentRect.height -= 22f;
 
                 GUIHelpers.DrawDefaultPropertyDrawers(currentRect, (SerializedObject) cso, true, propertiesToSkip);
+            }
+            else
+            {
+                currentRect.y += 21f;
+
+                currentRect.height -= 4f;
+                EditorGUI.DrawRect(currentRect, BlackboardFunctionGUIHelpers.GetBlackboardFunctionColorFaded(value));
+                currentRect.height += 4f;
+
+                var description = value.description;
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    EditorGUI.HelpBox(currentRect, "Contains errors.", MessageType.Error);
+                }
+                else
+                {
+                    EditorGUI.LabelField(currentRect, description, EditorStyles.miniBoldLabel);
+                }
             }
         }
     }
