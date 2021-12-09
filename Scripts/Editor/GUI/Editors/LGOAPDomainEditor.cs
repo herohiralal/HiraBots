@@ -117,7 +117,7 @@ namespace HiraBots.Editor
                 if (m_Dirty)
                 {
                     m_SerializedObject.Update();
-                    // todo: synchronize file to compound object here
+                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, subAssetsThatMustBeInFile);
                     m_Dirty = false;
                     m_SerializedObject.ApplyModifiedProperties();
                     m_SerializedObject.OnBlackboardUpdate();
@@ -174,7 +174,7 @@ namespace HiraBots.Editor
             }
         }
 
-        private HashSet<Object> assetsThatMustBeInFile
+        private HashSet<Object> subAssetsThatMustBeInFile
         {
             get
             {
@@ -184,9 +184,9 @@ namespace HiraBots.Editor
                 {
                     hs.Add(goal);
 
-                    foreach (var d in goal.insistence.m_Insistence)
+                    foreach (var s in goal.insistence.m_Insistence)
                     {
-                        hs.Add(d);
+                        hs.Add(s);
                     }
 
                     foreach (var d in goal.target.m_Target)
@@ -206,14 +206,14 @@ namespace HiraBots.Editor
                             hs.Add(d);
                         }
 
-                        foreach (var d in task.action.m_Cost)
+                        foreach (var s in task.action.m_Cost)
                         {
-                            hs.Add(d);
+                            hs.Add(s);
                         }
 
-                        foreach (var d in task.action.m_Effect)
+                        foreach (var e in task.action.m_Effect)
                         {
-                            hs.Add(d);
+                            hs.Add(e);
                         }
 
                         foreach (var d in task.target.m_Target)
@@ -232,14 +232,14 @@ namespace HiraBots.Editor
                         hs.Add(d);
                     }
 
-                    foreach (var d in task.action.m_Cost)
+                    foreach (var s in task.action.m_Cost)
                     {
-                        hs.Add(d);
+                        hs.Add(s);
                     }
 
-                    foreach (var d in task.action.m_Effect)
+                    foreach (var e in task.action.m_Effect)
                     {
-                        hs.Add(d);
+                        hs.Add(e);
                     }
 
                     foreach (var d in task.target.m_Target)
