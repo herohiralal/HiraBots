@@ -436,6 +436,7 @@ namespace HiraBots.Editor
             var originalCount = lists.Length;
 
             Array.Resize(ref lists, updatedCount);
+            if (lists == null) lists = new ReorderableList[0];
 
             var difference = updatedCount - originalCount;
 
