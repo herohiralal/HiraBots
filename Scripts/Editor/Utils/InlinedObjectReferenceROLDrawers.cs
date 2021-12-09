@@ -176,6 +176,7 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_GoalInsistence;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
             {
@@ -205,6 +206,7 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_GoalTarget;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
             {
@@ -234,6 +236,7 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskPrecondition;
 
             if (serializedObject is LGOAPTask.Serialized task)
             {
@@ -263,6 +266,7 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskCost;
 
             if (serializedObject is LGOAPTask.Serialized task)
             {
@@ -291,6 +295,7 @@ namespace HiraBots.Editor
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskEffect;
 
             if (serializedObject is LGOAPTask.Serialized task)
             {
@@ -320,6 +325,7 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
+            newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskTarget;
 
             if (serializedObject is LGOAPTask.Serialized task)
             {

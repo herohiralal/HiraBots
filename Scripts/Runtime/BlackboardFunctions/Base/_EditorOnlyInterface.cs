@@ -5,6 +5,9 @@ namespace HiraBots
 {
     internal abstract partial class BlackboardFunction
     {
+        [SerializeField, HideInInspector] private string m_Subtitle = "";
+        internal ref string subtitle => ref m_Subtitle;
+
         protected virtual void OnValidate()
         {
         }

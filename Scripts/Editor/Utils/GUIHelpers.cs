@@ -518,6 +518,14 @@ namespace HiraBots.Editor
                     .Replace("EffectorBlackboardFunction", ""))
             .ReadOnly();
 
+        private const string k_Target = "Target";
+        internal const string k_GoalInsistence = "Insistence";
+        internal const string k_GoalTarget = k_Target;
+        internal const string k_TaskPrecondition = "Precondition";
+        internal const string k_TaskCost = "Cost";
+        internal const string k_TaskEffect = "Effect";
+        internal const string k_TaskTarget = k_Target;
+
         /// <summary>
         /// Resolve a theme colour for a blackboard function.
         /// </summary>
@@ -525,13 +533,17 @@ namespace HiraBots.Editor
         /// <returns>Its respective theme color.</returns>
         internal static Color GetBlackboardFunctionColor(BlackboardFunction value)
         {
-            switch (value)
+            switch (value.subtitle)
             {
-                case DecoratorBlackboardFunction c when !c.isScoreCalculator:
-                    return new Color(202f / 255, 232f / 255, 150f / 255);
-                case DecoratorBlackboardFunction c when c.isScoreCalculator:
+                case k_GoalInsistence:
+                    return new Color(203f / 255, 232f / 255, 150f / 255);
+                case k_TaskPrecondition:
+                    return new Color(0f / 255, 62f / 255, 160f / 255);
+                case k_TaskCost:
                     return new Color(238f / 255, 150f / 255, 75f / 255);
-                case EffectorBlackboardFunction _:
+                case k_TaskEffect:
+                    return new Color(148f / 255, 201f / 255, 169f /255);
+                case k_Target:
                     return new Color(239f / 255, 71f / 255, 111f / 255);
                 default:
                     return Color.black;
@@ -567,11 +579,11 @@ namespace HiraBots.Editor
             switch (value)
             {
                 case LGOAPGoal _:
-                    return new Color(0f / 255, 62f / 255, 160f / 255);
+                    return new Color(117f / 255, 91f / 255, 82f / 255);
                 case LGOAPTask c when c.isAbstract:
-                    return new Color(14f / 255, 153f / 255, 126f / 255);
+                    return new Color(53f / 255, 66f / 255, 143f / 255);
                 case LGOAPTask c when !c.isAbstract:
-                    return new Color(121f / 255, 52f / 255, 167f / 255);
+                    return new Color(115f / 255, 26f / 255, 76f / 255);
                 default:
                     return Color.black;
             }

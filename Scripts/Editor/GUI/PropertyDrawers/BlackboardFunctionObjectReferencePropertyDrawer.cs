@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -6,6 +7,8 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardFunction), true)]
     internal class BlackboardFunctionObjectReferencePropertyDrawer : PropertyDrawer
     {
+        private HashSet<string> propertiesToSkip = new HashSet<string> { "m_Subtitle" };
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var value = property.objectReferenceValue;
@@ -21,7 +24,7 @@ namespace HiraBots.Editor
                 ? 21f
                 : 0f
                   + 21f // header
-                  + GUIHelpers.GetTotalHeightForPropertyDrawers((SerializedObject) cso)
+                  + GUIHelpers.GetTotalHeightForPropertyDrawers((SerializedObject) cso, true, propertiesToSkip)
                   + 0f;
         }
 
@@ -43,7 +46,7 @@ namespace HiraBots.Editor
             currentRect.height = 21f;
 
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
-                BlackboardFunctionGUIHelpers.GetBlackboardFunctionColorFaded(value), null,
+                BlackboardFunctionGUIHelpers.GetBlackboardFunctionColorFaded(value), value.subtitle,
                 out var cso) && cso is BlackboardFunction.Serialized serializedObject)
             {
                 if (serializedObject.hasError)
@@ -56,7 +59,7 @@ namespace HiraBots.Editor
                 currentRect.y += 22f;
                 currentRect.height -= 22f;
 
-                GUIHelpers.DrawDefaultPropertyDrawers(currentRect, (SerializedObject) cso);
+                GUIHelpers.DrawDefaultPropertyDrawers(currentRect, (SerializedObject) cso, true, propertiesToSkip);
             }
         }
     }
