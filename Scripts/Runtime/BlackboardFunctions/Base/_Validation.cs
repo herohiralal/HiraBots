@@ -10,9 +10,9 @@ namespace HiraBots
     internal struct BlackboardFunctionValidatorContext
     {
         /// <summary>
-        /// Whether the validation succeeded.
+        /// The identifier for this function.
         /// </summary>
-        internal bool succeeded { get; set; }
+        internal string identifier { get; set; }
 
         /// <summary>
         /// List of badly selected keys.
