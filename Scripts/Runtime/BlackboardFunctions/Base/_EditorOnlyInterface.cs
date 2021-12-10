@@ -50,11 +50,6 @@ namespace HiraBots
 
     internal abstract partial class DecoratorBlackboardFunction
     {
-        /// <summary>
-        /// Whether this decorator is used as a score calculator.
-        /// </summary>
-        internal ref bool isScoreCalculator => ref m_Header.m_IsScoreCalculator;
-
         protected string scoreString => $"{(m_Header.m_Score >= 0 ? '+' : '-')}{m_Header.m_Score}.";
 
         internal new class Serialized : BlackboardFunction<DecoratorDelegate>.Serialized

@@ -49,6 +49,11 @@ namespace HiraBots
                     continue;
                 }
 
+                if (!scoreCalculator.isScoreCalculator)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (must be a score calculator but is a decorator)");
+                }
+
                 scoreCalculator.Validate(ref functionValidator);
             }
 
@@ -61,6 +66,11 @@ namespace HiraBots
                 {
                     context.badObjects.Add(functionValidator.identifier + " (missing function)");
                     continue;
+                }
+
+                if (decorator.isScoreCalculator)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
                 }
 
                 decorator.Validate(ref functionValidator);
@@ -92,6 +102,11 @@ namespace HiraBots
                     continue;
                 }
 
+                if (decorator.isScoreCalculator)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
+                }
+
                 decorator.Validate(ref functionValidator);
             }
 
@@ -104,6 +119,11 @@ namespace HiraBots
                 {
                     context.badObjects.Add(functionValidator.identifier + " (missing function)");
                     continue;
+                }
+
+                if (!scoreCalculator.isScoreCalculator)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (must be a score calculator but is a decorator)");
                 }
 
                 scoreCalculator.Validate(ref functionValidator);
@@ -132,6 +152,11 @@ namespace HiraBots
                 {
                     context.badObjects.Add(functionValidator.identifier + " (missing function)");
                     continue;
+                }
+
+                if (decorator.isScoreCalculator)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
                 }
 
                 decorator.Validate(ref functionValidator);
