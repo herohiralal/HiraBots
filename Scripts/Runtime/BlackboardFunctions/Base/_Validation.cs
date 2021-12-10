@@ -10,14 +10,35 @@ namespace HiraBots
     internal struct BlackboardFunctionValidatorContext
     {
         /// <summary>
-        /// The identifier for this function.
+        /// The info regarding a bad key.
         /// </summary>
-        internal string identifier { get; set; }
+        internal struct BadKeyInfo
+        {
+            /// <summary>
+            /// The name of the blackboard function.
+            /// </summary>
+            internal string functionName { get; set; }
+
+            /// <summary>
+            /// The name of the badly assigned variable.
+            /// </summary>
+            internal string variableName { get; set; }
+
+            /// <summary>
+            /// The currently selected key.
+            /// </summary>
+            internal BlackboardKey selectedKey { get; set; }
+        }
+
+        /// <summary>
+        /// Whether the validation succeeded.
+        /// </summary>
+        internal bool succeeded { get; set; }
 
         /// <summary>
         /// List of badly selected keys.
         /// </summary>
-        internal List<string> badObjects { get; set; }
+        internal List<BadKeyInfo> badlySelectedKeys { get; set; }
 
         /// <summary>
         /// The pool of allowed keys.

@@ -10,14 +10,60 @@ namespace HiraBots
     internal struct LGOAPComponentValidatorContext
     {
         /// <summary>
-        /// The identifier for this function.
+        /// The info regarding a bad function.
         /// </summary>
-        internal string identifier { get; set; }
+        internal struct BadFunctionInfo
+        {
+            /// <summary>
+            /// The name of the component.
+            /// </summary>
+            internal string componentName { get; set; }
+
+            /// <summary>
+            /// The type of the function.
+            /// </summary>
+            internal string functionType { get; set; }
+
+            /// <summary>
+            /// The index of the function.
+            /// </summary>
+            internal int functionIndex { get; set; }
+
+            /// <summary>
+            /// Whether the function is null.
+            /// </summary>
+            internal bool functionIsNull { get; set; }
+
+            /// <summary>
+            /// Whether the function is a score calculator when it shouldn't be,
+            /// </summary>
+            internal bool functionIsScoreCalculatorWhenItShouldNotBe { get; set; }
+
+            /// <summary>
+            /// Whether the function is not a score calculator when it should be.
+            /// </summary>
+            internal bool functionIsNotScoreCalculatorWhenItShouldBe { get; set; }
+
+            /// <summary>
+            /// The list of bad keys on the function.
+            /// </summary>
+            internal BlackboardFunctionValidatorContext.BadKeyInfo[] badKeys { get; set; }
+        }
 
         /// <summary>
-        /// List of badly selected keys.
+        /// Whether the validation succeeded.
         /// </summary>
-        internal List<string> badObjects { get; set; }
+        internal bool succeeded { get; set; }
+
+        /// <summary>
+        /// List of bad functions.
+        /// </summary>
+        internal List<BadFunctionInfo> badFunctions { get; set; }
+
+        /// <summary>
+        /// Pre-allocated list for badly selected keys.
+        /// </summary>
+        internal List<BlackboardFunctionValidatorContext.BadKeyInfo> badlySelectedKeys { get; set; }
 
         /// <summary>
         /// The pool of allowed keys.
@@ -34,46 +80,98 @@ namespace HiraBots
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
-                badObjects = context.badObjects,
+                badlySelectedKeys = context.badlySelectedKeys,
                 allowedKeyPool = context.allowedKeyPool
             };
 
             for (var i = 0; i < m_Insistence.m_Insistence.Length; i++)
             {
                 var scoreCalculator = m_Insistence.m_Insistence[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Insistence[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Insistence",
+                    functionIndex = i,
+                };
 
                 if (scoreCalculator == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 if (!scoreCalculator.isScoreCalculator)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (must be a score calculator but is a decorator)");
+                    success = false;
+                    badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe = true;
                 }
 
                 scoreCalculator.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
 
             for (var i = 0; i < m_Target.m_Target.Length; i++)
             {
                 var decorator = m_Target.m_Target[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Target[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Target",
+                    functionIndex = i,
+                };
 
                 if (decorator == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 if (decorator.isScoreCalculator)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
+                    success = false;
+                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
                 }
 
                 decorator.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
         }
     }
@@ -87,79 +185,182 @@ namespace HiraBots
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
-                badObjects = context.badObjects,
+                badlySelectedKeys = context.badlySelectedKeys,
                 allowedKeyPool = context.allowedKeyPool
             };
 
             for (var i = 0; i < m_Action.m_Precondition.Length; i++)
             {
                 var decorator = m_Action.m_Precondition[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Precondition[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Precondition",
+                    functionIndex = i,
+                };
 
                 if (decorator == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 if (decorator.isScoreCalculator)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
+                    success = false;
+                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
                 }
 
                 decorator.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
 
             for (var i = 0; i < m_Action.m_Cost.Length; i++)
             {
                 var scoreCalculator = m_Action.m_Cost[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Cost[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Cost",
+                    functionIndex = i,
+                };
 
                 if (scoreCalculator == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 if (!scoreCalculator.isScoreCalculator)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (must be a score calculator but is a decorator)");
+                    success = false;
+                    badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe = true;
                 }
 
                 scoreCalculator.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
 
             for (var i = 0; i < m_Action.m_Effect.Length; i++)
             {
                 var effector = m_Action.m_Effect[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Effect[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Effect",
+                    functionIndex = i,
+                };
 
                 if (effector == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 effector.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
 
             for (var i = 0; i < m_Target.m_Target.Length; i++)
             {
                 var decorator = m_Target.m_Target[i];
-                functionValidator.identifier = $"{context.identifier}({name})::Target[{i}]";
+                functionValidator.succeeded = true;
+                functionValidator.badlySelectedKeys.Clear();
+
+                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                {
+                    componentName = name,
+                    functionType = "Target",
+                    functionIndex = i,
+                };
 
                 if (decorator == null)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    badFunctionInfo.functionIsNull = true;
+
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
                     continue;
                 }
 
+                var success = true;
+
                 if (decorator.isScoreCalculator)
                 {
-                    context.badObjects.Add(functionValidator.identifier + " (must be a decorator but is a score calculator)");
+                    success = false;
+                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
                 }
 
                 decorator.Validate(ref functionValidator);
+
+                if (!functionValidator.succeeded)
+                {
+                    success = false;
+                    badFunctionInfo.badKeys = functionValidator.badlySelectedKeys.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badFunctions.Add(badFunctionInfo);
+                }
             }
         }
     }

@@ -9,7 +9,15 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Enum, ref context))
             {
-                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
+                var badKeyInfo = new BlackboardFunctionValidatorContext.BadKeyInfo
+                {
+                    functionName = name,
+                    variableName = nameof(m_Key),
+                    selectedKey = m_Key.selectedKey
+                };
+
+                context.succeeded = false;
+                context.badlySelectedKeys.Add(badKeyInfo);
             }
         }
     }
@@ -22,7 +30,15 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Float, ref context))
             {
-                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
+                var badKeyInfo = new BlackboardFunctionValidatorContext.BadKeyInfo
+                {
+                    functionName = name,
+                    variableName = nameof(m_Key),
+                    selectedKey = m_Key.selectedKey
+                };
+
+                context.succeeded = false;
+                context.badlySelectedKeys.Add(badKeyInfo);
             }
         }
     }
@@ -35,7 +51,15 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Integer, ref context))
             {
-                context.badObjects.Add($"{context.identifier}{name}:{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
+                var badKeyInfo = new BlackboardFunctionValidatorContext.BadKeyInfo
+                {
+                    functionName = name,
+                    variableName = nameof(m_Key),
+                    selectedKey = m_Key.selectedKey
+                };
+
+                context.succeeded = false;
+                context.badlySelectedKeys.Add(badKeyInfo);
             }
         }
     }
@@ -48,7 +72,15 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.UnmanagedSettable, ref context))
             {
-                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
+                var badKeyInfo = new BlackboardFunctionValidatorContext.BadKeyInfo
+                {
+                    functionName = name,
+                    variableName = nameof(m_Key),
+                    selectedKey = m_Key.selectedKey
+                };
+
+                context.succeeded = false;
+                context.badlySelectedKeys.Add(badKeyInfo);
             }
         }
     }
@@ -61,7 +93,15 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Object, ref context))
             {
-                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
+                var badKeyInfo = new BlackboardFunctionValidatorContext.BadKeyInfo
+                {
+                    functionName = name,
+                    variableName = nameof(m_Key),
+                    selectedKey = m_Key.selectedKey
+                };
+
+                context.succeeded = false;
+                context.badlySelectedKeys.Add(badKeyInfo);
             }
         }
     }
