@@ -9,11 +9,5 @@ namespace HiraBots
 
         [SerializeField, HideInInspector] private LGOAPTarget m_Target = LGOAPTarget.empty;
         internal ref LGOAPTarget target => ref m_Target;
-
-        internal void PrepareForCompilation()
-        {
-            m_Insistence.PrepareForCompilation();
-            m_Target.PrepareForCompilation(false);
-        }
     }
 }
