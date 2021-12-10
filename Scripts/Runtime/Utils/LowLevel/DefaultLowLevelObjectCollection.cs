@@ -85,12 +85,14 @@ namespace HiraBots
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal Enumerator(byte* current, int count)
             {
-                m_Current = current;
+                m_Current = null;
+                m_Next = current;
                 m_CurrentIndex = -1;
                 m_Count = count;
             }
 
             private byte* m_Current;
+            private byte* m_Next;
             private int m_CurrentIndex;
             private readonly int m_Count;
 
@@ -102,7 +104,8 @@ namespace HiraBots
                     return false;
                 }
 
-                m_Current += new TConverter().Convert(m_Current).size;
+                m_Current = m_Next;
+                m_Next = m_Current + new TConverter().Convert(m_Current).size;
                 return true;
             }
 
