@@ -17,7 +17,7 @@ namespace HiraBots
         /// <summary>
         /// List of badly selected keys.
         /// </summary>
-        internal List<string> badKeys { get; set; }
+        internal List<string> badObjects { get; set; }
 
         /// <summary>
         /// The pool of allowed keys.

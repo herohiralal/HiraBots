@@ -17,7 +17,7 @@ namespace HiraBots
         /// <summary>
         /// List of badly selected keys.
         /// </summary>
-        internal List<string> badKeys { get; set; }
+        internal List<string> badObjects { get; set; }
 
         /// <summary>
         /// The pool of allowed keys.
@@ -34,7 +34,7 @@ namespace HiraBots
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
-                badKeys = context.badKeys,
+                badObjects = context.badObjects,
                 allowedKeyPool = context.allowedKeyPool
             };
 
@@ -42,6 +42,13 @@ namespace HiraBots
             {
                 var scoreCalculator = m_Insistence.m_Insistence[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Insistence[{i}]";
+
+                if (scoreCalculator == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 scoreCalculator.Validate(ref functionValidator);
             }
 
@@ -49,6 +56,13 @@ namespace HiraBots
             {
                 var decorator = m_Target.m_Target[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Target[{i}]";
+
+                if (decorator == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 decorator.Validate(ref functionValidator);
             }
         }
@@ -63,7 +77,7 @@ namespace HiraBots
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
-                badKeys = context.badKeys,
+                badObjects = context.badObjects,
                 allowedKeyPool = context.allowedKeyPool
             };
 
@@ -71,6 +85,13 @@ namespace HiraBots
             {
                 var decorator = m_Action.m_Precondition[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Precondition[{i}]";
+
+                if (decorator == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 decorator.Validate(ref functionValidator);
             }
 
@@ -78,6 +99,13 @@ namespace HiraBots
             {
                 var scoreCalculator = m_Action.m_Cost[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Cost[{i}]";
+
+                if (scoreCalculator == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 scoreCalculator.Validate(ref functionValidator);
             }
 
@@ -85,6 +113,13 @@ namespace HiraBots
             {
                 var effector = m_Action.m_Effect[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Effect[{i}]";
+
+                if (effector == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 effector.Validate(ref functionValidator);
             }
 
@@ -92,6 +127,13 @@ namespace HiraBots
             {
                 var decorator = m_Target.m_Target[i];
                 functionValidator.identifier = $"{context.identifier}({name})::Target[{i}]";
+
+                if (decorator == null)
+                {
+                    context.badObjects.Add(functionValidator.identifier + " (missing function)");
+                    continue;
+                }
+
                 decorator.Validate(ref functionValidator);
             }
         }

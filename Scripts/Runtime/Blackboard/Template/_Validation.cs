@@ -73,6 +73,7 @@ namespace HiraBots
         /// <summary>
         /// Check whether the parent template contains all the backends this template requires.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BackendCheck(IBlackboardTemplateValidatorContext context)
         {
             if (m_Parent != null)

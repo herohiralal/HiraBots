@@ -9,7 +9,7 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Enum, ref context))
             {
-                context.badKeys.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)})");
+                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
             }
         }
     }
@@ -22,7 +22,7 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Float, ref context))
             {
-                context.badKeys.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)})");
+                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
             }
         }
     }
@@ -35,7 +35,7 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Integer, ref context))
             {
-                context.badKeys.Add($"{context.identifier}{name}:{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)})");
+                context.badObjects.Add($"{context.identifier}{name}:{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
             }
         }
     }
@@ -48,7 +48,7 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.UnmanagedSettable, ref context))
             {
-                context.badKeys.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)})");
+                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
             }
         }
     }
@@ -61,7 +61,7 @@ namespace HiraBots
 
             if (!ValidateKeySelector(ref m_Key, BlackboardKeyType.Object, ref context))
             {
-                context.badKeys.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)})");
+                context.badObjects.Add($"{context.identifier}({name})::{nameof(m_Key)}({(m_Key.selectedKey == null ? "null" : m_Key.selectedKey.name)}) (badly selected)");
             }
         }
     }
