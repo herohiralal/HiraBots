@@ -69,6 +69,50 @@ namespace HiraBots
         }
     }
 
+    internal partial class IsSetDecoratorBlackboardFunction
+    {
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            m_Key.keyTypesFilter = BlackboardKeyType.UnmanagedSettable;
+
+            UpdateDescription();
+        }
+
+        internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
+        {
+            base.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+
+            m_Key.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
+
+            UpdateDescription();
+        }
+
+        private void UpdateDescription()
+        {
+            if (m_Key.selectedKey == null)
+            {
+                m_Description = "";
+                return;
+            }
+
+            var verb = m_Header.m_IsScoreCalculator
+                ? m_Header.m_Invert
+                    ? "is not"
+                    : "is"
+                : m_Header.m_Invert
+                    ? "must not be"
+                    : "must be";
+
+            m_Description = m_Header.m_IsScoreCalculator
+                ? $"{scoreString} if "
+                : "";
+
+            m_Description += $"{m_Key.selectedKey.name} {verb} set.";
+        }
+    }
+
     internal partial class NumericalComparisonDecoratorBlackboardFunction
     {
         protected override void OnValidate()
@@ -97,7 +141,7 @@ namespace HiraBots
                 return;
             }
 
-            var value = m_Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var value = $"{m_Value}";
             string comparison;
 
             switch (m_ComparisonType)
@@ -143,50 +187,6 @@ namespace HiraBots
                 : "";
 
             m_Description += $"{m_Key.selectedKey.name} {verb} {comparison} {value}.";
-        }
-    }
-
-    internal partial class IsSetDecoratorBlackboardFunction
-    {
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            m_Key.keyTypesFilter = BlackboardKeyType.UnmanagedSettable;
-
-            UpdateDescription();
-        }
-
-        internal override void OnTargetBlackboardTemplateChanged(BlackboardTemplate newTemplate, ReadOnlyHashSetAccessor<BlackboardKey> keySet)
-        {
-            base.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
-
-            m_Key.OnTargetBlackboardTemplateChanged(newTemplate, keySet);
-
-            UpdateDescription();
-        }
-
-        private void UpdateDescription()
-        {
-            if (m_Key.selectedKey == null)
-            {
-                m_Description = "";
-                return;
-            }
-
-            var verb = m_Header.m_IsScoreCalculator
-                ? m_Header.m_Invert
-                    ? "is not"
-                    : "is"
-                : m_Header.m_Invert
-                    ? "must not be"
-                    : "must be";
-
-            m_Description = m_Header.m_IsScoreCalculator
-                ? $"{scoreString} if "
-                : "";
-
-            m_Description += $"{m_Key.selectedKey.name} {verb} set.";
         }
     }
 
