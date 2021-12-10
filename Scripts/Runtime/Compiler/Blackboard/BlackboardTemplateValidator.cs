@@ -12,7 +12,7 @@ namespace HiraBots
     {
         private readonly StringBuilder m_ErrorString;
 
-        public BlackboardTemplateValidator()
+        internal BlackboardTemplateValidator()
         {
             m_ErrorString = new StringBuilder(2000);
             m_CyclicalHierarchyCheckHelper = new HashSet<BlackboardTemplate>();
