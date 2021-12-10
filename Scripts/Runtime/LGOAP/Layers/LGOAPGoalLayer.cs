@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace HiraBots
 {
-    [Serializable]
+    [Serializable, StructLayout(LayoutKind.Auto)]
     internal partial struct LGOAPGoalLayer
     {
         internal static LGOAPGoalLayer empty => new LGOAPGoalLayer
