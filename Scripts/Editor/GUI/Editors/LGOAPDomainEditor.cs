@@ -111,7 +111,7 @@ namespace HiraBots.Editor
 
                 if (!editingAllowed)
                 {
-                    EditorGUILayout.HelpBox("Blackboard Templates are read-only while in play mode.", MessageType.Warning);
+                    EditorGUILayout.HelpBox("LGOAP Domains are read-only while in play mode.", MessageType.Warning);
                 }
 
                 if (m_Dirty)
@@ -154,6 +154,15 @@ namespace HiraBots.Editor
                     {
                         EditorGUILayout.HelpBox("Assign a blackboard template to modify AI behaviour.", MessageType.Info);
                         return;
+                    }
+
+                    var selfBackends = (int) m_SerializedObject.target.backends;
+                    var blackboardBackends = (int) ((BlackboardTemplate) m_SerializedObject.blackboard.objectReferenceValue).backends;
+
+                    if ((blackboardBackends & selfBackends) != selfBackends)
+                    {
+                        EditorGUILayout.HelpBox("The assigned blackboard template must contain" +
+                                                " all the backends that this LGOAP domain requires.", MessageType.Error);
                     }
 
                     EditorGUILayout.Space();
