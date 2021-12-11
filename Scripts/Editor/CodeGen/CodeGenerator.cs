@@ -15,17 +15,36 @@ namespace HiraBots.Editor
         [MenuItem("Assets/Generate HiraBots Code", false, priority = 800)]
         private static void GenerateHiraBotsCode()
         {
-            var templateGenerationSuccessful = CookingHelpers.TryGetBlackboardTemplatesToGenerateCodeFor(out var blackboardTemplates);
-
-            if (!templateGenerationSuccessful)
-            {
-                Debug.LogError("Failed to generate code.");
-                return;
-            }
+            var success = true;
 
             // create folder/asmdef
             EditorSerializationUtility.ConfirmCodeGenFolder();
             EditorSerializationUtility.CreateCodeGenAssemblyDefinition();
+
+            if (!CookingHelpers.TryGetBlackboardTemplatesToGenerateCodeFor(out var blackboardTemplates))
+            {
+                success = false;
+            }
+
+            var blackboardData = new Dictionary<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>>();
+
+            foreach (var (_, template) in blackboardTemplates)
+            {
+                var hs = new HashSet<BlackboardKey>();
+                template.GetKeySet(hs);
+                blackboardData.Add(template, hs.ReadOnly());
+            }
+
+            if (!CookingHelpers.TryGetLGOAPDomainsToGenerateCodeFor(blackboardData.ReadOnly(), out var lgoapDomains))
+            {
+                success = false;
+            }
+
+            if (!success)
+            {
+                blackboardTemplates = new (string path, BlackboardTemplate template)[0];
+                lgoapDomains = new (string path, LGOAPDomain domain)[0];
+            }
 
             var generatedCode = new List<(string path, string contents)>();
 
@@ -33,6 +52,11 @@ namespace HiraBots.Editor
             foreach (var (path, template) in blackboardTemplates)
             {
                 generatedCode.Add((path, template.allGeneratedCode));
+            }
+
+            foreach (var (path, domain) in lgoapDomains)
+            {
+                generatedCode.Add((path, domain.allGeneratedCode));
             }
 
             // write all c# code

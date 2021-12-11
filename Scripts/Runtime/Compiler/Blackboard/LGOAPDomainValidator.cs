@@ -69,7 +69,7 @@ namespace HiraBots
 
             if (m_MissingBackends != BackendType.None)
             {
-                m_ErrorString.Append(FormatErrorStringForUnsupportedBackends(m_MissingBackends));
+                m_ErrorString.AppendLine(FormatErrorStringForUnsupportedBackends(m_MissingBackends));
             }
 
             if (m_MissingBlackboard)

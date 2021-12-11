@@ -7,6 +7,11 @@ namespace HiraBots
         [Tooltip("The backends to use.")]
         [SerializeField, HideInInspector] private BackendType m_Backends = BackendType.RuntimeInterpreter;
 
+        /// <summary>
+        /// The effective backend to use.
+        /// </summary>
+        internal BackendType backends => m_Backends;
+
         [Tooltip("The blackboard to use for the domain.")]
         [SerializeField, HideInInspector] private BlackboardTemplate m_Blackboard = null;
 

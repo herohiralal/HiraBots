@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -23,21 +24,47 @@ namespace HiraBots.Editor
                 return;
             }
 
+            var success = true;
+
             EditorSerializationUtility.ConfirmTempEditorFolder();
 
             // validate the blackboards and generate the template collection
-            if (!CookingHelpers.TryGenerateInterpretedBlackboardTemplateCollection(out var result))
+            if (!CookingHelpers.TryGenerateInterpretedBlackboardTemplateCollection(out var templateCollection))
             {
-                Debug.LogError($"One or more blackboard templates have failed to compile. " +
-                               "You cannot enter play mode until they are fixed.");
-                EditorApplication.isPlaying = false;
+                success = false;
             }
-            else
-            {
-                result.hideFlags = HideFlags.HideAndDontSave;
 
-                // cook the collection into the temporary build folder
-                EditorSerializationUtility.CookToTempEditorFolderAndForget(ref result);
+            var blackboardData = new Dictionary<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>>();
+
+            for (var i = 0; i < templateCollection.count; i++)
+            {
+                var hs = new HashSet<BlackboardKey>();
+                templateCollection[i].GetKeySet(hs);
+                blackboardData.Add(templateCollection[i], hs.ReadOnly());
+            }
+
+            templateCollection.hideFlags = HideFlags.HideAndDontSave;
+
+            // cook the collection into the temporary build folder
+            EditorSerializationUtility.CookToTempEditorFolderAndForget(ref templateCollection);
+
+            if (!CookingHelpers.TryGenerateInterpretedLGOAPDomainCollection(blackboardData.ReadOnly(), out var domainCollection))
+            {
+                success = false;
+            }
+
+            domainCollection.hideFlags = HideFlags.HideAndDontSave;
+
+            // cook the collection into the temporary editor folder
+            EditorSerializationUtility.CookToTempEditorFolderAndForget(ref domainCollection);
+
+            if (!success)
+            {
+                Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, null,
+                    "One or more HiraBots objects have failed to compile. " +
+                    "You cannot enter play mode until they are fixed. Optionally, you " +
+                    "can also set their backends to none.");
+                EditorApplication.isPlaying = false;
             }
         }
     }

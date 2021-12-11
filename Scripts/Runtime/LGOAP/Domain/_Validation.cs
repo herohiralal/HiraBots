@@ -106,6 +106,8 @@ namespace HiraBots
                 return;
             }
 
+            BackendCheck(context);
+
             if (!context.TryGetBlackboardKeySet(m_Blackboard, out var keySet))
             {
                 context.MarkUnsuccessful();
@@ -113,7 +115,6 @@ namespace HiraBots
                 return;
             }
 
-            BackendCheck(context);
             IndividualComponentCheck(context, keySet);
         }
 
