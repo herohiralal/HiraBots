@@ -18,7 +18,7 @@ namespace HiraBots
             m_InsistenceCompilationHelper = m_Goals.Select(g => g.insistence).ToArray().GetLowLevelObjectProviderCollection();
             m_TargetCompilationHelper = m_Goals.Select(g => g.target).ToArray().GetLowLevelObjectProviderCollection();
 
-            m_Size = ByteStreamHelpers.CombinedSizes<int>() // total size header
+            m_Size = 0 // no header
                      + m_InsistenceCompilationHelper.GetMemorySizeRequiredForCompilation()
                      + m_TargetCompilationHelper.GetMemorySizeRequiredForCompilation();
         }
@@ -30,8 +30,6 @@ namespace HiraBots
 
         public unsafe void Compile(ref byte* stream)
         {
-            ByteStreamHelpers.Write<int>(ref stream, m_Size);
-
             m_InsistenceCompilationHelper.Compile(ref stream);
 
             m_TargetCompilationHelper.Compile(ref stream);
@@ -54,7 +52,7 @@ namespace HiraBots
             m_ActionCompilationHelper = m_Tasks.Select(t => t.action).ToArray().GetLowLevelObjectProviderCollection();
             m_TargetCompilationHelper = m_Tasks.Select(t => t.target).ToArray().GetLowLevelObjectProviderCollection();
 
-            m_Size = ByteStreamHelpers.CombinedSizes<int>() // total size header
+            m_Size = 0 // no header
                      + m_ActionCompilationHelper.GetMemorySizeRequiredForCompilation()
                      + m_TargetCompilationHelper.GetMemorySizeRequiredForCompilation();
         }
@@ -66,8 +64,6 @@ namespace HiraBots
 
         public unsafe void Compile(ref byte* stream)
         {
-            ByteStreamHelpers.Write<int>(ref stream, m_Size);
-
             m_ActionCompilationHelper.Compile(ref stream);
 
             m_TargetCompilationHelper.Compile(ref stream);
