@@ -47,7 +47,7 @@ namespace HiraBots.Editor
         [SerializeField] private bool m_Dirty = false;
         private LGOAPDomain.Serialized m_SerializedObject = null;
         private ReorderableList m_TopLayer = null;
-        private ReorderableList[] m_IntermediateLayers = null;
+        private ReorderableList[] m_IntermediateLayers = new ReorderableList[0];
         private ReorderableList m_BottomLayer = null;
 
         private void OnEnable()
