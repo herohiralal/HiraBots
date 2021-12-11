@@ -12,7 +12,7 @@ namespace HiraBots
     internal unsafe partial class NumericalComparisonDecoratorBlackboardFunction : DecoratorBlackboardFunction
     {
         [System.Serializable]
-        private enum ComparisonType : byte
+        internal enum ComparisonType : byte
         {
             AlmostEqualTo,
             GreaterThan,

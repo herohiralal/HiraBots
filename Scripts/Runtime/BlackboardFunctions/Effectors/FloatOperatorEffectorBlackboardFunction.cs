@@ -11,7 +11,7 @@ namespace HiraBots
     internal unsafe partial class FloatOperatorEffectorBlackboardFunction : EffectorBlackboardFunction
     {
         [System.Serializable]
-        private enum OperationType
+        internal enum OperationType
         {
             Set,
             Add,

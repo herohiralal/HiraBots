@@ -11,7 +11,7 @@ namespace HiraBots
     internal unsafe partial class EnumOperatorEffectorBlackboardFunction : EffectorBlackboardFunction
     {
         [System.Serializable]
-        private enum OperationType
+        internal enum OperationType
         {
             Set,
             AddFlags,

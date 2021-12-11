@@ -12,7 +12,7 @@ namespace HiraBots
     internal unsafe partial class IsSetEffectorBlackboardFunction : EffectorBlackboardFunction
     {
         [System.Serializable]
-        private enum OperationType
+        internal enum OperationType
         {
             Set,
             Unset,

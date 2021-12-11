@@ -19,5 +19,16 @@ namespace HiraBots
             m_Header = new Header {m_IsScoreCalculator = true, m_Score = score, m_Invert = invert};
         }
     }
+
+    internal abstract partial class EffectorBlackboardFunction
+    {
+        /// <summary>
+        /// Build an effector.
+        /// </summary>
+        internal void BuildEffectorBlackboardFunction()
+        {
+            // nothing lol
+        }
+    }
 }
 #endif

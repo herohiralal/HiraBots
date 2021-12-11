@@ -36,20 +36,20 @@ namespace HiraBots
         internal void BuildEnumBlackboardKey<TEnumType>(TEnumType defaultValue)
             where TEnumType : unmanaged, System.Enum
         {
+#if UNITY_EDITOR // type identifier is not present outside the editor
             var enumType = typeof(TEnumType);
             if (enumType.IsEnum)
             {
                 if (enumType.GetEnumUnderlyingType() == typeof(byte) || enumType.GetEnumUnderlyingType() == typeof(sbyte))
                 {
-#if UNITY_EDITOR // type identifier is not present outside the editor
                     var exposedToHiraBotsAttribute = enumType.GetCustomAttribute<ExposedToHiraBotsAttribute>();
                     if (exposedToHiraBotsAttribute != null)
                     {
                         m_DefaultValue.m_TypeIdentifier = exposedToHiraBotsAttribute.identifier;
                     }
-#endif
                 }
             }
+#endif
 
             m_DefaultValue.m_Value = *(byte*) &defaultValue;
         }
