@@ -33,6 +33,18 @@ namespace HiraBots
 
             Profiler.EndSample();
 
+            Profiler.BeginSample("LGOAP Domain Compilation");
+
+            var ldc = LGOAPDomainCollection.instance;
+            var ldcCount = ldc.count;
+            for (var i = 0; i < ldcCount; i++)
+            {
+                // the assumption here is that the blackboard templates have already compiled
+                ldc[i].Compile();
+            }
+
+            Profiler.EndSample();
+
             Profiler.EndSample();
         }
 
@@ -42,6 +54,14 @@ namespace HiraBots
             Profiler.BeginSample("HiraBots Cleanup");
 
             Application.quitting -= Quit;
+
+            var ldc = LGOAPDomainCollection.instance;
+            var ldcCount = ldc.count;
+            for (var i = ldcCount - 1; i >= 0; i--)
+            {
+                // need to free them before the blackboards they depend on
+                ldc[i].Free();
+            }
 
             var btc = BlackboardTemplateCollection.instance;
             var btcCount = btc.count;
