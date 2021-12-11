@@ -67,17 +67,15 @@ namespace HiraBots
 
             m_ErrorString.AppendLine($"Failed to validate LGOAP domain {target.name}.\n\n");
 
-            if (m_MissingBackends != BackendType.None)
-            {
-                m_ErrorString.AppendLine(FormatErrorStringForUnsupportedBackends(m_MissingBackends));
-            }
-
             if (m_MissingBlackboard)
             {
                 m_ErrorString.AppendLine(FormatErrorStringForMissingBlackboard());
             }
-
-            if (m_UnvalidatedBlackboard != null)
+            else if (m_MissingBackends != BackendType.None)
+            {
+                m_ErrorString.AppendLine(FormatErrorStringForUnsupportedBackends(m_MissingBackends));
+            }
+            else if (m_UnvalidatedBlackboard != null)
             {
                 m_ErrorString.AppendLine(FormatErrorStringForUnvalidatedBlackboard(m_UnvalidatedBlackboard));
             }

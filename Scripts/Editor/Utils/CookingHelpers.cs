@@ -42,7 +42,7 @@ namespace HiraBots.Editor
                     continue;
                 }
 
-                Debug.LogError(errorText, template);
+                Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, template, errorText);
                 result = false;
             }
 
@@ -80,7 +80,7 @@ namespace HiraBots.Editor
                     continue;
                 }
 
-                Debug.LogError(errorText, domain);
+                Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, domain, errorText);
                 result = false;
             }
 
@@ -115,7 +115,7 @@ namespace HiraBots.Editor
                     continue;
                 }
 
-                Debug.LogError(errorText, template);
+                Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, template, errorText);
                 result = false;
             }
 
@@ -142,15 +142,15 @@ namespace HiraBots.Editor
 
             var validatedTemplatesToGenerateCodeFor = new List<(string path, LGOAPDomain domain)>();
 
-            foreach (var (path, template) in domainsToGenerateCodeFor)
+            foreach (var (path, domain) in domainsToGenerateCodeFor)
             {
-                if (validator.Validate(template, out var errorText))
+                if (validator.Validate(domain, out var errorText))
                 {
-                    validatedTemplatesToGenerateCodeFor.Add((path, template));
+                    validatedTemplatesToGenerateCodeFor.Add((path, domain));
                     continue;
                 }
 
-                Debug.LogError(errorText, template);
+                Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, domain, errorText);
                 result = false;
             }
 
