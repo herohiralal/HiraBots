@@ -12,6 +12,16 @@ namespace HiraBots
         /// </summary>
         internal byte layerCount { get; }
 
+        /// <summary>
+        /// The actual domain.
+        /// </summary>
+        internal NativeArray<byte> lowLevelDomain => m_Domain;
+
+        /// <summary>
+        /// The relevant blackboard.
+        /// </summary>
+        internal BlackboardTemplateCompiledData blackboard => m_BlackboardCompiledData;
+
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
             byte layerCount)
         {

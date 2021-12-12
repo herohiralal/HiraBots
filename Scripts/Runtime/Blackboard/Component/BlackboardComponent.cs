@@ -36,6 +36,22 @@ namespace HiraBots
             return true;
         }
 
+        /// <summary>
+        /// Attempt to create a BlackboardComponent from the compiled data of a template.
+        /// </summary>
+        /// <returns>Whether the process was successful.</returns>
+        internal static bool TryCreate(BlackboardTemplateCompiledData template, out BlackboardComponent component)
+        {
+            if (template == null)
+            {
+                component = null;
+                return false;
+            }
+
+            component = new BlackboardComponent(template);
+            return true;
+        }
+
         private BlackboardComponent(BlackboardTemplateCompiledData template)
         {
             m_Template = template;

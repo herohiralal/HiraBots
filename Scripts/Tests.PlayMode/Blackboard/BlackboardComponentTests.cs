@@ -37,7 +37,7 @@ namespace HiraBots.Editor.Tests
 
             try
             {
-                Assert.IsTrue(!TryCreate(null, out var component) && component == null,
+                Assert.IsTrue(!TryCreate((BlackboardTemplate) null, out var component) && component == null,
                     "Created a component without template.");
 
                 Assert.IsTrue(!TryCreate(nonCompilingBlackboard, out component) && component == null,
