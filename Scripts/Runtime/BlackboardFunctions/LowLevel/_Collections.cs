@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using LowLevelDecoratorCollection =
     HiraBots.DefaultLowLevelObjectCollection<
         HiraBots.LowLevelDecoratorBlackboardFunction,
@@ -37,6 +39,12 @@ namespace HiraBots
             get => m_Count;
         }
 
+        // get a pointer at a given index
+        private byte* GetBlackboardPtrAt(int index)
+        {
+            return m_Address + (m_Size * index);
+        }
+
         /// <summary>
         /// Access a blackboard from the collection.
         /// </summary>
@@ -45,7 +53,7 @@ namespace HiraBots
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                var output = new LowLevelBlackboard(m_Address + (m_Size * index), m_Size);
+                var output = new LowLevelBlackboard(GetBlackboardPtrAt(index), m_Size);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 return index >= count
@@ -56,6 +64,45 @@ namespace HiraBots
                 return output;
 #endif
             }
+        }
+
+        /// <summary>
+        /// Copy a blackboard from one index to another.
+        /// </summary>
+        internal void Copy(int indexDestination, int indexSource)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (indexDestination < 0 || indexDestination >= m_Size
+                                     || indexSource < 0 || indexSource >= m_Size)
+            {
+                throw new System.IndexOutOfRangeException($"Index out of range [0-{count}) - " +
+                                                          $"(indices) {indexSource} -> {indexDestination}.");
+            }
+#endif
+
+            UnsafeUtility.MemCpy(GetBlackboardPtrAt(indexDestination), GetBlackboardPtrAt(indexSource), m_Size);
+        }
+
+        /// <summary>
+        /// Copy a blackboard from an array to a given index.
+        /// </summary>
+        internal void Copy(int indexDestination, NativeArray<byte> source)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if (indexDestination < 0 || indexDestination >= m_Size)
+            {
+                throw new System.IndexOutOfRangeException($"Index out of range [0-{count}) - " +
+                                                          $"(indices) {indexDestination}.");
+            }
+
+            if (source.Length != m_Size)
+            {
+                throw new System.InvalidOperationException($"Size mismatch between source array and blackboard size. - " +
+                                                           $"(blackboard size) {m_Size} & (array length) {source.Length}");
+            }
+#endif
+
+            UnsafeUtility.MemCpy(GetBlackboardPtrAt(indexDestination), source.GetUnsafeReadOnlyPtr(), m_Size);
         }
     }
 
@@ -97,6 +144,23 @@ namespace HiraBots
             }
 
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal int GetHeuristic(LowLevelBlackboard blackboard)
+        {
+            var heuristic = 0;
+            var enumerator = m_Collection.GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                if (!enumerator.current.Execute(blackboard))
+                {
+                    heuristic++;
+                }
+            }
+
+            return heuristic;
         }
     }
 

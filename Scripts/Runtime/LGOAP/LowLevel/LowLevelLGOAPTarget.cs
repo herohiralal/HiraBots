@@ -54,11 +54,11 @@ namespace HiraBots
         /// <summary>
         /// Check if a blackboard has this target achieved.
         /// </summary>
-        internal bool CheckIfAchieved(LowLevelBlackboard blackboard)
+        internal int GetHeuristic(LowLevelBlackboard blackboard)
         {
             var ptr = ByteStreamHelpers.JumpOver<int, bool>(m_Address).AndGetAPointerOf<byte>();
 
-            return new LowLevelDecoratorBlackboardFunctionCollection(ptr).Execute(blackboard);
+            return new LowLevelDecoratorBlackboardFunctionCollection(ptr).GetHeuristic(blackboard);
         }
     }
 }
