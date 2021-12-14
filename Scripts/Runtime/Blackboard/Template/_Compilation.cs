@@ -83,6 +83,11 @@ namespace HiraBots
             var memoryOffset = startingMemoryOffset;
             var index = startingIndex;
 
+            CompilationRegistry.BeginObject(this);
+
+            CompilationRegistry.IncreaseDepth();
+            CompilationRegistry.AddEntry("Parent", templateAddress, templateAddress + memoryOffset);
+
             var keyCompilerContext = new BlackboardKeyCompilerContext();
 
             foreach (var key in m_Keys.OrderBy(k => k.sizeInBytes))
@@ -94,10 +99,16 @@ namespace HiraBots
                 key.Compile(ref keyCompilerContext);
 
                 keyNameToKeyData.Add(key.name, key.compiledData);
+                CompilationRegistry.AddEntry(key.name, keyCompilerContext.address, keyCompilerContext.address + key.sizeInBytes);
 
                 memoryOffset += key.sizeInBytes;
                 index++;
             }
+
+            CompilationRegistry.DecreaseDepth();
+
+            CompilationRegistry.AddEntry(name, templateAddress, templateAddress + memoryOffset);
+            CompilationRegistry.EndObject();
 
             compiledData = new BlackboardTemplateCompiledData(parentCompiledData,
                 template, keyNameToKeyData, totalKeyCount);

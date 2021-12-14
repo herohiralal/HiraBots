@@ -17,6 +17,7 @@ namespace HiraBots
             Application.quitting -= Quit;
             Application.quitting += Quit;
 
+            CompilationRegistry.Initialize();
             BlackboardUnsafeHelpers.ClearObjectCache();
 
             Profiler.BeginSample("Blackboard Template Compilation");
@@ -44,6 +45,8 @@ namespace HiraBots
             }
 
             Profiler.EndSample();
+
+            CompilationRegistry.Build();
 
             Profiler.EndSample();
         }
