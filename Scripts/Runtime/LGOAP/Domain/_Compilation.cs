@@ -62,20 +62,36 @@ namespace HiraBots
             var domain = new NativeArray<byte>(requiredSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             var domainAddress = (byte*) domain.GetUnsafePtr();
 
+            CompilationRegistry.BeginObject(this);
+
+            CompilationRegistry.IncreaseDepth();
+            CompilationRegistry.AddEntry("Layer Count", domainAddress, domainAddress + sizeof(byte));
+
             // write layer count header
             ByteStreamHelpers.Write<byte>(ref domainAddress, (byte) (m_IntermediateLayers.Length + 1));
 
             // write top layer
+            var topLayerStart = domainAddress;
             m_TopLayer.Compile(ref domainAddress);
+            CompilationRegistry.AddEntry("Top Layer", topLayerStart, domainAddress);
 
             // write intermediate layers
             for (var i = 0; i < m_IntermediateLayers.Length; i++)
             {
+                var intermediateLayerStart = domainAddress;
                 m_IntermediateLayers[i].Compile(ref domainAddress);
+                CompilationRegistry.AddEntry($"Layer {i}", intermediateLayerStart, domainAddress);
             }
 
             // write bottom layer
+            var bottomLayerStart = domainAddress;
             m_BottomLayer.Compile(ref domainAddress);
+            CompilationRegistry.AddEntry($"Layer {m_IntermediateLayers.Length}", bottomLayerStart, domainAddress);
+
+            CompilationRegistry.DecreaseDepth();
+
+            CompilationRegistry.AddEntry(name, (byte*) domain.GetUnsafePtr(), domainAddress);
+            CompilationRegistry.EndObject();
 
             compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData, domain, (byte) (m_IntermediateLayers.Length + 1));
         }

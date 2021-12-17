@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal partial struct LGOAPGoalLayer : ILowLevelObjectProvider
+    internal partial struct LGOAPGoalLayer
     {
         [System.NonSerialized] private int m_Size;
         [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<LGOAPInsistence> m_InsistenceCompilationHelper;
@@ -23,20 +23,28 @@ namespace HiraBots
                      + m_TargetCompilationHelper.GetMemorySizeRequiredForCompilation();
         }
 
-        public int GetMemorySizeRequiredForCompilation()
+        internal int GetMemorySizeRequiredForCompilation()
         {
             return m_Size;
         }
 
-        public unsafe void Compile(ref byte* stream)
+        internal unsafe void Compile(ref byte* stream)
         {
-            m_InsistenceCompilationHelper.Compile(ref stream);
+            CompilationRegistry.IncreaseDepth();
 
+            var insistenceStartAddress = stream;
+            m_InsistenceCompilationHelper.Compile(ref stream);
+            CompilationRegistry.AddEntry("Insistence Collection", insistenceStartAddress, stream);
+
+            var targetStartAddress = stream;
             m_TargetCompilationHelper.Compile(ref stream);
+            CompilationRegistry.AddEntry("Target Collection", targetStartAddress, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
     }
 
-    internal partial struct LGOAPTaskLayer : ILowLevelObjectProvider
+    internal partial struct LGOAPTaskLayer
     {
         [System.NonSerialized] private int m_Size;
         [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<LGOAPAction> m_ActionCompilationHelper;
@@ -57,16 +65,24 @@ namespace HiraBots
                      + m_TargetCompilationHelper.GetMemorySizeRequiredForCompilation();
         }
 
-        public int GetMemorySizeRequiredForCompilation()
+        internal int GetMemorySizeRequiredForCompilation()
         {
             return m_Size;
         }
 
-        public unsafe void Compile(ref byte* stream)
+        internal unsafe void Compile(ref byte* stream)
         {
-            m_ActionCompilationHelper.Compile(ref stream);
+            CompilationRegistry.IncreaseDepth();
 
+            var actionStartAddress = stream;
+            m_ActionCompilationHelper.Compile(ref stream);
+            CompilationRegistry.AddEntry("Action Collection", actionStartAddress, stream);
+
+            var targetStartAddress = stream;
             m_TargetCompilationHelper.Compile(ref stream);
+            CompilationRegistry.AddEntry("Target Collection", targetStartAddress, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
     }
 }

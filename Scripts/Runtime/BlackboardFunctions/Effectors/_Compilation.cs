@@ -21,12 +21,20 @@ namespace HiraBots
         // compile override
         public override void Compile(ref byte* stream)
         {
+            CompilationRegistry.IncreaseDepth();
+
+            var start = stream;
+
             base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
+
+            CompilationRegistry.AddEntry(name, start, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
 
         // function override
@@ -52,12 +60,20 @@ namespace HiraBots
         // compile override
         public override void Compile(ref byte* stream)
         {
+            CompilationRegistry.IncreaseDepth();
+
+            var start = stream;
+
             base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
+
+            CompilationRegistry.AddEntry(name, start, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
 
         // function override
@@ -83,12 +99,20 @@ namespace HiraBots
         // compile override
         public override void Compile(ref byte* stream)
         {
+            CompilationRegistry.IncreaseDepth();
+
+            var start = stream;
+
             base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
+
+            CompilationRegistry.AddEntry(name, start, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
 
         // function override
@@ -114,12 +138,20 @@ namespace HiraBots
         // compile override
         public override void Compile(ref byte* stream)
         {
+            CompilationRegistry.IncreaseDepth();
+
+            var start = stream;
+
             base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
+
+            CompilationRegistry.AddEntry(name, start, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
 
         // function override
@@ -145,12 +177,20 @@ namespace HiraBots
         // compile override
         public override void Compile(ref byte* stream)
         {
+            CompilationRegistry.IncreaseDepth();
+
+            var start = stream;
+
             base.Compile(ref stream);
 
             // no offset
             ByteStreamHelpers.Write(ref stream, memory);
 
             // offset sizeof(Memory)
+
+            CompilationRegistry.AddEntry(name, start, stream);
+
+            CompilationRegistry.DecreaseDepth();
         }
 
         // function override
