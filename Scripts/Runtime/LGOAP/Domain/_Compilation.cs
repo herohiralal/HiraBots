@@ -85,6 +85,7 @@ namespace HiraBots
         /// </summary>
         internal void Free()
         {
+            compiledData.Dispose();
             compiledData = null;
         }
     }

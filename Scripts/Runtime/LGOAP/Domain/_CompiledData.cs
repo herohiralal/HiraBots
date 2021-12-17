@@ -30,7 +30,7 @@ namespace HiraBots
             this.layerCount = layerCount;
         }
 
-        ~LGOAPDomainCompiledData()
+        internal void Dispose()
         {
             m_BlackboardCompiledData = null;
 

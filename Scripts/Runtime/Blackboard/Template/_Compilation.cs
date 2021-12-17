@@ -124,6 +124,7 @@ namespace HiraBots
                 key.Free();
             }
 
+            compiledData.Dispose();
             compiledData = null;
         }
     }

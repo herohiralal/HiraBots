@@ -29,7 +29,7 @@ namespace HiraBots
             this.keyCount = keyCount;
         }
 
-        ~BlackboardTemplateCompiledData()
+        internal void Dispose()
         {
             m_ParentCompiledData?.RemoveInstanceSyncListener(this);
             m_ParentCompiledData = null;
