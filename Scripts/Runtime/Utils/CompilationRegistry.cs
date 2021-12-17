@@ -33,7 +33,7 @@ namespace HiraBots
 
         static CompilationRegistry()
         {
-            database = new Dictionary<string, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<Entry>>>().ReadOnly();
+            Clear();
         }
 
         private static Builder s_Builder;
@@ -112,6 +112,12 @@ namespace HiraBots
             database = d.ReadOnly();
 
             s_Builder = null;
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        internal static void Clear()
+        {
+            database = new Dictionary<string, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<Entry>>>().ReadOnly();
         }
     }
 }

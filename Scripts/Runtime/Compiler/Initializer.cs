@@ -75,11 +75,14 @@ namespace HiraBots
                 btc[i].Free();
             }
 
-            // get rid of template collection
+            // get rid of all collections
             // needed to work correctly when domain reload on play mode state change is disabled
+            LGOAPDomainCollection.ClearInstance();
             BlackboardTemplateCollection.ClearInstance();
 
             BlackboardUnsafeHelpers.ClearObjectCache();
+
+            CompilationRegistry.Clear();
 
             Profiler.EndSample();
         }
