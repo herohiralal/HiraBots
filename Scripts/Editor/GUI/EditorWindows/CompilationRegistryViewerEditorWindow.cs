@@ -19,7 +19,9 @@ namespace HiraBots.Editor
 
         private void OnGUI()
         {
-            if (EditorGUILayout.DropdownButton(GUIHelpers.TempContent(m_CurrentObject), FocusType.Keyboard, EditorStyles.popup, GUILayout.Width(200)))
+            var buttonRect = new Rect(0, 0, 200, 21);
+
+            if (EditorGUI.DropdownButton(buttonRect, GUIHelpers.TempContent(m_CurrentObject), FocusType.Keyboard, EditorStyles.popup))
             {
                 var m = new GenericMenu();
 
@@ -34,23 +36,43 @@ namespace HiraBots.Editor
                 m.ShowAsContext();
             }
 
-            m_Scroller = EditorGUILayout.BeginScrollView(m_Scroller, true, true);
-
             if (CompilationRegistry.database.TryGetValue(m_CurrentObject, out var dataForCurrentObject))
             {
+                var contentRect = new Rect(0, buttonRect.y + buttonRect.height, position.width * 0.66f, position.height - buttonRect.height);
+
                 var startAddress = dataForCurrentObject[0][0].startAddress;
+                var width = dataForCurrentObject[0][0].size * 20;
+                var r = new Rect
+                {
+                    height = 18
+                };
+
+                var viewRect = new Rect(0, 0, width, dataForCurrentObject.count * 20);
+
+                m_Scroller = GUI.BeginScrollView(contentRect, m_Scroller, viewRect);
+
                 for (var currentDepth = 0; currentDepth < dataForCurrentObject.count; currentDepth++)
                 {
                     var dataForCurrentDepth = dataForCurrentObject[currentDepth];
+                    r.y = (currentDepth * 20) + 1;
 
                     for (var i = 0; i < dataForCurrentDepth.count; i++)
                     {
                         var entry = dataForCurrentDepth[i];
+                        r.x = ((int) ((long) entry.startAddress - (long) startAddress) * 20) + 1;
+                        r.width = (entry.size * 20) - 2;
+
+                        EditorGUI.DrawRect(r, Color.black);
+                        EditorGUI.LabelField(r, entry.name);
                     }
                 }
-            }
 
-            EditorGUILayout.EndScrollView();
+                GUI.EndScrollView();
+            }
+            else
+            {
+                m_CurrentObject = k_SelectObject;
+            }
         }
     }
 }
