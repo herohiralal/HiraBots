@@ -41,7 +41,7 @@ namespace HiraBots.Editor
 
             if (CompilationRegistry.database.TryGetValue(m_CurrentObject, out var dataForCurrentObject))
             {
-                var contentRect = new Rect(0, buttonRect.y + buttonRect.height + 10, position.width * 0.66f, position.height - buttonRect.height - 10);
+                var contentRect = new Rect(0, buttonRect.y + buttonRect.height + 10, position.width * 0.75f, position.height - buttonRect.height - 10);
 
                 var startAddress = dataForCurrentObject[0][0].startAddress;
                 var width = dataForCurrentObject[0][0].size * 20;
@@ -77,13 +77,13 @@ namespace HiraBots.Editor
 
                 var infoRect = new Rect(contentRect.x + contentRect.width + 10, contentRect.y, position.width - contentRect.width - 10, contentRect.height);
 
-                viewRect = new Rect(0, 0, 300, 21 * 4);
+                viewRect = new Rect(0, 0, 500, 21 * 4);
 
                 m_InfoScroller = GUI.BeginScrollView(infoRect, m_InfoScroller, viewRect);
 
                 r.x = 0;
                 r.y = 0;
-                r.width = 300;
+                r.width = 500;
                 r.height = 21;
 
                 if (m_CurrentDepth < dataForCurrentObject.count)
