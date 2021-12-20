@@ -119,7 +119,7 @@ namespace HiraBots
                 float score;
                 if ((score = PerformHeuristicEstimatedSearch((byte) (index + 1), currentCost, threshold)) < 0)
                 {
-                    m_Result[(short) (index - 1)] = index;
+                    m_Result[(short) (index - 1)] = (short) iterator.currentIndex;
                     return -1;
                 }
 
