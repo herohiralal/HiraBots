@@ -65,7 +65,6 @@ namespace HiraBots
             CompilationRegistry.BeginObject(this);
 
             CompilationRegistry.IncreaseDepth();
-            CompilationRegistry.AddEntry("Layer Count", domainAddress, domainAddress + sizeof(byte));
 
             // write layer count header
             ByteStreamHelpers.Write<byte>(ref domainAddress, (byte) (m_IntermediateLayers.Length + 1));
