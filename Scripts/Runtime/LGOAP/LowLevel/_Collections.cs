@@ -37,6 +37,7 @@ namespace HiraBots
     /// <summary>
     /// A collection of low-level LGOAP insistence.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelLGOAPInsistenceCollection
     {
         private readonly LowLevelScoreCalculator2DCollection m_Collection;
@@ -56,6 +57,16 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelLGOAPInsistenceCollection(byte* stream) : this(new LowLevelScoreCalculator2DCollection(stream))
         {
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output, 3);
+                return output;
+            }
         }
 
         /// <summary>
@@ -83,6 +94,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a collection of LGOAP targets.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelLGOAPTargetCollection
     {
         private readonly LowLevelLGOAPTargetCollectionActual m_Collection;
@@ -104,6 +116,16 @@ namespace HiraBots
         {
         }
 
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output, 3);
+                return output;
+            }
+        }
+
         /// <summary>
         /// Access a specific low-level LGOAP target by index.
         /// </summary>
@@ -117,6 +139,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a collection of LGOAP actions.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelLGOAPActionCollection
     {
         private readonly LowLevelLGOAPActionCollectionActual m_Collection;
@@ -136,6 +159,16 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelLGOAPActionCollection(byte* stream) : this(new LowLevelLGOAPActionCollectionActual(stream))
         {
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output, 3);
+                return output;
+            }
         }
 
         /// <summary>

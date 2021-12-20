@@ -68,12 +68,15 @@ namespace HiraBots
 #endif
 
             var address = ByteStreamHelpers.JumpOver<byte>(m_Address).AndGetAPointerOf<byte>();
-            address += new LowLevelLGOAPInsistenceCollection(address).collection.size;
+            var insistenceColl = new LowLevelLGOAPInsistenceCollection(address);
+            address += insistenceColl.collection.size;
 
             for (var i = 0; i < index; i++)
             {
-                address += new LowLevelLGOAPTargetCollection(address).collection.size;
-                address += new LowLevelLGOAPActionCollection(address).collection.size;
+                var targetColl = new LowLevelLGOAPTargetCollection(address);
+                address += targetColl.collection.size;
+                var actionColl = new LowLevelLGOAPActionCollection(address);
+                address += actionColl.collection.size;
             }
 
             var targetCollection = new LowLevelLGOAPTargetCollection(address);
