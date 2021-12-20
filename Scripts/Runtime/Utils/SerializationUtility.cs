@@ -56,6 +56,15 @@
 #endif
         }
 
+        internal static void DumpLog(string text, string logType)
+        {
+#if UNITY_EDITOR
+            System.IO.File.WriteAllText(FileNameToEditorLogPath(logType), text);
+#else
+            System.IO.File.WriteAllText(FileNameToBuildLogPath(logType), text);
+#endif
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Convert file name to an address in the temporary editor folder.
@@ -63,6 +72,14 @@
         protected static string FileNameToTempEditorPath(string name)
         {
             return k_TempFolderName + "/" + k_MainSubfolderName + "/" + name + ".asset";
+        }
+
+        /// <summary>
+        /// Convert file name to an address in the editor log folder.
+        /// </summary>
+        protected static string FileNameToEditorLogPath(string name)
+        {
+            return System.IO.Path.GetDirectoryName(UnityEngine.Application.dataPath) + "/" + k_TempFolderName + "/" + k_MainSubfolderName + "/" + name + ".log";
         }
 #endif
 
@@ -72,6 +89,16 @@
         protected static string FileNameToResourcesRelativePath(string name)
         {
             return k_MainSubfolderName + "/" + name;
+        }
+
+        /// <summary>
+        /// Convert a file name to an address in the build log folder.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected static string FileNameToBuildLogPath(string name)
+        {
+            return UnityEngine.Application.persistentDataPath + "/" + k_MainSubfolderName + "/" + name + ".log";
         }
     }
 }

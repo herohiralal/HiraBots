@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -22,6 +23,11 @@ namespace HiraBots
             internal IntPtr endAddress { get; }
 
             internal ushort size => (ushort) (1L + (long) endAddress - (long) startAddress);
+
+            public override string ToString()
+            {
+                return $"{name} [{startAddress.ToString("X8")}-{endAddress.ToString("X8")}]";
+            }
         }
 
         private class Builder
@@ -112,6 +118,29 @@ namespace HiraBots
             database = d.ReadOnly();
 
             s_Builder = null;
+
+            var sb = new StringBuilder(10000);
+            foreach (var kvp in database)
+            {
+                sb.AppendLine($"[{kvp.Key}] ===================================");
+
+                var objectData = kvp.Value;
+                for (var i = 0; i < objectData.count; i++)
+                {
+                    var depthData = objectData[i];
+
+                    sb.AppendLine($"    Depth: {i} ===============");
+
+                    foreach (var entry in depthData)
+                    {
+                        sb.AppendLine($"        {entry}");
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+            SerializationUtility.DumpLog(sb.ToString(), "CompilationRegistry");
         }
 
         [Conditional("UNITY_EDITOR")]
