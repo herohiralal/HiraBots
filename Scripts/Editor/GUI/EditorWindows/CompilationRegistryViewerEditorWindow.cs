@@ -17,6 +17,7 @@ namespace HiraBots.Editor
         [SerializeField] private Vector2 m_ContentScroller;
         [SerializeField] private Vector2 m_InfoScroller;
         [NonSerialized] private string m_CurrentObject = k_SelectObject;
+        [NonSerialized] private float m_Zoom = 1f;
         [NonSerialized] private int m_CurrentDepth = 0;
         [NonSerialized] private int m_CurrentIndex = 0;
 
@@ -39,12 +40,16 @@ namespace HiraBots.Editor
                 m.ShowAsContext();
             }
 
+            EditorGUI.DrawRect(new Rect(0, buttonRect.y + buttonRect.height + 2, position.width, 6), Color.black);
+
             if (CompilationRegistry.database.TryGetValue(m_CurrentObject, out var dataForCurrentObject))
             {
-                var contentRect = new Rect(0, buttonRect.y + buttonRect.height + 10, position.width * 0.75f, position.height - buttonRect.height - 10);
+                var contentRect = new Rect(0, buttonRect.y + buttonRect.height + 10 + 21, position.width, (position.height * 0.75f) - buttonRect.height - 10 - 21);
+
+                m_Zoom = EditorGUI.Slider(new Rect(contentRect.x, contentRect.y - 21, 200, 21), m_Zoom, 0.1f, 1f);
 
                 var startAddress = dataForCurrentObject[0][0].startAddress;
-                var width = dataForCurrentObject[0][0].size * 20;
+                var width = dataForCurrentObject[0][0].size * 20 * m_Zoom;
                 var r = new Rect
                 {
                     height = 18
@@ -62,8 +67,8 @@ namespace HiraBots.Editor
                     for (var i = 0; i < dataForCurrentDepth.count; i++)
                     {
                         var entry = dataForCurrentDepth[i];
-                        r.x = ((int) ((long) entry.startAddress - (long) startAddress) * 20) + 1;
-                        r.width = (entry.size * 20) - 2;
+                        r.x = ((int) ((long) entry.startAddress - (long) startAddress) * 20 * m_Zoom) + 1;
+                        r.width = (entry.size * 20 * m_Zoom) - 2;
 
                         if (GUI.Button(r, entry.name))
                         {
@@ -75,7 +80,9 @@ namespace HiraBots.Editor
 
                 GUI.EndScrollView();
 
-                var infoRect = new Rect(contentRect.x + contentRect.width + 10, contentRect.y, position.width - contentRect.width - 10, contentRect.height);
+                EditorGUI.DrawRect(new Rect(0, (position.height * 0.75f) + 2, position.width, 6), Color.black);
+
+                var infoRect = new Rect(0, (position.height * 0.75f) + 10, contentRect.width, position.height * 0.25f);
 
                 viewRect = new Rect(0, 0, 500, 21 * 4);
 
