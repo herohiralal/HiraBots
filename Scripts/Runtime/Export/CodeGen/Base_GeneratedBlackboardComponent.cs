@@ -6,9 +6,6 @@ namespace UnityEngine
     // ReSharper disable once InconsistentNaming
     public abstract class Base_GeneratedBlackboardComponent : IDisposable
     {
-        private static readonly HashSet<Base_GeneratedBlackboardComponent> s_ActiveComponents =
-            new HashSet<Base_GeneratedBlackboardComponent>();
-
         protected readonly List<string> m_UnexpectedChanges = new List<string>();
 
         public ReadOnlyListAccessor<string> unexpectedChanges => m_UnexpectedChanges;
@@ -20,14 +17,12 @@ namespace UnityEngine
             m_UnexpectedChanges.Clear();
         }
 
-        protected static void Register(Base_GeneratedBlackboardComponent component)
+        protected static void Register(Base_GeneratedBlackboardComponent _)
         {
-            s_ActiveComponents.Add(component);
         }
 
-        protected static void Unregister(Base_GeneratedBlackboardComponent component)
+        protected static void Unregister(Base_GeneratedBlackboardComponent _)
         {
-            s_ActiveComponents.Remove(component);
         }
 
         public abstract void Dispose();
