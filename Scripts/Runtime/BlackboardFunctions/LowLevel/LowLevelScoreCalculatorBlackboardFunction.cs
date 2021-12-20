@@ -6,6 +6,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a score calculator blackboard function.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelScoreCalculatorBlackboardFunction : ILowLevelObject
     {
         private readonly LowLevelBlackboardFunction m_Function;
@@ -41,6 +42,8 @@ namespace HiraBots
                 return new LowLevelScoreCalculatorBlackboardFunction(address);
             }
         }
+
+        private string info => m_Function.info;
 
         // the score upon success
         private float score

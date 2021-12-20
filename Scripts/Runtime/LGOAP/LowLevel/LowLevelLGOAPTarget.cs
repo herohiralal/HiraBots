@@ -5,6 +5,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of an LGOAP target.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelLGOAPTarget : ILowLevelObject
     {
         private readonly byte* m_Address;
@@ -15,11 +16,20 @@ namespace HiraBots
             get => m_Address;
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelLGOAPTarget(byte* address)
         {
             m_Address = address;
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Address, ref output, 4);
+                return output;
+            }
         }
 
         internal readonly struct Converter : IPointerToLowLevelObjectConverter<LowLevelLGOAPTarget>

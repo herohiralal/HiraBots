@@ -6,6 +6,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a blackboard function.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelBlackboardFunction : ILowLevelObject
     {
         private readonly byte* m_Address;
@@ -19,6 +20,16 @@ namespace HiraBots
         internal LowLevelBlackboardFunction(byte* address)
         {
             m_Address = address;
+        }
+
+        internal string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Address, ref output, 5);
+                return output;
+            }
         }
 
         internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<LowLevelBlackboardFunction>

@@ -119,5 +119,40 @@ namespace HiraBots
         {
             database = new Dictionary<string, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<Entry>>>().ReadOnly();
         }
+
+        [Conditional("UNITY_EDITOR")]
+        internal static unsafe void Find(byte* address, ref string info, int? maxDepth = null)
+        {
+            foreach (var kvp in database)
+            {
+                var objectData = kvp.Value;
+
+                var objectEntry = kvp.Value[0][0];
+                if ((byte*) objectEntry.startAddress > address || (byte*) objectEntry.endAddress < address)
+                {
+                    continue;
+                }
+
+                info = objectEntry.name;
+
+                maxDepth = maxDepth.HasValue && (maxDepth.Value < objectData.count) ? maxDepth.Value : objectData.count; 
+
+                for (var currentDepth = 1; currentDepth < maxDepth; currentDepth++)
+                {
+                    var depthData = objectData[currentDepth];
+
+                    foreach (var entry in depthData)
+                    {
+                        if ((byte*) entry.startAddress >= address || (byte*) entry.endAddress < address)
+                        {
+                            continue;
+                        }
+
+                        info += $" > {entry.name}";
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

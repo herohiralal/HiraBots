@@ -6,6 +6,7 @@ namespace HiraBots
     /// <summary>
     /// Low-level representation of a decorator blackboard function.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelDecoratorBlackboardFunction : ILowLevelObject
     {
         private readonly LowLevelBlackboardFunction m_Function;
@@ -32,6 +33,8 @@ namespace HiraBots
         internal LowLevelDecoratorBlackboardFunction(byte* stream) : this(new LowLevelBlackboardFunction(stream))
         {
         }
+
+        private string info => m_Function.info;
 
         internal readonly struct PointerConverter : IPointerToLowLevelObjectConverter<LowLevelDecoratorBlackboardFunction>
         {

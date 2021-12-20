@@ -2,6 +2,7 @@
 
 namespace HiraBots
 {
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelLGOAPDomain
     {
         private readonly byte* m_Address;
@@ -15,6 +16,16 @@ namespace HiraBots
         public static implicit operator LowLevelLGOAPDomain(Unity.Collections.NativeArray<byte> domain)
         {
             return new LowLevelLGOAPDomain((byte*) Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr(domain));
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Address, ref output, 1);
+                return output;
+            }
         }
 
         // no offset
