@@ -109,6 +109,7 @@ namespace HiraBots
     /// <summary>
     /// A collection of low level decorators.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelDecoratorBlackboardFunctionCollection
     {
         private readonly LowLevelDecoratorCollection m_Collection;
@@ -127,6 +128,16 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelDecoratorBlackboardFunctionCollection(byte* stream) : this(new LowLevelDecoratorCollection(stream))
         {
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output);
+                return output;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -167,6 +178,7 @@ namespace HiraBots
     /// <summary>
     /// A collection of low level score-calculators.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelScoreCalculatorBlackboardFunctionCollection
     {
         private readonly LowLevelScoreCalculatorCollection m_Collection;
@@ -187,6 +199,16 @@ namespace HiraBots
         {
         }
 
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output);
+                return output;
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal float Execute(LowLevelBlackboard blackboard)
         {
@@ -205,6 +227,7 @@ namespace HiraBots
     /// <summary>
     /// A collection of low-level effectors.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{info}")]
     internal readonly unsafe struct LowLevelEffectorBlackboardFunctionCollection
     {
         private readonly LowLevelEffectorCollection m_Collection;
@@ -223,6 +246,16 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal LowLevelEffectorBlackboardFunctionCollection(byte* stream) : this(new LowLevelEffectorCollection(stream))
         {
+        }
+
+        private string info
+        {
+            get
+            {
+                var output = "unknown";
+                CompilationRegistry.Find(m_Collection.address, ref output);
+                return output;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
