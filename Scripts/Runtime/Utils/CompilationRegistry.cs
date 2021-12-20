@@ -172,7 +172,7 @@ namespace HiraBots
 
                     foreach (var entry in depthData)
                     {
-                        if ((byte*) entry.startAddress >= address || (byte*) entry.endAddress < address)
+                        if ((byte*) entry.startAddress > address || (byte*) entry.endAddress < address)
                         {
                             continue;
                         }
