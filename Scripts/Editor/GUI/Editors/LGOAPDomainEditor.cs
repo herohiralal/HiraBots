@@ -144,6 +144,10 @@ namespace HiraBots.Editor
                         LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
                     }
 
+                    m_SerializedObject.Update();
+                    m_SerializedObject.planSizesByLayer.arraySize = m_SerializedObject.intermediateLayersCount + 1;
+                    m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
+
                     // blackboard property field
                     m_SerializedObject.Update();
                     EditorGUILayout.PropertyField(m_SerializedObject.blackboard);
@@ -174,16 +178,34 @@ namespace HiraBots.Editor
 
                     EditorGUILayout.Space();
 
-                    foreach (var l in m_IntermediateLayers)
+                    for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
+                        var l = m_IntermediateLayers[i];
+
+                        DrawPlanSizeProperty(i);
+
                         l.DoLayoutList();
 
                         EditorGUILayout.Space();
                     }
 
+                    DrawPlanSizeProperty(m_SerializedObject.intermediateLayersCount);
+
                     m_BottomLayer.DoLayoutList();
+
+                    EditorGUILayout.Space();
                 }
             }
+        }
+
+        private void DrawPlanSizeProperty(int layerIndex)
+        {
+            m_SerializedObject.Update();
+
+            EditorGUILayout.IntSlider(m_SerializedObject.planSizesByLayer.GetArrayElementAtIndex(layerIndex),
+                1, 10, "Plan Size");
+
+            m_SerializedObject.ApplyModifiedProperties();
         }
 
         private HashSet<Object> subAssetsThatMustBeInFile

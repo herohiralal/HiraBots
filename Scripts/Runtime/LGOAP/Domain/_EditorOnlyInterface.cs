@@ -19,6 +19,9 @@ namespace HiraBots
                 blackboard = GetProperty<BlackboardTemplate>(nameof(m_Blackboard),
                     false, true);
 
+                planSizesByLayer = GetProperty(nameof(m_PlanSizesByLayer), SerializedPropertyType.Integer,
+                    true, true);
+
                 topLayer = GetProperty<LGOAPGoal>($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_Goals)}",
                     true, true);
 
@@ -41,6 +44,7 @@ namespace HiraBots
 
             internal SerializedProperty backends { get; }
             internal SerializedProperty blackboard { get; }
+            internal SerializedProperty planSizesByLayer { get; }
             internal SerializedProperty topLayer { get; }
             private SerializedProperty intermediateLayersProperty { get; }
             internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayers => m_IntermediateLayerProperties.ReadOnly();
