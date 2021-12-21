@@ -19,7 +19,10 @@ namespace HiraBots
 
         internal void Dispose()
         {
-            m_Internal.Dispose();
+            if (m_Internal.IsCreated)
+            {
+                m_Internal.Dispose();
+            }
         }
 
         internal short count
