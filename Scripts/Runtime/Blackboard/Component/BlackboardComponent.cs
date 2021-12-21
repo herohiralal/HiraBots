@@ -1,5 +1,6 @@
 ﻿using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -8,8 +9,20 @@ namespace HiraBots
     /// </summary>
     internal unsafe partial class BlackboardComponent
     {
+        private static ulong s_Id = 0;
+
+        private readonly ulong m_Id;
         private BlackboardTemplateCompiledData m_Template;
         private NativeArray<byte> m_Data;
+
+        /// <summary>
+        /// Reset the static id assigner.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod]
+        private static void Reset()
+        {
+            s_Id = 0;
+        }
 
         private byte* dataPtr => (byte*) m_Data.GetUnsafePtr();
         private byte* dataReadOnlyPtr => (byte*) m_Data.GetUnsafeReadOnlyPtr();
@@ -32,6 +45,8 @@ namespace HiraBots
 
         private BlackboardComponent(BlackboardTemplateCompiledData template)
         {
+            m_Id = ++s_Id;
+
             m_Template = template;
             m_Data = new NativeArray<byte>(m_Template.templateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             m_Template.CopyTemplateTo(m_Data);
