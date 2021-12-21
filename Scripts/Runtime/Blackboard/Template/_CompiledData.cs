@@ -14,6 +14,8 @@ namespace HiraBots
         private NativeArray<byte> m_Template = default;
         private readonly Dictionary<string, BlackboardKeyCompiledData> m_KeyNameToKeyData;
 
+        private readonly HashSet<NativeArray<byte>> m_BlackboardComponents = new HashSet<NativeArray<byte>>();
+
         /// <summary>
         /// The number of keys within the blackboard template.
         /// </summary>
@@ -31,6 +33,15 @@ namespace HiraBots
 
         internal void Dispose()
         {
+            m_Listeners.Clear();
+
+            foreach (var blackboard in m_BlackboardComponents)
+            {
+                blackboard.Dispose();
+            }
+
+            m_BlackboardComponents.Clear();
+
             m_ParentCompiledData?.RemoveInstanceSyncListener(this);
             m_ParentCompiledData = null;
 
@@ -43,6 +54,26 @@ namespace HiraBots
         // pointers to the template
         private byte* templatePtr => (byte*) m_Template.GetUnsafePtr();
         private byte* templateReadOnlyPtr => (byte*) m_Template.GetUnsafeReadOnlyPtr();
+
+        /// <summary>
+        /// Initialize a blackboard component based on this template.
+        /// </summary>
+        internal void InitializeBlackboardComponent(out NativeArray<byte> blackboard)
+        {
+            blackboard = new NativeArray<byte>(m_Template, Allocator.Persistent);
+            m_BlackboardComponents.Add(blackboard);
+        }
+
+        /// <summary>
+        /// Dispose a blackboard component based on this template.
+        /// </summary>
+        internal void DisposeBlackboardComponent(NativeArray<byte> blackboard)
+        {
+            if (m_BlackboardComponents.Remove(blackboard))
+            {
+                blackboard.Dispose();
+            }
+        }
 
         /// <summary>
         /// Copy template to a different NativeArray.
