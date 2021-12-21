@@ -48,6 +48,11 @@ namespace HiraBots
         [Conditional("UNITY_EDITOR")]
         internal static void Initialize()
         {
+            if (s_Builder != null)
+            {
+                return;
+            }
+
             s_Builder = new Builder
             {
                 m_Data = new Dictionary<string, List<List<Entry>>>(),
@@ -59,6 +64,11 @@ namespace HiraBots
         [Conditional("UNITY_EDITOR")]
         internal static void BeginObject(Object o)
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             var name = $"{o.name} [{o.GetInstanceID()}]";
             s_Builder.m_Data.Add(name, new List<List<Entry>>(0));
             s_Builder.m_Data[name].Add(new List<Entry>(0));
@@ -69,6 +79,11 @@ namespace HiraBots
         [Conditional("UNITY_EDITOR")]
         internal static void IncreaseDepth()
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             s_Builder.m_CurrentDepth++;
             var l = s_Builder.m_Data[s_Builder.m_CurrentObject];
             if (l.Count == s_Builder.m_CurrentDepth)
@@ -80,18 +95,33 @@ namespace HiraBots
         [Conditional("UNITY_EDITOR")]
         internal static unsafe void AddEntry(string name, byte* startAddress, byte* endAddress)
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             s_Builder.m_Data[s_Builder.m_CurrentObject][s_Builder.m_CurrentDepth].Add(new Entry(name, (IntPtr) startAddress, (IntPtr) (endAddress - 1)));
         }
 
         [Conditional("UNITY_EDITOR")]
         internal static void DecreaseDepth()
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             s_Builder.m_CurrentDepth--;
         }
 
         [Conditional("UNITY_EDITOR")]
         internal static void EndObject()
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             s_Builder.m_CurrentDepth = 0;
             s_Builder.m_CurrentObject = null;
         }
@@ -99,6 +129,11 @@ namespace HiraBots
         [Conditional("UNITY_EDITOR")]
         internal static void Build()
         {
+            if (s_Builder == null)
+            {
+                return;
+            }
+
             var d = new Dictionary<string, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<Entry>>>();
 
             foreach (var kvp in s_Builder.m_Data)
