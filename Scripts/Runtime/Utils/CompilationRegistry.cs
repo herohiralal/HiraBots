@@ -83,6 +83,7 @@ namespace HiraBots
             s_Builder.m_Data[s_Builder.m_CurrentObject][s_Builder.m_CurrentDepth].Add(new Entry(name, (IntPtr) startAddress, (IntPtr) (endAddress - 1)));
         }
 
+        [Conditional("UNITY_EDITOR")]
         internal static void DecreaseDepth()
         {
             s_Builder.m_CurrentDepth--;
@@ -143,7 +144,6 @@ namespace HiraBots
             SerializationUtility.DumpLog(sb.ToString(), "CompilationRegistry");
         }
 
-        [Conditional("UNITY_EDITOR")]
         internal static void Clear()
         {
             database = new Dictionary<string, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<Entry>>>().ReadOnly();
