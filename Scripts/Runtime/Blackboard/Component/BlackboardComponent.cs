@@ -42,6 +42,8 @@ namespace HiraBots
         {
             m_Template.RemoveInstanceSyncListener(this);
 
+            m_UnexpectedChanges.Clear();
+
             foreach (var keyData in m_Template.keyNameToKeyData.values)
             {
                 if (keyData.keyType == BlackboardKeyType.Object && !keyData.instanceSynced)
