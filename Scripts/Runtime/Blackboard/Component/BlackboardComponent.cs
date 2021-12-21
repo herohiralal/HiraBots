@@ -33,7 +33,8 @@ namespace HiraBots
         private BlackboardComponent(BlackboardTemplateCompiledData template)
         {
             m_Template = template;
-            m_Template.InitializeBlackboardComponent(out m_Data);
+            m_Data = new NativeArray<byte>(m_Template.templateSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            m_Template.CopyTemplateTo(m_Data);
             m_UnexpectedChanges = new System.Collections.Generic.List<string>(template.keyCount);
             m_Template.AddInstanceSyncListener(this);
         }
@@ -52,7 +53,7 @@ namespace HiraBots
                 }
             }
 
-            m_Template.DisposeBlackboardComponent(m_Data);
+            m_Data.Dispose();
 
             m_Template = null;
         }
