@@ -62,5 +62,10 @@ namespace HiraBots
         }
 
         internal short currentElement => this[currentIndex];
+
+        internal void CopyTo(PlannerResult other)
+        {
+            m_Internal.CopyTo(other.m_Internal);
+        }
     }
 }
