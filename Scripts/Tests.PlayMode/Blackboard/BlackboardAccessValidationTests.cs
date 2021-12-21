@@ -33,7 +33,7 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void InvalidKeyHandlingOnBlackboardComponent()
         {
-            TryCreate(m_ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate.compiledData, out var baboon);
 
             InvalidGetterTest<string, bool, KeyNotFoundException>(baboon.GetBooleanValue, k_InvalidKeyName,
                 "Invalid Boolean key name getter test failed.");
@@ -69,6 +69,8 @@ namespace HiraBots.Editor.Tests
                 "Invalid Quaternion key name getter test failed.");
             InvalidSetterTest<string, quaternion, KeyNotFoundException>(baboon.SetQuaternionValue, k_InvalidKeyName,
                 "Invalid Quaternion key name setter test failed.");
+
+            baboon.Dispose();
         }
 
         /// <summary>
@@ -77,12 +79,14 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void InvalidTypeAccessHandlingOnBlackboardComponent()
         {
-            TryCreate(m_ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate.compiledData, out var baboon);
 
             InvalidGetterTest<string, bool, InvalidCastException>(baboon.GetBooleanValue, "Mana",
                 "Invalid type read-access with key name test failed.");
             InvalidSetterTest<string, bool, InvalidCastException>(baboon.SetBooleanValue, "Mana",
                 "Invalid type write-access with key name test failed.");
+
+            baboon.Dispose();
         }
 
         /// <summary>
@@ -91,12 +95,14 @@ namespace HiraBots.Editor.Tests
         [Test]
         public void InvalidEnumTypeAccessHandlingOnBlackboardComponent()
         {
-            TryCreate(m_ElementalistTemplate, out var baboon);
+            TryCreate(m_ElementalistTemplate.compiledData, out var baboon);
             
             InvalidGetterTest<string, LongEnum, OverflowException>(baboon.GetEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type read-access with key name test failed.");
             InvalidSetterTest<string, LongEnum, OverflowException>(baboon.SetEnumValue<LongEnum>, "PowerType",
                 "Invalid enum type write-access with key name test failed.");
+
+            baboon.Dispose();
         }
 
         /// <summary>

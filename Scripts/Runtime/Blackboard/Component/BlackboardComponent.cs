@@ -15,28 +15,6 @@ namespace HiraBots
         private byte* dataReadOnlyPtr => (byte*) m_Data.GetUnsafeReadOnlyPtr();
 
         /// <summary>
-        /// Attempt to create a BlackboardComponent from a template.
-        /// </summary>
-        /// <returns>Whether the process was successful.</returns>
-        internal static bool TryCreate(BlackboardTemplate template, out BlackboardComponent component)
-        {
-            if (template == null)
-            {
-                component = null;
-                return false;
-            }
-
-            if (!template.isCompiled)
-            {
-                component = null;
-                return false;
-            }
-
-            component = new BlackboardComponent(template.compiledData);
-            return true;
-        }
-
-        /// <summary>
         /// Attempt to create a BlackboardComponent from the compiled data of a template.
         /// </summary>
         /// <returns>Whether the process was successful.</returns>
@@ -61,7 +39,7 @@ namespace HiraBots
             m_Template.AddInstanceSyncListener(this);
         }
 
-        ~BlackboardComponent()
+        internal void Dispose()
         {
             m_Template.RemoveInstanceSyncListener(this);
 

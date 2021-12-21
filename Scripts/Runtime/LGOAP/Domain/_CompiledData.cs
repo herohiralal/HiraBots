@@ -1,41 +1,61 @@
-﻿using Unity.Collections;
+﻿using System.Collections.Generic;
+using Unity.Collections;
 
 namespace HiraBots
 {
     internal class LGOAPDomainCompiledData
     {
         private BlackboardTemplateCompiledData m_BlackboardCompiledData;
+        private byte m_LayerCount;
         private NativeArray<byte> m_Domain = default;
+        private readonly HashSet<BlackboardComponent> m_BlackboardComponents = new HashSet<BlackboardComponent>();
 
         /// <summary>
-        /// The number of layers within this LGOAP domain.
+        /// Create a blackboard component.
         /// </summary>
-        internal byte layerCount { get; }
+        internal BlackboardComponent CreateBlackboardComponent()
+        {
+            BlackboardComponent.TryCreate(m_BlackboardCompiledData, out var output);
+            m_BlackboardComponents.Add(output);
+            return output;
+        }
 
         /// <summary>
-        /// The actual domain.
+        /// Dispose a blackboard component if registered on this domain.
         /// </summary>
-        internal NativeArray<byte> lowLevelDomain => m_Domain;
-
-        /// <summary>
-        /// The relevant blackboard.
-        /// </summary>
-        internal BlackboardTemplateCompiledData blackboard => m_BlackboardCompiledData;
+        internal void DisposeBlackboardComponent(BlackboardComponent component)
+        {
+            if (m_BlackboardComponents.Remove(component))
+            {
+                component.Dispose();
+            }
+        }
 
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
             byte layerCount)
         {
             m_BlackboardCompiledData = blackboardCompiledData;
             m_Domain = domain;
-            this.layerCount = layerCount;
+            m_LayerCount = layerCount;
         }
 
         internal void Dispose()
         {
-            m_BlackboardCompiledData = null;
+            foreach (var blackboard in m_BlackboardComponents)
+            {
+                blackboard.Dispose();
+            }
+
+            m_BlackboardComponents.Clear();
+
+            m_LayerCount = 0;
 
             if (m_Domain.IsCreated)
+            {
                 m_Domain.Dispose();
+            }
+
+            m_BlackboardCompiledData = null;
         }
     }
 }
