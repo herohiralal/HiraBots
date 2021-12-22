@@ -34,6 +34,12 @@ namespace HiraBots
 
         public void Execute()
         {
+            if (m_PreviousLayerResult.resultType == PlannerResult.Type.Invalid)
+            {
+                m_Result.InvalidatePlan();
+                return;
+            }
+
             var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.bufferSize + 1)];
             var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.bufferSize + 1), (ushort) m_Blackboard.Length);
             datasets.Copy(0, m_Blackboard);
@@ -43,7 +49,48 @@ namespace HiraBots
 
             var target = targets[m_PreviousLayerResult[0]];
 
-            new ActualJob
+            // check if the target is fake
+            if (target.isFake)
+            {
+                m_Result.InvalidatePlan();
+                m_Result.resultType = PlannerResult.Type.NotRequired;
+                return;
+            }
+
+            // check if the current plan is ok
+            if (m_PreviousLayerResult.resultType == PlannerResult.Type.Unchanged && m_Result.resultType != PlannerResult.Type.Invalid)
+            {
+                var previousPlanStillValid = true;
+
+                // check if the actions in the plan can still be chained
+                var planLength = m_Result.count;
+                for (var i = m_Result.currentIndex; i < planLength; i++)
+                {
+                    actions.collection[m_Result[i]].Break(
+                        out var precondition,
+                        out _,
+                        out var effect);
+
+                    if (!precondition.Execute(datasets[0]))
+                    {
+                        previousPlanStillValid = false;
+                        break;
+                    }
+
+                    effect.Execute(datasets[0]);
+                }
+
+                // current plan is still valid AND it satisfies the target
+                if (previousPlanStillValid && target.GetHeuristic(datasets[0]) == 0)
+                {
+                    m_Result.resultType = PlannerResult.Type.Unchanged;
+                    return;
+                }
+
+                datasets.Copy(0, m_Blackboard);
+            }
+
+            new NewPlanFinder
             {
                 m_Goal = target,
                 m_Actions = actions,
@@ -53,7 +100,7 @@ namespace HiraBots
             }.Execute();
         }
 
-        private struct ActualJob
+        private struct NewPlanFinder
         {
             internal LowLevelLGOAPTarget m_Goal;
             internal LowLevelLGOAPActionCollection m_Actions;
@@ -63,14 +110,14 @@ namespace HiraBots
 
             internal void Execute()
             {
+                m_Result.InvalidatePlan();
+
                 float threshold = m_Goal.GetHeuristic(m_Datasets[0]);
                 float score;
                 while ((score = PerformHeuristicEstimatedSearch(1, 0, threshold)) > 0 && score <= m_MaxFScore)
                 {
                     threshold = score;
                 }
-
-                m_Result.RestartPlan();
             }
 
             private float PerformHeuristicEstimatedSearch(byte index, float costUntilNow, float threshold)
@@ -85,6 +132,8 @@ namespace HiraBots
 
                 if (heuristic == 0)
                 {
+                    m_Result.RestartPlan();
+                    m_Result.resultType = PlannerResult.Type.NewPlan;
                     m_Result.count = (short) (index - 1);
                     return -1;
                 }

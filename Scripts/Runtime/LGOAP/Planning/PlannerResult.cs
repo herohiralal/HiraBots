@@ -22,7 +22,6 @@ namespace HiraBots
         internal PlannerResult(short bufferSize, Allocator allocator)
         {
             m_Internal = new NativeArray<short>(bufferSize + k_HeaderSize, allocator, NativeArrayOptions.UninitializedMemory);
-            resultType = Type.Invalid;
             InvalidatePlan();
         }
 
@@ -62,6 +61,7 @@ namespace HiraBots
 
         internal void InvalidatePlan()
         {
+            resultType = Type.Invalid;
             count = 0;
             currentIndex = short.MaxValue;
         }
