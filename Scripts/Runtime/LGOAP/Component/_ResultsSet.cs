@@ -36,12 +36,12 @@ namespace HiraBots
             /// <summary>
             /// The goal result.
             /// </summary>
-            private PlannerResult goalResult => m_Internal[0];
+            internal PlannerResult goalResult => m_Internal[0];
 
             /// <summary>
             /// The result for a plan at the given layer index.
             /// </summary>
-            private PlannerResult this[int layerIndex] => m_Internal[layerIndex + 1]; // first one is goal layer
+            internal PlannerResult this[int layerIndex] => m_Internal[layerIndex + 1]; // first one is goal layer
 
             /// <summary>
             /// Check if the results set is valid.
@@ -60,6 +60,9 @@ namespace HiraBots
                 {
                     throw new System.InvalidOperationException();
                 }
+
+                // individual size checking will be done by NativeArray<T>.Copy itself
+                // no point in doing it here again
 
                 for (var i = 0; i < countA; i++)
                 {
