@@ -4,9 +4,18 @@ namespace HiraBots
 {
     internal struct PlannerResult
     {
-        private const short k_CountIndex = 0;
-        private const short k_CurrentIndexIndex = 1;
-        private const short k_HeaderSize = 2;
+        internal enum Type : short
+        {
+            Uninitialized = 0,
+            NotRequired = 1,
+            Unchanged = 2,
+            NewPlan = 3
+        }
+
+        private const short k_TypeIndex = 0;
+        private const short k_CountIndex = 1;
+        private const short k_CurrentIndexIndex = 2;
+        private const short k_HeaderSize = 3;
 
         private NativeArray<short> m_Internal;
 
@@ -23,6 +32,12 @@ namespace HiraBots
             {
                 m_Internal.Dispose();
             }
+        }
+
+        internal Type resultType
+        {
+            get => (Type) m_Internal[k_TypeIndex];
+            set => m_Internal[k_TypeIndex] = (short) value;
         }
 
         internal short count
