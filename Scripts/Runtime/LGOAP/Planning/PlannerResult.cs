@@ -6,7 +6,7 @@ namespace HiraBots
     {
         internal enum Type : short
         {
-            Uninitialized = 0,
+            Invalid = 0,
             NotRequired = 1,
             Unchanged = 2,
             NewPlan = 3
@@ -22,7 +22,7 @@ namespace HiraBots
         internal PlannerResult(short bufferSize, Allocator allocator)
         {
             m_Internal = new NativeArray<short>(bufferSize + k_HeaderSize, allocator, NativeArrayOptions.UninitializedMemory);
-            count = 0;
+            resultType = Type.Invalid;
             InvalidatePlan();
         }
 
@@ -62,6 +62,7 @@ namespace HiraBots
 
         internal void InvalidatePlan()
         {
+            count = 0;
             currentIndex = short.MaxValue;
         }
 

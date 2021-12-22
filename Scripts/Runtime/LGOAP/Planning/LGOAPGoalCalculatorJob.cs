@@ -25,8 +25,16 @@ namespace HiraBots
             var blackboard = new LowLevelBlackboard((byte*) m_Blackboard.GetUnsafeReadOnlyPtr(), (ushort) m_Blackboard.Length);
 
             var answer = domain.insistenceCollection.GetMaxInsistenceIndex(blackboard);
+            answer = answer == -1 ? 0 : answer;
+
             m_Result.count = 1;
-            m_Result[0] = (short) (answer == -1 ? 0 : answer);
+
+            m_Result.resultType = m_Result.resultType != PlannerResult.Type.Invalid && answer == m_Result[0]
+                    ? PlannerResult.Type.Unchanged
+                    : PlannerResult.Type.NewPlan;
+
+            m_Result[0] = (short) answer;
+
             m_Result.RestartPlan();
         }
     }
