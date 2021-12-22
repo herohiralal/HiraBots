@@ -43,7 +43,7 @@ namespace HiraBots
 
             var target = targets[m_PreviousLayerResult[0]];
 
-            new LGOAPMainPlannerJobInternal
+            new ActualJob
             {
                 m_Goal = target,
                 m_Actions = actions,
@@ -52,81 +52,81 @@ namespace HiraBots
                 m_Result = m_Result
             }.Execute();
         }
-    }
 
-    internal struct LGOAPMainPlannerJobInternal
-    {
-        internal LowLevelLGOAPTarget m_Goal;
-        internal LowLevelLGOAPActionCollection m_Actions;
-        internal float m_MaxFScore;
-        internal LowLevelBlackboardCollection m_Datasets;
-        internal PlannerResult m_Result;
-
-        internal void Execute()
+        private struct ActualJob
         {
-            float threshold = m_Goal.GetHeuristic(m_Datasets[0]);
-            float score;
-            while ((score = PerformHeuristicEstimatedSearch(1, 0, threshold)) > 0 && score <= m_MaxFScore)
+            internal LowLevelLGOAPTarget m_Goal;
+            internal LowLevelLGOAPActionCollection m_Actions;
+            internal float m_MaxFScore;
+            internal LowLevelBlackboardCollection m_Datasets;
+            internal PlannerResult m_Result;
+
+            internal void Execute()
             {
-                threshold = score;
-            }
-
-            m_Result.RestartPlan();
-        }
-
-        private float PerformHeuristicEstimatedSearch(byte index, float costUntilNow, float threshold)
-        {
-            var heuristic = m_Goal.GetHeuristic(m_Datasets[index - 1]);
-
-            var fScore = costUntilNow + heuristic;
-            if (fScore > threshold)
-            {
-                return fScore;
-            }
-
-            if (heuristic == 0)
-            {
-                m_Result.count = (short) (index - 1);
-                return -1;
-            }
-
-            if (index == m_Datasets.count)
-            {
-                return float.MaxValue;
-            }
-
-            var min = float.MaxValue;
-
-            var iterator = m_Actions.GetEnumerator();
-            while (iterator.MoveNext())
-            {
-                iterator.current.Break(
-                    out var precondition,
-                    out var cost,
-                    out var effect);
-
-                if (!precondition.Execute(m_Datasets[index - 1]))
+                float threshold = m_Goal.GetHeuristic(m_Datasets[0]);
+                float score;
+                while ((score = PerformHeuristicEstimatedSearch(1, 0, threshold)) > 0 && score <= m_MaxFScore)
                 {
-                    continue;
+                    threshold = score;
                 }
 
-                var currentCost = costUntilNow + cost.Execute(m_Datasets[index - 1]);
+                m_Result.RestartPlan();
+            }
 
-                m_Datasets.Copy(index, index - 1);
+            private float PerformHeuristicEstimatedSearch(byte index, float costUntilNow, float threshold)
+            {
+                var heuristic = m_Goal.GetHeuristic(m_Datasets[index - 1]);
 
-                effect.Execute(m_Datasets[index]);
-
-                float score;
-                if ((score = PerformHeuristicEstimatedSearch((byte) (index + 1), currentCost, threshold)) < 0)
+                var fScore = costUntilNow + heuristic;
+                if (fScore > threshold)
                 {
-                    m_Result[(short) (index - 1)] = (short) iterator.currentIndex;
+                    return fScore;
+                }
+
+                if (heuristic == 0)
+                {
+                    m_Result.count = (short) (index - 1);
                     return -1;
                 }
 
-                min = math.min(score, min);
-            }
+                if (index == m_Datasets.count)
+                {
+                    return float.MaxValue;
+                }
 
-            return min;
+                var min = float.MaxValue;
+
+                var iterator = m_Actions.GetEnumerator();
+                while (iterator.MoveNext())
+                {
+                    iterator.current.Break(
+                        out var precondition,
+                        out var cost,
+                        out var effect);
+
+                    if (!precondition.Execute(m_Datasets[index - 1]))
+                    {
+                        continue;
+                    }
+
+                    var currentCost = costUntilNow + cost.Execute(m_Datasets[index - 1]);
+
+                    m_Datasets.Copy(index, index - 1);
+
+                    effect.Execute(m_Datasets[index]);
+
+                    float score;
+                    if ((score = PerformHeuristicEstimatedSearch((byte) (index + 1), currentCost, threshold)) < 0)
+                    {
+                        m_Result[(short) (index - 1)] = (short) iterator.currentIndex;
+                        return -1;
+                    }
+
+                    min = math.min(score, min);
+                }
+
+                return min;
+            }
         }
     }
 }
