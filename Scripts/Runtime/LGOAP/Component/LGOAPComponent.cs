@@ -52,10 +52,31 @@ namespace HiraBots
 
             m_ResultsSetForUse = new PlannerResultsSet(m_Domain.planSizesByLayer);
             m_ResultsSetForPlanning = new PlannerResultsSet(m_Domain.planSizesByLayer);
+
+            m_Status = Status.Normal;
+            m_LayerToSchedulePlannerAt = null;
+            m_JobHandleToWaitOn = null;
+            m_PlannerCoroutine = null;
         }
 
         internal void Dispose()
         {
+            if (m_PlannerCoroutine != null)
+            {
+                HiraBotsModule.StopCoroutine(m_PlannerCoroutine);
+                m_PlannerCoroutine = null;
+            }
+
+            if (m_JobHandleToWaitOn.HasValue)
+            {
+                m_JobHandleToWaitOn.Value.Complete();
+                m_Domain.RemoveDependentJob(m_Id);
+                m_JobHandleToWaitOn = null;
+            }
+
+            m_LayerToSchedulePlannerAt = null;
+            m_Status = Status.Normal;
+
             m_ResultsSetForPlanning.Dispose();
             m_ResultsSetForUse.Dispose();
 
