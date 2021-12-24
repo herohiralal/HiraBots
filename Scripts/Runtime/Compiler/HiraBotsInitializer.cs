@@ -6,7 +6,8 @@ namespace HiraBots
     /// <summary>
     /// This class is responsible for all runtime initialization and cleanup.
     /// </summary>
-    internal static class Initializer
+    [AddComponentMenu("")]
+    internal class HiraBotsInitializer : MonoBehaviour
     {
         // compile all HiraBots components in their required order
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -14,8 +15,16 @@ namespace HiraBots
         {
             Profiler.BeginSample("HiraBots Initialization");
 
-            Application.quitting -= Quit;
-            Application.quitting += Quit;
+            {
+                var go = new GameObject("[HiraBots]")
+                {
+                    hideFlags = HideFlags.HideAndDontSave
+                };
+
+                DontDestroyOnLoad(go);
+                go.AddComponent<HiraBotsInitializer>();
+                go.AddComponent<HiraBotsModule>();
+            }
 
             CompilationRegistry.Initialize();
             BlackboardUnsafeHelpers.ClearObjectCache();
@@ -51,12 +60,15 @@ namespace HiraBots
             Profiler.EndSample();
         }
 
+        private void OnDestroy()
+        {
+            Quit();
+        }
+
         // Free all the compiled HiraBots components in a reverse order
         private static void Quit()
         {
             Profiler.BeginSample("HiraBots Cleanup");
-
-            Application.quitting -= Quit;
 
             var ldc = LGOAPDomainCollection.instance;
             var ldcCount = ldc.count;
