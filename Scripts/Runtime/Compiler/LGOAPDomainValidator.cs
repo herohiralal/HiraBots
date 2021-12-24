@@ -11,8 +11,8 @@ namespace HiraBots
         internal LGOAPDomainValidator(ReadOnlyDictionaryAccessor<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>> validatedBlackboardsAndTheirKeySets)
         {
             m_ErrorString = new StringBuilder(2000);
-            m_BadComponents = new List<LGOAPDomainValidatorContext.BadComponentInfo>();
-            m_BadFunctions = new List<LGOAPComponentValidatorContext.BadFunctionInfo>();
+            m_BadContainers = new List<LGOAPDomainValidatorContext.BadContainerInfo>();
+            m_BadFunctions = new List<LGOAPContainerValidatorContext.BadFunctionInfo>();
             m_BadlySelectedKeys = new List<BlackboardFunctionValidatorContext.BadKeyInfo>();
             m_ValidatedBlackboardsAndTheirKeySets = validatedBlackboardsAndTheirKeySets;
         }
@@ -24,7 +24,7 @@ namespace HiraBots
             m_Validated = true;
             m_MissingBlackboard = false;
             m_UnvalidatedBlackboard = null;
-            m_BadComponents.Clear();
+            m_BadContainers.Clear();
             m_BadFunctions.Clear();
             m_BadlySelectedKeys.Clear();
         }
@@ -41,11 +41,11 @@ namespace HiraBots
         // whether the domain has an unvalidated blackboard
         private BlackboardTemplate m_UnvalidatedBlackboard;
 
-        // list of bad components within the domain
-        private readonly List<LGOAPDomainValidatorContext.BadComponentInfo> m_BadComponents;
+        // list of bad containers within the domain
+        private readonly List<LGOAPDomainValidatorContext.BadContainerInfo> m_BadContainers;
 
         // pre-allocated list of bad functions
-        private readonly List<LGOAPComponentValidatorContext.BadFunctionInfo> m_BadFunctions;
+        private readonly List<LGOAPContainerValidatorContext.BadFunctionInfo> m_BadFunctions;
 
         // pre-allocated list of badly selected keys
         private readonly List<BlackboardFunctionValidatorContext.BadKeyInfo> m_BadlySelectedKeys;
@@ -80,57 +80,57 @@ namespace HiraBots
                 m_ErrorString.AppendLine(FormatErrorStringForUnvalidatedBlackboard(m_UnvalidatedBlackboard));
             }
 
-            for (var i = 0; i < m_BadComponents.Count; i++)
+            for (var i = 0; i < m_BadContainers.Count; i++)
             {
-                var badComponentInfo = m_BadComponents[i];
+                var badContainerInfo = m_BadContainers[i];
 
-                if (badComponentInfo.componentIsNull)
+                if (badContainerInfo.containerIsNull)
                 {
-                    m_ErrorString.AppendLine(FormatErrorStringForNullComponent(target,
-                        ref badComponentInfo));
+                    m_ErrorString.AppendLine(FormatErrorStringForNullContainer(target,
+                        ref badContainerInfo));
                     continue;
                 }
 
-                if (badComponentInfo.componentIsAbstractWhenItShouldNotBe)
+                if (badContainerInfo.containerIsAbstractWhenItShouldNotBe)
                 {
-                    m_ErrorString.AppendLine(FormatErrorStringForComponentAbstractWhenItShouldNotBe(target,
-                        ref badComponentInfo));
+                    m_ErrorString.AppendLine(FormatErrorStringForContainerAbstractWhenItShouldNotBe(target,
+                        ref badContainerInfo));
                 }
 
-                if (badComponentInfo.componentIsNotAbstractWhenItShouldBe)
+                if (badContainerInfo.containerIsNotAbstractWhenItShouldBe)
                 {
-                    m_ErrorString.AppendLine(FormatErrorStringForComponentNotAbstractWhenItShouldBe(target,
-                        ref badComponentInfo));
+                    m_ErrorString.AppendLine(FormatErrorStringForContainerNotAbstractWhenItShouldBe(target,
+                        ref badContainerInfo));
                 }
 
-                for (var j = 0; j < badComponentInfo.badFunctions.Length; j++)
+                for (var j = 0; j < badContainerInfo.badFunctions.Length; j++)
                 {
-                    var badFunctionInfo = badComponentInfo.badFunctions[j];
+                    var badFunctionInfo = badContainerInfo.badFunctions[j];
 
                     if (badFunctionInfo.functionIsNull)
                     {
                         m_ErrorString.AppendLine(FormatStringForNullFunction(target,
-                            ref badComponentInfo, ref badFunctionInfo));
+                            ref badContainerInfo, ref badFunctionInfo));
                         continue;
                     }
 
                     if (badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe)
                     {
                         m_ErrorString.AppendLine(FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(target,
-                            ref badComponentInfo, ref badFunctionInfo));
+                            ref badContainerInfo, ref badFunctionInfo));
                     }
 
                     if (badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe)
                     {
                         m_ErrorString.AppendLine(FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(target,
-                            ref badComponentInfo, ref badFunctionInfo));
+                            ref badContainerInfo, ref badFunctionInfo));
                     }
 
                     for (var k = 0; k < badFunctionInfo.badKeys.Length; k++)
                     {
                         var badlySelectedKey = badFunctionInfo.badKeys[k];
                         m_ErrorString.AppendLine(FormatErrorStringForBadlySelectedKey(target,
-                            ref badComponentInfo, ref badFunctionInfo, ref badlySelectedKey));
+                            ref badContainerInfo, ref badFunctionInfo, ref badlySelectedKey));
                     }
                 }
             }
@@ -154,54 +154,54 @@ namespace HiraBots
             return $"The assigned blackboard template ({blackboard.name}) was invalidated.";
         }
 
-        internal static string FormatErrorStringForNullComponent(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c)
+        internal static string FormatErrorStringForNullContainer(LGOAPDomain d,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c)
         {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.componentType}[{c.componentIndex}] is null.";
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}] is null.";
         }
 
-        internal static string FormatErrorStringForComponentAbstractWhenItShouldNotBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c)
+        internal static string FormatErrorStringForContainerAbstractWhenItShouldNotBe(LGOAPDomain d,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c)
         {
-            return $"{d.name}::Layer{c.layerIndex}]::{c.componentType}[{c.componentIndex}] should not be abstract.";
+            return $"{d.name}::Layer{c.layerIndex}]::{c.containerType}[{c.containerIndex}] should not be abstract.";
         }
 
-        internal static string FormatErrorStringForComponentNotAbstractWhenItShouldBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c)
+        internal static string FormatErrorStringForContainerNotAbstractWhenItShouldBe(LGOAPDomain d,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c)
         {
-            return $"{d.name}::Layer{c.layerIndex}]::{c.componentType}[{c.componentIndex}] should be abstract.";
+            return $"{d.name}::Layer{c.layerIndex}]::{c.containerType}[{c.containerIndex}] should be abstract.";
         }
 
         internal static string FormatStringForNullFunction(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c,
-            ref LGOAPComponentValidatorContext.BadFunctionInfo f)
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadFunctionInfo f)
         {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.componentType}[{c.componentIndex}]({f.componentName})" +
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
                    $"::{f.functionType}[{f.functionIndex}] is null.";
         }
 
         internal static string FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c,
-            ref LGOAPComponentValidatorContext.BadFunctionInfo f)
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadFunctionInfo f)
         {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.componentType}[{c.componentIndex}]({f.componentName})" +
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
                    $"::{f.functionType}[{f.functionIndex}] should not be a score calculator.";
         }
 
         internal static string FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c,
-            ref LGOAPComponentValidatorContext.BadFunctionInfo f)
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadFunctionInfo f)
         {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.componentType}[{c.componentIndex}]({f.componentName})" +
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
                    $"::{f.functionType}[{f.functionIndex}] should be a score calculator.";
         }
 
         internal static string FormatErrorStringForBadlySelectedKey(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadComponentInfo c,
-            ref LGOAPComponentValidatorContext.BadFunctionInfo f,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadFunctionInfo f,
             ref BlackboardFunctionValidatorContext.BadKeyInfo k)
         {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.componentType}[{c.componentIndex}]({f.componentName})" +
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
                    $"::{f.functionType}[{f.functionIndex}]({k.functionName})::{k.variableName} has an invalid value of " +
                    $"{(k.selectedKey == null ? "null" : k.selectedKey.name)}.";
         }
@@ -214,12 +214,12 @@ namespace HiraBots
             set => m_MissingBackends = value;
         }
 
-        void ILGOAPDomainValidatorContext.AddBadComponent(ref LGOAPDomainValidatorContext.BadComponentInfo info)
+        void ILGOAPDomainValidatorContext.AddBadContainer(ref LGOAPDomainValidatorContext.BadContainerInfo info)
         {
-            m_BadComponents.Add(info);
+            m_BadContainers.Add(info);
         }
 
-        List<LGOAPComponentValidatorContext.BadFunctionInfo> ILGOAPDomainValidatorContext.badFunctions => m_BadFunctions;
+        List<LGOAPContainerValidatorContext.BadFunctionInfo> ILGOAPDomainValidatorContext.badFunctions => m_BadFunctions;
 
         List<BlackboardFunctionValidatorContext.BadKeyInfo> ILGOAPDomainValidatorContext.badlySelectedKeys => m_BadlySelectedKeys;
 

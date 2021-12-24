@@ -5,9 +5,9 @@ using UnityEngine;
 namespace HiraBots
 {
     /// <summary>
-    /// The context to validate an LGOAP component.
+    /// The context to validate an LGOAP container.
     /// </summary>
-    internal struct LGOAPComponentValidatorContext
+    internal struct LGOAPContainerValidatorContext
     {
         /// <summary>
         /// The info regarding a bad function.
@@ -15,9 +15,9 @@ namespace HiraBots
         internal struct BadFunctionInfo
         {
             /// <summary>
-            /// The name of the component.
+            /// The name of the container.
             /// </summary>
-            internal string componentName { get; set; }
+            internal string containerName { get; set; }
 
             /// <summary>
             /// The type of the function.
@@ -74,9 +74,9 @@ namespace HiraBots
     internal sealed partial class LGOAPGoal
     {
         /// <summary>
-        /// Validate this LGOAP component.
+        /// Validate this LGOAP container.
         /// </summary>
-        internal void Validate(ref LGOAPComponentValidatorContext context)
+        internal void Validate(ref LGOAPContainerValidatorContext context)
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
@@ -90,9 +90,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Insistence",
                     functionIndex = i,
                 };
@@ -135,9 +135,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Target",
                     functionIndex = i,
                 };
@@ -179,9 +179,9 @@ namespace HiraBots
     internal sealed partial class LGOAPTask
     {
         /// <summary>
-        /// Validate this LGOAP component.
+        /// Validate this LGOAP container.
         /// </summary>
-        internal void Validate(ref LGOAPComponentValidatorContext context)
+        internal void Validate(ref LGOAPContainerValidatorContext context)
         {
             var functionValidator = new BlackboardFunctionValidatorContext
             {
@@ -195,9 +195,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Precondition",
                     functionIndex = i,
                 };
@@ -240,9 +240,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Cost",
                     functionIndex = i,
                 };
@@ -285,9 +285,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Effect",
                     functionIndex = i,
                 };
@@ -324,9 +324,9 @@ namespace HiraBots
                 functionValidator.succeeded = true;
                 functionValidator.badlySelectedKeys.Clear();
 
-                var badFunctionInfo = new LGOAPComponentValidatorContext.BadFunctionInfo
+                var badFunctionInfo = new LGOAPContainerValidatorContext.BadFunctionInfo
                 {
-                    componentName = name,
+                    containerName = name,
                     functionType = "Target",
                     functionIndex = i,
                 };

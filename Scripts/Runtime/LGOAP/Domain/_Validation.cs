@@ -36,14 +36,14 @@ namespace HiraBots
         BackendType missingBackends { get; set; }
 
         /// <summary>
-        /// A list of bad components.
+        /// A list of bad containers.
         /// </summary>
-        void AddBadComponent(ref LGOAPDomainValidatorContext.BadComponentInfo info);
+        void AddBadContainer(ref LGOAPDomainValidatorContext.BadContainerInfo info);
 
         /// <summary>
         /// Pre-allocated list of bad functions.
         /// </summary>
-        List<LGOAPComponentValidatorContext.BadFunctionInfo> badFunctions { get; }
+        List<LGOAPContainerValidatorContext.BadFunctionInfo> badFunctions { get; }
 
         /// <summary>
         /// Pre-allocated list for badly selected keys.
@@ -54,9 +54,9 @@ namespace HiraBots
     internal struct LGOAPDomainValidatorContext
     {
         /// <summary>
-        /// The info regarding a bad component.
+        /// The info regarding a bad container.
         /// </summary>
-        internal struct BadComponentInfo
+        internal struct BadContainerInfo
         {
             /// <summary>
             /// The index of the layer.
@@ -64,34 +64,34 @@ namespace HiraBots
             internal int layerIndex { get; set; }
 
             /// <summary>
-            /// The type of the component.
+            /// The type of the container.
             /// </summary>
-            internal string componentType { get; set; }
+            internal string containerType { get; set; }
 
             /// <summary>
-            /// The index of the component.
+            /// The index of the container.
             /// </summary>
-            internal int componentIndex { get; set; }
+            internal int containerIndex { get; set; }
 
             /// <summary>
-            /// Whether the component is null.
+            /// Whether the container is null.
             /// </summary>
-            internal bool componentIsNull { get; set; }
+            internal bool containerIsNull { get; set; }
 
             /// <summary>
-            /// Whether the component is abstract when it should not be.
+            /// Whether the container is abstract when it should not be.
             /// </summary>
-            internal bool componentIsAbstractWhenItShouldNotBe { get; set; }
+            internal bool containerIsAbstractWhenItShouldNotBe { get; set; }
 
             /// <summary>
-            /// Whether the component is not abstract when it should be.
+            /// Whether the container is not abstract when it should be.
             /// </summary>
-            internal bool componentIsNotAbstractWhenItShouldBe { get; set; }
+            internal bool containerIsNotAbstractWhenItShouldBe { get; set; }
 
             /// <summary>
-            /// The list of bad functions on the component.
+            /// The list of bad functions on the container.
             /// </summary>
-            internal LGOAPComponentValidatorContext.BadFunctionInfo[] badFunctions { get; set; }
+            internal LGOAPContainerValidatorContext.BadFunctionInfo[] badFunctions { get; set; }
         }
     }
 
@@ -115,7 +115,7 @@ namespace HiraBots
                 return;
             }
 
-            IndividualComponentCheck(context, keySet);
+            IndividualContainerCheck(context, keySet);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,9 +144,9 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void IndividualComponentCheck(ILGOAPDomainValidatorContext context, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+        private void IndividualContainerCheck(ILGOAPDomainValidatorContext context, ReadOnlyHashSetAccessor<BlackboardKey> keys)
         {
-            var componentValidator = new LGOAPComponentValidatorContext
+            var containerValidator = new LGOAPContainerValidatorContext
             {
                 badFunctions = context.badFunctions,
                 badlySelectedKeys = context.badlySelectedKeys,
@@ -156,40 +156,40 @@ namespace HiraBots
             for (var i = 0; i < m_TopLayer.m_Goals.Length; i++)
             {
                 var goal = m_TopLayer.m_Goals[i];
-                componentValidator.succeeded = true;
-                componentValidator.badFunctions.Clear();
-                componentValidator.badlySelectedKeys.Clear();
+                containerValidator.succeeded = true;
+                containerValidator.badFunctions.Clear();
+                containerValidator.badlySelectedKeys.Clear();
 
-                var badComponentInfo = new LGOAPDomainValidatorContext.BadComponentInfo
+                var badComponentInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                 {
                     layerIndex = 0,
-                    componentType = "Goal",
-                    componentIndex = i
+                    containerType = "Goal",
+                    containerIndex = i
                 };
 
                 if (goal == null)
                 {
-                    badComponentInfo.componentIsNull = true;
+                    badComponentInfo.containerIsNull = true;
 
                     context.MarkUnsuccessful();
-                    context.AddBadComponent(ref badComponentInfo);
+                    context.AddBadContainer(ref badComponentInfo);
                     continue;
                 }
 
                 var success = true;
 
-                goal.Validate(ref componentValidator);
+                goal.Validate(ref containerValidator);
 
-                if (!componentValidator.succeeded)
+                if (!containerValidator.succeeded)
                 {
                     success = false;
-                    badComponentInfo.badFunctions = componentValidator.badFunctions.ToArray();
+                    badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
                 }
 
                 if (!success)
                 {
                     context.MarkUnsuccessful();
-                    context.AddBadComponent(ref badComponentInfo);
+                    context.AddBadContainer(ref badComponentInfo);
                 }
             }
 
@@ -200,23 +200,23 @@ namespace HiraBots
                 for (var j = 0; j < layer.m_Tasks.Length; j++)
                 {
                     var abstractTask = layer.m_Tasks[j];
-                    componentValidator.succeeded = true;
-                    componentValidator.badFunctions.Clear();
-                    componentValidator.badlySelectedKeys.Clear();
+                    containerValidator.succeeded = true;
+                    containerValidator.badFunctions.Clear();
+                    containerValidator.badlySelectedKeys.Clear();
 
-                    var badComponentInfo = new LGOAPDomainValidatorContext.BadComponentInfo
+                    var badComponentInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                     {
                         layerIndex = i + 1,
-                        componentType = "AbstractTask",
-                        componentIndex = j
+                        containerType = "AbstractTask",
+                        containerIndex = j
                     };
 
                     if (abstractTask == null)
                     {
-                        badComponentInfo.componentIsNull = true;
+                        badComponentInfo.containerIsNull = true;
 
                         context.MarkUnsuccessful();
-                        context.AddBadComponent(ref badComponentInfo);
+                        context.AddBadContainer(ref badComponentInfo);
                         continue;
                     }
 
@@ -225,21 +225,21 @@ namespace HiraBots
                     if (!abstractTask.isAbstract)
                     {
                         success = false;
-                        badComponentInfo.componentIsNotAbstractWhenItShouldBe = true;
+                        badComponentInfo.containerIsNotAbstractWhenItShouldBe = true;
                     }
 
-                    abstractTask.Validate(ref componentValidator);
+                    abstractTask.Validate(ref containerValidator);
 
-                    if (!componentValidator.succeeded)
+                    if (!containerValidator.succeeded)
                     {
                         success = false;
-                        badComponentInfo.badFunctions = componentValidator.badFunctions.ToArray();
+                        badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
                     }
 
                     if (!success)
                     {
                         context.MarkUnsuccessful();
-                        context.AddBadComponent(ref badComponentInfo);
+                        context.AddBadContainer(ref badComponentInfo);
                     }
                 }
             }
@@ -249,23 +249,23 @@ namespace HiraBots
             for (var i = 0; i < m_BottomLayer.m_Tasks.Length; i++)
             {
                 var task = m_BottomLayer.m_Tasks[i];
-                componentValidator.succeeded = true;
-                componentValidator.badFunctions.Clear();
-                componentValidator.badlySelectedKeys.Clear();
+                containerValidator.succeeded = true;
+                containerValidator.badFunctions.Clear();
+                containerValidator.badlySelectedKeys.Clear();
 
-                var badComponentInfo = new LGOAPDomainValidatorContext.BadComponentInfo
+                var badContainerInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                 {
                     layerIndex = bottomLayerIndex,
-                    componentType = "Task",
-                    componentIndex = i
+                    containerType = "Task",
+                    containerIndex = i
                 };
 
                 if (task == null)
                 {
-                    badComponentInfo.componentIsNull = true;
+                    badContainerInfo.containerIsNull = true;
 
                     context.MarkUnsuccessful();
-                    context.AddBadComponent(ref badComponentInfo);
+                    context.AddBadContainer(ref badContainerInfo);
                     continue;
                 }
 
@@ -274,21 +274,21 @@ namespace HiraBots
                 if (task.isAbstract)
                 {
                     success = false;
-                    badComponentInfo.componentIsAbstractWhenItShouldNotBe = true;
+                    badContainerInfo.containerIsAbstractWhenItShouldNotBe = true;
                 }
 
-                task.Validate(ref componentValidator);
+                task.Validate(ref containerValidator);
 
-                if (!componentValidator.succeeded)
+                if (!containerValidator.succeeded)
                 {
                     success = false;
-                    badComponentInfo.badFunctions = componentValidator.badFunctions.ToArray();
+                    badContainerInfo.badFunctions = containerValidator.badFunctions.ToArray();
                 }
 
                 if (!success)
                 {
                     context.MarkUnsuccessful();
-                    context.AddBadComponent(ref badComponentInfo);
+                    context.AddBadContainer(ref badContainerInfo);
                 }
             }
         }
