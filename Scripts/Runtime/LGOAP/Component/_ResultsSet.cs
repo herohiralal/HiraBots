@@ -44,11 +44,6 @@ namespace HiraBots
             internal PlannerResult this[int layerIndex] => m_Internal[layerIndex + 1]; // first one is goal layer
 
             /// <summary>
-            /// Check if the results set is valid.
-            /// </summary>
-            internal bool isValid => m_Internal != null;
-
-            /// <summary>
             /// Copy the result set to another.
             /// </summary>
             internal void CopyTo(PlannerResultsSet other)
