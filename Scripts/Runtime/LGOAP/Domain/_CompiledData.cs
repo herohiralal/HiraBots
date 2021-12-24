@@ -11,7 +11,7 @@ namespace HiraBots
         private ReadOnlyArrayAccessor<byte> m_PlanSizesByLayer;
         private NativeArray<byte> m_Domain = default;
 
-        private readonly Dictionary<int, JobHandle> m_DependentJobs = new Dictionary<int, JobHandle>();
+        private readonly Dictionary<ulong, JobHandle> m_DependentJobs = new Dictionary<ulong, JobHandle>();
 
         /// <summary>
         /// The size of a plan by the layer.
@@ -54,7 +54,7 @@ namespace HiraBots
         /// Add a job dependent on the given compiled data.
         /// Dependent jobs will be completed before the domain gets deallocated.
         /// </summary>
-        internal void AddDependentJob(int id, JobHandle dependentJob)
+        internal void AddDependentJob(ulong id, JobHandle dependentJob)
         {
             if (!m_DependentJobs.ContainsKey(id))
             {
@@ -70,7 +70,7 @@ namespace HiraBots
         /// <summary>
         /// Remove a dependent job.
         /// </summary>
-        internal void RemoveDependentJob(int id)
+        internal void RemoveDependentJob(ulong id)
         {
             m_DependentJobs.Remove(id);
         }
