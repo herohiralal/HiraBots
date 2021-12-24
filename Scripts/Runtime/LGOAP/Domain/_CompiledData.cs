@@ -18,6 +18,11 @@ namespace HiraBots
         /// </summary>
         internal ReadOnlyArrayAccessor<byte> planSizesByLayer => m_PlanSizesByLayer;
 
+        /// <summary>
+        /// The compiled data for the domain.
+        /// </summary>
+        internal NativeArray<byte> data => m_Domain;
+
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
             byte[] planSizesByLayer)
         {

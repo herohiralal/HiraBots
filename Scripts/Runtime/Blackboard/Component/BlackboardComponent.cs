@@ -28,6 +28,14 @@ namespace HiraBots
         private byte* dataReadOnlyPtr => (byte*) m_Data.GetUnsafeReadOnlyPtr();
 
         /// <summary>
+        /// Create a copy of the blackboard.
+        /// </summary>
+        internal NativeArray<byte> Copy(Allocator allocator)
+        {
+            return new NativeArray<byte>(m_Data, allocator);
+        }
+
+        /// <summary>
         /// Attempt to create a BlackboardComponent from the compiled data of a template.
         /// </summary>
         /// <returns>Whether the process was successful.</returns>
