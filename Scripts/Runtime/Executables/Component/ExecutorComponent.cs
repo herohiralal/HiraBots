@@ -27,7 +27,10 @@
 
         internal void Dispose()
         {
-            
+            if (hasTask)
+            {
+                HiraBotsTaskRunner.Remove(this);
+            }
         }
     }
 }

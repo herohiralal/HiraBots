@@ -24,6 +24,7 @@ namespace HiraBots
                 DontDestroyOnLoad(go);
                 go.AddComponent<HiraBotsInitializer>();
                 go.AddComponent<HiraBotsModule>();
+                go.AddComponent<HiraBotsTaskRunner>();
                 go.AddComponent<HiraBotsServiceRunner>();
             }
 
@@ -68,6 +69,7 @@ namespace HiraBots
         private void OnDestroy()
         {
             Destroy(GetComponent<HiraBotsServiceRunner>());
+            Destroy(GetComponent<HiraBotsTaskRunner>());
             Destroy(GetComponent<HiraBotsModule>());
             Quit();
         }
