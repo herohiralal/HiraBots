@@ -67,18 +67,14 @@ namespace HiraBots
     internal partial class LGOAPTask
     {
         [field: SerializeField, HideInInspector] internal BlackboardTemplate blackboard { get; set; }
+        [field: SerializeField, HideInInspector] internal bool canBeAbstract { get; set; }
 
         internal class Serialized : CustomSerializedObject<LGOAPTask>
         {
-            private SerializedProperty m_IsAbstract;
-
             internal Serialized(LGOAPTask obj) : base(obj)
             {
                 name = GetProperty("m_Name",
                     SerializedPropertyType.String, false, true);
-
-                m_IsAbstract = GetProperty(nameof(m_IsAbstract),
-                    SerializedPropertyType.Boolean, false, true);
 
                 taskPrecondition = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Precondition)}",
                     true, true);
@@ -105,7 +101,8 @@ namespace HiraBots
                     true, true, true, true);
             }
 
-            internal bool isAbstract => m_IsAbstract.boolValue;
+            internal bool canBeAbstract => target.canBeAbstract;
+            internal bool isAbstract => target.isAbstract;
 
             internal SerializedProperty name { get; }
             internal SerializedProperty taskPrecondition { get; }

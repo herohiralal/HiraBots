@@ -399,7 +399,7 @@ namespace HiraBots.Editor
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, LGOAPTask newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            newObject.isAbstract = true;
+            newObject.canBeAbstract = true;
 
             if (serializedObject is LGOAPDomain.Serialized d)
             {
@@ -456,7 +456,7 @@ namespace HiraBots.Editor
         protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPDomain> serializedObject, LGOAPTask newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            newObject.isAbstract = false;
+            newObject.canBeAbstract = false;
 
             if (serializedObject is LGOAPDomain.Serialized d)
             {

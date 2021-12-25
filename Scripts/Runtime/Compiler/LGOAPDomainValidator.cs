@@ -97,12 +97,6 @@ namespace HiraBots
                         ref badContainerInfo));
                 }
 
-                if (badContainerInfo.containerIsNotAbstractWhenItShouldBe)
-                {
-                    m_ErrorString.AppendLine(FormatErrorStringForContainerNotAbstractWhenItShouldBe(target,
-                        ref badContainerInfo));
-                }
-
                 for (var j = 0; j < badContainerInfo.badFunctions.Length; j++)
                 {
                     var badFunctionInfo = badContainerInfo.badFunctions[j];
@@ -163,13 +157,7 @@ namespace HiraBots
         internal static string FormatErrorStringForContainerAbstractWhenItShouldNotBe(LGOAPDomain d,
             ref LGOAPDomainValidatorContext.BadContainerInfo c)
         {
-            return $"{d.name}::Layer{c.layerIndex}]::{c.containerType}[{c.containerIndex}] should not be abstract.";
-        }
-
-        internal static string FormatErrorStringForContainerNotAbstractWhenItShouldBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadContainerInfo c)
-        {
-            return $"{d.name}::Layer{c.layerIndex}]::{c.containerType}[{c.containerIndex}] should be abstract.";
+            return $"{d.name}::Layer{c.layerIndex}]::{c.containerType}[{c.containerIndex}] should provide a task.";
         }
 
         internal static string FormatStringForNullFunction(LGOAPDomain d,

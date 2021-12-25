@@ -84,11 +84,6 @@ namespace HiraBots
             internal bool containerIsAbstractWhenItShouldNotBe { get; set; }
 
             /// <summary>
-            /// Whether the container is not abstract when it should be.
-            /// </summary>
-            internal bool containerIsNotAbstractWhenItShouldBe { get; set; }
-
-            /// <summary>
             /// The list of bad functions on the container.
             /// </summary>
             internal LGOAPContainerValidatorContext.BadFunctionInfo[] badFunctions { get; set; }
@@ -221,12 +216,6 @@ namespace HiraBots
                     }
 
                     var success = true;
-
-                    if (!abstractTask.isAbstract)
-                    {
-                        success = false;
-                        badComponentInfo.containerIsNotAbstractWhenItShouldBe = true;
-                    }
 
                     abstractTask.Validate(ref containerValidator);
 

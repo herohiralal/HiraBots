@@ -28,7 +28,7 @@ namespace HiraBots.Editor
                   + serializedObject.taskCostROL.GetHeight()
                   + 5f // padding
                   + serializedObject.taskEffectROL.GetHeight()
-                  + (serializedObject.isAbstract
+                  + (serializedObject.canBeAbstract
                       ? 5f /* padding */ + serializedObject.taskTargetROL.GetHeight()
                       : 0f)
                   + 0f;
@@ -101,7 +101,7 @@ namespace HiraBots.Editor
                 currentRect.height = serializedObject.taskEffectROL.GetHeight();
                 serializedObject.taskEffectROL.DoList(currentRect);
 
-                if (serializedObject.isAbstract)
+                if (serializedObject.canBeAbstract)
                 {
                     // padding
                     currentRect.y += 5f;

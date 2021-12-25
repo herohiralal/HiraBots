@@ -21,7 +21,6 @@ namespace HiraBots
         internal void BuildLGOAPTask(DecoratorBlackboardFunction[] inPrecondition, DecoratorBlackboardFunction[] inCost,
             EffectorBlackboardFunction[] inEffect)
         {
-            m_IsAbstract = false;
             m_Action.m_Precondition = inPrecondition;
             m_Action.m_Cost = inCost;
             m_Action.m_Effect = inEffect;
@@ -33,7 +32,6 @@ namespace HiraBots
         internal void BuildLGOAPAbstractTask(DecoratorBlackboardFunction[] inPrecondition, DecoratorBlackboardFunction[] inCost,
             EffectorBlackboardFunction[] inEffect, DecoratorBlackboardFunction[] inTarget)
         {
-            m_IsAbstract = true;
             m_Action.m_Precondition = inPrecondition;
             m_Action.m_Cost = inCost;
             m_Action.m_Effect = inEffect;
