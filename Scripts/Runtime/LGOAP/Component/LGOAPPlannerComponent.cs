@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace HiraBots
+﻿namespace HiraBots
 {
     internal partial class LGOAPPlannerComponent
     {
@@ -15,8 +13,7 @@ namespace HiraBots
         /// <summary>
         /// Reset the static id assigner.
         /// </summary>
-        [RuntimeInitializeOnLoadMethod]
-        private static void Reset()
+        internal static void ResetStaticIDAssigner()
         {
             s_Id = 0;
         }

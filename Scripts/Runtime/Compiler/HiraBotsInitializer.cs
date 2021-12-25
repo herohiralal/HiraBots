@@ -26,6 +26,9 @@ namespace HiraBots
                 go.AddComponent<HiraBotsModule>();
             }
 
+            BlackboardComponent.ResetStaticIDAssigner();
+            LGOAPPlannerComponent.ResetStaticIDAssigner();
+
             CompilationRegistry.Initialize();
             BlackboardUnsafeHelpers.ClearObjectCache();
 
