@@ -180,6 +180,10 @@ namespace HiraBots
                     success = false;
                     badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
                 }
+                else
+                {
+                    badComponentInfo.badFunctions = new LGOAPContainerValidatorContext.BadFunctionInfo[0];
+                }
 
                 if (!success)
                 {
@@ -202,7 +206,7 @@ namespace HiraBots
                     var badComponentInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                     {
                         layerIndex = i + 1,
-                        containerType = "AbstractTask",
+                        containerType = "Task",
                         containerIndex = j
                     };
 
@@ -223,6 +227,10 @@ namespace HiraBots
                     {
                         success = false;
                         badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
+                    }
+                    else
+                    {
+                        badComponentInfo.badFunctions = new LGOAPContainerValidatorContext.BadFunctionInfo[0];
                     }
 
                     if (!success)
@@ -272,6 +280,10 @@ namespace HiraBots
                 {
                     success = false;
                     badContainerInfo.badFunctions = containerValidator.badFunctions.ToArray();
+                }
+                else
+                {
+                    badContainerInfo.badFunctions = new LGOAPContainerValidatorContext.BadFunctionInfo[0];
                 }
 
                 if (!success)
