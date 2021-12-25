@@ -392,7 +392,7 @@ namespace HiraBots.Editor
 
     internal class LGOAPAbstractTaskROLDrawer : LGOAPComponentROLDrawer<LGOAPTask>
     {
-        private LGOAPAbstractTaskROLDrawer() : base("Abstract Tasks")
+        private LGOAPAbstractTaskROLDrawer() : base("Tasks")
         {
         }
 
@@ -472,6 +472,35 @@ namespace HiraBots.Editor
                 true, true, true, true);
             s_Instance.Bind(rol, serializedObject, serializedObject.bottomLayer);
             return rol;
+        }
+    }
+
+    internal class ServiceProviderROLDrawer : InlinedObjectReferenceROLDrawer<HiraBotsServiceProvider, LGOAPTask>
+    {
+        private ServiceProviderROLDrawer() : base("Services", ExecutablesGUIHelpers.formattedServiceProviderNames)
+        {
+        }
+
+        private static readonly ServiceProviderROLDrawer s_Instance = new ServiceProviderROLDrawer();
+
+        protected override Color GetThemeColor(HiraBotsServiceProvider value)
+        {
+            return ExecutablesGUIHelpers.serviceProviderColor;
+        }
+
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsServiceProvider newObject)
+        {
+            base.ProcessCreatedObject(serializedObject, newObject);
+            InlinedObjectReferencesHelper.Expand(newObject, out _);
+        }
+
+        internal static void Bind(LGOAPTask.Serialized task)
+        {
+            if (!task.taskServiceProvidersBound)
+            {
+                s_Instance.Bind(task.taskServiceProvidersROL, task, task.taskServiceProviders);
+                task.taskServiceProvidersBound = true;
+            }
         }
     }
 }

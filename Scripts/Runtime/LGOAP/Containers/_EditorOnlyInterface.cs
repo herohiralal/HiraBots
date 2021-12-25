@@ -99,6 +99,15 @@ namespace HiraBots
 
                 taskTargetROL = new ReorderableList((SerializedObject) this, taskTarget,
                     true, true, true, true);
+
+                taskTaskProvider = GetProperty<HiraBotsTaskProvider>(nameof(m_TaskProvider),
+                    false, true);
+
+                taskServiceProviders = GetProperty<HiraBotsServiceProvider>(nameof(m_ServiceProviders),
+                    true, true);
+
+                taskServiceProvidersROL = new ReorderableList((SerializedObject) this, taskServiceProviders,
+                    true, true, true, true);
             }
 
             internal bool canBeAbstract => target.canBeAbstract;
@@ -117,6 +126,10 @@ namespace HiraBots
             internal SerializedProperty taskTarget { get; }
             internal bool taskTargetBound { get; set; } = false;
             internal ReorderableList taskTargetROL { get; }
+            internal SerializedProperty taskTaskProvider { get; }
+            internal SerializedProperty taskServiceProviders { get; }
+            internal bool taskServiceProvidersBound { get; set; } = false;
+            internal ReorderableList taskServiceProvidersROL { get; }
 
             private ReadOnlyHashSetAccessor<BlackboardKey> keySet
             {

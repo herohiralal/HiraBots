@@ -34,6 +34,7 @@ namespace HiraBots.Editor
                     {
                         DestroyImmediate(helper);
                     }
+
                     break;
             }
 
@@ -542,7 +543,7 @@ namespace HiraBots.Editor
                 case k_TaskCost:
                     return new Color(238f / 255, 150f / 255, 75f / 255);
                 case k_TaskEffect:
-                    return new Color(148f / 255, 201f / 255, 169f /255);
+                    return new Color(148f / 255, 201f / 255, 169f / 255);
                 case k_Target:
                     return new Color(239f / 255, 71f / 255, 111f / 255);
                 default:
@@ -600,6 +601,60 @@ namespace HiraBots.Editor
             s *= 0.35f;
             v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
             return Color.HSVToRGB(h, s, v);
+        }
+    }
+
+    /// <summary>
+    /// Helper class for Executables GUI.
+    /// </summary>
+    internal static class ExecutablesGUIHelpers
+    {
+        /// <summary>
+        /// Format a Type.Name to a more readable version.
+        /// </summary>
+        internal static ReadOnlyDictionaryAccessor<Type, string> formattedTaskProviderNames { get; } = TypeCache
+            .GetTypesDerivedFrom<HiraBotsTaskProvider>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .ToDictionary(f => f,
+                f => f.Name
+                    .Replace("TaskProvider", ""))
+            .ReadOnly();
+
+        /// <summary>
+        /// Format a Type.Name to a more readable version.
+        /// </summary>
+        internal static ReadOnlyDictionaryAccessor<Type, string> formattedServiceProviderNames { get; } = TypeCache
+            .GetTypesDerivedFrom<HiraBotsServiceProvider>()
+            .Where(t => !t.IsAbstract && !t.IsInterface)
+            .ToDictionary(f => f,
+                f => f.Name
+                    .Replace("ServiceProvider", ""))
+            .ReadOnly();
+
+        internal static Color taskProviderColor => new Color(121f / 255, 52f / 255, 167f / 255);
+
+        internal static Color taskProviderColorFaded
+        {
+            get
+            {
+                Color.RGBToHSV(taskProviderColor, out var h, out var s, out var v);
+                s *= 0.35f;
+                v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+                return Color.HSVToRGB(h, s, v);
+            }
+        }
+
+        internal static Color serviceProviderColor => new Color(14f / 255, 153f / 255, 126f / 255);
+
+        internal static Color serviceProviderColorFaded
+        {
+            get
+            {
+                Color.RGBToHSV(serviceProviderColor, out var h, out var s, out var v);
+                s *= 0.35f;
+                v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
+                return Color.HSVToRGB(h, s, v);
+            }
         }
     }
 }

@@ -6,23 +6,6 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    /**
-     * todo: decide on a theme
-     * 
-     * Unreal:
-     * decorator 003ea0
-     * task 7934a7
-     * service 0e997e
-     *
-     * Custom:
-     * 203, 232, 150 decorator
-     * 238, 150, 75 score calculator
-     * 239, 71, 111 effector
-     * 83, 58, 113 task
-     * 200, 198, 215 service
-     * 80, 61, 66 reset - used for bb header
-     */
-
     /// <summary>
     /// Custom editor for an LGOAP Domain.
     /// todo: implement this in UIElements (the current issue is that ListView has a predefined length for each element)

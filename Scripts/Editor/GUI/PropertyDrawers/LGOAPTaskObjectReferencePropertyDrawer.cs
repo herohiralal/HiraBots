@@ -31,6 +31,8 @@ namespace HiraBots.Editor
                   + (serializedObject.canBeAbstract
                       ? 5f /* padding */ + serializedObject.taskTargetROL.GetHeight()
                       : 0f)
+                  + 5f // padding
+                  + serializedObject.taskServiceProvidersROL.GetHeight()
                   + 0f;
         }
 
@@ -69,6 +71,7 @@ namespace HiraBots.Editor
                 TaskCostROLDrawer.Bind(serializedObject);
                 TaskEffectROLDrawer.Bind(serializedObject);
                 TaskTargetROLDrawer.Bind(serializedObject);
+                ServiceProviderROLDrawer.Bind(serializedObject);
 
                 currentRect.y += 1f;
 
@@ -111,6 +114,14 @@ namespace HiraBots.Editor
                     currentRect.height = serializedObject.taskTargetROL.GetHeight();
                     serializedObject.taskTargetROL.DoList(currentRect);
                 }
+
+                // padding
+                currentRect.y += 5f;
+
+                // service providers
+                currentRect.y += currentRect.height;
+                currentRect.height = serializedObject.taskServiceProvidersROL.GetHeight();
+                serializedObject.taskServiceProvidersROL.DoList(currentRect);
 
                 serializedObject.ApplyModifiedProperties();
             }
