@@ -9,7 +9,7 @@ namespace HiraBots
         private readonly ulong m_Id;
         private LGOAPDomainCompiledData m_Domain;
         private BlackboardComponent m_Blackboard;
-        private PlannerResultsSet m_ResultsSetForUse;
+        private PlannerResultsSet m_ResultsSetForExecution;
         private PlannerResultsSet m_ResultsSetForPlanning;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace HiraBots
             m_Blackboard = blackboard;
             m_Domain = domain;
 
-            m_ResultsSetForUse = new PlannerResultsSet(m_Domain.planSizesByLayer);
+            m_ResultsSetForExecution = new PlannerResultsSet(m_Domain.planSizesByLayer);
             m_ResultsSetForPlanning = new PlannerResultsSet(m_Domain.planSizesByLayer);
 
             m_Status = Status.Normal;
@@ -78,7 +78,7 @@ namespace HiraBots
             m_Status = Status.Normal;
 
             m_ResultsSetForPlanning.Dispose();
-            m_ResultsSetForUse.Dispose();
+            m_ResultsSetForExecution.Dispose();
 
             m_Domain = null;
             m_Blackboard = null;

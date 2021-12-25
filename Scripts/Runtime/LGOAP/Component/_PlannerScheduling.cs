@@ -100,8 +100,8 @@ namespace HiraBots
         {
             var layerCount = m_Domain.planSizesByLayer.count;
 
-            // copy currently used plan to the results set used for planning
-            m_ResultsSetForUse.CopyTo(m_ResultsSetForPlanning);
+            // copy currently executing plan to the results set used for planning
+            m_ResultsSetForExecution.CopyTo(m_ResultsSetForPlanning);
 
             JobHandle lastJobHandle = default;
 
@@ -140,25 +140,35 @@ namespace HiraBots
             var layerCount = m_Domain.planSizesByLayer.count;
 
             // copy planner results to result set used for execution
-            m_ResultsSetForPlanning.CopyTo(m_ResultsSetForUse);
+            m_ResultsSetForPlanning.CopyTo(m_ResultsSetForExecution);
 
             for (var i = index; i < layerCount; i++)
             {
-                var result = m_ResultsSetForUse[i];
+                var result = m_ResultsSetForExecution[i];
 
+                // todo: actually use the plan please, that's sort of the whole point
                 switch (result.resultType)
                 {
                     case PlannerResult.Type.Invalid:
-                        Debug.Log($"Planner {m_Id} could not generate a plan at layer {i}.");
+                        Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
+                                  "The planner must always be able to calculate a plan.");
                         break;
                     case PlannerResult.Type.NotRequired:
-                        Debug.Log($"Planner {m_Id} was not required to generate a plan at layer {i}.");
+                        Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
+                                  " previous layers contain a fake target.");
                         break;
                     case PlannerResult.Type.Unchanged:
-                        Debug.Log($"Planner {m_Id} reused a previously generated plan at layer {i}.");
+                        Debug.Log($"Reused previous plan at layer {i} on component {m_Id}. This can happen if there " +
+                                  "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
                     case PlannerResult.Type.NewPlan:
+                        var s = "Plan discovered: ";
+                        while (result.MoveNext())
+                        {
+                            s += $"{result.currentElement} ";
+                        }
                         
+                        Debug.Log(s);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
