@@ -24,6 +24,7 @@ namespace HiraBots
                 DontDestroyOnLoad(go);
                 go.AddComponent<HiraBotsInitializer>();
                 go.AddComponent<HiraBotsModule>();
+                go.AddComponent<HiraBotsServiceRunner>();
             }
 
             BlackboardComponent.ResetStaticIDAssigner();
@@ -65,6 +66,8 @@ namespace HiraBots
 
         private void OnDestroy()
         {
+            Destroy(GetComponent<HiraBotsServiceRunner>());
+            Destroy(GetComponent<HiraBotsModule>());
             Quit();
         }
 

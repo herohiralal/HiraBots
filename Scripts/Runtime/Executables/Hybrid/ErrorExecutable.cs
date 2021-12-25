@@ -48,7 +48,7 @@ namespace HiraBots
             Debug.LogError($"Error running service: {m_Error}.");
         }
 
-        public void Tick()
+        public void Tick(float deltaTime)
         {
         }
 
