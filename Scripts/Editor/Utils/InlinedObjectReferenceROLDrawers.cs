@@ -33,13 +33,13 @@ namespace HiraBots.Editor
                 {
                     var menu = new GenericMenu();
 
-                    foreach (var type in m_TypesWithFormattedNames.Value.keys)
+                    foreach (var kvp in m_TypesWithFormattedNames.Value)
                     {
-                        menu.AddItem(GUIHelpers.ToGUIContent(m_TypesWithFormattedNames.Value[type]), false,
+                        menu.AddItem(GUIHelpers.ToGUIContent(kvp.Value), false,
                             () =>
                             {
                                 var newObject = AssetDatabaseUtility.AddInlinedObject(serializedObject.target, (SerializedObject) serializedObject,
-                                    property, type);
+                                    property, kvp.Key);
 
                                 ProcessCreatedObject(serializedObject, (TInlinedReference) newObject);
                             });
