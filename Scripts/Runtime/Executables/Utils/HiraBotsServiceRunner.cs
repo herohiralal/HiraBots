@@ -150,7 +150,7 @@ namespace HiraBots
         private unsafe void Update()
         {
             // update all the elapsed timers
-            new TimerUpdateJob(m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float4x4)), Time.deltaTime).Run();
+            new TimerUpdateJob(m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float)), Time.deltaTime).Run();
 
             var activeServicesCount = m_ActiveServices.Count;
 
