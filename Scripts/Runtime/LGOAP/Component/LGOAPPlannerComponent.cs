@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal partial class LGOAPComponent
+    internal partial class LGOAPPlannerComponent
     {
         private static ulong s_Id = 0;
 
@@ -25,7 +25,7 @@ namespace HiraBots
         /// Attempt to create an LGOAPComponent from a blackboard and the compiled data of a domain.
         /// </summary>
         /// <returns>Whether the process was successful.</returns>
-        internal static bool TryCreate(BlackboardComponent blackboard, LGOAPDomainCompiledData domain, out LGOAPComponent component)
+        internal static bool TryCreate(BlackboardComponent blackboard, LGOAPDomainCompiledData domain, out LGOAPPlannerComponent component)
         {
             if (blackboard == null)
             {
@@ -39,11 +39,11 @@ namespace HiraBots
                 return false;
             }
 
-            component = new LGOAPComponent(blackboard, domain);
+            component = new LGOAPPlannerComponent(blackboard, domain);
             return true;
         }
 
-        private LGOAPComponent(BlackboardComponent blackboard, LGOAPDomainCompiledData domain)
+        private LGOAPPlannerComponent(BlackboardComponent blackboard, LGOAPDomainCompiledData domain)
         {
             m_Id = ++s_Id;
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal partial class LGOAPComponent
+    internal partial class LGOAPPlannerComponent
     {
         private struct PlannerResultsSet
         {
@@ -11,13 +11,13 @@ namespace HiraBots
             {
                 var layerCount = planSizesByLayer.count;
 
-                m_Internal = new PlannerResult[layerCount + 1];
+                m_Internal = new LGOAPPlannerResult[layerCount + 1];
 
-                m_Internal[0] = new PlannerResult(1, Allocator.Persistent);
+                m_Internal[0] = new LGOAPPlannerResult(1, Allocator.Persistent);
 
                 for (var i = 0; i < layerCount; i++)
                 {
-                    m_Internal[i + 1] = new PlannerResult(planSizesByLayer[i], Allocator.Persistent);
+                    m_Internal[i + 1] = new LGOAPPlannerResult(planSizesByLayer[i], Allocator.Persistent);
                 }
             }
 
@@ -31,17 +31,17 @@ namespace HiraBots
                 m_Internal = null;
             }
 
-            private PlannerResult[] m_Internal;
+            private LGOAPPlannerResult[] m_Internal;
 
             /// <summary>
             /// The goal result.
             /// </summary>
-            internal PlannerResult goalResult => m_Internal[0];
+            internal LGOAPPlannerResult goalResult => m_Internal[0];
 
             /// <summary>
             /// The result for a plan at the given layer index.
             /// </summary>
-            internal PlannerResult this[int layerIndex] => m_Internal[layerIndex + 1]; // first one is goal layer
+            internal LGOAPPlannerResult this[int layerIndex] => m_Internal[layerIndex + 1]; // first one is goal layer
 
             /// <summary>
             /// Copy the result set to another.

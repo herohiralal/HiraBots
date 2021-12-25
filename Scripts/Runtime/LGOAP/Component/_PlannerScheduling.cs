@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal partial class LGOAPComponent
+    internal partial class LGOAPPlannerComponent
     {
         private enum Status
         {
@@ -149,19 +149,19 @@ namespace HiraBots
                 // todo: actually use the plan please, that's sort of the whole point
                 switch (result.resultType)
                 {
-                    case PlannerResult.Type.Invalid:
+                    case LGOAPPlannerResult.Type.Invalid:
                         Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
                                   "The planner must always be able to calculate a plan.");
                         break;
-                    case PlannerResult.Type.NotRequired:
+                    case LGOAPPlannerResult.Type.NotRequired:
                         Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
                                   " previous layers contain a fake target.");
                         break;
-                    case PlannerResult.Type.Unchanged:
+                    case LGOAPPlannerResult.Type.Unchanged:
                         Debug.Log($"Reused previous plan at layer {i} on component {m_Id}. This can happen if there " +
                                   "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
-                    case PlannerResult.Type.NewPlan:
+                    case LGOAPPlannerResult.Type.NewPlan:
                         var s = "Plan discovered: ";
                         while (result.MoveNext())
                         {
