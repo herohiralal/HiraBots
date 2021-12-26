@@ -28,8 +28,17 @@ namespace HiraBots.Editor
                   + serializedObject.taskCostROL.GetHeight()
                   + 5f // padding
                   + serializedObject.taskEffectROL.GetHeight()
+                  + (!serializedObject.canBeAbstract
+                     || serializedObject.taskTaskProviders.arraySize > 0
+                     || serializedObject.taskTarget.arraySize == 0
+                      ? 5f /* padding */ + serializedObject.taskTaskProvidersROL.GetHeight()
+                                         + (serializedObject.canBeAbstract ? (5f /* padding */ + 21f) : 0f) // info regarding switching abstraction
+                      : 0f)
                   + (serializedObject.canBeAbstract
+                     && (serializedObject.taskTaskProviders.arraySize == 0
+                         || serializedObject.taskTarget.arraySize > 0)
                       ? 5f /* padding */ + serializedObject.taskTargetROL.GetHeight()
+                                         + 5f /* padding */ + 21f // info regarding switching abstraction
                       : 0f)
                   + 5f // padding
                   + serializedObject.taskServiceProvidersROL.GetHeight()
@@ -55,8 +64,8 @@ namespace HiraBots.Editor
 
             // draw header, and check if it's expanded
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
-                LGOAPDomainGUIHelpers.GetComponentColorFaded(value), value.isAbstract ? "Abstract Task" : "Task",
-                out var cso) && cso is LGOAPTask.Serialized serializedObject)
+                    LGOAPDomainGUIHelpers.GetComponentColorFaded(value), value.canBeAbstract && value.isAbstract ? "Abstract Task" : "Task",
+                    out var cso) && cso is LGOAPTask.Serialized serializedObject)
             {
                 if (serializedObject.hasError)
                 {
@@ -71,6 +80,7 @@ namespace HiraBots.Editor
                 TaskCostROLDrawer.Bind(serializedObject);
                 TaskEffectROLDrawer.Bind(serializedObject);
                 TaskTargetROLDrawer.Bind(serializedObject);
+                TaskProviderROLDrawer.Bind(serializedObject);
                 ServiceProviderROLDrawer.Bind(serializedObject);
 
                 currentRect.y += 1f;
@@ -104,8 +114,18 @@ namespace HiraBots.Editor
                 currentRect.height = serializedObject.taskEffectROL.GetHeight();
                 serializedObject.taskEffectROL.DoList(currentRect);
 
-                if (serializedObject.canBeAbstract)
+                if (serializedObject.canBeAbstract
+                    && (serializedObject.taskTaskProviders.arraySize == 0
+                        || serializedObject.taskTarget.arraySize > 0))
                 {
+                    // padding
+                    currentRect.y += 5f;
+
+                    // info
+                    currentRect.y += currentRect.height;
+                    currentRect.height = 21f;
+                    EditorGUI.HelpBox(currentRect, "To make this task non-abstract, remove the target.", MessageType.Info);
+
                     // padding
                     currentRect.y += 5f;
 
@@ -113,6 +133,30 @@ namespace HiraBots.Editor
                     currentRect.y += currentRect.height;
                     currentRect.height = serializedObject.taskTargetROL.GetHeight();
                     serializedObject.taskTargetROL.DoList(currentRect);
+                }
+
+                if (!serializedObject.canBeAbstract
+                    || serializedObject.taskTaskProviders.arraySize > 0
+                    || serializedObject.taskTarget.arraySize == 0)
+                {
+                    if (serializedObject.canBeAbstract)
+                    {
+                        // padding
+                        currentRect.y += 5f;
+
+                        // info
+                        currentRect.y += currentRect.height;
+                        currentRect.height = 21f;
+                        EditorGUI.HelpBox(currentRect, "To make this task abstract, remove the task provider.", MessageType.Info);
+                    }
+
+                    // padding
+                    currentRect.y += 5f;
+
+                    // task
+                    currentRect.y += currentRect.height;
+                    currentRect.height = serializedObject.taskTaskProvidersROL.GetHeight();
+                    serializedObject.taskTaskProvidersROL.DoList(currentRect);
                 }
 
                 // padding

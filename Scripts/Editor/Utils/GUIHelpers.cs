@@ -581,9 +581,9 @@ namespace HiraBots.Editor
             {
                 case LGOAPGoal _:
                     return new Color(117f / 255, 91f / 255, 82f / 255);
-                case LGOAPTask c when c.isAbstract:
+                case LGOAPTask c when c.canBeAbstract && c.isAbstract:
                     return new Color(53f / 255, 66f / 255, 143f / 255);
-                case LGOAPTask c when !c.isAbstract:
+                case LGOAPTask c when !c.canBeAbstract || !c.isAbstract:
                     return new Color(115f / 255, 26f / 255, 76f / 255);
                 default:
                     return Color.black;

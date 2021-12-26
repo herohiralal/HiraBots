@@ -475,6 +475,36 @@ namespace HiraBots.Editor
         }
     }
 
+    internal class TaskProviderROLDrawer : InlinedObjectReferenceROLDrawer<HiraBotsTaskProvider, LGOAPTask>
+    {
+        private TaskProviderROLDrawer() : base("Task", ExecutablesGUIHelpers.formattedTaskProviderNames)
+        {
+        }
+
+        private static readonly TaskProviderROLDrawer s_Instance = new TaskProviderROLDrawer();
+
+        protected override Color GetThemeColor(HiraBotsTaskProvider value)
+        {
+            return ExecutablesGUIHelpers.taskProviderColor;
+        }
+
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsTaskProvider newObject)
+        {
+            base.ProcessCreatedObject(serializedObject, newObject);
+            InlinedObjectReferencesHelper.Expand(newObject, out _);
+        }
+
+        internal static void Bind(LGOAPTask.Serialized task)
+        {
+            if (!task.taskTaskProvidersBound)
+            {
+                s_Instance.Bind(task.taskTaskProvidersROL, task, task.taskTaskProviders);
+                task.taskTaskProvidersROL.onCanAddCallback = l => l.serializedProperty.arraySize == 0;
+                task.taskTaskProvidersBound = true;
+            }
+        }
+    }
+
     internal class ServiceProviderROLDrawer : InlinedObjectReferenceROLDrawer<HiraBotsServiceProvider, LGOAPTask>
     {
         private ServiceProviderROLDrawer() : base("Services", ExecutablesGUIHelpers.formattedServiceProviderNames)

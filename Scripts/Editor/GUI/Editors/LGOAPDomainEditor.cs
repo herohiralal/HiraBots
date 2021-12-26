@@ -237,6 +237,16 @@ namespace HiraBots.Editor
                         {
                             hs.Add(d);
                         }
+
+                        foreach (var t in task.taskProviders)
+                        {
+                            hs.Add(t);
+                        }
+
+                        foreach (var s in task.serviceProviders)
+                        {
+                            hs.Add(s);
+                        }
                     }
                 }
 
@@ -262,6 +272,16 @@ namespace HiraBots.Editor
                     foreach (var d in task.target.m_Target)
                     {
                         hs.Add(d);
+                    }
+
+                    foreach (var t in task.taskProviders)
+                    {
+                        hs.Add(t);
+                    }
+
+                    foreach (var s in task.serviceProviders)
+                    {
+                        hs.Add(s);
                     }
                 }
 

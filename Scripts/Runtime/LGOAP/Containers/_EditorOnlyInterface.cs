@@ -100,8 +100,11 @@ namespace HiraBots
                 taskTargetROL = new ReorderableList((SerializedObject) this, taskTarget,
                     true, true, true, true);
 
-                taskTaskProvider = GetProperty<HiraBotsTaskProvider>(nameof(m_TaskProvider),
-                    false, true);
+                taskTaskProviders = GetProperty<HiraBotsTaskProvider>(nameof(m_TaskProviders),
+                    true, true);
+
+                taskTaskProvidersROL = new ReorderableList((SerializedObject) this, taskTaskProviders,
+                    true, true, true, true);
 
                 taskServiceProviders = GetProperty<HiraBotsServiceProvider>(nameof(m_ServiceProviders),
                     true, true);
@@ -111,7 +114,6 @@ namespace HiraBots
             }
 
             internal bool canBeAbstract => target.canBeAbstract;
-            internal bool isAbstract => target.isAbstract;
 
             internal SerializedProperty name { get; }
             internal SerializedProperty taskPrecondition { get; }
@@ -126,7 +128,9 @@ namespace HiraBots
             internal SerializedProperty taskTarget { get; }
             internal bool taskTargetBound { get; set; } = false;
             internal ReorderableList taskTargetROL { get; }
-            internal SerializedProperty taskTaskProvider { get; }
+            internal SerializedProperty taskTaskProviders { get; }
+            internal bool taskTaskProvidersBound { get; set; } = false;
+            internal ReorderableList taskTaskProvidersROL { get; }
             internal SerializedProperty taskServiceProviders { get; }
             internal bool taskServiceProvidersBound { get; set; } = false;
             internal ReorderableList taskServiceProvidersROL { get; }

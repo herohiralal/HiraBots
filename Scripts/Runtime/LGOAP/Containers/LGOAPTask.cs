@@ -10,12 +10,12 @@ namespace HiraBots
         [SerializeField, HideInInspector] private LGOAPTarget m_Target = LGOAPTarget.empty;
         internal ref LGOAPTarget target => ref m_Target;
 
-        [SerializeField, HideInInspector] internal HiraBotsTaskProvider m_TaskProvider = null;
-        internal ref HiraBotsTaskProvider taskProvider => ref m_TaskProvider;
+        [SerializeField, HideInInspector] private HiraBotsTaskProvider[] m_TaskProviders = new HiraBotsTaskProvider[0];
+        internal ref HiraBotsTaskProvider[] taskProviders => ref m_TaskProviders;
 
-        internal bool isAbstract => m_TaskProvider == null;
+        internal bool isAbstract => m_TaskProviders.Length == 0;
 
-        [SerializeField, HideInInspector] internal HiraBotsServiceProvider[] m_ServiceProviders = new HiraBotsServiceProvider[0];
+        [SerializeField, HideInInspector] private HiraBotsServiceProvider[] m_ServiceProviders = new HiraBotsServiceProvider[0];
         internal ref HiraBotsServiceProvider[] serviceProviders => ref m_ServiceProviders;
     }
 }
