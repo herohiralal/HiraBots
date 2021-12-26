@@ -9,7 +9,7 @@ namespace HiraBots.Editor
     /// Property drawer for a blackboard key selector.
     /// </summary>
     [CustomPropertyDrawer(typeof(BlackboardTemplate.KeySelector))]
-    public class BlackboardKeySelectorPropertyDrawer : PropertyDrawer
+    internal class BlackboardKeySelectorPropertyDrawer : PropertyDrawer
     {
         private const string k_KeyPropertyName = "m_Key";
         private const string k_TemplatePropertyName = "m_Template";

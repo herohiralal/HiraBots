@@ -30,6 +30,11 @@
         public string name => m_Value.compiledData.keyName;
 
         /// <summary>
+        /// The type of the blackboard key.
+        /// </summary>
+        public BlackboardKeyType keyType => (BlackboardKeyType) (byte) m_Value.compiledData.keyType;
+
+        /// <summary>
         /// Whether the key is supposed to have a synchronized instance.
         /// </summary>
         public bool instanceSynced => m_Value.compiledData.instanceSynced;

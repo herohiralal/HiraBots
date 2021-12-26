@@ -11,6 +11,8 @@ namespace HiraBots.Editor
     /// </summary>
     [CustomPropertyDrawer(typeof(DisallowPlayModeEdit))]
     [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate))]
+    [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate.KeySelector))]
+    [CustomPropertyDrawer(typeof(UnityEngine.BlackboardKey))]
     internal class ExportedReferenceAPIPropertyDrawer : PropertyDrawer
     {
         private const string k_InternalPropertyName = "m_Value";
