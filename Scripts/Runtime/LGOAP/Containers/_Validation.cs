@@ -412,7 +412,7 @@ namespace HiraBots
                 var badExecutableInfo = new LGOAPContainerValidatorContext.BadExecutableInfo
                 {
                     containerName = name,
-                    executableType = "Task Provider",
+                    executableType = "TaskProvider",
                     executableIndex = i
                 };
 
@@ -450,7 +450,7 @@ namespace HiraBots
                 var badExecutableInfo = new LGOAPContainerValidatorContext.BadExecutableInfo
                 {
                     containerName = name,
-                    executableType = "Task Provider",
+                    executableType = "ServiceProvider",
                     executableIndex = i
                 };
 
