@@ -14,7 +14,7 @@
         /// <summary>
         /// Whether the blackboard template is valid.
         /// </summary>
-        public bool isValid => m_Value != null && m_Value.isCompiled;
+        public bool isValid => m_Value != null;
 
         /// <summary>
         /// Implicit boolean cast to determine validity.
@@ -27,16 +27,11 @@
         /// <summary>
         /// The name of the blackboard key.
         /// </summary>
-        public string name => m_Value.compiledData.keyName;
+        public string name => m_Value.name;
 
         /// <summary>
         /// The type of the blackboard key.
         /// </summary>
-        public BlackboardKeyType keyType => (BlackboardKeyType) (byte) m_Value.compiledData.keyType;
-
-        /// <summary>
-        /// Whether the key is supposed to have a synchronized instance.
-        /// </summary>
-        public bool instanceSynced => m_Value.compiledData.instanceSynced;
+        public BlackboardKeyType keyType => (BlackboardKeyType) (byte) m_Value.keyType;
     }
 }
