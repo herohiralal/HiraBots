@@ -7,7 +7,7 @@ namespace HiraBots
         [Tooltip("The amount of time to wait.")]
         [SerializeField] private UnityEngine.BlackboardTemplate.KeySelector m_Timer;
 
-        public override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard)
+        public override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard, IHiraBotArchetype archetype)
         {
             switch (m_Timer.selectedKey.keyType)
             {

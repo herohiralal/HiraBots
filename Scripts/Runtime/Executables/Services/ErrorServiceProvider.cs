@@ -10,7 +10,7 @@ namespace HiraBots
         [TextArea, Tooltip("The error to display.")]
         [SerializeField] private string m_Text = "Insert error here that will help you recognize this node from a debug message.";
 
-        public override IHiraBotsService GetService(UnityEngine.BlackboardComponent blackboard)
+        public override IHiraBotsService GetService(UnityEngine.BlackboardComponent blackboard, IHiraBotArchetype archetype)
         {
             return ErrorExecutable.Get(m_Text);
         }

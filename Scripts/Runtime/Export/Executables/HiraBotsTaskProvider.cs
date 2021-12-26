@@ -26,6 +26,6 @@
             set => m_TickInterval = Mathf.Max(0, value);
         }
 
-        public abstract IHiraBotsTask GetTask(BlackboardComponent blackboard);
+        public abstract IHiraBotsTask GetTask(BlackboardComponent blackboard, IHiraBotArchetype archetype);
     }
 }
