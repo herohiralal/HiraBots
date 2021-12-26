@@ -2,8 +2,10 @@
 
 namespace HiraBots
 {
-    internal sealed class ErrorServiceProvider : HiraBotsServiceProvider
+    internal sealed partial class ErrorServiceProvider : HiraBotsServiceProvider
     {
+        [SerializeField] private bool m_DisablePlayModeEntryOrBuildingPlayer;
+
         [TextArea]
         [SerializeField] private string m_Text = "Insert error here that will help you recognize this node from a debug message.";
 
