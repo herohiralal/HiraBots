@@ -14,7 +14,7 @@
             s_Id = 0;
         }
 
-        internal bool TryCreate(out ExecutorComponent executor)
+        internal static bool TryCreate(out ExecutorComponent executor)
         {
             executor = new ExecutorComponent();
             return true;

@@ -14,6 +14,11 @@ namespace HiraBots
         private readonly Dictionary<ulong, JobHandle> m_DependentJobs = new Dictionary<ulong, JobHandle>();
 
         /// <summary>
+        /// The compiled template.
+        /// </summary>
+        internal BlackboardTemplateCompiledData blackboardTemplate => m_BlackboardCompiledData;
+
+        /// <summary>
         /// The size of a plan by the layer.
         /// </summary>
         internal ReadOnlyArrayAccessor<byte> planSizesByLayer => m_PlanSizesByLayer;
