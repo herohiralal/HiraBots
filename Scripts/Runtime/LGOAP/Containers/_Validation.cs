@@ -427,7 +427,7 @@ namespace HiraBots
 
                 var success = true;
 
-                taskProvider.Validate(context.executablesErrors);
+                taskProvider.Validate(context.executablesErrors, context.allowedKeyPool);
 
                 if (context.executablesErrors.Count > 0)
                 {
@@ -465,7 +465,7 @@ namespace HiraBots
 
                 var success = true;
 
-                serviceProvider.Validate(context.executablesErrors);
+                serviceProvider.Validate(context.executablesErrors, context.allowedKeyPool);
 
                 if (context.executablesErrors.Count > 0)
                 {

@@ -4,11 +4,11 @@ namespace UnityEngine
 {
     public abstract partial class HiraBotsServiceProvider
     {
-        public void Validate(List<string> errors)
+        internal void Validate(List<string> errors, ReadOnlyHashSetAccessor<HiraBots.BlackboardKey> keySet)
         {
             try
             {
-                Validate(errors.Add);
+                Validate(errors.Add, new BlackboardTemplate.KeySet(keySet));
             }
             catch (System.Exception e)
             {
@@ -19,18 +19,18 @@ namespace UnityEngine
         /// <summary>
         /// Callback before entering playmode or building a player. Report errors if any.
         /// </summary>
-        protected virtual void Validate(System.Action<string> reportError)
+        protected virtual void Validate(System.Action<string> reportError, in BlackboardTemplate.KeySet keySet)
         {
         }
     }
 
     public abstract partial class HiraBotsTaskProvider
     {
-        public void Validate(List<string> errors)
+        internal void Validate(List<string> errors, ReadOnlyHashSetAccessor<HiraBots.BlackboardKey> keySet)
         {
             try
             {
-                Validate(errors.Add);
+                Validate(errors.Add, new BlackboardTemplate.KeySet(keySet));
             }
             catch (System.Exception e)
             {
@@ -41,7 +41,7 @@ namespace UnityEngine
         /// <summary>
         /// Callback before entering playmode or building a player. Report errors if any.
         /// </summary>
-        protected virtual void Validate(System.Action<string> reportError)
+        protected virtual void Validate(System.Action<string> reportError, in BlackboardTemplate.KeySet keySet)
         {
         }
     }

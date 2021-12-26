@@ -25,7 +25,7 @@ namespace HiraBots
         {
             staticDescription = m_RandomDeviation == 0
                 ? $"Wait for {m_Timer} second(s)."
-                : $"Wait for {m_Timer} ± {m_RandomDeviation} second(s)";
+                : $"Wait for {m_Timer} ± {m_RandomDeviation} second(s).";
         }
     }
 }

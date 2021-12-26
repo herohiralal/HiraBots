@@ -5,7 +5,7 @@ namespace HiraBots
 {
     internal partial class ErrorServiceProvider
     {
-        protected override void Validate(Action<string> reportError)
+        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
         {
             if (m_DisablePlayModeEntryOrBuildingPlayer)
             {
