@@ -17,17 +17,17 @@ namespace HiraBots
     {
         protected override void OnValidateCallback()
         {
-            m_Key.keyTypesFilter = UnityEngine.BlackboardKeyType.Numeric;
+            m_Timer.keyTypesFilter = UnityEngine.BlackboardKeyType.Numeric;
         }
 
         protected override void OnTargetBlackboardTemplateChanged(UnityEngine.BlackboardTemplate template, in UnityEngine.BlackboardTemplate.KeySet keySet)
         {
-            m_Key.OnTargetBlackboardTemplateChanged(template, in keySet);
+            m_Timer.OnTargetBlackboardTemplateChanged(template, in keySet);
         }
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            var key = m_Key.selectedKey;
+            var key = m_Timer.selectedKey;
 
             staticDescription = key.isValid
                 ? $"Wait for [{key.name}] second(s)."

@@ -17,6 +17,7 @@
 
     public abstract partial class HiraBotsTaskProvider : ScriptableObject
     {
+        [Tooltip("The interval between two ticks (to the most precise frame).")]
         [SerializeField] private float m_TickInterval = 0f;
 
         public float tickInterval

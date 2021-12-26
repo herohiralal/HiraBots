@@ -4,16 +4,17 @@ namespace HiraBots
 {
     internal sealed partial class WaitBlackboardTimeTaskProvider : HiraBotsTaskProvider
     {
-        [SerializeField] private UnityEngine.BlackboardTemplate.KeySelector m_Key;
+        [Tooltip("The amount of time to wait.")]
+        [SerializeField] private UnityEngine.BlackboardTemplate.KeySelector m_Timer;
 
         public override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard)
         {
-            switch (m_Key.selectedKey.keyType)
+            switch (m_Timer.selectedKey.keyType)
             {
                 case UnityEngine.BlackboardKeyType.Float:
-                    return WaitTask.Get(blackboard.GetFloatValue(m_Key.selectedKey.name));
+                    return WaitTask.Get(blackboard.GetFloatValue(m_Timer.selectedKey.name));
                 case UnityEngine.BlackboardKeyType.Integer:
-                    return WaitTask.Get(blackboard.GetIntegerValue(m_Key.selectedKey.name));
+                    return WaitTask.Get(blackboard.GetIntegerValue(m_Timer.selectedKey.name));
                 default:
                     return ErrorExecutable.Get($"Can not execute {name} because a correct key is not selected.");
             }

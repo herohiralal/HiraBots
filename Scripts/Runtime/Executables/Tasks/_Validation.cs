@@ -18,9 +18,9 @@ namespace HiraBots
     {
         protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
         {
-            if (!m_Key.Validate(in keySet, UnityEngine.BlackboardKeyType.Numeric))
+            if (!m_Timer.Validate(in keySet, UnityEngine.BlackboardKeyType.Numeric))
             {
-                reportError($"{name} contains an incorrectly selected key.");
+                reportError($"{name} does not have a valid timer key.");
             }
         }
     }
