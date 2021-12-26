@@ -13,6 +13,28 @@ namespace HiraBots
         }
     }
 
+    internal partial class WaitBlackboardTimeTaskProvider
+    {
+        protected override void OnValidateCallback()
+        {
+            m_Key.keyTypesFilter = UnityEngine.BlackboardKeyType.Numeric;
+        }
+
+        protected override void OnTargetBlackboardTemplateChanged(UnityEngine.BlackboardTemplate template, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        {
+            m_Key.OnTargetBlackboardTemplateChanged(template, in keySet);
+        }
+
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            var key = m_Key.selectedKey;
+
+            staticDescription = key.isValid
+                ? $"Wait for [{key.name}] second(s)."
+                : "[CONTAINS ERRORS]";
+        }
+    }
+
     internal partial class WaitTaskProvider
     {
         protected override void OnValidateCallback()

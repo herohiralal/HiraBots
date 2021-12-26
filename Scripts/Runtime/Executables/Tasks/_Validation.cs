@@ -13,5 +13,16 @@ namespace HiraBots
             }
         }
     }
+
+    internal partial class WaitBlackboardTimeTaskProvider
+    {
+        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        {
+            if (!m_Key.Validate(in keySet, UnityEngine.BlackboardKeyType.Numeric))
+            {
+                reportError($"{name} contains an incorrectly selected key.");
+            }
+        }
+    }
 }
 #endif
