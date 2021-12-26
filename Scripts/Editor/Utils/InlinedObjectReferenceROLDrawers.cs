@@ -493,6 +493,8 @@ namespace HiraBots.Editor
             base.ProcessCreatedObject(serializedObject, newObject);
             InlinedObjectReferencesHelper.Expand(newObject, out _);
 
+            newObject.OnValidate();
+
             if (serializedObject is LGOAPTask.Serialized task)
             {
                 task.OnBlackboardUpdate(newObject);
@@ -527,6 +529,8 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             InlinedObjectReferencesHelper.Expand(newObject, out _);
+
+            newObject.OnValidate();
 
             if (serializedObject is LGOAPTask.Serialized task)
             {

@@ -12,7 +12,7 @@
         /// </summary>
         public string description => m_Description;
 
-        private void OnValidate()
+        internal void OnValidate()
         {
             tickInterval = m_TickInterval;
 
@@ -91,7 +91,7 @@
         /// </summary>
         public string description => m_Description;
 
-        private void OnValidate()
+        internal void OnValidate()
         {
             tickInterval = m_TickInterval;
 
