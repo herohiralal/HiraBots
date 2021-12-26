@@ -5,7 +5,7 @@
         /// <summary>
         /// The static description of this service provider.
         /// </summary>
-        [SerializeField, HideInInspector] protected string m_Description = "";
+        [SerializeField, HideInInspector] private string m_Description = "";
 
         /// <summary>
         /// The static description of this service provider.
@@ -27,7 +27,7 @@
 
             try
             {
-                UpdateDescription();
+                UpdateDescription(out m_Description);
             }
             catch (System.Exception e)
             {
@@ -55,7 +55,7 @@
 
             try
             {
-                UpdateDescription();
+                UpdateDescription(out m_Description);
             }
             catch (System.Exception e)
             {
@@ -73,8 +73,9 @@
         /// <summary>
         /// Update the static description of this object.
         /// </summary>
-        protected virtual void UpdateDescription()
+        protected virtual void UpdateDescription(out string staticDescription)
         {
+            staticDescription = "Customize this description by overriding UpdateDescription().";
         }
     }
 
@@ -83,7 +84,7 @@
         /// <summary>
         /// The static description of this task provider.
         /// </summary>
-        [SerializeField, HideInInspector] protected string m_Description = "";
+        [SerializeField, HideInInspector] private string m_Description = "Customize this description by overriding UpdateDescription().";
 
         /// <summary>
         /// The static description of this task provider.
@@ -105,7 +106,7 @@
 
             try
             {
-                UpdateDescription();
+                UpdateDescription(out m_Description);
             }
             catch (System.Exception e)
             {
@@ -133,7 +134,7 @@
 
             try
             {
-                UpdateDescription();
+                UpdateDescription(out m_Description);
             }
             catch (System.Exception e)
             {
@@ -151,8 +152,9 @@
         /// <summary>
         /// Update the static description of this object.
         /// </summary>
-        protected virtual void UpdateDescription()
+        protected virtual void UpdateDescription(out string staticDescription)
         {
+            staticDescription = "Customize this description by overriding UpdateDescription().";
         }
     }
 }

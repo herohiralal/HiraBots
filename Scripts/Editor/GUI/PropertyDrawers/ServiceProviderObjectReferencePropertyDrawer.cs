@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -6,6 +7,8 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(HiraBotsServiceProvider), true)]
     internal class ServiceProviderObjectReferencePropertyDrawer : PropertyDrawer
     {
+        private static HashSet<string> propertiesToSkip { get; } = new HashSet<string> { "m_Description" };
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var value = property.objectReferenceValue;
@@ -18,10 +21,10 @@ namespace HiraBots.Editor
             var expanded = InlinedObjectReferencesHelper.IsExpanded(value, out var cso);
 
             return !expanded
-                ? 21f
+                ? 21f + 21f
                 : 0f
                   + 21f // header
-                  + GUIHelpers.GetTotalHeightForPropertyDrawers((SerializedObject) cso)
+                  + GUIHelpers.GetTotalHeightForPropertyDrawers((SerializedObject) cso, true, propertiesToSkip)
                   + 0f;
         }
 
@@ -55,7 +58,18 @@ namespace HiraBots.Editor
                 currentRect.y += 22f;
                 currentRect.height -= 22f;
 
-                GUIHelpers.DrawDefaultPropertyDrawers(currentRect, (SerializedObject) cso);
+                GUIHelpers.DrawDefaultPropertyDrawers(currentRect, (SerializedObject) cso, true, propertiesToSkip);
+            }
+            else
+            {
+                currentRect.y += 21f;
+
+                currentRect.height -= 4f;
+                EditorGUI.DrawRect(currentRect, ExecutablesGUIHelpers.serviceProviderColorFaded);
+                currentRect.height += 4f;
+
+                var description = value.description ?? "";
+                EditorGUI.LabelField(currentRect, description, EditorStyles.miniBoldLabel);
             }
         }
     }

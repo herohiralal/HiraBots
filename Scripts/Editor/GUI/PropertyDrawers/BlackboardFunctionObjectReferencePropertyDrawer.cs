@@ -7,7 +7,7 @@ namespace HiraBots.Editor
     [CustomPropertyDrawer(typeof(BlackboardFunction), true)]
     internal class BlackboardFunctionObjectReferencePropertyDrawer : PropertyDrawer
     {
-        private HashSet<string> propertiesToSkip = new HashSet<string> { "m_Subtitle", "m_Description" };
+        private static HashSet<string> propertiesToSkip { get; } = new HashSet<string> { "m_Subtitle", "m_Description" };
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
