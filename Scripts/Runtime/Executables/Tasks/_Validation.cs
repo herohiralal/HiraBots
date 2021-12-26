@@ -14,6 +14,17 @@ namespace HiraBots
         }
     }
 
+    internal partial class MoveToTaskProvider
+    {
+        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        {
+            if (!m_Target.Validate(in keySet, UnityEngine.BlackboardKeyType.Vector))
+            {
+                reportError($"{name} does not have a valid target key.");
+            }
+        }
+    }
+
     internal partial class WaitBlackboardTimeTaskProvider
     {
         protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
