@@ -13,7 +13,9 @@ namespace HiraBots
             m_ErrorString = new StringBuilder(2000);
             m_BadContainers = new List<LGOAPDomainValidatorContext.BadContainerInfo>();
             m_BadFunctions = new List<LGOAPContainerValidatorContext.BadFunctionInfo>();
+            m_BadExecutables = new List<LGOAPContainerValidatorContext.BadExecutableInfo>();
             m_BadlySelectedKeys = new List<BlackboardFunctionValidatorContext.BadKeyInfo>();
+            m_ExecutablesErrors = new List<string>();
             m_ValidatedBlackboardsAndTheirKeySets = validatedBlackboardsAndTheirKeySets;
         }
 
@@ -26,7 +28,9 @@ namespace HiraBots
             m_UnvalidatedBlackboard = null;
             m_BadContainers.Clear();
             m_BadFunctions.Clear();
+            m_BadExecutables.Clear();
             m_BadlySelectedKeys.Clear();
+            m_ExecutablesErrors.Clear();
         }
 
         // the current status
@@ -47,8 +51,14 @@ namespace HiraBots
         // pre-allocated list of bad functions
         private readonly List<LGOAPContainerValidatorContext.BadFunctionInfo> m_BadFunctions;
 
+        // pre-allocated list of bad executables
+        private readonly List<LGOAPContainerValidatorContext.BadExecutableInfo> m_BadExecutables;
+
         // pre-allocated list of badly selected keys
         private readonly List<BlackboardFunctionValidatorContext.BadKeyInfo> m_BadlySelectedKeys;
+
+        // pre-allocated list of executables errors
+        private readonly List<string> m_ExecutablesErrors;
 
         // hash map of validated blackboards and their key sets
         private readonly ReadOnlyDictionaryAccessor<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>> m_ValidatedBlackboardsAndTheirKeySets;
@@ -136,6 +146,32 @@ namespace HiraBots
                             }
                         }
                     }
+
+                    if (badContainerInfo.badExecutables != null)
+                    {
+                        for (var j = 0; j < badContainerInfo.badExecutables.Length; j++)
+                        {
+                            var badExecutableInfo = badContainerInfo.badExecutables[j];
+
+                            if (badExecutableInfo.executableIsNull)
+                            {
+                                m_ErrorString.AppendLine(FormatStringForNullExecutable(target,
+                                    ref badContainerInfo, ref badExecutableInfo));
+                                continue;
+                            }
+
+                            if (badExecutableInfo.errors != null)
+                            {
+                                for (var k = 0; k < badExecutableInfo.errors.Length; k++)
+                                {
+                                    var executableError = badExecutableInfo.errors[k];
+
+                                    m_ErrorString.AppendLine(FormatErrorStringForBadExecutableError(target,
+                                        ref badContainerInfo, ref badExecutableInfo, executableError));
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -204,6 +240,23 @@ namespace HiraBots
                    $"{(k.selectedKey == null ? "null" : k.selectedKey.name)}.";
         }
 
+        internal static string FormatStringForNullExecutable(LGOAPDomain d,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadExecutableInfo e)
+        {
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({e.containerName})" +
+                   $"::{e.executableType}[{e.executableIndex}] is null.";
+        }
+
+        internal static string FormatErrorStringForBadExecutableError(LGOAPDomain d,
+            ref LGOAPDomainValidatorContext.BadContainerInfo c,
+            ref LGOAPContainerValidatorContext.BadExecutableInfo e,
+            string error)
+        {
+            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({e.containerName})" +
+                   $"::{e.executableType}[{e.executableIndex}] reported \"{error}\"";
+        }
+
         //================================= validator context interface
 
         BackendType ILGOAPDomainValidatorContext.missingBackends
@@ -219,7 +272,11 @@ namespace HiraBots
 
         List<LGOAPContainerValidatorContext.BadFunctionInfo> ILGOAPDomainValidatorContext.badFunctions => m_BadFunctions;
 
+        List<LGOAPContainerValidatorContext.BadExecutableInfo> ILGOAPDomainValidatorContext.badExecutables => m_BadExecutables;
+
         List<BlackboardFunctionValidatorContext.BadKeyInfo> ILGOAPDomainValidatorContext.badlySelectedKeys => m_BadlySelectedKeys;
+
+        List<string> ILGOAPDomainValidatorContext.executablesErrors => m_ExecutablesErrors;
 
         // other interface
         void ILGOAPDomainValidatorContext.MarkUnsuccessful()

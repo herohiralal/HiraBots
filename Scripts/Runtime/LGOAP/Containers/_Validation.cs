@@ -51,6 +51,37 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// The info regarding a bad executable.
+        /// </summary>
+        internal struct BadExecutableInfo
+        {
+            /// <summary>
+            /// The name of the container.
+            /// </summary>
+            internal string containerName { get; set; }
+
+            /// <summary>
+            /// The type of the executable.
+            /// </summary>
+            internal string executableType { get; set; }
+
+            /// <summary>
+            /// The index of the executable.
+            /// </summary>
+            internal int executableIndex { get; set; }
+
+            /// <summary>
+            /// Whether the executable is null.
+            /// </summary>
+            internal bool executableIsNull { get; set; }
+
+            /// <summary>
+            /// The list of errors in the executable.
+            /// </summary>
+            internal string[] errors { get; set; }
+        }
+
+        /// <summary>
         /// Whether the validation succeeded.
         /// </summary>
         internal bool succeeded { get; set; }
@@ -61,9 +92,19 @@ namespace HiraBots
         internal List<BadFunctionInfo> badFunctions { get; set; }
 
         /// <summary>
+        /// List of bad executables.
+        /// </summary>
+        internal List<BadExecutableInfo> badExecutables { get; set; }
+
+        /// <summary>
         /// Pre-allocated list for badly selected keys.
         /// </summary>
         internal List<BlackboardFunctionValidatorContext.BadKeyInfo> badlySelectedKeys { get; set; }
+
+        /// <summary>
+        /// Pre-allocated list for errors in executables.
+        /// </summary>
+        internal List<string> executablesErrors { get; set; }
 
         /// <summary>
         /// The pool of allowed keys.
@@ -360,6 +401,82 @@ namespace HiraBots
                 {
                     context.succeeded = false;
                     context.badFunctions.Add(badFunctionInfo);
+                }
+            }
+
+            for (var i = 0; i < m_TaskProviders.Length; i++)
+            {
+                var taskProvider = m_TaskProviders[i];
+                context.executablesErrors.Clear();
+
+                var badExecutableInfo = new LGOAPContainerValidatorContext.BadExecutableInfo
+                {
+                    containerName = name,
+                    executableType = "Task Provider",
+                    executableIndex = i
+                };
+
+                if (taskProvider == null)
+                {
+                    badExecutableInfo.executableIsNull = true;
+
+                    context.succeeded = false;
+                    context.badExecutables.Add(badExecutableInfo);
+                    continue;
+                }
+
+                var success = true;
+
+                taskProvider.Validate(context.executablesErrors);
+
+                if (context.executablesErrors.Count > 0)
+                {
+                    success = false;
+                    badExecutableInfo.errors = context.executablesErrors.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badExecutables.Add(badExecutableInfo);
+                }
+            }
+
+            for (var i = 0; i < m_ServiceProviders.Length; i++)
+            {
+                var serviceProvider = m_ServiceProviders[i];
+                context.executablesErrors.Clear();
+
+                var badExecutableInfo = new LGOAPContainerValidatorContext.BadExecutableInfo
+                {
+                    containerName = name,
+                    executableType = "Task Provider",
+                    executableIndex = i
+                };
+
+                if (serviceProvider == null)
+                {
+                    badExecutableInfo.executableIsNull = true;
+
+                    context.succeeded = false;
+                    context.badExecutables.Add(badExecutableInfo);
+                    continue;
+                }
+
+                var success = true;
+
+                serviceProvider.Validate(context.executablesErrors);
+
+                if (context.executablesErrors.Count > 0)
+                {
+                    success = false;
+                    badExecutableInfo.errors = context.executablesErrors.ToArray();
+                }
+
+                if (!success)
+                {
+                    context.succeeded = false;
+                    context.badExecutables.Add(badExecutableInfo);
                 }
             }
         }

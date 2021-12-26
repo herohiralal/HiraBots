@@ -46,9 +46,19 @@ namespace HiraBots
         List<LGOAPContainerValidatorContext.BadFunctionInfo> badFunctions { get; }
 
         /// <summary>
+        /// Pre-allocated list of bad functions.
+        /// </summary>
+        List<LGOAPContainerValidatorContext.BadExecutableInfo> badExecutables { get; }
+
+        /// <summary>
         /// Pre-allocated list for badly selected keys.
         /// </summary>
         List<BlackboardFunctionValidatorContext.BadKeyInfo> badlySelectedKeys { get; }
+
+        /// <summary>
+        /// Pre-allocated list for errors in executables.
+        /// </summary>
+        List<string> executablesErrors { get; }
     }
 
     internal struct LGOAPDomainValidatorContext
@@ -87,6 +97,11 @@ namespace HiraBots
             /// The list of bad functions on the container.
             /// </summary>
             internal LGOAPContainerValidatorContext.BadFunctionInfo[] badFunctions { get; set; }
+
+            /// <summary>
+            /// The list of bad executables on the container.
+            /// </summary>
+            internal LGOAPContainerValidatorContext.BadExecutableInfo[] badExecutables { get; set; }
         }
     }
 
@@ -144,7 +159,9 @@ namespace HiraBots
             var containerValidator = new LGOAPContainerValidatorContext
             {
                 badFunctions = context.badFunctions,
+                badExecutables = context.badExecutables,
                 badlySelectedKeys = context.badlySelectedKeys,
+                executablesErrors = context.executablesErrors,
                 allowedKeyPool = keys
             };
 
@@ -153,7 +170,9 @@ namespace HiraBots
                 var goal = m_TopLayer.m_Goals[i];
                 containerValidator.succeeded = true;
                 containerValidator.badFunctions.Clear();
+                containerValidator.badExecutables.Clear();
                 containerValidator.badlySelectedKeys.Clear();
+                containerValidator.executablesErrors.Clear();
 
                 var badComponentInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                 {
@@ -179,6 +198,7 @@ namespace HiraBots
                 {
                     success = false;
                     badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
+                    badComponentInfo.badExecutables = containerValidator.badExecutables.ToArray();
                 }
 
                 if (!success)
@@ -197,7 +217,9 @@ namespace HiraBots
                     var abstractTask = layer.m_Tasks[j];
                     containerValidator.succeeded = true;
                     containerValidator.badFunctions.Clear();
+                    containerValidator.badExecutables.Clear();
                     containerValidator.badlySelectedKeys.Clear();
+                    containerValidator.executablesErrors.Clear();
 
                     var badComponentInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                     {
@@ -223,6 +245,7 @@ namespace HiraBots
                     {
                         success = false;
                         badComponentInfo.badFunctions = containerValidator.badFunctions.ToArray();
+                        badComponentInfo.badExecutables = containerValidator.badExecutables.ToArray();
                     }
 
                     if (!success)
@@ -240,7 +263,9 @@ namespace HiraBots
                 var task = m_BottomLayer.m_Tasks[i];
                 containerValidator.succeeded = true;
                 containerValidator.badFunctions.Clear();
+                containerValidator.badExecutables.Clear();
                 containerValidator.badlySelectedKeys.Clear();
+                containerValidator.executablesErrors.Clear();
 
                 var badContainerInfo = new LGOAPDomainValidatorContext.BadContainerInfo
                 {
@@ -272,6 +297,7 @@ namespace HiraBots
                 {
                     success = false;
                     badContainerInfo.badFunctions = containerValidator.badFunctions.ToArray();
+                    badContainerInfo.badExecutables = containerValidator.badExecutables.ToArray();
                 }
 
                 if (!success)
