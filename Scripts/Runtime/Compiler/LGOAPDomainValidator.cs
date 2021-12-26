@@ -80,51 +80,61 @@ namespace HiraBots
                 m_ErrorString.AppendLine(FormatErrorStringForUnvalidatedBlackboard(m_UnvalidatedBlackboard));
             }
 
-            for (var i = 0; i < m_BadContainers.Count; i++)
+            if (m_BadContainers != null)
             {
-                var badContainerInfo = m_BadContainers[i];
-
-                if (badContainerInfo.containerIsNull)
+                for (var i = 0; i < m_BadContainers.Count; i++)
                 {
-                    m_ErrorString.AppendLine(FormatErrorStringForNullContainer(target,
-                        ref badContainerInfo));
-                    continue;
-                }
+                    var badContainerInfo = m_BadContainers[i];
 
-                if (badContainerInfo.containerIsAbstractWhenItShouldNotBe)
-                {
-                    m_ErrorString.AppendLine(FormatErrorStringForContainerAbstractWhenItShouldNotBe(target,
-                        ref badContainerInfo));
-                }
-
-                for (var j = 0; j < badContainerInfo.badFunctions.Length; j++)
-                {
-                    var badFunctionInfo = badContainerInfo.badFunctions[j];
-
-                    if (badFunctionInfo.functionIsNull)
+                    if (badContainerInfo.containerIsNull)
                     {
-                        m_ErrorString.AppendLine(FormatStringForNullFunction(target,
-                            ref badContainerInfo, ref badFunctionInfo));
+                        m_ErrorString.AppendLine(FormatErrorStringForNullContainer(target,
+                            ref badContainerInfo));
                         continue;
                     }
 
-                    if (badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe)
+                    if (badContainerInfo.containerIsAbstractWhenItShouldNotBe)
                     {
-                        m_ErrorString.AppendLine(FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(target,
-                            ref badContainerInfo, ref badFunctionInfo));
+                        m_ErrorString.AppendLine(FormatErrorStringForContainerAbstractWhenItShouldNotBe(target,
+                            ref badContainerInfo));
                     }
 
-                    if (badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe)
+                    if (badContainerInfo.badFunctions != null)
                     {
-                        m_ErrorString.AppendLine(FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(target,
-                            ref badContainerInfo, ref badFunctionInfo));
-                    }
+                        for (var j = 0; j < badContainerInfo.badFunctions.Length; j++)
+                        {
+                            var badFunctionInfo = badContainerInfo.badFunctions[j];
 
-                    for (var k = 0; k < badFunctionInfo.badKeys.Length; k++)
-                    {
-                        var badlySelectedKey = badFunctionInfo.badKeys[k];
-                        m_ErrorString.AppendLine(FormatErrorStringForBadlySelectedKey(target,
-                            ref badContainerInfo, ref badFunctionInfo, ref badlySelectedKey));
+                            if (badFunctionInfo.functionIsNull)
+                            {
+                                m_ErrorString.AppendLine(FormatStringForNullFunction(target,
+                                    ref badContainerInfo, ref badFunctionInfo));
+                                continue;
+                            }
+
+                            if (badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe)
+                            {
+                                m_ErrorString.AppendLine(FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(target,
+                                    ref badContainerInfo, ref badFunctionInfo));
+                            }
+
+                            if (badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe)
+                            {
+                                m_ErrorString.AppendLine(FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(target,
+                                    ref badContainerInfo, ref badFunctionInfo));
+                            }
+
+                            if (badFunctionInfo.badKeys != null)
+                            {
+                                for (var k = 0; k < badFunctionInfo.badKeys.Length; k++)
+                                {
+                                    var badlySelectedKey = badFunctionInfo.badKeys[k];
+
+                                    m_ErrorString.AppendLine(FormatErrorStringForBadlySelectedKey(target,
+                                        ref badContainerInfo, ref badFunctionInfo, ref badlySelectedKey));
+                                }
+                            }
+                        }
                     }
                 }
             }
