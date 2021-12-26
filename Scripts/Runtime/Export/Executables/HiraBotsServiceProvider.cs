@@ -7,14 +7,14 @@
         void Stop();
     }
 
-    public abstract class HiraBotsServiceProvider : ScriptableObject
+    public abstract partial class HiraBotsServiceProvider : ScriptableObject
     {
-        [SerializeField] private float m_TickRate = 0f;
+        [SerializeField] private float m_TickInterval = 0f;
 
-        public float tickRate
+        public float tickInterval
         {
-            get => m_TickRate;
-            set => m_TickRate = Mathf.Max(0, value);
+            get => m_TickInterval;
+            set => m_TickInterval = Mathf.Max(0, value);
         }
 
         public abstract IHiraBotsService GetService(BlackboardComponent blackboard);
