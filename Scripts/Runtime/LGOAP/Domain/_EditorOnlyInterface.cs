@@ -172,6 +172,16 @@ namespace HiraBots
                 {
                     OnBlackboardUpdate(decorator, keys);
                 }
+
+                foreach (var taskProvider in task.taskProviders)
+                {
+                    OnBlackboardUpdate(taskProvider, keys);
+                }
+
+                foreach (var taskProvider in task.serviceProviders)
+                {
+                    OnBlackboardUpdate(taskProvider, keys);
+                }
             }
 
             internal void OnBlackboardUpdate(BlackboardFunction function)
@@ -182,6 +192,26 @@ namespace HiraBots
             private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
                 function.OnTargetBlackboardTemplateChanged(target.m_Blackboard, keys);
+            }
+
+            internal void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider)
+            {
+                OnBlackboardUpdate(taskProvider, keySet);
+            }
+
+            private void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            {
+                taskProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
+            }
+
+            internal void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider)
+            {
+                OnBlackboardUpdate(serviceProvider, keySet);
+            }
+
+            private void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            {
+                serviceProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
             }
         }
     }

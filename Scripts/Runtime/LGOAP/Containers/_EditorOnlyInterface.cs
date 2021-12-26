@@ -158,6 +158,26 @@ namespace HiraBots
             {
                 function.OnTargetBlackboardTemplateChanged(target.blackboard, keys);
             }
+
+            internal void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider)
+            {
+                OnBlackboardUpdate(taskProvider, keySet);
+            }
+
+            private void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            {
+                taskProvider.OnTargetBlackboardTemplateChangedWrapped(target.blackboard, keys);
+            }
+
+            internal void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider)
+            {
+                OnBlackboardUpdate(serviceProvider, keySet);
+            }
+
+            private void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            {
+                serviceProvider.OnTargetBlackboardTemplateChangedWrapped(target.blackboard, keys);
+            }
         }
     }
 }

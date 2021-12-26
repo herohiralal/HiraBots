@@ -492,6 +492,11 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             InlinedObjectReferencesHelper.Expand(newObject, out _);
+
+            if (serializedObject is LGOAPTask.Serialized task)
+            {
+                task.OnBlackboardUpdate(newObject);
+            }
         }
 
         internal static void Bind(LGOAPTask.Serialized task)
@@ -522,6 +527,11 @@ namespace HiraBots.Editor
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             InlinedObjectReferencesHelper.Expand(newObject, out _);
+
+            if (serializedObject is LGOAPTask.Serialized task)
+            {
+                task.OnBlackboardUpdate(newObject);
+            }
         }
 
         internal static void Bind(LGOAPTask.Serialized task)
