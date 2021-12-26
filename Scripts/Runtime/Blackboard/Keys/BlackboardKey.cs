@@ -22,5 +22,13 @@ namespace HiraBots
         /// </summary>
         internal BlackboardKeyType keyType => m_KeyType;
         [NonSerialized] protected BlackboardKeyType m_KeyType;
+
+        /// <summary>
+        /// Implicitly convert a KeySelector to its public interface.
+        /// </summary>
+        public static implicit operator UnityEngine.BlackboardKey(BlackboardKey key)
+        {
+            return new UnityEngine.BlackboardKey(key);
+        }
     }
 }

@@ -4,7 +4,7 @@
     /// A reference to a blackboard template.
     /// </summary>
     [System.Serializable]
-    public struct BlackboardTemplate
+    public partial struct BlackboardTemplate
     {
         internal BlackboardTemplate(HiraBots.BlackboardTemplate value)
         {
@@ -12,7 +12,7 @@
         }
         
         // the actual template
-        [SerializeField, HideInInspector] private HiraBots.BlackboardTemplate m_Value;
+        [SerializeField, HideInInspector] internal HiraBots.BlackboardTemplate m_Value;
 
         /// <summary>
         /// Whether the blackboard template is valid.

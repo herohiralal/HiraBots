@@ -12,7 +12,7 @@
         }
 
         // the actual component
-        private HiraBots.BlackboardComponent m_Value;
+        internal HiraBots.BlackboardComponent m_Value;
 
         /// <summary>
         /// Whether the blackboard component is valid.

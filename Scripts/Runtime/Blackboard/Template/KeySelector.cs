@@ -22,6 +22,14 @@ namespace HiraBots
                 set => m_Key = value;
             }
 
+            /// <summary>
+            /// Implicitly convert a KeySelector to its public interface.
+            /// </summary>
+            public static implicit operator UnityEngine.BlackboardTemplate.KeySelector(KeySelector selector)
+            {
+                return new UnityEngine.BlackboardTemplate.KeySelector(selector);
+            }
+
 #if UNITY_EDITOR
 #pragma warning disable CS0414
             // filter data is only needed in the editor - the actual validation occurs based on
