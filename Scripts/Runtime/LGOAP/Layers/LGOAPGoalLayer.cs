@@ -9,6 +9,7 @@ namespace HiraBots
     {
         internal static LGOAPGoalLayer empty => new LGOAPGoalLayer
         {
+            m_FallbackGoal = new ushort[1],
             m_Goals = new LGOAPGoal[0]
         };
 

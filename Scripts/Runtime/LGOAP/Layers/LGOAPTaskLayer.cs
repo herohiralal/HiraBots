@@ -9,6 +9,7 @@ namespace HiraBots
     {
         internal static LGOAPTaskLayer empty => new LGOAPTaskLayer
         {
+            m_FallbackPlan = new ushort[1],
             m_Tasks = new LGOAPTask[0]
         };
 

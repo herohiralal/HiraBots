@@ -30,8 +30,11 @@ namespace HiraBots.Editor
         [SerializeField] private bool m_Dirty = false;
         private LGOAPDomain.Serialized m_SerializedObject = null;
         private ReorderableList m_TopLayer = null;
+        private ReorderableList m_TopLayerFallback = null;
         private ReorderableList[] m_IntermediateLayers = null;
+        private ReorderableList[] m_IntermediateLayersFallbacks = null;
         private ReorderableList m_BottomLayer = null;
+        private ReorderableList m_BottomLayerFallback = null;
 
         private void OnEnable()
         {
@@ -43,6 +46,7 @@ namespace HiraBots.Editor
             Undo.undoRedoPerformed -= OnUndoPerformed;
 
             LGOAPGoalROLDrawer.Unbind(m_TopLayer);
+            FallbackPlanDrawer.Unbind(m_TopLayerFallback);
 
             if (m_IntermediateLayers != null)
             {
@@ -52,7 +56,16 @@ namespace HiraBots.Editor
                 }
             }
 
+            if (m_IntermediateLayersFallbacks != null)
+            {
+                foreach (var l in m_IntermediateLayersFallbacks)
+                {
+                    FallbackPlanDrawer.Unbind(l);
+                }
+            }
+
             LGOAPTaskROLDrawer.Unbind(m_BottomLayer);
+            FallbackPlanDrawer.Unbind(m_BottomLayerFallback);
 
             m_SerializedObject = null;
             m_Dirty = false;
@@ -83,14 +96,29 @@ namespace HiraBots.Editor
                     m_TopLayer = LGOAPGoalROLDrawer.Bind(domain);
                 }
 
+                if (m_TopLayerFallback == null)
+                {
+                    m_TopLayerFallback = FallbackPlanDrawer.BindTopLayer(domain);
+                }
+
                 if (m_IntermediateLayers == null)
                 {
                     m_IntermediateLayers = LGOAPAbstractTaskROLDrawer.Bind(domain);
                 }
 
+                if (m_IntermediateLayersFallbacks == null)
+                {
+                    m_IntermediateLayersFallbacks = FallbackPlanDrawer.BindIntermediateLayers(domain);
+                }
+
                 if (m_BottomLayer == null)
                 {
                     m_BottomLayer = LGOAPTaskROLDrawer.Bind(domain);
+                }
+
+                if (m_BottomLayerFallback == null)
+                {
+                    m_BottomLayerFallback = FallbackPlanDrawer.BindBottomLayer(domain);
                 }
 
                 var editingAllowed = !EditorApplication.isPlayingOrWillChangePlaymode;
@@ -125,6 +153,7 @@ namespace HiraBots.Editor
                     {
                         m_Dirty = true;
                         LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
+                        FallbackPlanDrawer.RebindIntermediateLayers(ref m_IntermediateLayersFallbacks, domain);
                     }
 
                     // blackboard property field
@@ -160,15 +189,21 @@ namespace HiraBots.Editor
 
                     m_TopLayer.DoLayoutList();
 
+                    m_SerializedObject.Update();
+                    m_TopLayerFallback.DoLayoutList();
+                    m_SerializedObject.ApplyModifiedProperties();
+
                     EditorGUILayout.Space();
 
                     for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
-                        var l = m_IntermediateLayers[i];
-
                         DrawPlanSizeProperty(i);
 
-                        l.DoLayoutList();
+                        m_IntermediateLayers[i].DoLayoutList();
+
+                        m_SerializedObject.Update();
+                        m_IntermediateLayersFallbacks[i].DoLayoutList();
+                        m_SerializedObject.ApplyModifiedProperties();
 
                         EditorGUILayout.Space();
                     }
@@ -176,6 +211,10 @@ namespace HiraBots.Editor
                     DrawPlanSizeProperty(m_SerializedObject.intermediateLayersCount);
 
                     m_BottomLayer.DoLayoutList();
+
+                    m_SerializedObject.Update();
+                    m_BottomLayerFallback.DoLayoutList();
+                    m_SerializedObject.ApplyModifiedProperties();
 
                     EditorGUILayout.Space();
                 }
@@ -287,6 +326,147 @@ namespace HiraBots.Editor
                 }
 
                 return hs;
+            }
+        }
+
+        private static class FallbackPlanDrawer
+        {
+            private static void Bind(ReorderableList rol, SerializedProperty planProperty, SerializedProperty containerListProperty)
+            {
+                rol.drawHeaderCallback = r =>
+                {
+                    r.x += 20f;
+                    EditorGUI.LabelField(r, "Fallback Plan");
+                };
+
+                rol.elementHeight = 23f;
+
+                rol.drawElementBackgroundCallback = (r, i, a, f) =>
+                {
+                    if (i < 0)
+                    {
+                        return;
+                    }
+
+                    // default background
+                    ReorderableList.defaultBehaviours.DrawElementBackground(r, i, a, true, true);
+                };
+
+                rol.drawElementCallback = (r, i, a, f) =>
+                {
+                    r.y += 2;
+                    r.height -= 4;
+                    r.x += 2;
+                    r.width -= 4;
+
+                    var currentIndex = planProperty.GetArrayElementAtIndex(i).intValue;
+
+                    string label;
+                    if (currentIndex < 0 || currentIndex >= containerListProperty.arraySize)
+                    {
+                        var width = r.width;
+                        r.width = width * 0.78f;
+
+                        var r2 = r;
+                        r2.x += width * 0.82f;
+                        r2.width = width * 0.18f;
+                        EditorGUI.HelpBox(r2, "Invalid.", MessageType.Error);
+
+                        label = $"UNKNOWN [{currentIndex}]";
+                    }
+                    else
+                    {
+                        var currentContainer = containerListProperty.GetArrayElementAtIndex(currentIndex).objectReferenceValue;
+                        label = currentContainer == null ? $"NULL [{currentIndex}]" : $"{currentContainer.name} [{currentIndex}]";
+                    }
+
+                    if (EditorGUI.DropdownButton(r, GUIHelpers.TempContent(label), FocusType.Keyboard, EditorStyles.popup))
+                    {
+                        var menu = new GenericMenu();
+
+                        for (var j = 0; j < containerListProperty.arraySize; j++)
+                        {
+                            var currentContainerIndex = j;
+                            var currentContainer = containerListProperty.GetArrayElementAtIndex(j).objectReferenceValue;
+
+                            var guiContent = new GUIContent(currentContainer == null ? $"NULL [{currentIndex}]" : $"{currentContainer.name} [{currentIndex}]");
+                            menu.AddItem(guiContent, currentIndex == j,
+                                () =>
+                                {
+                                    planProperty.serializedObject.Update();
+                                    planProperty.GetArrayElementAtIndex(i).intValue = currentContainerIndex;
+                                    planProperty.serializedObject.ApplyModifiedProperties();
+                                });
+                        }
+
+                        menu.DropDown(r);
+                    }
+                };
+
+                rol.onCanRemoveCallback = r => planProperty.arraySize <= 1;
+            }
+
+            internal static void Unbind(ReorderableList rol)
+            {
+                rol.drawHeaderCallback = null;
+                rol.drawElementBackgroundCallback = null;
+                rol.drawElementCallback = null;
+                rol.onCanRemoveCallback = null;
+            }
+
+            internal static ReorderableList BindTopLayer(LGOAPDomain.Serialized serializedObject)
+            {
+                var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.topLayerFallback,
+                    true, true, true, true);
+
+                Bind(rol, serializedObject.topLayerFallback, serializedObject.topLayer);
+                return rol;
+            }
+
+            internal static ReorderableList BindBottomLayer(LGOAPDomain.Serialized serializedObject)
+            {
+                var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.bottomLayerFallback,
+                    true, true, true, true);
+
+                Bind(rol, serializedObject.bottomLayerFallback, serializedObject.bottomLayer);
+                return rol;
+            }
+
+            private static ReorderableList BindIntermediateLayer(LGOAPDomain.Serialized serializedObject, int index)
+            {
+                var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.intermediateLayersFallbacks[index],
+                    true, true, true, true);
+                Bind(rol, serializedObject.intermediateLayersFallbacks[index], serializedObject.intermediateLayers[index]);
+                return rol;
+            }
+
+            internal static ReorderableList[] BindIntermediateLayers(LGOAPDomain.Serialized serializedObject)
+            {
+                var count = serializedObject.intermediateLayersCount;
+                var lists = new ReorderableList[count];
+
+                for (var i = 0; i < count; i++)
+                {
+                    lists[i] = BindIntermediateLayer(serializedObject, i);
+                }
+
+                return lists;
+            }
+
+            internal static void RebindIntermediateLayers(ref ReorderableList[] lists, LGOAPDomain.Serialized serializedObject)
+            {
+                var updatedCount = serializedObject.intermediateLayersCount;
+                var originalCount = lists.Length;
+
+                System.Array.Resize(ref lists, updatedCount);
+                if (lists == null) lists = new ReorderableList[0];
+
+                var difference = updatedCount - originalCount;
+
+                for (var i = 0; i < difference; i++)
+                {
+                    lists[originalCount + i] = BindIntermediateLayer(serializedObject, originalCount + i);
+                }
             }
         }
     }
