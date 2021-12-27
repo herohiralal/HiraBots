@@ -9,6 +9,7 @@ namespace HiraBots
     {
         private BlackboardTemplateCompiledData m_BlackboardCompiledData;
         private ReadOnlyArrayAccessor<byte> m_MaxPlanSizesByLayer;
+        private LGOAPPlan.Set.ReadOnly m_FallbackPlans;
         private NativeArray<byte> m_Domain = default;
 
         private readonly Dictionary<ulong, JobHandle> m_DependentJobs = new Dictionary<ulong, JobHandle>();
@@ -24,6 +25,11 @@ namespace HiraBots
         internal ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer => m_MaxPlanSizesByLayer;
 
         /// <summary>
+        /// The fallback plans by each layer.
+        /// </summary>
+        internal LGOAPPlan.Set.ReadOnly fallbackPlans => m_FallbackPlans;
+
+        /// <summary>
         /// The number of layers (excluding the goal layer).
         /// </summary>
         internal int layerCount => m_MaxPlanSizesByLayer.count;
@@ -34,11 +40,12 @@ namespace HiraBots
         internal NativeArray<byte> data => m_Domain;
 
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
-            byte[] maxPlanSizesByLayer)
+            ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer, ReadOnlyArrayAccessor<short[]> fallbackPlans)
         {
             m_BlackboardCompiledData = blackboardCompiledData;
             m_Domain = domain;
-            m_MaxPlanSizesByLayer = maxPlanSizesByLayer.ReadOnly();
+            m_FallbackPlans = new LGOAPPlan.Set.ReadOnly(fallbackPlans);
+            m_MaxPlanSizesByLayer = maxPlanSizesByLayer;
         }
 
         internal void Dispose()
@@ -51,6 +58,8 @@ namespace HiraBots
             }
 
             m_DependentJobs.Clear();
+
+            m_FallbackPlans.Dispose();
 
             if (m_Domain.IsCreated)
             {

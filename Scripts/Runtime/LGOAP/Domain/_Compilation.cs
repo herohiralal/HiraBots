@@ -106,7 +106,26 @@ namespace HiraBots
                 maxPlanSizesByLayer[maxPlanSizesByLayer.Length - 1] = m_BottomLayer.m_MaxPlanSize;
             }
 
-            compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData, domain, maxPlanSizesByLayer);
+            // fallback plans
+            var fallbackPlans = new short[m_IntermediateLayers.Length + 2][];
+
+            {
+                // create copies instead of passing around the main array and run the risk of it getting edited
+
+                fallbackPlans[0] = (short[]) m_TopLayer.m_FallbackGoal.Clone();
+
+                for (var i = 0; i < fallbackPlans.Length - 2; i++)
+                {
+                    fallbackPlans[i + 1] = (short[]) m_IntermediateLayers[i].m_FallbackPlan.Clone();
+                }
+
+                fallbackPlans[fallbackPlans.Length - 1] = (short[]) m_BottomLayer.m_FallbackPlan.Clone();
+            }
+
+            compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData,
+                domain,
+                maxPlanSizesByLayer.ReadOnly(),
+                fallbackPlans.ReadOnly());
         }
 
         /// <summary>
