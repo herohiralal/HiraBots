@@ -10,6 +10,7 @@ namespace HiraBots
         internal class Serialized : CustomSerializedObject<LGOAPDomain>
         {
             private SerializedProperty[] m_IntermediateLayerProperties;
+            private SerializedProperty[] m_IntermediateLayerFallbackProperties;
 
             internal Serialized(LGOAPDomain obj) : base(obj)
             {
@@ -25,19 +26,32 @@ namespace HiraBots
                 topLayer = GetProperty<LGOAPGoal>($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_Goals)}",
                     true, true);
 
+                topLayerFallback = GetProperty($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_FallbackGoal)}", SerializedPropertyType.Integer,
+                    true, true);
+
                 intermediateLayersProperty = GetProperty<LGOAPTaskLayer>(nameof(m_IntermediateLayers),
                     true, true);
 
                 bottomLayer = GetProperty<LGOAPTask>($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_Tasks)}",
                     true, true);
 
+                bottomLayerFallback = GetProperty($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_FallbackPlan)}", SerializedPropertyType.Integer,
+                    true, true);
+
                 if (intermediateLayersProperty != null)
                 {
                     var intermediateLayerCount = intermediateLayersProperty.arraySize;
+
                     m_IntermediateLayerProperties = new SerializedProperty[intermediateLayerCount];
                     for (var i = 0; i < intermediateLayerCount; i++)
                     {
                         m_IntermediateLayerProperties[i] = GetIntermediateLayerProperty(i);
+                    }
+
+                    m_IntermediateLayerFallbackProperties = new SerializedProperty[intermediateLayerCount];
+                    for (var i = 0; i < intermediateLayerCount; i++)
+                    {
+                        m_IntermediateLayerFallbackProperties[i] = GetIntermediateLayerFallbackProperty(i);
                     }
                 }
             }
@@ -46,9 +60,12 @@ namespace HiraBots
             internal SerializedProperty blackboard { get; }
             internal SerializedProperty planSizesByLayer { get; }
             internal SerializedProperty topLayer { get; }
+            internal SerializedProperty topLayerFallback { get; }
             private SerializedProperty intermediateLayersProperty { get; }
             internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayers => m_IntermediateLayerProperties.ReadOnly();
+            internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayersFallbacks => m_IntermediateLayerFallbackProperties.ReadOnly();
             internal SerializedProperty bottomLayer { get; }
+            internal SerializedProperty bottomLayerFallback { get; }
 
             internal int intermediateLayersCount
             {
@@ -61,6 +78,7 @@ namespace HiraBots
                     {
                         intermediateLayersProperty.arraySize = value;
                         System.Array.Resize(ref m_IntermediateLayerProperties, value);
+                        System.Array.Resize(ref m_IntermediateLayerFallbackProperties, value);
 
                         var difference = value - originalCount;
 
@@ -74,6 +92,15 @@ namespace HiraBots
                             }
 
                             m_IntermediateLayerProperties[originalCount + i] = p;
+
+                            var p2 = GetIntermediateLayerFallbackProperty(originalCount + i);
+
+                            if (p2 != null)
+                            {
+                                p2.arraySize = 0;
+                            }
+
+                            m_IntermediateLayerFallbackProperties[originalCount + i] = p2;
                         }
                     }
                 }
@@ -83,6 +110,12 @@ namespace HiraBots
             {
                 return GetProperty<LGOAPTask>($"{nameof(m_IntermediateLayers)}.Array.data[{x}].{nameof(LGOAPTaskLayer.m_Tasks)}",
                     true, true);
+            }
+
+            private SerializedProperty GetIntermediateLayerFallbackProperty(int x)
+            {
+                return GetProperty($"{nameof(m_IntermediateLayers)}.Array.data[{x}].{nameof(LGOAPTaskLayer.m_FallbackPlan)}",
+                    SerializedPropertyType.Integer, true, true);
             }
 
             private ReadOnlyHashSetAccessor<BlackboardKey> keySet

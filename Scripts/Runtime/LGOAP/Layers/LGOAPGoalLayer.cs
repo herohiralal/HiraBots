@@ -12,6 +12,7 @@ namespace HiraBots
             m_Goals = new LGOAPGoal[0]
         };
 
+        [SerializeField, HideInInspector] internal ushort[] m_FallbackGoal;
         [SerializeField, HideInInspector] internal LGOAPGoal[] m_Goals;
     }
 }

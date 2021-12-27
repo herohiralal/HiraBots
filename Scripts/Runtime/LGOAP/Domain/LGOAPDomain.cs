@@ -15,7 +15,7 @@ namespace HiraBots
         [Tooltip("The blackboard to use for the domain.")]
         [SerializeField, HideInInspector] private BlackboardTemplate m_Blackboard = null;
 
-        [Tooltip("The size of a plan at this layer.")]
+        [Tooltip("The max size of a plan at this layer.")]
         [SerializeField, HideInInspector] private byte[] m_PlanSizesByLayer = new byte[0];
 
         [Tooltip("The top-most layer, containing only goals.")]

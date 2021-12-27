@@ -12,6 +12,7 @@ namespace HiraBots
             m_Tasks = new LGOAPTask[0]
         };
 
+        [SerializeField, HideInInspector] internal ushort[] m_FallbackPlan;
         [SerializeField, HideInInspector] internal LGOAPTask[] m_Tasks;
     }
 }
