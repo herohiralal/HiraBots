@@ -106,7 +106,7 @@ namespace HiraBots
             var layerCount = m_Domain.planSizesByLayer.count;
 
             // copy currently executing plan to the results set used for planning
-            PlanSet.Copy(m_PlanForExecution, m_PlanForPlanning);
+            m_PlanForExecution.CopyTo(m_PlanForPlanning);
 
             JobHandle lastJobHandle = default;
 
@@ -166,7 +166,7 @@ namespace HiraBots
                                   "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
                     case LGOAPPlan.Type.NewPlan:
-                        LGOAPPlan.Copy(m_PlanForPlanning[i], m_PlanForExecution[i]);
+                        m_PlanForPlanning[i].CopyTo(m_PlanForExecution[i]);
                         Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:

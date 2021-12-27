@@ -46,9 +46,9 @@ namespace HiraBots
             /// <summary>
             /// Copy the result set to another.
             /// </summary>
-            internal static void Copy(PlanSet src, PlanSet dst)
+            internal void CopyTo(PlanSet dst)
             {
-                var countA = src.m_Internal.Length;
+                var countA = m_Internal.Length;
                 var countB = dst.m_Internal.Length;
 
                 if (countA != countB)
@@ -61,7 +61,7 @@ namespace HiraBots
 
                 for (var i = 0; i < countA; i++)
                 {
-                    LGOAPPlan.Copy(src.m_Internal[i], dst.m_Internal[i]);
+                    m_Internal[i].CopyTo(dst.m_Internal[i]);
                 }
             }
         }

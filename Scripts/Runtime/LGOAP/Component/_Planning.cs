@@ -6,87 +6,6 @@ using Unity.Mathematics;
 
 namespace HiraBots
 {
-    internal struct LGOAPPlan
-    {
-        internal enum Type : short
-        {
-            Invalid = 0,
-            NotRequired = 1,
-            Unchanged = 2,
-            NewPlan = 3
-        }
-
-        private const short k_TypeIndex = 0;
-        private const short k_CountIndex = 1;
-        private const short k_CurrentIndexIndex = 2;
-        private const short k_HeaderSize = 3;
-
-        private NativeArray<short> m_Internal;
-
-        internal LGOAPPlan(short bufferSize, Allocator allocator)
-        {
-            m_Internal = new NativeArray<short>(bufferSize + k_HeaderSize, allocator, NativeArrayOptions.UninitializedMemory);
-            InvalidatePlan();
-        }
-
-        internal void Dispose()
-        {
-            if (m_Internal.IsCreated)
-            {
-                m_Internal.Dispose();
-            }
-        }
-
-        internal Type resultType
-        {
-            get => (Type) m_Internal[k_TypeIndex];
-            set => m_Internal[k_TypeIndex] = (short) value;
-        }
-
-        internal short length
-        {
-            get => m_Internal[k_CountIndex];
-            set => m_Internal[k_CountIndex] = value;
-        }
-
-        internal short bufferSize => (byte) (m_Internal.Length - k_HeaderSize);
-
-        internal short currentIndex
-        {
-            get => m_Internal[k_CurrentIndexIndex];
-            set => m_Internal[k_CurrentIndexIndex] = value;
-        }
-
-        internal short this[short index]
-        {
-            get => m_Internal[index + k_HeaderSize];
-            set => m_Internal[index + k_HeaderSize] = value;
-        }
-
-        internal void InvalidatePlan()
-        {
-            resultType = Type.Invalid;
-            length = 0;
-            currentIndex = -1;
-        }
-
-        internal void RestartPlan()
-        {
-            currentIndex = -1;
-        }
-
-        internal bool canMoveNext => (currentIndex + 1) < length;
-
-        internal void MoveNext() => currentIndex++;
-
-        internal short currentElement => this[currentIndex];
-
-        internal static void Copy(LGOAPPlan src, LGOAPPlan dst)
-        {
-            NativeArray<short>.Copy(src.m_Internal, dst.m_Internal);
-        }
-    }
-
     [BurstCompile(FloatPrecision.Low, FloatMode.Fast)]
     internal unsafe struct LGOAPGoalCalculatorJob : IJob
     {
@@ -155,8 +74,8 @@ namespace HiraBots
                 return;
             }
 
-            var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.bufferSize + 1)];
-            var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.bufferSize + 1), (ushort) m_Blackboard.Length);
+            var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.maxLength + 1)];
+            var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.maxLength + 1), (ushort) m_Blackboard.Length);
             datasets.Copy(0, m_Blackboard);
 
             var domain = new LowLevelLGOAPDomain((byte*) m_Domain.GetUnsafeReadOnlyPtr());
