@@ -24,6 +24,11 @@ namespace HiraBots
         internal ReadOnlyArrayAccessor<byte> planSizesByLayer => m_PlanSizesByLayer;
 
         /// <summary>
+        /// The number of layers (excluding the goal layer).
+        /// </summary>
+        internal int layerCount => m_PlanSizesByLayer.count - 1;
+
+        /// <summary>
         /// The compiled data for the domain.
         /// </summary>
         internal NativeArray<byte> data => m_Domain;

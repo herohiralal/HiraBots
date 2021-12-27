@@ -21,7 +21,7 @@ namespace HiraBots
 
         internal void StartPlannerAtLayer(int index, bool discardIfAlreadyPlanning)
         {
-            var layerCount = m_Domain.planSizesByLayer.count;
+            var layerCount = m_Domain.layerCount;
 
             if (index < -1 || index >= layerCount)
             {
@@ -103,7 +103,7 @@ namespace HiraBots
         // this function is not inlined to ensure its synchronicity
         private JobHandle SchedulePlannerJob(int index)
         {
-            var layerCount = m_Domain.planSizesByLayer.count;
+            var layerCount = m_Domain.layerCount;
 
             // copy currently executing plan to the results set used for planning
             m_PlanForExecution.CopyTo(m_PlanForPlanning);
@@ -142,7 +142,7 @@ namespace HiraBots
         // this function is not inlined to ensure its synchronicity
         private void UsePlannerResults(int index)
         {
-            var layerCount = m_Domain.planSizesByLayer.count;
+            var layerCount = m_Domain.layerCount;
 
             for (var i = index; i < layerCount; i++)
             {

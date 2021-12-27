@@ -9,15 +9,13 @@ namespace HiraBots
         {
             internal PlanSet(ReadOnlyArrayAccessor<byte> planSizesByLayer)
             {
-                var layerCount = planSizesByLayer.count;
+                var layerCountIncludingGoalLayer = planSizesByLayer.count;
 
-                m_Internal = new LGOAPPlan[layerCount + 1];
+                m_Internal = new LGOAPPlan[layerCountIncludingGoalLayer];
 
-                m_Internal[0] = new LGOAPPlan(1, Allocator.Persistent);
-
-                for (var i = 0; i < layerCount; i++)
+                for (var i = 0; i < layerCountIncludingGoalLayer; i++)
                 {
-                    m_Internal[i + 1] = new LGOAPPlan(planSizesByLayer[i], Allocator.Persistent);
+                    m_Internal[i] = new LGOAPPlan(planSizesByLayer[i], Allocator.Persistent);
                 }
             }
 
