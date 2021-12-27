@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -20,13 +19,13 @@ namespace HiraBots
         private int? m_LayerToSchedulePlannerAt;
         private JobHandle? m_JobHandleToWaitOn;
 
-        internal void StartPlannerAtLayer(int index)
+        internal void StartPlannerAtLayer(int index, bool discardIfAlreadyPlanning)
         {
             var layerCount = m_Domain.planSizesByLayer.count;
 
             if (index < -1 || index >= layerCount)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), index, $"Range: [-1, {layerCount}).");
+                throw new System.ArgumentOutOfRangeException(nameof(index), index, $"Range: [-1, {layerCount}).");
             }
 
             switch (m_Status)
@@ -37,7 +36,7 @@ namespace HiraBots
                         m_LayerToSchedulePlannerAt = index;
                     }
                     break;
-                case Status.Planning:
+                case Status.Planning when discardIfAlreadyPlanning:
                     m_LayerToSchedulePlannerAt = index;
                     break;
                 case Status.Normal:
@@ -45,7 +44,7 @@ namespace HiraBots
                     m_PlannerCoroutine = HiraBotsModule.StartCoroutine(SchedulePlannerCoroutine());
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new System.ArgumentOutOfRangeException();
             }
         }
 
@@ -56,12 +55,17 @@ namespace HiraBots
                 yield break;
             }
 
-            // mark the status as planning
-            m_Status = Status.Planning;
+            // mark the status as about to start planning
+            m_Status = Status.WillSchedulePlanner;
+
+            yield return null;
 
             // get the index to schedule the planner job at and mark it as consumed
             var index = m_LayerToSchedulePlannerAt.Value;
             m_LayerToSchedulePlannerAt = null;
+
+            // mark the status as planning
+            m_Status = Status.Planning;
 
             var lastJobHandle = SchedulePlannerJob(index);
 
@@ -79,9 +83,6 @@ namespace HiraBots
                 m_JobHandleToWaitOn = null;
             }
 
-            // mark the status as normal because the rest of the execution will take place on the main thread exclusively
-            m_Status = Status.Normal;
-
             // if a re-plan has been requested, ignore the results and just schedule a new planner job
             if (m_LayerToSchedulePlannerAt.HasValue)
             {
@@ -90,6 +91,10 @@ namespace HiraBots
             else // otherwise use the generated results
             {
                 UsePlannerResults(index);
+
+                // mark the status as normal
+                m_Status = Status.Normal;
+
                 m_PlannerCoroutine = null;
             }
         }
@@ -139,39 +144,33 @@ namespace HiraBots
         {
             var layerCount = m_Domain.planSizesByLayer.count;
 
-            // copy planner results to result set used for execution
-            m_ResultsSetForPlanning.CopyTo(m_ResultsSetForExecution);
-
             for (var i = index; i < layerCount; i++)
             {
-                var result = m_ResultsSetForExecution[i];
-
                 // todo: actually use the plan please, that's sort of the whole point
-                switch (result.resultType)
+                switch (m_ResultsSetForPlanning[i].resultType)
                 {
                     case LGOAPPlannerResult.Type.Invalid:
+                        m_ResultsSetForExecution[i].InvalidatePlan();
                         Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
                                   "The planner must always be able to calculate a plan.");
                         break;
                     case LGOAPPlannerResult.Type.NotRequired:
+                        m_ResultsSetForExecution[i].InvalidatePlan();
+                        m_ResultsSetForExecution[i].resultType = LGOAPPlannerResult.Type.NotRequired;
                         Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
                                   " previous layers contain a fake target.");
                         break;
                     case LGOAPPlannerResult.Type.Unchanged:
+                        // ignore the result and keep executing the current copy
                         Debug.Log($"Reused previous plan at layer {i} on component {m_Id}. This can happen if there " +
                                   "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
                     case LGOAPPlannerResult.Type.NewPlan:
-                        var s = "Plan discovered: ";
-                        while (result.MoveNext())
-                        {
-                            s += $"{result.currentElement} ";
-                        }
-                        
-                        Debug.Log(s);
+                        m_ResultsSetForPlanning[i].CopyTo(m_ResultsSetForExecution[i]);
+                        Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new System.ArgumentOutOfRangeException();
                 }
             }
         }

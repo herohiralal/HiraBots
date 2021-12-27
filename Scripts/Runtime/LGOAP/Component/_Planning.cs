@@ -67,7 +67,7 @@ namespace HiraBots
         {
             resultType = Type.Invalid;
             count = 0;
-            currentIndex = short.MaxValue;
+            currentIndex = -1;
         }
 
         internal void RestartPlan()
@@ -75,11 +75,9 @@ namespace HiraBots
             currentIndex = -1;
         }
 
-        internal bool MoveNext()
-        {
-            currentIndex++;
-            return currentIndex < count;
-        }
+        internal bool canMoveNext => (currentIndex + 1) < count;
+
+        internal void MoveNext() => currentIndex++;
 
         internal short currentElement => this[currentIndex];
 
