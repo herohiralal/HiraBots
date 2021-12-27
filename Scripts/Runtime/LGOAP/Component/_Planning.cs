@@ -6,7 +6,7 @@ using Unity.Mathematics;
 
 namespace HiraBots
 {
-    internal struct LGOAPPlannerResult
+    internal struct LGOAPPlan
     {
         internal enum Type : short
         {
@@ -23,7 +23,7 @@ namespace HiraBots
 
         private NativeArray<short> m_Internal;
 
-        internal LGOAPPlannerResult(short bufferSize, Allocator allocator)
+        internal LGOAPPlan(short bufferSize, Allocator allocator)
         {
             m_Internal = new NativeArray<short>(bufferSize + k_HeaderSize, allocator, NativeArrayOptions.UninitializedMemory);
             InvalidatePlan();
@@ -43,7 +43,7 @@ namespace HiraBots
             set => m_Internal[k_TypeIndex] = (short) value;
         }
 
-        internal short count
+        internal short length
         {
             get => m_Internal[k_CountIndex];
             set => m_Internal[k_CountIndex] = value;
@@ -66,7 +66,7 @@ namespace HiraBots
         internal void InvalidatePlan()
         {
             resultType = Type.Invalid;
-            count = 0;
+            length = 0;
             currentIndex = -1;
         }
 
@@ -75,22 +75,22 @@ namespace HiraBots
             currentIndex = -1;
         }
 
-        internal bool canMoveNext => (currentIndex + 1) < count;
+        internal bool canMoveNext => (currentIndex + 1) < length;
 
         internal void MoveNext() => currentIndex++;
 
         internal short currentElement => this[currentIndex];
 
-        internal void CopyTo(LGOAPPlannerResult other)
+        internal static void Copy(LGOAPPlan src, LGOAPPlan dst)
         {
-            m_Internal.CopyTo(other.m_Internal);
+            NativeArray<short>.Copy(src.m_Internal, dst.m_Internal);
         }
     }
 
     [BurstCompile(FloatPrecision.Low, FloatMode.Fast)]
     internal unsafe struct LGOAPGoalCalculatorJob : IJob
     {
-        public LGOAPGoalCalculatorJob(NativeArray<byte> domain, NativeArray<byte> blackboard, LGOAPPlannerResult result)
+        public LGOAPGoalCalculatorJob(NativeArray<byte> domain, NativeArray<byte> blackboard, LGOAPPlan result)
         {
             m_Domain = domain;
             m_Blackboard = blackboard;
@@ -99,7 +99,7 @@ namespace HiraBots
 
         [ReadOnly] private readonly NativeArray<byte> m_Domain;
         [ReadOnly] private readonly NativeArray<byte> m_Blackboard;
-        private LGOAPPlannerResult m_Result;
+        private LGOAPPlan m_Result;
 
         public void Execute()
         {
@@ -109,11 +109,11 @@ namespace HiraBots
             var answer = domain.insistenceCollection.GetMaxInsistenceIndex(blackboard);
             answer = answer == -1 ? 0 : answer;
 
-            m_Result.count = 1;
+            m_Result.length = 1;
 
-            m_Result.resultType = m_Result.resultType != LGOAPPlannerResult.Type.Invalid && answer == m_Result[0]
-                ? LGOAPPlannerResult.Type.Unchanged
-                : LGOAPPlannerResult.Type.NewPlan;
+            m_Result.resultType = m_Result.resultType != LGOAPPlan.Type.Invalid && answer == m_Result[0]
+                ? LGOAPPlan.Type.Unchanged
+                : LGOAPPlan.Type.NewPlan;
 
             m_Result[0] = (short) answer;
 
@@ -128,8 +128,8 @@ namespace HiraBots
             NativeArray<byte> blackboard,
             float maxFScore,
             int layerIndex,
-            LGOAPPlannerResult previousLayerResult,
-            LGOAPPlannerResult result)
+            LGOAPPlan previousLayerResult,
+            LGOAPPlan result)
         {
             m_Domain = domain;
             m_Blackboard = blackboard;
@@ -144,12 +144,12 @@ namespace HiraBots
 
         private readonly float m_MaxFScore;
         private readonly int m_LayerIndex;
-        private LGOAPPlannerResult m_PreviousLayerResult;
-        private LGOAPPlannerResult m_Result;
+        private LGOAPPlan m_PreviousLayerResult;
+        private LGOAPPlan m_Result;
 
         public void Execute()
         {
-            if (m_PreviousLayerResult.resultType == LGOAPPlannerResult.Type.Invalid)
+            if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Invalid)
             {
                 m_Result.InvalidatePlan();
                 return;
@@ -168,17 +168,17 @@ namespace HiraBots
             if (target.isFake)
             {
                 m_Result.InvalidatePlan();
-                m_Result.resultType = LGOAPPlannerResult.Type.NotRequired;
+                m_Result.resultType = LGOAPPlan.Type.NotRequired;
                 return;
             }
 
             // check if the current plan is ok
-            if (m_PreviousLayerResult.resultType == LGOAPPlannerResult.Type.Unchanged && m_Result.resultType != LGOAPPlannerResult.Type.Invalid)
+            if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Unchanged && m_Result.resultType != LGOAPPlan.Type.Invalid)
             {
                 var previousPlanStillValid = true;
 
                 // check if the actions in the plan can still be chained
-                var planLength = m_Result.count;
+                var planLength = m_Result.length;
                 for (var i = m_Result.currentIndex; i < planLength; i++)
                 {
                     actions.collection[m_Result[i]].Break(
@@ -198,7 +198,7 @@ namespace HiraBots
                 // current plan is still valid AND it satisfies the target
                 if (previousPlanStillValid && target.GetHeuristic(datasets[0]) == 0)
                 {
-                    m_Result.resultType = LGOAPPlannerResult.Type.Unchanged;
+                    m_Result.resultType = LGOAPPlan.Type.Unchanged;
                     return;
                 }
 
@@ -221,7 +221,7 @@ namespace HiraBots
             internal LowLevelLGOAPActionCollection m_Actions;
             internal float m_MaxFScore;
             internal LowLevelBlackboardCollection m_Datasets;
-            internal LGOAPPlannerResult m_Result;
+            internal LGOAPPlan m_Result;
 
             internal void Execute()
             {
@@ -248,8 +248,8 @@ namespace HiraBots
                 if (heuristic == 0)
                 {
                     m_Result.RestartPlan();
-                    m_Result.resultType = LGOAPPlannerResult.Type.NewPlan;
-                    m_Result.count = (short) (index - 1);
+                    m_Result.resultType = LGOAPPlan.Type.NewPlan;
+                    m_Result.length = (short) (index - 1);
                     return -1;
                 }
 

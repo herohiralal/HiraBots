@@ -5,19 +5,19 @@ namespace HiraBots
 {
     internal partial class LGOAPPlannerComponent
     {
-        private struct PlannerResultsSet
+        private struct PlanSet
         {
-            internal PlannerResultsSet(ReadOnlyArrayAccessor<byte> planSizesByLayer)
+            internal PlanSet(ReadOnlyArrayAccessor<byte> planSizesByLayer)
             {
                 var layerCount = planSizesByLayer.count;
 
-                m_Internal = new LGOAPPlannerResult[layerCount + 1];
+                m_Internal = new LGOAPPlan[layerCount + 1];
 
-                m_Internal[0] = new LGOAPPlannerResult(1, Allocator.Persistent);
+                m_Internal[0] = new LGOAPPlan(1, Allocator.Persistent);
 
                 for (var i = 0; i < layerCount; i++)
                 {
-                    m_Internal[i + 1] = new LGOAPPlannerResult(planSizesByLayer[i], Allocator.Persistent);
+                    m_Internal[i + 1] = new LGOAPPlan(planSizesByLayer[i], Allocator.Persistent);
                 }
             }
 
@@ -31,25 +31,25 @@ namespace HiraBots
                 m_Internal = null;
             }
 
-            private LGOAPPlannerResult[] m_Internal;
+            private LGOAPPlan[] m_Internal;
 
             /// <summary>
             /// The goal result.
             /// </summary>
-            internal LGOAPPlannerResult goalResult => m_Internal[0];
+            internal LGOAPPlan goalResult => m_Internal[0];
 
             /// <summary>
             /// The result for a plan at the given layer index.
             /// </summary>
-            internal ref LGOAPPlannerResult this[int layerIndex] => ref m_Internal[layerIndex + 1]; // first one is goal layer
+            internal ref LGOAPPlan this[int layerIndex] => ref m_Internal[layerIndex + 1]; // first one is goal layer
 
             /// <summary>
             /// Copy the result set to another.
             /// </summary>
-            internal void CopyTo(PlannerResultsSet other)
+            internal static void Copy(PlanSet src, PlanSet dst)
             {
-                var countA = m_Internal.Length;
-                var countB = other.m_Internal.Length;
+                var countA = src.m_Internal.Length;
+                var countB = dst.m_Internal.Length;
 
                 if (countA != countB)
                 {
@@ -61,7 +61,7 @@ namespace HiraBots
 
                 for (var i = 0; i < countA; i++)
                 {
-                    m_Internal[i].CopyTo(other.m_Internal[i]);
+                    LGOAPPlan.Copy(src.m_Internal[i], dst.m_Internal[i]);
                 }
             }
         }

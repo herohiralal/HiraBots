@@ -106,7 +106,7 @@ namespace HiraBots
             var layerCount = m_Domain.planSizesByLayer.count;
 
             // copy currently executing plan to the results set used for planning
-            m_ResultsSetForExecution.CopyTo(m_ResultsSetForPlanning);
+            PlanSet.Copy(m_PlanForExecution, m_PlanForPlanning);
 
             JobHandle lastJobHandle = default;
 
@@ -116,7 +116,7 @@ namespace HiraBots
             // goal calculator job
             if (index == -1)
             {
-                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_ResultsSetForPlanning.goalResult);
+                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_PlanForPlanning.goalResult);
                 lastJobHandle = goalCalculatorJob.Schedule();
                 index++;
             }
@@ -129,8 +129,8 @@ namespace HiraBots
                     blackboard,
                     100f,
                     i,
-                    m_ResultsSetForPlanning[i - 1],
-                    m_ResultsSetForPlanning[i]);
+                    m_PlanForPlanning[i - 1],
+                    m_PlanForPlanning[i]);
 
                 lastJobHandle = plannerJob.Schedule(lastJobHandle);
             }
@@ -147,26 +147,26 @@ namespace HiraBots
             for (var i = index; i < layerCount; i++)
             {
                 // todo: actually use the plan please, that's sort of the whole point
-                switch (m_ResultsSetForPlanning[i].resultType)
+                switch (m_PlanForPlanning[i].resultType)
                 {
-                    case LGOAPPlannerResult.Type.Invalid:
-                        m_ResultsSetForExecution[i].InvalidatePlan();
+                    case LGOAPPlan.Type.Invalid:
+                        m_PlanForExecution[i].InvalidatePlan();
                         Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
                                   "The planner must always be able to calculate a plan.");
                         break;
-                    case LGOAPPlannerResult.Type.NotRequired:
-                        m_ResultsSetForExecution[i].InvalidatePlan();
-                        m_ResultsSetForExecution[i].resultType = LGOAPPlannerResult.Type.NotRequired;
+                    case LGOAPPlan.Type.NotRequired:
+                        m_PlanForExecution[i].InvalidatePlan();
+                        m_PlanForExecution[i].resultType = LGOAPPlan.Type.NotRequired;
                         Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
                                   " previous layers contain a fake target.");
                         break;
-                    case LGOAPPlannerResult.Type.Unchanged:
+                    case LGOAPPlan.Type.Unchanged:
                         // ignore the result and keep executing the current copy
                         Debug.Log($"Reused previous plan at layer {i} on component {m_Id}. This can happen if there " +
                                   "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
-                    case LGOAPPlannerResult.Type.NewPlan:
-                        m_ResultsSetForPlanning[i].CopyTo(m_ResultsSetForExecution[i]);
+                    case LGOAPPlan.Type.NewPlan:
+                        LGOAPPlan.Copy(m_PlanForPlanning[i], m_PlanForExecution[i]);
                         Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:

@@ -7,8 +7,8 @@
         private readonly ulong m_Id;
         private LGOAPDomainCompiledData m_Domain;
         private BlackboardComponent m_Blackboard;
-        private PlannerResultsSet m_ResultsSetForExecution;
-        private PlannerResultsSet m_ResultsSetForPlanning;
+        private PlanSet m_PlanForExecution;
+        private PlanSet m_PlanForPlanning;
 
         /// <summary>
         /// Reset the static id assigner.
@@ -47,8 +47,8 @@
             m_Blackboard = blackboard;
             m_Domain = domain;
 
-            m_ResultsSetForExecution = new PlannerResultsSet(m_Domain.planSizesByLayer);
-            m_ResultsSetForPlanning = new PlannerResultsSet(m_Domain.planSizesByLayer);
+            m_PlanForExecution = new PlanSet(m_Domain.planSizesByLayer);
+            m_PlanForPlanning = new PlanSet(m_Domain.planSizesByLayer);
 
             m_Status = Status.Normal;
             m_LayerToSchedulePlannerAt = null;
@@ -74,8 +74,8 @@
             m_LayerToSchedulePlannerAt = null;
             m_Status = Status.Normal;
 
-            m_ResultsSetForPlanning.Dispose();
-            m_ResultsSetForExecution.Dispose();
+            m_PlanForPlanning.Dispose();
+            m_PlanForExecution.Dispose();
 
             m_Domain = null;
             m_Blackboard = null;
