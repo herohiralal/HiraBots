@@ -26,7 +26,7 @@ namespace HiraBots
         /// <summary>
         /// The number of layers (excluding the goal layer).
         /// </summary>
-        internal int layerCount => m_PlanSizesByLayer.count - 1;
+        internal int layerCount => m_PlanSizesByLayer.count;
 
         /// <summary>
         /// The compiled data for the domain.

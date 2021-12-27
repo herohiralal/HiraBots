@@ -23,9 +23,9 @@ namespace HiraBots
         {
             var layerCount = m_Domain.layerCount;
 
-            if (index < -1 || index >= layerCount)
+            if (index < 0 || index >= layerCount)
             {
-                throw new System.ArgumentOutOfRangeException(nameof(index), index, $"Range: [-1, {layerCount}).");
+                throw new System.ArgumentOutOfRangeException(nameof(index), index, $"Range: [0, {layerCount}).");
             }
 
             switch (m_Status)
@@ -114,9 +114,9 @@ namespace HiraBots
             var blackboard = m_Blackboard.Copy(Allocator.TempJob);
 
             // goal calculator job
-            if (index == -1)
+            if (index == 0)
             {
-                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_PlanForPlanning.goalResult);
+                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_PlanForPlanning[0]);
                 lastJobHandle = goalCalculatorJob.Schedule();
                 index++;
             }

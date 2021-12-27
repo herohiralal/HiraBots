@@ -67,7 +67,7 @@ namespace HiraBots
             CompilationRegistry.IncreaseDepth();
 
             // write layer count header
-            ByteStreamHelpers.Write<byte>(ref domainAddress, (byte) (m_IntermediateLayers.Length + 1));
+            ByteStreamHelpers.Write<byte>(ref domainAddress, (byte) (m_IntermediateLayers.Length + 2));
 
             // write top layer
             var topLayerStart = domainAddress;
@@ -95,7 +95,7 @@ namespace HiraBots
             {
                 var planSizesByLayer = new byte[m_IntermediateLayers.Length + 2];
 
-                planSizesByLayer[0] = m_TopLayer.m_MaxPlanSize;
+                planSizesByLayer[0] = m_TopLayer.m_MaxPlanSize = 1;
 
                 for (var i = 0; i < planSizesByLayer.Length - 2; i++)
                 {

@@ -32,14 +32,9 @@ namespace HiraBots
             private LGOAPPlan[] m_Internal;
 
             /// <summary>
-            /// The goal result.
-            /// </summary>
-            internal LGOAPPlan goalResult => m_Internal[0];
-
-            /// <summary>
             /// The result for a plan at the given layer index.
             /// </summary>
-            internal ref LGOAPPlan this[int layerIndex] => ref m_Internal[layerIndex + 1]; // first one is goal layer
+            internal ref LGOAPPlan this[int layerIndex] => ref m_Internal[layerIndex]; // first one is goal layer
 
             /// <summary>
             /// Copy the result set to another.

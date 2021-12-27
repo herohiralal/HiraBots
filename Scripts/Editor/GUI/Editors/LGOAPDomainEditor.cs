@@ -187,7 +187,7 @@ namespace HiraBots.Editor
 
                     GUIHelpers.DrawSplitter();
 
-                    GUIHelpers.DrawHeader("GOALS [Layer Index: -1]", m_SerializedObject.topLayer);
+                    GUIHelpers.DrawHeader("GOALS [Layer Index: 0]", m_SerializedObject.topLayer);
                     if (m_SerializedObject.topLayer.isExpanded)
                     {
                         EditorGUILayout.Space();
@@ -208,7 +208,7 @@ namespace HiraBots.Editor
 
                     for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
-                        GUIHelpers.DrawHeader($"TASKS [Layer Index: {i}]", m_SerializedObject.intermediateLayers[i]);
+                        GUIHelpers.DrawHeader($"TASKS [Layer Index: {i + 1}]", m_SerializedObject.intermediateLayers[i]);
                         if (m_SerializedObject.intermediateLayers[i].isExpanded)
                         {
                             EditorGUILayout.Space();
@@ -225,7 +225,7 @@ namespace HiraBots.Editor
                         }
                     }
 
-                    GUIHelpers.DrawHeader($"TASKS [Layer Index: {m_IntermediateLayers.Length}]", m_SerializedObject.bottomLayer);
+                    GUIHelpers.DrawHeader($"TASKS [Layer Index: {m_IntermediateLayers.Length + 1}]", m_SerializedObject.bottomLayer);
                     if (m_SerializedObject.bottomLayer.isExpanded)
                     {
                         EditorGUILayout.Space();

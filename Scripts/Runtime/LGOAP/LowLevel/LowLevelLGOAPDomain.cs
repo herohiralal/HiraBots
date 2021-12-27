@@ -61,9 +61,9 @@ namespace HiraBots
         internal (LowLevelLGOAPTargetCollection targets, LowLevelLGOAPActionCollection actions) GetTaskLayerAt(int index)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            if (index < 0 || index >= layerCount)
+            if (index < 1 || index >= layerCount)
             {
-                throw new System.IndexOutOfRangeException($"Index out of range [0-{layerCount}) - (index) {index}.");
+                throw new System.IndexOutOfRangeException($"Index out of range [1-{layerCount}) - (index) {index}.");
             }
 #endif
 
@@ -71,7 +71,7 @@ namespace HiraBots
             var insistenceColl = new LowLevelLGOAPInsistenceCollection(address);
             address += insistenceColl.collection.size;
 
-            for (var i = 0; i < index; i++)
+            for (var i = 1; i < index; i++) // start from 1 because layer 0 is goal layer
             {
                 var targetColl = new LowLevelLGOAPTargetCollection(address);
                 address += targetColl.collection.size;
