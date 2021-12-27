@@ -39,6 +39,115 @@ namespace HiraBots
             }
         }
 
+        internal struct Set
+        {
+            // ReSharper disable once MemberHidesStaticFromOuterClass
+            internal struct ReadOnly
+            {
+                private LGOAPPlan.ReadOnly[] m_Internal;
+
+                internal ReadOnly(UnityEngine.ReadOnlyArrayAccessor<short[]> plans)
+                {
+                    var layerCount = plans.count;
+
+                    m_Internal = new LGOAPPlan.ReadOnly[layerCount];
+
+                    for (var i = 0; i < layerCount; i++)
+                    {
+                        m_Internal[i] = new LGOAPPlan.ReadOnly(plans[i]);
+                    }
+                }
+
+                internal void Dispose()
+                {
+                    for (var i = 0; i < m_Internal.Length; i++)
+                    {
+                        m_Internal[i].Dispose();
+                    }
+
+                    m_Internal = null;
+                }
+
+                /// <summary>
+                /// The plan at the given layer index.
+                /// </summary>
+                internal ref LGOAPPlan.ReadOnly this[int layerIndex] => ref m_Internal[layerIndex];
+
+                /// <summary>
+                /// Copy the plan set to another.
+                /// </summary>
+                internal void CopyTo(Set dst)
+                {
+                    var countA = m_Internal.Length;
+                    var countB = dst.m_Internal.Length;
+
+                    if (countA != countB)
+                    {
+                        throw new System.InvalidOperationException();
+                    }
+
+                    // individual size checking will be done by LGOAPPlan.ReadOnly itsel
+                    // no point in doing it here again
+
+                    for (var i = 0; i < countA; i++)
+                    {
+                        m_Internal[i].CopyTo(dst.m_Internal[i]);
+                    }
+                }
+            }
+
+            private LGOAPPlan[] m_Internal;
+
+            internal Set(UnityEngine.ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer)
+            {
+                var layerCount = maxPlanSizesByLayer.count;
+
+                m_Internal = new LGOAPPlan[layerCount];
+
+                for (var i = 0; i < layerCount; i++)
+                {
+                    m_Internal[i] = new LGOAPPlan(maxPlanSizesByLayer[i], Allocator.Persistent);
+                }
+            }
+
+            internal void Dispose()
+            {
+                for (var i = 0; i < m_Internal.Length; i++)
+                {
+                    m_Internal[i].Dispose();
+                }
+
+                m_Internal = null;
+            }
+
+            /// <summary>
+            /// The plan at the given layer index.
+            /// </summary>
+            internal ref LGOAPPlan this[int layerIndex] => ref m_Internal[layerIndex];
+
+            /// <summary>
+            /// Copy the plan set to another.
+            /// </summary>
+            internal void CopyTo(Set dst)
+            {
+                var countA = m_Internal.Length;
+                var countB = dst.m_Internal.Length;
+
+                if (countA != countB)
+                {
+                    throw new System.InvalidOperationException();
+                }
+
+                // individual size checking will be done by NativeArray<T>.Copy itself
+                // no point in doing it here again
+
+                for (var i = 0; i < countA; i++)
+                {
+                    m_Internal[i].CopyTo(dst.m_Internal[i]);
+                }
+            }
+        }
+
         internal enum Type : short
         {
             Invalid = 0,

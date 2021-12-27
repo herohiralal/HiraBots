@@ -8,7 +8,7 @@ namespace HiraBots
     internal class LGOAPDomainCompiledData
     {
         private BlackboardTemplateCompiledData m_BlackboardCompiledData;
-        private ReadOnlyArrayAccessor<byte> m_PlanSizesByLayer;
+        private ReadOnlyArrayAccessor<byte> m_MaxPlanSizesByLayer;
         private NativeArray<byte> m_Domain = default;
 
         private readonly Dictionary<ulong, JobHandle> m_DependentJobs = new Dictionary<ulong, JobHandle>();
@@ -21,12 +21,12 @@ namespace HiraBots
         /// <summary>
         /// The size of a plan by the layer.
         /// </summary>
-        internal ReadOnlyArrayAccessor<byte> planSizesByLayer => m_PlanSizesByLayer;
+        internal ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer => m_MaxPlanSizesByLayer;
 
         /// <summary>
         /// The number of layers (excluding the goal layer).
         /// </summary>
-        internal int layerCount => m_PlanSizesByLayer.count;
+        internal int layerCount => m_MaxPlanSizesByLayer.count;
 
         /// <summary>
         /// The compiled data for the domain.
@@ -34,16 +34,16 @@ namespace HiraBots
         internal NativeArray<byte> data => m_Domain;
 
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
-            byte[] planSizesByLayer)
+            byte[] maxPlanSizesByLayer)
         {
             m_BlackboardCompiledData = blackboardCompiledData;
             m_Domain = domain;
-            m_PlanSizesByLayer = planSizesByLayer.ReadOnly();
+            m_MaxPlanSizesByLayer = maxPlanSizesByLayer.ReadOnly();
         }
 
         internal void Dispose()
         {
-            m_PlanSizesByLayer = default;
+            m_MaxPlanSizesByLayer = default;
 
             foreach (var dependentJob in m_DependentJobs.Values)
             {
