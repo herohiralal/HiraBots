@@ -406,6 +406,67 @@ namespace HiraBots.Editor
 
             serializedObject.ApplyModifiedProperties();
         }
+
+        internal static void DrawHeader(string title, SerializedProperty expansionProperty)
+        {
+            var bgRect = GUILayoutUtility.GetRect(1f, 17f);
+
+            var labelRect = bgRect;
+            labelRect.xMin += 32f;
+            labelRect.xMax -= 20f;
+
+            var foldoutRect = bgRect;
+            foldoutRect.y += 1f;
+            foldoutRect.width = 13f;
+            foldoutRect.height = 13f;
+
+            // bg rect should be full-width
+            bgRect.xMin = 0f;
+            bgRect.width += 4f;
+
+            // background
+
+            Color headerClr;
+            if (bgRect.Contains(Event.current.mousePosition))
+            {
+                headerClr = EditorGUIUtility.isProSkin ? new Color(0.3f, 0.3f, 0.3f, 0.5f) : new Color(0.7f, 0.7f, 0.7f, 0.5f);
+            }
+            else
+            {
+                headerClr = EditorGUIUtility.isProSkin ? new Color(0.1f, 0.1f, 0.1f, 0.5f) : new Color(0.9f, 0.9f, 0.9f, 0.5f);
+            }
+
+            EditorGUI.DrawRect(bgRect, headerClr);
+
+            // title
+            EditorGUI.LabelField(labelRect, TempContent(title), EditorStyles.boldLabel);
+
+            // foldout
+            expansionProperty.isExpanded = GUI.Toggle(foldoutRect, expansionProperty.isExpanded, GUIContent.none, EditorStyles.foldout);
+
+            var e = Event.current;
+            if (e.type == EventType.MouseDown && bgRect.Contains(e.mousePosition) && e.button == 0)
+            {
+                expansionProperty.isExpanded = !expansionProperty.isExpanded;
+                e.Use();
+            }
+
+            DrawSplitter();
+        }
+
+        internal static void DrawSplitter()
+        {
+            var splitterRect = GUILayoutUtility.GetRect(1f, 1f);
+
+            // splitter rect should be full-width
+            splitterRect.xMin = 0f;
+            splitterRect.width += 4f;
+
+            // splitter
+            var splitterClr = EditorGUIUtility.isProSkin ? new Color(0.12f, 0.12f, 0.12f, 1.333f) : new Color(0.6f, 0.6f, 0.6f, 1.333f);
+
+            EditorGUI.DrawRect(splitterRect, splitterClr);
+        }
     }
 
     /// <summary>

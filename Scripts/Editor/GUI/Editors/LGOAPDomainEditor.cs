@@ -182,41 +182,61 @@ namespace HiraBots.Editor
 
                     EditorGUILayout.Space();
 
-                    m_TopLayer.DoLayoutList();
+                    GUIHelpers.DrawSplitter();
 
-                    using (new GUIEnabledChanger(false))
+                    GUIHelpers.DrawHeader("GOALS", m_SerializedObject.topLayer);
+                    if (m_SerializedObject.topLayer.isExpanded)
                     {
-                        DrawPlanSizeProperty(m_SerializedObject.topLayerMaxPlanSize);
-                    }
+                        EditorGUILayout.Space();
 
-                    m_SerializedObject.Update();
-                    m_TopLayerFallback.DoLayoutList();
-                    m_SerializedObject.ApplyModifiedProperties();
+                        m_TopLayer.DoLayoutList();
 
-                    EditorGUILayout.Space();
-
-                    for (var i = 0; i < m_IntermediateLayers.Length; i++)
-                    {
-                        m_IntermediateLayers[i].DoLayoutList();
-
-                        DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
+                        using (new GUIEnabledChanger(false))
+                        {
+                            DrawPlanSizeProperty(m_SerializedObject.topLayerMaxPlanSize);
+                        }
 
                         m_SerializedObject.Update();
-                        m_IntermediateLayersFallbacks[i].DoLayoutList();
+                        m_TopLayerFallback.DoLayoutList();
                         m_SerializedObject.ApplyModifiedProperties();
 
                         EditorGUILayout.Space();
                     }
 
-                    m_BottomLayer.DoLayoutList();
+                    for (var i = 0; i < m_IntermediateLayers.Length; i++)
+                    {
+                        GUIHelpers.DrawHeader("TASKS", m_SerializedObject.intermediateLayers[i]);
+                        if (m_SerializedObject.intermediateLayers[i].isExpanded)
+                        {
+                            EditorGUILayout.Space();
 
-                    DrawPlanSizeProperty(m_SerializedObject.bottomLayerMaxPlanSize);
+                            m_IntermediateLayers[i].DoLayoutList();
 
-                    m_SerializedObject.Update();
-                    m_BottomLayerFallback.DoLayoutList();
-                    m_SerializedObject.ApplyModifiedProperties();
+                            DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
 
-                    EditorGUILayout.Space();
+                            m_SerializedObject.Update();
+                            m_IntermediateLayersFallbacks[i].DoLayoutList();
+                            m_SerializedObject.ApplyModifiedProperties();
+
+                            EditorGUILayout.Space();
+                        }
+                    }
+
+                    GUIHelpers.DrawHeader("TASKS", m_SerializedObject.bottomLayer);
+                    if (m_SerializedObject.bottomLayer.isExpanded)
+                    {
+                        EditorGUILayout.Space();
+
+                        m_BottomLayer.DoLayoutList();
+
+                        DrawPlanSizeProperty(m_SerializedObject.bottomLayerMaxPlanSize);
+
+                        m_SerializedObject.Update();
+                        m_BottomLayerFallback.DoLayoutList();
+                        m_SerializedObject.ApplyModifiedProperties();
+
+                        EditorGUILayout.Space();
+                    }
                 }
             }
         }
