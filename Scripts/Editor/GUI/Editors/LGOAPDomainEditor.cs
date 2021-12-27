@@ -131,6 +131,9 @@ namespace HiraBots.Editor
                 if (m_Dirty)
                 {
                     m_SerializedObject.Update();
+                    m_SerializedObject.IntermediateLayersCountRecheck();
+                    LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
+                    FallbackPlanDrawer.RebindIntermediateLayers(ref m_IntermediateLayersFallbacks, domain);
                     AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, subAssetsThatMustBeInFile);
                     m_Dirty = false;
                     m_SerializedObject.ApplyModifiedProperties();

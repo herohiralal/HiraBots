@@ -128,6 +128,31 @@ namespace HiraBots
                 }
             }
 
+            internal void IntermediateLayersCountRecheck()
+            {
+                var value = intermediateLayersCount;
+                var originalCount = m_IntermediateLayerProperties.Length;
+
+                if (originalCount != value)
+                {
+                    intermediateLayersProperty.arraySize = value;
+                    System.Array.Resize(ref m_IntermediateLayerProperties, value);
+                    System.Array.Resize(ref m_IntermediateLayerMaxPlanSizeProperties, value);
+                    System.Array.Resize(ref m_IntermediateLayerFallbackProperties, value);
+
+                    var difference = value - originalCount;
+
+                    for (var i = 0; i < difference; i++) // if original count was bigger, difference will be negative and the loop will be ignored
+                    {
+                        m_IntermediateLayerProperties[originalCount + i] = GetIntermediateLayerProperty(originalCount + i);
+
+                        m_IntermediateLayerMaxPlanSizeProperties[originalCount + i] = GetIntermediateLayerMaxPlanSizeProperty(originalCount + i);
+
+                        m_IntermediateLayerFallbackProperties[originalCount + i] = GetIntermediateLayerFallbackProperty(originalCount + i);
+                    }
+                }
+            }
+
             private SerializedProperty GetIntermediateLayerProperty(int x)
             {
                 return GetProperty<LGOAPTask>($"{nameof(m_IntermediateLayers)}.Array.data[{x}].{nameof(LGOAPTaskLayer.m_Tasks)}",
