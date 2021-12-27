@@ -16,7 +16,7 @@ namespace HiraBots
         [SerializeField, HideInInspector] private BlackboardTemplate m_Blackboard = null;
 
         [Tooltip("The max size of a plan at this layer.")]
-        [SerializeField, HideInInspector] private byte[] m_PlanSizesByLayer = new byte[0];
+        [SerializeField, HideInInspector] private byte[] m_PlanSizesByLayer = { 1, 5 };
 
         [Tooltip("The top-most layer, containing only goals.")]
         [SerializeField, HideInInspector] private LGOAPGoalLayer m_TopLayer = LGOAPGoalLayer.empty;

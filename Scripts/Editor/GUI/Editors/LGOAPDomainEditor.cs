@@ -127,10 +127,6 @@ namespace HiraBots.Editor
                         LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
                     }
 
-                    m_SerializedObject.Update();
-                    m_SerializedObject.planSizesByLayer.arraySize = m_SerializedObject.intermediateLayersCount + 1;
-                    m_SerializedObject.ApplyModifiedPropertiesWithoutUndo();
-
                     // blackboard property field
                     m_SerializedObject.Update();
                     EditorGUILayout.PropertyField(m_SerializedObject.blackboard);
@@ -156,6 +152,11 @@ namespace HiraBots.Editor
                     }
 
                     EditorGUILayout.Space();
+
+                    using (new GUIEnabledChanger(false))
+                    {
+                        DrawPlanSizeProperty(-1);
+                    }
 
                     m_TopLayer.DoLayoutList();
 
@@ -185,8 +186,8 @@ namespace HiraBots.Editor
         {
             m_SerializedObject.Update();
 
-            EditorGUILayout.IntSlider(m_SerializedObject.planSizesByLayer.GetArrayElementAtIndex(layerIndex),
-                1, 10, "Plan Size");
+            EditorGUILayout.IntSlider(m_SerializedObject.planSizesByLayer.GetArrayElementAtIndex(layerIndex + 1),
+                1, 10, "Max Plan Size");
 
             m_SerializedObject.ApplyModifiedProperties();
         }

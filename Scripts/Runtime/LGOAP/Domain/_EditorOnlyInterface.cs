@@ -77,6 +77,7 @@ namespace HiraBots
                     if (originalCount != value)
                     {
                         intermediateLayersProperty.arraySize = value;
+                        planSizesByLayer.arraySize = value + 2;
                         System.Array.Resize(ref m_IntermediateLayerProperties, value);
                         System.Array.Resize(ref m_IntermediateLayerFallbackProperties, value);
 
@@ -101,6 +102,8 @@ namespace HiraBots
                             }
 
                             m_IntermediateLayerFallbackProperties[originalCount + i] = p2;
+
+                            planSizesByLayer.GetArrayElementAtIndex(originalCount + i).intValue = 5;
                         }
                     }
                 }
