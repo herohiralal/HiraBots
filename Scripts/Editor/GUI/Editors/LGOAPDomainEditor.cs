@@ -197,7 +197,7 @@ namespace HiraBots.Editor
 
                     for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
-                        DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes.GetArrayElementAtIndex(i));
+                        DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
 
                         m_IntermediateLayers[i].DoLayoutList();
 
@@ -330,7 +330,7 @@ namespace HiraBots.Editor
 
         private static class FallbackPlanDrawer
         {
-            private static void Bind(ReorderableList rol, SerializedProperty planProperty, SerializedProperty containerListProperty)
+            private static void Bind(ReorderableList rol, SerializedProperty planProperty, SerializedProperty containerListProperty, SerializedProperty planSizeProperty)
             {
                 rol.drawHeaderCallback = r =>
                 {
@@ -402,7 +402,9 @@ namespace HiraBots.Editor
                     }
                 };
 
-                rol.onCanRemoveCallback = r => planProperty.arraySize <= 1;
+                rol.onCanAddCallback = r => planProperty.arraySize < planSizeProperty.intValue;
+
+                rol.onCanRemoveCallback = r => planProperty.arraySize > 1;
             }
 
             internal static void Unbind(ReorderableList rol)
@@ -410,6 +412,7 @@ namespace HiraBots.Editor
                 rol.drawHeaderCallback = null;
                 rol.drawElementBackgroundCallback = null;
                 rol.drawElementCallback = null;
+                rol.onCanAddCallback = null;
                 rol.onCanRemoveCallback = null;
             }
 
@@ -418,7 +421,7 @@ namespace HiraBots.Editor
                 var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.topLayerFallback,
                     true, true, true, true);
 
-                Bind(rol, serializedObject.topLayerFallback, serializedObject.topLayer);
+                Bind(rol, serializedObject.topLayerFallback, serializedObject.topLayer, serializedObject.topLayerMaxPlanSize);
                 return rol;
             }
 
@@ -427,7 +430,7 @@ namespace HiraBots.Editor
                 var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.bottomLayerFallback,
                     true, true, true, true);
 
-                Bind(rol, serializedObject.bottomLayerFallback, serializedObject.bottomLayer);
+                Bind(rol, serializedObject.bottomLayerFallback, serializedObject.bottomLayer, serializedObject.bottomLayerMaxPlanSize);
                 return rol;
             }
 
@@ -435,7 +438,8 @@ namespace HiraBots.Editor
             {
                 var rol = new ReorderableList((SerializedObject) serializedObject, serializedObject.intermediateLayersFallbacks[index],
                     true, true, true, true);
-                Bind(rol, serializedObject.intermediateLayersFallbacks[index], serializedObject.intermediateLayers[index]);
+                Bind(rol, serializedObject.intermediateLayersFallbacks[index], serializedObject.intermediateLayers[index],
+                    serializedObject.intermediateLayerMaxPlanSizes[index]);
                 return rol;
             }
 
