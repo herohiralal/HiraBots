@@ -182,12 +182,12 @@ namespace HiraBots.Editor
 
                     EditorGUILayout.Space();
 
+                    m_TopLayer.DoLayoutList();
+
                     using (new GUIEnabledChanger(false))
                     {
                         DrawPlanSizeProperty(m_SerializedObject.topLayerMaxPlanSize);
                     }
-
-                    m_TopLayer.DoLayoutList();
 
                     m_SerializedObject.Update();
                     m_TopLayerFallback.DoLayoutList();
@@ -197,9 +197,9 @@ namespace HiraBots.Editor
 
                     for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
-                        DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
-
                         m_IntermediateLayers[i].DoLayoutList();
+
+                        DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
 
                         m_SerializedObject.Update();
                         m_IntermediateLayersFallbacks[i].DoLayoutList();
@@ -208,9 +208,9 @@ namespace HiraBots.Editor
                         EditorGUILayout.Space();
                     }
 
-                    DrawPlanSizeProperty(m_SerializedObject.bottomLayerMaxPlanSize);
-
                     m_BottomLayer.DoLayoutList();
+
+                    DrawPlanSizeProperty(m_SerializedObject.bottomLayerMaxPlanSize);
 
                     m_SerializedObject.Update();
                     m_BottomLayerFallback.DoLayoutList();
