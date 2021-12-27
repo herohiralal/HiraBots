@@ -18,19 +18,10 @@ namespace HiraBots
         [Tooltip("The top-most layer, containing only goals.")]
         [SerializeField, HideInInspector] private LGOAPGoalLayer m_TopLayer = LGOAPGoalLayer.empty;
 
-        [Tooltip("The max size of a plan at this layer.")]
-        [SerializeField, HideInInspector] private byte m_MaxTopLayerPlanSize = 1;
-
         [Tooltip("The intermediate layers, containing abstract tasks.")]
         [SerializeField, HideInInspector] private LGOAPTaskLayer[] m_IntermediateLayers = new LGOAPTaskLayer[0];
 
-        [Tooltip("The max size of a plan at this layer.")]
-        [SerializeField, HideInInspector] private byte[] m_MaxIntermediateLayersPlanSizes = new byte[0];
-
         [Tooltip("The bottom-most layer, containing only executable tasks.")]
         [SerializeField, HideInInspector] private LGOAPTaskLayer m_BottomLayer = LGOAPTaskLayer.empty;
-
-        [Tooltip("The max size of a plan at this layer.")]
-        [SerializeField, HideInInspector] private byte m_MaxBottomLayerPlanSize = 5;
     }
 }

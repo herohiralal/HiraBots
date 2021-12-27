@@ -24,26 +24,23 @@ namespace HiraBots
                 topLayer = GetProperty<LGOAPGoal>($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_Goals)}",
                     true, true);
 
-                topLayerMaxPlanSize = GetProperty(nameof(m_MaxTopLayerPlanSize), SerializedPropertyType.Integer,
-                    false, true);
+                topLayerMaxPlanSize = GetProperty($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_MaxPlanSize)}",
+                    SerializedPropertyType.Integer, false, true);
 
-                topLayerFallback = GetProperty($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_FallbackGoal)}", SerializedPropertyType.Integer,
-                    true, true);
+                topLayerFallback = GetProperty($"{nameof(m_TopLayer)}.{nameof(LGOAPGoalLayer.m_FallbackGoal)}",
+                    SerializedPropertyType.Integer, true, true);
 
                 intermediateLayersProperty = GetProperty<LGOAPTaskLayer>(nameof(m_IntermediateLayers),
-                    true, true);
-
-                intermediateLayerMaxPlanSizesProperty = GetProperty(nameof(m_MaxIntermediateLayersPlanSizes), SerializedPropertyType.Integer,
                     true, true);
 
                 bottomLayer = GetProperty<LGOAPTask>($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_Tasks)}",
                     true, true);
 
-                bottomLayerMaxPlanSize = GetProperty(nameof(m_MaxBottomLayerPlanSize), SerializedPropertyType.Integer,
-                    false, true);
+                bottomLayerMaxPlanSize = GetProperty($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_MaxPlanSize)}",
+                    SerializedPropertyType.Integer, false, true);
 
-                bottomLayerFallback = GetProperty($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_FallbackPlan)}", SerializedPropertyType.Integer,
-                    true, true);
+                bottomLayerFallback = GetProperty($"{nameof(m_BottomLayer)}.{nameof(LGOAPTaskLayer.m_FallbackPlan)}",
+                    SerializedPropertyType.Integer, true, true);
 
                 if (intermediateLayersProperty != null)
                 {
@@ -54,22 +51,12 @@ namespace HiraBots
                     {
                         m_IntermediateLayerProperties[i] = GetIntermediateLayerProperty(i);
                     }
-                }
-
-                if (intermediateLayerMaxPlanSizesProperty != null)
-                {
-                    var intermediateLayerCount = intermediateLayerMaxPlanSizesProperty.arraySize;
 
                     m_IntermediateLayerMaxPlanSizeProperties = new SerializedProperty[intermediateLayerCount];
                     for (var i = 0; i < intermediateLayerCount; i++)
                     {
                         m_IntermediateLayerMaxPlanSizeProperties[i] = GetIntermediateLayerMaxPlanSizeProperty(i);
                     }
-                }
-
-                if (intermediateLayersProperty != null)
-                {
-                    var intermediateLayerCount = intermediateLayersProperty.arraySize;
 
                     m_IntermediateLayerFallbackProperties = new SerializedProperty[intermediateLayerCount];
                     for (var i = 0; i < intermediateLayerCount; i++)
@@ -85,7 +72,6 @@ namespace HiraBots
             internal SerializedProperty topLayerFallback { get; }
             internal SerializedProperty topLayerMaxPlanSize { get; }
             private SerializedProperty intermediateLayersProperty { get; }
-            private SerializedProperty intermediateLayerMaxPlanSizesProperty { get; }
             internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayers => m_IntermediateLayerProperties.ReadOnly();
             internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayerMaxPlanSizes => m_IntermediateLayerMaxPlanSizeProperties.ReadOnly();
             internal ReadOnlyArrayAccessor<SerializedProperty> intermediateLayersFallbacks => m_IntermediateLayerFallbackProperties.ReadOnly();
@@ -103,7 +89,6 @@ namespace HiraBots
                     if (originalCount != value)
                     {
                         intermediateLayersProperty.arraySize = value;
-                        intermediateLayerMaxPlanSizesProperty.arraySize = value;
                         System.Array.Resize(ref m_IntermediateLayerProperties, value);
                         System.Array.Resize(ref m_IntermediateLayerMaxPlanSizeProperties, value);
                         System.Array.Resize(ref m_IntermediateLayerFallbackProperties, value);
@@ -151,7 +136,7 @@ namespace HiraBots
 
             private SerializedProperty GetIntermediateLayerMaxPlanSizeProperty(int x)
             {
-                return GetProperty($"{nameof(m_MaxIntermediateLayersPlanSizes)}.Array.data[{x}]",
+                return GetProperty($"{nameof(m_IntermediateLayers)}.Array.data[{x}].{nameof(LGOAPTaskLayer.m_MaxPlanSize)}",
                     SerializedPropertyType.Integer, false, true);
             }
 

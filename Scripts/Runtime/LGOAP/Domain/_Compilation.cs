@@ -95,14 +95,14 @@ namespace HiraBots
             {
                 var planSizesByLayer = new byte[m_IntermediateLayers.Length + 2];
 
-                planSizesByLayer[0] = m_MaxTopLayerPlanSize;
+                planSizesByLayer[0] = m_TopLayer.m_MaxPlanSize;
 
                 for (var i = 0; i < planSizesByLayer.Length - 2; i++)
                 {
-                    planSizesByLayer[i + 1] = m_MaxIntermediateLayersPlanSizes[i];
+                    planSizesByLayer[i + 1] = m_IntermediateLayers[i].m_MaxPlanSize;
                 }
 
-                planSizesByLayer[planSizesByLayer.Length - 1] = m_MaxBottomLayerPlanSize;
+                planSizesByLayer[planSizesByLayer.Length - 1] = m_BottomLayer.m_MaxPlanSize;
 
                 compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData, domain, planSizesByLayer);
             }
