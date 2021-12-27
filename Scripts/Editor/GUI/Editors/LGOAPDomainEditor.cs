@@ -187,7 +187,7 @@ namespace HiraBots.Editor
 
                     GUIHelpers.DrawSplitter();
 
-                    GUIHelpers.DrawHeader("GOALS", m_SerializedObject.topLayer);
+                    GUIHelpers.DrawHeader("GOALS [Layer Index: -1]", m_SerializedObject.topLayer);
                     if (m_SerializedObject.topLayer.isExpanded)
                     {
                         EditorGUILayout.Space();
@@ -208,7 +208,7 @@ namespace HiraBots.Editor
 
                     for (var i = 0; i < m_IntermediateLayers.Length; i++)
                     {
-                        GUIHelpers.DrawHeader("TASKS", m_SerializedObject.intermediateLayers[i]);
+                        GUIHelpers.DrawHeader($"TASKS [Layer Index: {i}]", m_SerializedObject.intermediateLayers[i]);
                         if (m_SerializedObject.intermediateLayers[i].isExpanded)
                         {
                             EditorGUILayout.Space();
@@ -225,7 +225,7 @@ namespace HiraBots.Editor
                         }
                     }
 
-                    GUIHelpers.DrawHeader("TASKS", m_SerializedObject.bottomLayer);
+                    GUIHelpers.DrawHeader($"TASKS [Layer Index: {m_IntermediateLayers.Length}]", m_SerializedObject.bottomLayer);
                     if (m_SerializedObject.bottomLayer.isExpanded)
                     {
                         EditorGUILayout.Space();
@@ -358,7 +358,13 @@ namespace HiraBots.Editor
                 rol.drawHeaderCallback = r =>
                 {
                     r.x += 20f;
-                    EditorGUI.LabelField(r, "Fallback Plan");
+                    var hasErrors = planProperty.arraySize == 0 || planProperty.arraySize > planSizeProperty.intValue;
+                    var errorIcon = hasErrors ? (Texture2D) EditorGUIUtility.Load("console.erroricon") : null;
+                    EditorGUI.LabelField(r,
+                        GUIHelpers.TempContent(
+                            "Fallback Plan",
+                            "The plan to fallback to, if the planner fails.",
+                            errorIcon));
                 };
 
                 rol.elementHeight = 23f;
@@ -386,14 +392,6 @@ namespace HiraBots.Editor
                     string label;
                     if (currentIndex < 0 || currentIndex >= containerListProperty.arraySize)
                     {
-                        var width = r.width;
-                        r.width = width * 0.78f;
-
-                        var r2 = r;
-                        r2.x += width * 0.82f;
-                        r2.width = width * 0.18f;
-                        EditorGUI.HelpBox(r2, "Invalid.", MessageType.Error);
-
                         label = $"UNKNOWN [{currentIndex}]";
                     }
                     else
@@ -401,6 +399,8 @@ namespace HiraBots.Editor
                         var currentContainer = containerListProperty.GetArrayElementAtIndex(currentIndex).objectReferenceValue;
                         label = currentContainer == null ? $"NULL [{currentIndex}]" : $"{currentContainer.name} [{currentIndex}]";
                     }
+
+                    r = EditorGUI.PrefixLabel(r, GUIHelpers.TempContent(i.ToString()));
 
                     if (EditorGUI.DropdownButton(r, GUIHelpers.TempContent(label), FocusType.Keyboard, EditorStyles.popup))
                     {
