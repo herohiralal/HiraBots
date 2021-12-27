@@ -92,7 +92,20 @@ namespace HiraBots
             CompilationRegistry.AddEntry(name, (byte*) domain.GetUnsafePtr(), domainAddress);
             CompilationRegistry.EndObject();
 
-            compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData, domain, m_PlanSizesByLayer);
+            {
+                var planSizesByLayer = new byte[m_IntermediateLayers.Length + 2];
+
+                planSizesByLayer[0] = m_MaxTopLayerPlanSize;
+
+                for (var i = 0; i < planSizesByLayer.Length - 2; i++)
+                {
+                    planSizesByLayer[i + 1] = m_MaxIntermediateLayersPlanSizes[i];
+                }
+
+                planSizesByLayer[planSizesByLayer.Length - 1] = m_MaxBottomLayerPlanSize;
+
+                compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData, domain, planSizesByLayer);
+            }
         }
 
         /// <summary>
