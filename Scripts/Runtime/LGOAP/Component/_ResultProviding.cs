@@ -66,6 +66,7 @@
             }
 
             // if the control flow made it past every layer, run the whole thing again lol
+            m_PlansForExecution[0].currentIndex++;
             StartPlannerAtLayer(0, false);
         }
 
