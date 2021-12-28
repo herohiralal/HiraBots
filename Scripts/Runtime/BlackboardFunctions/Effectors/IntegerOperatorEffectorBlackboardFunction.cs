@@ -88,5 +88,41 @@ namespace HiraBots
 #endif
             }
         }
+
+        // non-VM execution
+        protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            var currentValue = blackboard.GetIntegerValue(m_Key.selectedKey.name);
+
+            switch (m_OperationType)
+            {
+                case OperationType.Set:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, m_Value, expected);
+                    break;
+                case OperationType.Add:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue + m_Value, expected);
+                    break;
+                case OperationType.Subtract:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue - m_Value, expected);
+                    break;
+                case OperationType.Multiply:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue * m_Value, expected);
+                    break;
+                case OperationType.Divide:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue / m_Value, expected);
+                    break;
+                case OperationType.BitwiseAnd:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue & m_Value, expected);
+                    break;
+                case OperationType.BitwiseOr:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue | m_Value, expected);
+                    break;
+                case OperationType.BitwiseXor:
+                    blackboard.SetIntegerValue(m_Key.selectedKey.name, currentValue ^ m_Value, expected);
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+        }
     }
 }

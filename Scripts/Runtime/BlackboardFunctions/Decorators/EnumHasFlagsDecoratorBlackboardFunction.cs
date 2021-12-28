@@ -32,5 +32,11 @@ namespace HiraBots
             var memory = (Memory*) rawMemory;
             return (blackboard.Access<byte>(memory->m_Offset) & memory->m_Value) == memory->m_Value;
         }
+
+        // non-VM execution
+        protected override bool ExecuteFunction(BlackboardComponent blackboard)
+        {
+            return (blackboard.GetEnumValue(m_Key.selectedKey.name) & m_Value) == m_Value;
+        }
     }
 }

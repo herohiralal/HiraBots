@@ -93,5 +93,51 @@ namespace HiraBots
 #endif
             }
         }
+
+        // non-VM execution
+        protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            var keyType = m_Key.selectedKey.keyType;
+
+            switch (m_OperationType)
+            {
+                case OperationType.Set:
+                    switch (keyType)
+                    {
+                        case BlackboardKeyType.Boolean:
+                            blackboard.SetBooleanValue(m_Key.selectedKey.name, true, expected);
+                            break;
+                        case BlackboardKeyType.Quaternion:
+                            blackboard.SetQuaternionValue(m_Key.selectedKey.name, quaternion.Euler(new float3(10)), expected);
+                            break;
+                        case BlackboardKeyType.Vector:
+                            blackboard.SetVectorValue(m_Key.selectedKey.name, 1, expected);
+                            break;
+                        default:
+                            throw new System.ArgumentOutOfRangeException();
+                    }
+
+                    break;
+                case OperationType.Unset:
+                    switch (keyType)
+                    {
+                        case BlackboardKeyType.Boolean:
+                            blackboard.SetBooleanValue(m_Key.selectedKey.name, false, expected);
+                            break;
+                        case BlackboardKeyType.Quaternion:
+                            blackboard.SetQuaternionValue(m_Key.selectedKey.name, quaternion.identity, expected);
+                            break;
+                        case BlackboardKeyType.Vector:
+                            blackboard.SetVectorValue(m_Key.selectedKey.name, float3.zero, expected);
+                            break;
+                        default:
+                            throw new System.ArgumentOutOfRangeException();
+                    }
+
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+        }
     }
 }

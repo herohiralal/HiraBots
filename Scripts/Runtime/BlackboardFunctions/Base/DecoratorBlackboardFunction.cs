@@ -58,5 +58,35 @@ namespace HiraBots
 
             // offset sizeof(bool) or offset sizeof(float) + sizeof(bool)
         }
+
+        // non-VM execution
+        internal bool ExecuteDecorator(BlackboardComponent blackboard)
+        {
+            try
+            {
+                return ExecuteFunction(blackboard);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e, this);
+                return false;
+            }
+        }
+
+        // non-VM execution
+        internal float ExecuteScoreCalculator(BlackboardComponent blackboard)
+        {
+            try
+            {
+                return ExecuteFunction(blackboard) ? m_Header.m_Score : 0f;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e, this);
+                return 0f;
+            }
+        }
+
+        protected abstract bool ExecuteFunction(BlackboardComponent blackboard);
     }
 }

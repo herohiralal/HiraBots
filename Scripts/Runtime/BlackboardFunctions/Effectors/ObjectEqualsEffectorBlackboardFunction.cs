@@ -36,5 +36,11 @@ namespace HiraBots
             var memory = (Memory*) rawMemory;
             blackboard.Access<int>(memory->m_Offset) = memory->m_InstanceID;
         }
+
+        // non-VM execution
+        protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            blackboard.SetObjectValue(m_Key.selectedKey.name, m_Value, expected);
+        }
     }
 }

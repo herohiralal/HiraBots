@@ -76,5 +76,32 @@ namespace HiraBots
 #endif
             }
         }
+
+        // non-VM execution
+        protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            var currentValue = blackboard.GetFloatValue(m_Key.selectedKey.name);
+
+            switch (m_OperationType)
+            {
+                case OperationType.Set:
+                    blackboard.SetFloatValue(m_Key.selectedKey.name, m_Value, expected);
+                    break;
+                case OperationType.Add:
+                    blackboard.SetFloatValue(m_Key.selectedKey.name, currentValue + m_Value, expected);
+                    break;
+                case OperationType.Subtract:
+                    blackboard.SetFloatValue(m_Key.selectedKey.name, currentValue - m_Value, expected);
+                    break;
+                case OperationType.Multiply:
+                    blackboard.SetFloatValue(m_Key.selectedKey.name, currentValue * m_Value, expected);
+                    break;
+                case OperationType.Divide:
+                    blackboard.SetFloatValue(m_Key.selectedKey.name, currentValue / m_Value, expected);
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+        }
     }
 }

@@ -16,5 +16,11 @@ namespace HiraBots
         {
             return true;
         }
+
+        // non-VM execution
+        protected override bool ExecuteFunction(BlackboardComponent blackboard)
+        {
+            return true;
+        }
     }
 }

@@ -10,6 +10,19 @@
     /// </summary>
     internal abstract partial class EffectorBlackboardFunction : BlackboardFunction<EffectorDelegate>
     {
-        // contains no extra header so no overridden memory size of compilation
+        // non-VM execution
+        internal void Execute(BlackboardComponent blackboard, bool expected)
+        {
+            try
+            {
+                ExecuteFunction(blackboard, expected);
+            }
+            catch (System.Exception e)
+            {
+                UnityEngine.Debug.LogException(e, this);
+            }
+        }
+
+        protected abstract void ExecuteFunction(BlackboardComponent blackboard, bool expected);
     }
 }

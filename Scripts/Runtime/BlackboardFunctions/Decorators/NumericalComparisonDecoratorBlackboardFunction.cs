@@ -83,5 +83,31 @@ namespace HiraBots
 #endif
             }
         }
+
+        // non-VM execution
+        protected override bool ExecuteFunction(BlackboardComponent blackboard)
+        {
+            var isInteger = m_Key.selectedKey.keyType == BlackboardKeyType.Integer;
+
+            var blackboardValue = isInteger
+                ? blackboard.GetIntegerValue(m_Key.selectedKey.name)
+                : blackboard.GetFloatValue(m_Key.selectedKey.name);
+
+            switch (m_ComparisonType)
+            {
+                case ComparisonType.AlmostEqualTo:
+                    return math.abs(blackboardValue - m_Value) <= m_EqualityTolerance;
+                case ComparisonType.GreaterThan:
+                    return blackboardValue > m_Value;
+                case ComparisonType.GreaterThanEqualTo:
+                    return blackboardValue >= m_Value;
+                case ComparisonType.LesserThan:
+                    return blackboardValue < m_Value;
+                case ComparisonType.LesserThanEqualTo:
+                    return blackboardValue <= m_Value;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
+            }
+        }
     }
 }

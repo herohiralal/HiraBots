@@ -60,12 +60,33 @@ namespace HiraBots
                     blackboard.Access<byte>(offset) |= value;
                     break;
                 case OperationType.RemoveFlags:
-                    blackboard.Access<byte>(offset) &= value;
+                    blackboard.Access<byte>(offset) = (byte) (blackboard.Access<byte>(offset) & ~value);
                     break;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 default:
                     throw new System.ArgumentOutOfRangeException();
 #endif
+            }
+        }
+
+        // non-VM execution
+        protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            var currentValue = blackboard.GetEnumValue(m_Key.selectedKey.name);
+
+            switch (m_OperationType)
+            {
+                case OperationType.Set:
+                    blackboard.SetEnumValue(m_Key.selectedKey.name, m_Value, expected);
+                    break;
+                case OperationType.AddFlags:
+                    blackboard.SetEnumValue(m_Key.selectedKey.name, (byte) (currentValue | m_Value), expected);
+                    break;
+                case OperationType.RemoveFlags:
+                    blackboard.SetEnumValue(m_Key.selectedKey.name, (byte) (currentValue & ~(byte)(m_Value)), expected);
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
             }
         }
     }

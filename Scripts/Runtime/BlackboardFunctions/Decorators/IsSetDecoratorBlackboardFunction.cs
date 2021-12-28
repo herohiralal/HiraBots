@@ -1,5 +1,4 @@
-﻿using System;
-using AOT;
+﻿using AOT;
 using Unity.Burst;
 using Unity.Mathematics;
 using UnityEngine;
@@ -36,17 +35,37 @@ namespace HiraBots
                 case BlackboardKeyType.Boolean:
                     return blackboard.Access<bool>(offset);
                 case BlackboardKeyType.Quaternion:
-                    var value4 = blackboard.Access<quaternion>(offset).value != quaternion.identity.value;
+                    var value4 = blackboard.Access<quaternion>(offset).value == quaternion.identity.value;
                     return !value4.w || !value4.x || !value4.y || !value4.z;
                 case BlackboardKeyType.Vector:
-                    var value3 = blackboard.Access<float3>(offset) != float3.zero;
+                    var value3 = blackboard.Access<float3>(offset) == float3.zero;
                     return !value3.x || !value3.y || !value3.z;
                 default:
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                    throw new ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
+                    throw new System.ArgumentOutOfRangeException($"Invalid key type: {memory->m_KeyType}");
 #else
                     return false;
 #endif
+            }
+        }
+
+        // non-VM execution
+        protected override bool ExecuteFunction(BlackboardComponent blackboard)
+        {
+            var keyType = m_Key.selectedKey.keyType;
+
+            switch (keyType)
+            {
+                case BlackboardKeyType.Boolean:
+                    return blackboard.GetBooleanValue(m_Key.selectedKey.name);
+                case BlackboardKeyType.Quaternion:
+                    var value4 = blackboard.GetQuaternionValue(m_Key.selectedKey.name).value == quaternion.identity.value;
+                    return !value4.w || !value4.x || !value4.y || !value4.z;
+                case BlackboardKeyType.Vector:
+                    var value3 = blackboard.GetVectorValue(m_Key.selectedKey.name) == float3.zero;
+                    return !value3.x || !value3.y || !value3.z;
+                default:
+                    throw new System.ArgumentOutOfRangeException();
             }
         }
     }
