@@ -632,11 +632,11 @@ namespace HiraBots.Editor
     internal static class LGOAPDomainGUIHelpers
     {
         /// <summary>
-        /// Resolve a theme colour for an LGOAP domain component
+        /// Resolve a theme colour for an LGOAP domain container
         /// </summary>
-        /// <param name="value">The component object.</param>
+        /// <param name="value">The container object.</param>
         /// <returns>Its respective theme color.</returns>
-        internal static Color GetComponentColor(ScriptableObject value)
+        internal static Color GetContainerColor(ScriptableObject value)
         {
             switch (value)
             {
@@ -652,13 +652,13 @@ namespace HiraBots.Editor
         }
 
         /// <summary>
-        /// Resolve a theme colour for a faded LGOAP domain component
+        /// Resolve a theme colour for a faded LGOAP domain container
         /// </summary>
-        /// <param name="value">The component object.</param>
+        /// <param name="value">The container object.</param>
         /// <returns>Its respective faded theme color.</returns>
-        internal static Color GetComponentColorFaded(ScriptableObject value)
+        internal static Color GetContainerColorFaded(ScriptableObject value)
         {
-            Color.RGBToHSV(GetComponentColor(value), out var h, out var s, out var v);
+            Color.RGBToHSV(GetContainerColor(value), out var h, out var s, out var v);
             s *= 0.35f;
             v = EditorGUIUtility.isProSkin ? 0.25f : 0.75f;
             return Color.HSVToRGB(h, s, v);

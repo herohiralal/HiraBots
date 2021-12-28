@@ -345,10 +345,10 @@ namespace HiraBots.Editor
         }
     }
 
-    internal abstract class LGOAPComponentROLDrawer<T> : InlinedObjectReferenceROLDrawer<T, LGOAPDomain>
+    internal abstract class LGOAPContainerROLDrawer<T> : InlinedObjectReferenceROLDrawer<T, LGOAPDomain>
         where T : ScriptableObject
     {
-        protected LGOAPComponentROLDrawer(string header) : base(header)
+        protected LGOAPContainerROLDrawer(string header) : base(header)
         {
         }
 
@@ -359,11 +359,11 @@ namespace HiraBots.Editor
 
         protected override Color GetThemeColor(T value)
         {
-            return LGOAPDomainGUIHelpers.GetComponentColor(value);
+            return LGOAPDomainGUIHelpers.GetContainerColor(value);
         }
     }
 
-    internal class LGOAPGoalROLDrawer : LGOAPComponentROLDrawer<LGOAPGoal>
+    internal class LGOAPGoalROLDrawer : LGOAPContainerROLDrawer<LGOAPGoal>
     {
         private LGOAPGoalROLDrawer() : base("Goals")
         {
@@ -390,7 +390,7 @@ namespace HiraBots.Editor
         }
     }
 
-    internal class LGOAPAbstractTaskROLDrawer : LGOAPComponentROLDrawer<LGOAPTask>
+    internal class LGOAPAbstractTaskROLDrawer : LGOAPContainerROLDrawer<LGOAPTask>
     {
         private LGOAPAbstractTaskROLDrawer() : base("Tasks")
         {
@@ -447,7 +447,7 @@ namespace HiraBots.Editor
         }
     }
 
-    internal class LGOAPTaskROLDrawer : LGOAPComponentROLDrawer<LGOAPTask>
+    internal class LGOAPTaskROLDrawer : LGOAPContainerROLDrawer<LGOAPTask>
     {
         private LGOAPTaskROLDrawer() : base("Tasks")
         {
