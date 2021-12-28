@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HiraBots
@@ -19,6 +21,11 @@ namespace HiraBots
             }
 
             s_Instance = this;
+
+            lock (s_ExecutionQueue)
+            {
+                s_ExecutionQueue.Clear();
+            }
         }
 
         private void OnDestroy()
@@ -29,6 +36,11 @@ namespace HiraBots
             }
 
             s_Instance = null;
+
+            lock (s_ExecutionQueue)
+            {
+                s_ExecutionQueue.Clear();
+            }
         }
 
         #endregion
@@ -47,6 +59,39 @@ namespace HiraBots
         internal new static void StopCoroutine(Coroutine coroutine)
         {
             ((MonoBehaviour) s_Instance)?.StopCoroutine(coroutine);
+        }
+
+        private static readonly Queue<Action> s_ExecutionQueue = new Queue<Action>();
+
+        internal static void DispatchOnMainThread(Action action)
+        {
+            if (action == null)
+            {
+                return;
+            }
+
+            lock (s_ExecutionQueue)
+            {
+                s_ExecutionQueue.Enqueue(action);
+            }
+        }
+
+        private void Update()
+        {
+            lock (s_ExecutionQueue)
+            {
+                while (s_ExecutionQueue.Count > 0)
+                {
+                    try
+                    {
+                        s_ExecutionQueue.Dequeue()();
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+                }
+            }
         }
     }
 }
