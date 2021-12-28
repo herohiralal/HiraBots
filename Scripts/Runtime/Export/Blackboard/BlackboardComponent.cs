@@ -36,6 +36,14 @@
         }
 
         /// <summary>
+        /// Get Enum value index from the blackboard component using the key name.
+        /// </summary>
+        public byte GetEnumValue(string keyName)
+        {
+            return m_Value.GetEnumValue(keyName);
+        }
+
+        /// <summary>
         /// Get Enum value from the blackboard component using the key name.
         /// </summary>
         public T GetEnumValue<T>(string keyName) where T : unmanaged, System.Enum
@@ -86,15 +94,23 @@
         /// <summary>
         /// Set Boolean value on the blackboard component using the key name.
         /// </summary>
-        internal void SetBooleanValue(string key, bool value, bool expected = false)
+        public void SetBooleanValue(string key, bool value, bool expected = false)
         {
             m_Value.SetBooleanValue(key, value, expected);
         }
 
         /// <summary>
+        /// Set Enum value index on the blackboard component using the key name.
+        /// </summary>
+        public void SetEnumValue(string key, byte value, bool expected = false)
+        {
+            m_Value.SetEnumValue(key, value, expected);
+        }
+
+        /// <summary>
         /// Set Enum value on the blackboard component using the key name.
         /// </summary>
-        internal void SetEnumValue<T>(string key, T value, bool expected = false) where T : unmanaged, System.Enum
+        public void SetEnumValue<T>(string key, T value, bool expected = false) where T : unmanaged, System.Enum
         {
             m_Value.SetEnumValue<T>(key, value, expected);
         }
@@ -102,7 +118,7 @@
         /// <summary>
         /// Set Float value on the blackboard component using the key name.
         /// </summary>
-        internal void SetFloatValue(string key, float value, bool expected = false)
+        public void SetFloatValue(string key, float value, bool expected = false)
         {
             m_Value.SetFloatValue(key, value, expected);
         }
@@ -110,7 +126,7 @@
         /// <summary>
         /// Set Integer value on the blackboard component using the key name.
         /// </summary>
-        internal void SetIntegerValue(string key, int value, bool expected = false)
+        public void SetIntegerValue(string key, int value, bool expected = false)
         {
             m_Value.SetIntegerValue(key, value, expected);
         }
@@ -118,7 +134,7 @@
         /// <summary>
         /// Set Object value on the blackboard component using the key name.
         /// </summary>
-        internal void SetObjectValue(string key, Object value, bool expected = false)
+        public void SetObjectValue(string key, Object value, bool expected = false)
         {
             m_Value.SetObjectValue(key, value, expected);
         }
@@ -126,7 +142,7 @@
         /// <summary>
         /// Set Vector value on the blackboard component using the key name.
         /// </summary>
-        internal void SetVectorValue(string key, Vector3 value, bool expected = false)
+        public void SetVectorValue(string key, Vector3 value, bool expected = false)
         {
             m_Value.SetVectorValue(key, value, expected);
         }
@@ -134,7 +150,7 @@
         /// <summary>
         /// Set Quaternion value on the blackboard component using the key name.
         /// </summary>
-        internal void SetQuaternionValue(string key, Quaternion value, bool expected = false)
+        public void SetQuaternionValue(string key, Quaternion value, bool expected = false)
         {
             m_Value.SetQuaternionValue(key, value, expected);
         }

@@ -15,6 +15,15 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Get instance-synced Enum value index from the blackboard template using the key name.
+        /// </summary>
+        internal byte GetInstanceSyncedEnumValue(string key)
+        {
+            ValidateInput(key, BlackboardKeyType.Enum, out var data);
+            return GetInstanceSyncedEnumValueWithoutValidation(data.memoryOffset);
+        }
+
+        /// <summary>
         /// Get instance-synced Enum value from the blackboard template using the key name.
         /// </summary>
         internal T GetInstanceSyncedEnumValue<T>(string key) where T : unmanaged, System.Enum

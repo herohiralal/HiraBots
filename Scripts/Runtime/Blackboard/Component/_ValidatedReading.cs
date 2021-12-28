@@ -15,6 +15,15 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Get Enum value index from the blackboard using the key name.
+        /// </summary>
+        internal byte GetEnumValue(string key)
+        {
+            ValidateInput(key, BlackboardKeyType.Enum, out var data);
+            return GetEnumValueWithoutValidation(data.memoryOffset);
+        }
+
+        /// <summary>
         /// Get Enum value from the blackboard using the key name.
         /// </summary>
         internal T GetEnumValue<T>(string key) where T : unmanaged, System.Enum

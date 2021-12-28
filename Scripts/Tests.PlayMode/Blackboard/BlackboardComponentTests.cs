@@ -108,6 +108,8 @@ namespace HiraBots.Editor.Tests
             var healthStatusKeyEnumData = elementalistData[k_HealthStatusKeyEnum];
             baboon.SetEnumValueWithoutValidation<GenericStatus>(healthStatusKeyEnumData, GenericStatus.Low, true);
             Assert.IsTrue(GenericStatus.Low == baboon.GetEnumValueWithoutValidation<GenericStatus>(healthStatusKeyEnumData.memoryOffset), "Enum read-write failed.");
+            baboon.SetEnumValueWithoutValidation(healthStatusKeyEnumData, (byte) GenericStatus.High, true);
+            Assert.IsTrue((byte) GenericStatus.High == baboon.GetEnumValueWithoutValidation(healthStatusKeyEnumData.memoryOffset), "Raw Enum read-write failed.");
 
             Assert.IsFalse(baboon.hasUnexpectedChanges, "Expected changes still lead to dirtying.");
 

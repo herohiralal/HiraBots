@@ -79,6 +79,37 @@ namespace HiraBots
 
         #endregion
 
+        #region Raw Enum
+
+        /// <summary>
+        /// Read Enum value index from a memory stream.
+        /// </summary>
+        [MethodImpl(k_Inline)]
+        internal static byte ReadEnumValue(byte* stream, ushort offset)
+        {
+            return ReadGenericValue<byte>(stream, offset);
+        }
+
+        /// <summary>
+        /// Write Enum value index to a memory stream and determine whether it has changed from before.
+        /// </summary>
+        [MethodImpl(k_Inline)]
+        internal static bool WriteEnumValueAndGetChange(byte* stream, ushort offset, byte value)
+        {
+            return WriteGenericValueAndGetChange<byte>(stream, offset, value);
+        }
+
+        /// <summary>
+        /// Write Enum value index to a memory stream.
+        /// </summary>
+        [MethodImpl(k_Inline)]
+        internal static void WriteEnumValue(byte* stream, ushort offset, byte value)
+        {
+            WriteGenericValue<byte>(stream, offset, value);
+        }
+
+        #endregion
+
         #region Enum
 
         /// <summary>

@@ -14,6 +14,14 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Get instance-synced Enum value index from blackboard template using memory offset without validating any input.
+        /// </summary>
+        internal byte GetInstanceSyncedEnumValueWithoutValidation(ushort memoryOffset)
+        {
+            return BlackboardUnsafeHelpers.ReadEnumValue(templateReadOnlyPtr, memoryOffset);
+        }
+
+        /// <summary>
         /// Get instance-synced Enum value from blackboard template using memory offset without validating any input.
         /// </summary>
         internal T GetInstanceSyncedEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, System.Enum

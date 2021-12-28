@@ -85,6 +85,46 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Set Enum value index on blackboard using BlackboardKeyCompiledData without validating any input.
+        /// </summary>
+        internal void SetEnumValueWithoutValidation(in BlackboardKeyCompiledData keyData, byte value, bool expected = false)
+        {
+            var memoryOffset = keyData.memoryOffset;
+
+            if (expected)
+            {
+                if (keyData.instanceSynced)
+                {
+                    // instance synced
+                    m_Template.RemoveInstanceSyncListener(this);
+                    m_Template.SetInstanceSyncedEnumValueWithoutValidation(in keyData, value);
+                    m_Template.AddInstanceSyncListener(this);
+                }
+
+                BlackboardUnsafeHelpers.WriteEnumValue(dataPtr, memoryOffset, value);
+            }
+            else
+            {
+                if (keyData.instanceSynced)
+                {
+                    // unexpected & instance synced
+                    m_Template.SetInstanceSyncedEnumValueWithoutValidation(in keyData, value);
+                }
+                else
+                {
+                    // unexpected & not instance synced
+                    if (BlackboardUnsafeHelpers.WriteEnumValueAndGetChange(dataPtr, memoryOffset, value))
+                    {
+                        if (keyData.broadcastEventOnUnexpectedChange)
+                        {
+                            m_UnexpectedChanges.Add(keyData.keyName);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Set Enum value on blackboard using BlackboardKeyCompiledData without validating any input.
         /// </summary>
         internal void SetEnumValueWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value, bool expected = false) where T : unmanaged, Enum

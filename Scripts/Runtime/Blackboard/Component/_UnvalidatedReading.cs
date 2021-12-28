@@ -14,6 +14,14 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Get Enum value index from blackboard using memory offset without validating any input.
+        /// </summary>
+        internal byte GetEnumValueWithoutValidation(ushort memoryOffset)
+        {
+            return BlackboardUnsafeHelpers.ReadEnumValue(dataReadOnlyPtr, memoryOffset);
+        }
+
+        /// <summary>
         /// Get Enum value from blackboard using memory offset without validating any input.
         /// </summary>
         internal T GetEnumValueWithoutValidation<T>(ushort memoryOffset) where T : unmanaged, System.Enum

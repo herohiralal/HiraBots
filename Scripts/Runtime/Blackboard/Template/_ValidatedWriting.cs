@@ -15,6 +15,15 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Set instance-synced Enum value index on the blackboard template using the key name.
+        /// </summary>
+        internal void SetInstanceSyncedEnumValue(string key, byte value)
+        {
+            ValidateInput(key, BlackboardKeyType.Enum, out var data);
+            SetInstanceSyncedEnumValueWithoutValidation(in data, value);
+        }
+
+        /// <summary>
         /// Set instance-synced Enum value on the blackboard template using the key name.
         /// </summary>
         internal void SetInstanceSyncedEnumValue<T>(string key, T value) where T : unmanaged, System.Enum

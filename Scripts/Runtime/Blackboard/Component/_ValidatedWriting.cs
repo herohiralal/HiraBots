@@ -15,6 +15,15 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Set Enum value index on the blackboard using the key name.
+        /// </summary>
+        internal void SetEnumValue(string key, byte value, bool expected = false)
+        {
+            ValidateInput(key, BlackboardKeyType.Enum, out var data);
+            SetEnumValueWithoutValidation(in data, value, expected);
+        }
+
+        /// <summary>
         /// Set Enum value on the blackboard using the key name.
         /// </summary>
         internal void SetEnumValue<T>(string key, T value, bool expected = false) where T : unmanaged, System.Enum

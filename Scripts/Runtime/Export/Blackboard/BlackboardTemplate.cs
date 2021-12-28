@@ -41,6 +41,14 @@
         }
 
         /// <summary>
+        /// Get instance-synced Enum value index from the blackboard template using the key name.
+        /// </summary>
+        public byte GetInstanceSyncedEnumValue(string keyName)
+        {
+            return m_Value.compiledData.GetInstanceSyncedEnumValue(keyName);
+        }
+
+        /// <summary>
         /// Get instance-synced Enum value from the blackboard template using the key name.
         /// </summary>
         public T GetInstanceSyncedEnumValue<T>(string keyName) where T : unmanaged, System.Enum
@@ -91,7 +99,7 @@
         /// <summary>
         /// Set instance-synced Boolean value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedBooleanValue(string key, bool value)
+        public void SetInstanceSyncedBooleanValue(string key, bool value)
         {
             m_Value.compiledData.SetInstanceSyncedBooleanValue(key, value);
         }
@@ -99,7 +107,15 @@
         /// <summary>
         /// Set instance-synced Enum value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedEnumValue<T>(string key, T value) where T : unmanaged, System.Enum
+        public void SetInstanceSyncedEnumValue(string key, byte value)
+        {
+            m_Value.compiledData.SetInstanceSyncedEnumValue(key, value);
+        }
+
+        /// <summary>
+        /// Set instance-synced Enum value on the blackboard template using the key name.
+        /// </summary>
+        public void SetInstanceSyncedEnumValue<T>(string key, T value) where T : unmanaged, System.Enum
         {
             m_Value.compiledData.SetInstanceSyncedEnumValue<T>(key, value);
         }
@@ -107,7 +123,7 @@
         /// <summary>
         /// Set instance-synced Float value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedFloatValue(string key, float value)
+        public void SetInstanceSyncedFloatValue(string key, float value)
         {
             m_Value.compiledData.SetInstanceSyncedFloatValue(key, value);
         }
@@ -115,7 +131,7 @@
         /// <summary>
         /// Set instance-synced Integer value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedIntegerValue(string key, int value)
+        public void SetInstanceSyncedIntegerValue(string key, int value)
         {
             m_Value.compiledData.SetInstanceSyncedIntegerValue(key, value);
         }
@@ -123,7 +139,7 @@
         /// <summary>
         /// Set instance-synced Object value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedObjectValue(string key, Object value)
+        public void SetInstanceSyncedObjectValue(string key, Object value)
         {
             m_Value.compiledData.SetInstanceSyncedObjectValue(key, value);
         }
@@ -131,7 +147,7 @@
         /// <summary>
         /// Set instance-synced Vector value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedVectorValue(string key, Vector3 value)
+        public void SetInstanceSyncedVectorValue(string key, Vector3 value)
         {
             m_Value.compiledData.SetInstanceSyncedVectorValue(key, value);
         }
@@ -139,7 +155,7 @@
         /// <summary>
         /// Set instance-synced Quaternion value on the blackboard template using the key name.
         /// </summary>
-        internal void SetInstanceSyncedQuaternionValue(string key, Quaternion value)
+        public void SetInstanceSyncedQuaternionValue(string key, Quaternion value)
         {
             m_Value.compiledData.SetInstanceSyncedQuaternionValue(key, value);
         }

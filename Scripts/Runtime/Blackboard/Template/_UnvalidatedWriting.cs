@@ -20,6 +20,20 @@ namespace HiraBots
         }
 
         /// <summary>
+        /// Set instance-synced Enum value index on blackboard template using BlackboardKeyCompiledData without validating any input.
+        /// </summary>
+        internal void SetInstanceSyncedEnumValueWithoutValidation(in BlackboardKeyCompiledData keyData, byte value)
+        {
+            var memoryOffset = keyData.memoryOffset;
+            var owningTemplate = GetOwningTemplate(memoryOffset);
+            if (!BlackboardUnsafeHelpers.WriteEnumValueAndGetChange(owningTemplate.templatePtr, memoryOffset, value)) return;
+
+            var valuePtr = owningTemplate.templateReadOnlyPtr + memoryOffset;
+            foreach (var listener in owningTemplate.m_Listeners)
+                listener.UpdateValue(in keyData, valuePtr, sizeof(byte));
+        }
+
+        /// <summary>
         /// Set instance-synced Enum value on blackboard template using BlackboardKeyCompiledData without validating any input.
         /// </summary>
         internal void SetInstanceSyncedEnumValueWithoutValidation<T>(in BlackboardKeyCompiledData keyData, T value) where T : unmanaged, System.Enum

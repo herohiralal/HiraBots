@@ -40,10 +40,15 @@ namespace HiraBots.Editor.Tests
             InvalidSetterTest<string, bool, KeyNotFoundException>(baboon.SetBooleanValue, k_InvalidKeyName,
                 "Invalid Boolean key name setter test failed.");
 
+            InvalidGetterTest<string, byte, KeyNotFoundException>(baboon.GetEnumValue, k_InvalidKeyName,
+                "Invalid Enum key name getter test 1 failed.");
+            InvalidSetterTest<string, byte, KeyNotFoundException>(baboon.SetEnumValue, k_InvalidKeyName,
+                "Invalid Enum key name setter test 1 failed.");
+
             InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(baboon.GetEnumValue<GenericStatus>, k_InvalidKeyName,
-                "Invalid Enum key name getter test failed.");
+                "Invalid Enum key name getter test 2 failed.");
             InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(baboon.SetEnumValue<GenericStatus>, k_InvalidKeyName,
-                "Invalid Enum key name setter test failed.");
+                "Invalid Enum key name setter test 2 failed.");
 
             InvalidGetterTest<string, float, KeyNotFoundException>(baboon.GetFloatValue, k_InvalidKeyName,
                 "Invalid Float key name getter test failed.");
@@ -116,10 +121,15 @@ namespace HiraBots.Editor.Tests
             InvalidSetterTest<string, bool, KeyNotFoundException>(elementalistData.SetInstanceSyncedBooleanValue, k_InvalidKeyName,
                 "Invalid instance synced Boolean key name setter test failed.");
 
+            InvalidGetterTest<string, byte, KeyNotFoundException>(elementalistData.GetInstanceSyncedEnumValue, k_InvalidKeyName,
+                "Invalid instance synced Enum key name getter test 1 failed.");
+            InvalidSetterTest<string, byte, KeyNotFoundException>(elementalistData.SetInstanceSyncedEnumValue, k_InvalidKeyName,
+                "Invalid instance synced Enum key name setter test 1 failed.");
+
             InvalidGetterTest<string, GenericStatus, KeyNotFoundException>(elementalistData.GetInstanceSyncedEnumValue<GenericStatus>, k_InvalidKeyName,
-                "Invalid instance synced Enum key name getter test failed.");
+                "Invalid instance synced Enum key name getter test 2 failed.");
             InvalidSetterTest<string, GenericStatus, KeyNotFoundException>(elementalistData.SetInstanceSyncedEnumValue<GenericStatus>, k_InvalidKeyName,
-                "Invalid instance synced Enum key name setter test failed.");
+                "Invalid instance synced Enum key name setter test 2 failed.");
 
             InvalidGetterTest<string, float, KeyNotFoundException>(elementalistData.GetInstanceSyncedFloatValue, k_InvalidKeyName,
                 "Invalid instance synced Float key name getter test failed.");
