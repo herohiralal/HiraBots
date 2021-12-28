@@ -106,7 +106,7 @@ namespace HiraBots
             var layerCount = m_Domain.layerCount;
 
             // copy currently executing plan to the results set used for planning
-            m_PlanForExecution.CopyTo(m_PlanForPlanning);
+            m_PlansForExecution.CopyTo(m_PlansForPlanning);
 
             JobHandle lastJobHandle = default;
 
@@ -116,7 +116,7 @@ namespace HiraBots
             // goal calculator job
             if (index == 0)
             {
-                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_PlanForPlanning[0]);
+                var goalCalculatorJob = new LGOAPGoalCalculatorJob(domain, blackboard, m_Domain.fallbackPlans[0], m_PlansForPlanning[0]);
                 lastJobHandle = goalCalculatorJob.Schedule();
                 index++;
             }
@@ -127,10 +127,11 @@ namespace HiraBots
                 var plannerJob = new LGOAPMainPlannerJob(
                     domain,
                     blackboard,
+                    m_Domain.fallbackPlans[i],
                     100f,
                     i,
-                    m_PlanForPlanning[i - 1],
-                    m_PlanForPlanning[i]);
+                    m_PlansForPlanning[i - 1],
+                    m_PlansForPlanning[i]);
 
                 lastJobHandle = plannerJob.Schedule(lastJobHandle);
             }
@@ -147,16 +148,16 @@ namespace HiraBots
             for (var i = index; i < layerCount; i++)
             {
                 // todo: actually use the plan please, that's sort of the whole point
-                switch (m_PlanForPlanning[i].resultType)
+                switch (m_PlansForPlanning[i].resultType)
                 {
                     case LGOAPPlan.Type.Invalid:
-                        m_PlanForExecution[i].InvalidatePlan();
+                        m_PlansForExecution[i].InvalidatePlan();
                         Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
                                   "The planner must always be able to calculate a plan.");
                         break;
                     case LGOAPPlan.Type.NotRequired:
-                        m_PlanForExecution[i].InvalidatePlan();
-                        m_PlanForExecution[i].resultType = LGOAPPlan.Type.NotRequired;
+                        m_PlansForExecution[i].InvalidatePlan();
+                        m_PlansForExecution[i].resultType = LGOAPPlan.Type.NotRequired;
                         Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
                                   " previous layers contain a fake target.");
                         break;
@@ -166,7 +167,7 @@ namespace HiraBots
                                   "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
                     case LGOAPPlan.Type.NewPlan:
-                        m_PlanForPlanning[i].CopyTo(m_PlanForExecution[i]);
+                        m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
                         Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:

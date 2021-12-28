@@ -35,6 +35,7 @@ namespace HiraBots
 
                 NativeArray<short>.Copy(m_Internal, 0, dst.m_Internal, k_HeaderSize, selfLength);
                 dst.length = selfLength;
+                dst.resultType = Type.NewPlan;
                 dst.RestartPlan();
             }
         }
