@@ -44,7 +44,11 @@ namespace HiraBots.Editor
             m_ReorderableList = null;
             m_SerializedObject = null;
             m_Dirty = false;
-            InlinedObjectReferencesHelper.Collapse(target);
+
+            if (target != null)
+            {
+                InlinedObjectReferencesHelper.Collapse(target);
+            }
         }
 
         private void OnUndoPerformed()
