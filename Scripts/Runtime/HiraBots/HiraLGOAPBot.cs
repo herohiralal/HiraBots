@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -23,6 +24,12 @@ namespace HiraBots
         private BlackboardComponent m_Blackboard = null;
         private LGOAPPlannerComponent m_Planner = null;
         private ExecutorComponent m_Executor = null;
+
+        private short?[] m_ExecutionSet = null;
+        private short?[] m_PreAllocatedExecutionSet = null;
+        private List<IHiraBotsService>[] m_ActiveServicesByLayer = null;
+
+        private IHiraBotArchetype archetype => (IHiraBotArchetype) (m_ArchetypeOverride == null ? this : m_ArchetypeOverride);
 
         private void Awake()
         {
@@ -49,15 +56,35 @@ namespace HiraBots
 
             if (m_Blackboard.hasUnexpectedChanges)
             {
-                var changes = "unexpected changes: ";
-                for (var i = 0; i < m_Blackboard.unexpectedChanges.count; i++)
-                {
-                    changes += $"[{m_Blackboard.unexpectedChanges[i]}] ";
-                }
-
-                Debug.Log(changes);
-
+                m_Planner.StartPlannerAtLayer(0, true);
                 m_Blackboard.ClearUnexpectedChanges();
+            }
+
+            // if the planner can provide a plan regardless of the executor being done
+            if (m_Planner.canProvidePlan)
+            {
+                // grab the plan and provide it to the executor
+                GrabPlannerResults();
+                m_Planner.canProvidePlan = false;
+
+                // silence the executor, there's a new plan which invalidates its finish status
+                m_Executor.lastTaskEndSucceeded = null;
+            }
+
+            // if the executor is done executing, tell the planner
+            if (!m_Executor.hasTask && m_Executor.lastTaskEndSucceeded.HasValue)
+            {
+                m_Planner.OnTaskExecutionComplete(m_Executor.lastTaskEndSucceeded.Value);
+
+                m_Executor.lastTaskEndSucceeded = null;
+            }
+
+            // if the planner is providing a plan because the executor asked for it
+            if (m_Planner.canProvidePlan)
+            {
+                // grab the plan and provide it to the executor
+                GrabPlannerResults();
+                m_Planner.canProvidePlan = false;
             }
         }
 
@@ -92,7 +119,21 @@ namespace HiraBots
                 return;
             }
 
+            var layerCount = m_Domain.compiledData.layerCount;
+
+            m_ExecutionSet = new short?[layerCount];
+            m_PreAllocatedExecutionSet = new short?[layerCount];
+
+            m_ActiveServicesByLayer = new List<IHiraBotsService>[layerCount];
+
+            for (var i = 0; i < layerCount; i++)
+            {
+                m_ActiveServicesByLayer[i] = new List<IHiraBotsService>(layerCount);
+            }
+
             m_DomainCurrentlyInUse = m_Domain;
+
+            m_Planner.StartPlannerAtLayer(0, true);
         }
 
         private void StopUsingOldDomain()
@@ -101,6 +142,16 @@ namespace HiraBots
             {
                 return;
             }
+
+            foreach (var servicesInLayer in m_ActiveServicesByLayer)
+            {
+                servicesInLayer.Clear();
+            }
+
+            m_ActiveServicesByLayer = null;
+
+            m_PreAllocatedExecutionSet = null;
+            m_ExecutionSet = null;
 
             m_Executor.Dispose();
             m_Executor = null;
@@ -112,6 +163,62 @@ namespace HiraBots
             m_Blackboard = null;
 
             m_DomainCurrentlyInUse = null;
+        }
+
+        private void GrabPlannerResults()
+        {
+            m_Planner.CollectExecutionSet(m_PreAllocatedExecutionSet);
+
+            var domainData = m_DomainCurrentlyInUse.compiledData;
+            var layerCount = domainData.layerCount;
+
+            for (var i = layerCount - 1; i > 0; i--)
+            {
+                var containerIndex = m_PreAllocatedExecutionSet[i];
+
+                if (!containerIndex.HasValue)
+                {
+                    continue;
+                }
+
+                domainData.GetTaskProvider(i, containerIndex.Value, out var taskProvider);
+                var task = taskProvider.GetTask(m_Blackboard, archetype);
+                m_Executor.Execute(task, taskProvider.tickInterval);
+                break;
+            }
+
+            for (var i = layerCount - 1; i > 0; i--) // ignore goal layer
+            {
+                var existingValue = m_ExecutionSet[i];
+                var newContainerIndex = m_ExecutionSet[i] = m_PreAllocatedExecutionSet[i];
+
+                if (existingValue == newContainerIndex)
+                {
+                    continue;
+                }
+
+                if (existingValue.HasValue)
+                {
+                    foreach (var service in m_ActiveServicesByLayer[i])
+                    {
+                        HiraBotsServiceRunner.Remove(service);
+                    }
+
+                    m_ActiveServicesByLayer[i].Clear();
+                }
+
+                if (newContainerIndex.HasValue)
+                {
+                    domainData.GetServiceProviders(i, newContainerIndex.Value, out var serviceProviders);
+
+                    foreach (var serviceProvider in serviceProviders)
+                    {
+                        var service = serviceProvider.GetService(m_Blackboard, archetype);
+                        m_ActiveServicesByLayer[i].Add(service);
+                        HiraBotsServiceRunner.Add(service, serviceProvider.tickInterval);
+                    }
+                }
+            }
         }
     }
 }

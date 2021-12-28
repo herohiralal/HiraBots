@@ -8,6 +8,8 @@ namespace HiraBots
 
         internal bool hasTask => m_CurrentTask != null;
 
+        internal bool? lastTaskEndSucceeded { get; set; }
+
         internal void Execute(IHiraBotsTask task, float tickInterval)
         {
             if (hasTask)
@@ -75,6 +77,7 @@ namespace HiraBots
                     }
 
                     m_CurrentTask = null;
+                    lastTaskEndSucceeded = true;
                     return false;
 
                 case HiraBotsTaskResult.Failed:
@@ -88,6 +91,7 @@ namespace HiraBots
                     }
 
                     m_CurrentTask = null;
+                    lastTaskEndSucceeded = false;
                     return false;
 
                 default:

@@ -98,7 +98,6 @@ namespace HiraBots
                 m_PlannerCoroutine = null;
             }
         }
-        
 
         // this function is not inlined to ensure its synchronicity
         private JobHandle SchedulePlannerJob(int index)
@@ -162,6 +161,7 @@ namespace HiraBots
                         break;
                     case LGOAPPlan.Type.NewPlan:
                         m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
+                        canProvidePlan = true;
                         Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:
