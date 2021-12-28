@@ -48,7 +48,7 @@ namespace HiraBots
 
                     m_Result[0] = (short) answer;
 
-                    m_Result.RestartPlan();
+                    m_Result.currentIndex = 0;
                 }
             }
         }
@@ -84,9 +84,11 @@ namespace HiraBots
 
             public void Execute()
             {
-                if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Invalid)
+                if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.NotRequired)
                 {
-                    m_Result.InvalidatePlan();
+                    m_Result.length = 0;
+                    m_Result.currentIndex = 0;
+                    m_Result.resultType = LGOAPPlan.Type.NotRequired;
                     return;
                 }
 
@@ -97,18 +99,19 @@ namespace HiraBots
                 var domain = new LowLevelLGOAPDomain((byte*) m_Domain.GetUnsafeReadOnlyPtr());
                 var (targets, actions) = domain.GetTaskLayerAt(m_LayerIndex);
 
-                var target = targets[m_PreviousLayerResult[0]];
+                var target = targets[m_PreviousLayerResult[m_PreviousLayerResult.currentIndex]];
 
                 // check if the target is fake
                 if (target.isFake)
                 {
-                    m_Result.InvalidatePlan();
+                    m_Result.length = 0;
+                    m_Result.currentIndex = 0;
                     m_Result.resultType = LGOAPPlan.Type.NotRequired;
                     return;
                 }
 
                 // check if the current plan is ok
-                if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Unchanged && m_Result.resultType != LGOAPPlan.Type.Invalid)
+                if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Unchanged)
                 {
                     var previousPlanStillValid = true;
 
@@ -184,7 +187,7 @@ namespace HiraBots
 
                     if (heuristic == 0)
                     {
-                        m_Result.RestartPlan();
+                        m_Result.currentIndex = 0;
                         m_Result.resultType = LGOAPPlan.Type.NewPlan;
                         m_Result.length = (short) (index - 1);
                         return -1;

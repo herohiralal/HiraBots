@@ -36,7 +36,7 @@ namespace HiraBots
                 NativeArray<short>.Copy(m_Internal, 0, dst.m_Internal, k_HeaderSize, selfLength);
                 dst.length = selfLength;
                 dst.resultType = Type.NewPlan;
-                dst.RestartPlan();
+                dst.currentIndex = 0;
             }
         }
 
@@ -151,7 +151,6 @@ namespace HiraBots
 
         internal enum Type : short
         {
-            Invalid = 0,
             NotRequired = 1,
             Unchanged = 2,
             NewPlan = 3
@@ -167,7 +166,9 @@ namespace HiraBots
         internal LGOAPPlan(short bufferSize, Allocator allocator)
         {
             m_Internal = new NativeArray<short>(bufferSize + k_HeaderSize, allocator, NativeArrayOptions.UninitializedMemory);
-            InvalidatePlan();
+            length = 0;
+            resultType = Type.NewPlan;
+            currentIndex = 0;
         }
 
         internal void Dispose()
@@ -203,28 +204,10 @@ namespace HiraBots
             m_Internal.CopyTo(dst.m_Internal);
         }
 
-        internal void InvalidatePlan()
-        {
-            resultType = Type.Invalid;
-            length = 0;
-            currentIndex = -1;
-        }
-
-        internal void RestartPlan()
-        {
-            currentIndex = -1;
-        }
-
         internal short currentIndex
         {
             get => m_Internal[k_CurrentIndexIndex];
             set => m_Internal[k_CurrentIndexIndex] = value;
         }
-
-        internal bool canMoveNext => (currentIndex + 1) < length;
-
-        internal void MoveNext() => currentIndex++;
-
-        internal short currentElement => this[currentIndex];
     }
 }

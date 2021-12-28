@@ -150,14 +150,8 @@ namespace HiraBots
                 // todo: actually use the plan please, that's sort of the whole point
                 switch (m_PlansForPlanning[i].resultType)
                 {
-                    case LGOAPPlan.Type.Invalid:
-                        m_PlansForExecution[i].InvalidatePlan();
-                        Debug.Log($"Invalid result at layer {i} on component {m_Id}. This is not supposed to happen. " +
-                                  "The planner must always be able to calculate a plan.");
-                        break;
                     case LGOAPPlan.Type.NotRequired:
-                        m_PlansForExecution[i].InvalidatePlan();
-                        m_PlansForExecution[i].resultType = LGOAPPlan.Type.NotRequired;
+                        m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
                         Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
                                   " previous layers contain a fake target.");
                         break;
