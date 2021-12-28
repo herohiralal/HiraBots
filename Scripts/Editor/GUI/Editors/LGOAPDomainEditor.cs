@@ -432,11 +432,14 @@ namespace HiraBots.Editor
 
             internal static void Unbind(ReorderableList rol)
             {
-                rol.drawHeaderCallback = null;
-                rol.drawElementBackgroundCallback = null;
-                rol.drawElementCallback = null;
-                rol.onCanAddCallback = null;
-                rol.onCanRemoveCallback = null;
+                if (rol != null)
+                {
+                    rol.drawHeaderCallback = null;
+                    rol.drawElementBackgroundCallback = null;
+                    rol.drawElementCallback = null;
+                    rol.onCanAddCallback = null;
+                    rol.onCanRemoveCallback = null;
+                }
             }
 
             internal static ReorderableList BindTopLayer(LGOAPDomain.Serialized serializedObject)
