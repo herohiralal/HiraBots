@@ -46,6 +46,19 @@ namespace HiraBots
             {
                 return;
             }
+
+            if (m_Blackboard.hasUnexpectedChanges)
+            {
+                var changes = "unexpected changes: ";
+                for (var i = 0; i < m_Blackboard.unexpectedChanges.count; i++)
+                {
+                    changes += $"[{m_Blackboard.unexpectedChanges[i]}] ";
+                }
+
+                Debug.Log(changes);
+
+                m_Blackboard.ClearUnexpectedChanges();
+            }
         }
 
         private void StartUsingNewDomain()
