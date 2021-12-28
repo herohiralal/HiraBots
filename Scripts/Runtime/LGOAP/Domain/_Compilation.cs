@@ -137,7 +137,7 @@ namespace HiraBots
 
             {
                 // intermediate layers
-                for (var i = 0; i < tasksLayers.Length; i++)
+                for (var i = 0; i < tasksLayers.Length - 1; i++)
                 {
                     var currentLayer = m_IntermediateLayers[i];
 
