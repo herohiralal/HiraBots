@@ -148,7 +148,6 @@ namespace HiraBots
 
             for (var i = index; i < layerCount; i++)
             {
-                // todo: actually use the plan please, that's sort of the whole point
                 switch (m_PlansForPlanning[i].resultType)
                 {
                     case LGOAPPlan.Type.NotRequired:
