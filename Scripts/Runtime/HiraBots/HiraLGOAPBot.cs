@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal class HiraLGOAPBot : MonoBehaviour, IHiraBotArchetype
+    internal sealed partial class HiraLGOAPBot : MonoBehaviour, IHiraBotArchetype
     {
         [Tooltip("The component to use as an archetype. If not provided, will use self.")]
         [SerializeField] private Component m_ArchetypeOverride;
