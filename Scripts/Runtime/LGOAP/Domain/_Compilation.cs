@@ -122,10 +122,54 @@ namespace HiraBots
                 fallbackPlans[fallbackPlans.Length - 1] = (short[]) m_BottomLayer.m_FallbackPlan.Clone();
             }
 
+            // goals
+            var goals = new LGOAPGoalCompiledData[m_TopLayer.m_Goals.Length];
+
+            {
+                for (var i = 0; i < goals.Length; i++)
+                {
+                    goals[i] = new LGOAPGoalCompiledData(m_TopLayer.m_Goals[i]);
+                }
+            }
+
+            // tasks layers
+            var tasksLayers = new ReadOnlyArrayAccessor<LGOAPTaskCompiledData>[m_IntermediateLayers.Length + 1];
+
+            {
+                // intermediate layers
+                for (var i = 0; i < tasksLayers.Length; i++)
+                {
+                    var currentLayer = m_IntermediateLayers[i];
+
+                    var tasks = new LGOAPTaskCompiledData[currentLayer.m_Tasks.Length];
+
+                    for (var j = 0; j < tasks.Length; j++)
+                    {
+                        tasks[j] = new LGOAPTaskCompiledData(currentLayer.m_Tasks[j]);
+                    }
+
+                    tasksLayers[i] = tasks.ReadOnly();
+                }
+
+                // bottom layer
+                {
+                    var tasks = new LGOAPTaskCompiledData[m_BottomLayer.m_Tasks.Length];
+
+                    for (var i = 0; i < tasks.Length; i++)
+                    {
+                        tasks[i] = new LGOAPTaskCompiledData(m_BottomLayer.m_Tasks[i]);
+                    }
+
+                    tasksLayers[m_IntermediateLayers.Length] = tasks.ReadOnly();
+                }
+            }
+
             compiledData = new LGOAPDomainCompiledData(m_Blackboard.compiledData,
                 domain,
                 maxPlanSizesByLayer.ReadOnly(),
-                fallbackPlans.ReadOnly());
+                fallbackPlans.ReadOnly(),
+                goals.ReadOnly(),
+                tasksLayers.ReadOnly());
         }
 
         /// <summary>

@@ -1,0 +1,76 @@
+﻿using UnityEngine;
+
+namespace HiraBots
+{
+    internal partial class LGOAPDomainCompiledData
+    {
+        internal string GetContainerName(int layerIndex, int containerIndex)
+        {
+            return layerIndex == 0 ? m_Goals[containerIndex].name : m_TaskLayers[layerIndex - 1][containerIndex].name;
+        }
+
+        internal bool IsTaskAbstract(int layerIndex, int containerIndex)
+        {
+            return m_TaskLayers[layerIndex - 1][containerIndex].isAbstract;
+        }
+
+        internal float GetInsistenceOnBlackboard(int containerIndex, BlackboardComponent blackboard)
+        {
+            var insistence = m_Goals[containerIndex].insistence;
+
+            var score = 0f;
+            for (var i = 0; i < insistence.count; i++)
+            {
+                score += insistence[i].ExecuteScoreCalculator(blackboard);
+            }
+
+            return score;
+        }
+
+        internal bool CheckTargetOnBlackboard(int layerIndex, int containerIndex, BlackboardComponent blackboard)
+        {
+            var target = layerIndex == 0 ? m_Goals[containerIndex].target : m_TaskLayers[layerIndex - 1][containerIndex].target;
+
+            for (var i = 0; i < target.count; i++)
+            {
+                if (!target[i].ExecuteDecorator(blackboard))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        internal bool CheckPreconditionOnBlackboard(int layerIndex, int containerIndex, BlackboardComponent blackboard)
+        {
+            var precondition = m_TaskLayers[layerIndex - 1][containerIndex].precondition;
+
+            for (var i = 0; i < precondition.count; i++)
+            {
+                if (!precondition[i].ExecuteDecorator(blackboard))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        internal void ApplyEffectOnBlackboard(int layerIndex, int containerIndex, BlackboardComponent blackboard, bool expected)
+        {
+            var effect = m_TaskLayers[layerIndex - 1][containerIndex].effect;
+
+            for (var i = 0; i < effect.count; i++)
+            {
+                effect[i].Execute(blackboard, expected);
+            }
+        }
+
+        internal void GetExecutables(int layerIndex, int containerIndex, out HiraBotsTaskProvider taskProvider, out ReadOnlyArrayAccessor<HiraBotsServiceProvider> serviceProviders)
+        {
+            taskProvider = m_TaskLayers[layerIndex - 1][containerIndex].taskProvider;
+            serviceProviders = m_TaskLayers[layerIndex - 1][containerIndex].serviceProviders;
+        }
+    }
+}

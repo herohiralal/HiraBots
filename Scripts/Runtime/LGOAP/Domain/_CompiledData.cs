@@ -5,11 +5,13 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal class LGOAPDomainCompiledData
+    internal partial class LGOAPDomainCompiledData
     {
         private BlackboardTemplateCompiledData m_BlackboardCompiledData;
         private ReadOnlyArrayAccessor<byte> m_MaxPlanSizesByLayer;
         private LGOAPPlan.Set.ReadOnly m_FallbackPlans;
+        private ReadOnlyArrayAccessor<LGOAPGoalCompiledData> m_Goals;
+        private ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<LGOAPTaskCompiledData>> m_TaskLayers;
         private NativeArray<byte> m_Domain = default;
 
         private readonly Dictionary<ulong, JobHandle> m_DependentJobs = new Dictionary<ulong, JobHandle>();
@@ -40,16 +42,23 @@ namespace HiraBots
         internal NativeArray<byte> data => m_Domain;
 
         internal LGOAPDomainCompiledData(BlackboardTemplateCompiledData blackboardCompiledData, NativeArray<byte> domain,
-            ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer, ReadOnlyArrayAccessor<short[]> fallbackPlans)
+            ReadOnlyArrayAccessor<byte> maxPlanSizesByLayer, ReadOnlyArrayAccessor<short[]> fallbackPlans,
+            ReadOnlyArrayAccessor<LGOAPGoalCompiledData> goals, ReadOnlyArrayAccessor<ReadOnlyArrayAccessor<LGOAPTaskCompiledData>> taskLayers)
         {
             m_BlackboardCompiledData = blackboardCompiledData;
             m_Domain = domain;
             m_FallbackPlans = new LGOAPPlan.Set.ReadOnly(fallbackPlans);
             m_MaxPlanSizesByLayer = maxPlanSizesByLayer;
+
+            m_Goals = goals;
+            m_TaskLayers = taskLayers;
         }
 
         internal void Dispose()
         {
+            m_TaskLayers = default;
+            m_Goals = default;
+
             m_MaxPlanSizesByLayer = default;
 
             foreach (var dependentJob in m_DependentJobs.Values)
