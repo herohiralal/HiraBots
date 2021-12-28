@@ -22,10 +22,42 @@ namespace HiraBots
                 };
 
                 DontDestroyOnLoad(go);
-                go.AddComponent<HiraBotsInitializer>();
-                go.AddComponent<HiraBotsModule>();
-                go.AddComponent<HiraBotsTaskRunner>();
-                go.AddComponent<HiraBotsServiceRunner>();
+
+                try
+                {
+                    go.AddComponent<HiraBotsInitializer>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
+                try
+                {
+                    go.AddComponent<HiraBotsModule>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
+                try
+                {
+                    go.AddComponent<HiraBotsTaskRunner>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
+
+                try
+                {
+                    go.AddComponent<HiraBotsServiceRunner>();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             BlackboardComponent.ResetStaticIDAssigner();
@@ -41,10 +73,17 @@ namespace HiraBots
             var btcCount = btc.count;
             for (var i = 0; i < btcCount; i++)
             {
-                // the assumption here is that the blackboard templates are arranged
-                // according to their hierarchy indices, to make sure a parent template
-                // does not get compiled before its child
-                btc[i].Compile();
+                try
+                {
+                    // the assumption here is that the blackboard templates are arranged
+                    // according to their hierarchy indices, to make sure a parent template
+                    // does not get compiled before its child
+                    btc[i].Compile();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             Profiler.EndSample();
@@ -57,8 +96,15 @@ namespace HiraBots
             var ldcCount = ldc.count;
             for (var i = 0; i < ldcCount; i++)
             {
-                // the assumption here is that the blackboard templates have already compiled
-                ldc[i].Compile();
+                try
+                {
+                    // the assumption here is that the blackboard templates have already compiled
+                    ldc[i].Compile();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             Profiler.EndSample();
@@ -70,12 +116,41 @@ namespace HiraBots
 
         private void OnApplicationQuit()
         {
-            Destroy(GetComponent<HiraBotsServiceRunner>());
-            Destroy(GetComponent<HiraBotsTaskRunner>());
-            Destroy(GetComponent<HiraBotsModule>());
-            Unload();
-            Destroy(this);
+            try
+            {
+                Destroy(GetComponent<HiraBotsServiceRunner>());
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+            try
+            {
+                Destroy(GetComponent<HiraBotsTaskRunner>());
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+            try
+            {
+                Destroy(GetComponent<HiraBotsModule>());
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+            try
+            {
+                Destroy(this);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+
             Destroy(gameObject);
+            Unload();
         }
 
         // Free all the compiled HiraBots components in a reverse order
@@ -87,8 +162,15 @@ namespace HiraBots
             var ldcCount = ldc.count;
             for (var i = ldcCount - 1; i >= 0; i--)
             {
-                // need to free them before the blackboards they depend on
-                ldc[i].Free();
+                try
+                {
+                    // need to free them before the blackboards they depend on
+                    ldc[i].Free();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             ErrorTaskProvider.ClearNoneTaskInstance();
@@ -97,9 +179,16 @@ namespace HiraBots
             var btcCount = btc.count;
             for (var i = btcCount - 1; i >= 0; i--)
             {
-                // free all the compiled blackboards in reverse, to
-                // free them backwards from the order they were compiled in
-                btc[i].Free();
+                try
+                {
+                    // free all the compiled blackboards in reverse, to
+                    // free them backwards from the order they were compiled in
+                    btc[i].Free();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
             }
 
             // get rid of all collections
