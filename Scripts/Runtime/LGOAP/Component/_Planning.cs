@@ -173,6 +173,12 @@ namespace HiraBots
                     {
                         threshold = score;
                     }
+
+                    // if an empty plan was generated, i.e. the target is reached, use a fallback plan
+                    if (m_Result.length == 0)
+                    {
+                        m_FallbackPlan.CopyTo(m_Result);
+                    }
                 }
 
                 private float PerformHeuristicEstimatedSearch(byte index, float costUntilNow, float threshold)
