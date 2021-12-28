@@ -20,7 +20,7 @@
             m_Action.PrepareForCompilation();
 
             m_Target.m_Owner = this;
-            m_Target.PrepareForCompilation(isAbstract);
+            m_Target.PrepareForCompilation(!isAbstract);
         }
     }
 }
