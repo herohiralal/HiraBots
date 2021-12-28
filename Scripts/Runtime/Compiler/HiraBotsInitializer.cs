@@ -49,6 +49,8 @@ namespace HiraBots
 
             Profiler.EndSample();
 
+            ErrorTaskProvider.CreateNoneTaskInstance();
+
             Profiler.BeginSample("LGOAP Domain Compilation");
 
             var ldc = LGOAPDomainCollection.instance;
@@ -88,6 +90,8 @@ namespace HiraBots
                 // need to free them before the blackboards they depend on
                 ldc[i].Free();
             }
+
+            ErrorTaskProvider.ClearNoneTaskInstance();
 
             var btc = BlackboardTemplateCollection.instance;
             var btcCount = btc.count;

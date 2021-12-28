@@ -14,5 +14,20 @@ namespace HiraBots
         {
             return ErrorExecutable.Get(m_Text);
         }
+
+        internal static ErrorTaskProvider noneTaskProvider { get; private set; }
+
+        internal static void CreateNoneTaskInstance()
+        {
+            noneTaskProvider = CreateInstance<ErrorTaskProvider>();
+            noneTaskProvider.m_DisablePlayModeEntryOrBuildingPlayer = false;
+            noneTaskProvider.m_Text = "Missing task provider.";
+        }
+
+        internal static void ClearNoneTaskInstance()
+        {
+            Destroy(noneTaskProvider);
+            noneTaskProvider = null;
+        }
     }
 }
