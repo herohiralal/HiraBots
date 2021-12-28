@@ -44,7 +44,9 @@ namespace HiraBots
                 {
                     m_Result.length = 1;
 
-                    m_Result.resultType = answer == m_Result[0] ? LGOAPPlan.Type.Unchanged : LGOAPPlan.Type.NewPlan;
+                    // if the goal has been achieved, need to mark it as new plan
+                    // or it won't get properly picked up
+                    m_Result.resultType = answer == m_Result[0] && m_Result.currentIndex == 0 ? LGOAPPlan.Type.Unchanged : LGOAPPlan.Type.NewPlan;
 
                     m_Result[0] = (short) answer;
 
@@ -117,30 +119,36 @@ namespace HiraBots
 
                     // check if the actions in the plan can still be chained
                     var planLength = m_Result.length;
-                    for (var i = m_Result.currentIndex; i < planLength; i++)
-                    {
-                        actions.collection[m_Result[i]].Break(
-                            out var precondition,
-                            out _,
-                            out var effect);
+                    var currentIndex = m_Result.currentIndex;
 
-                        if (!precondition.Execute(datasets[0]))
+                    // if the plan has been used, can't use an "unchanged" plan now can we?
+                    if (currentIndex < planLength)
+                    {
+                        for (var i = currentIndex; i < planLength; i++)
                         {
-                            previousPlanStillValid = false;
-                            break;
+                            actions.collection[m_Result[i]].Break(
+                                out var precondition,
+                                out _,
+                                out var effect);
+
+                            if (!precondition.Execute(datasets[0]))
+                            {
+                                previousPlanStillValid = false;
+                                break;
+                            }
+
+                            effect.Execute(datasets[0]);
                         }
 
-                        effect.Execute(datasets[0]);
-                    }
+                        // current plan is still valid AND it satisfies the target
+                        if (previousPlanStillValid && target.GetHeuristic(datasets[0]) == 0)
+                        {
+                            m_Result.resultType = LGOAPPlan.Type.Unchanged;
+                            return;
+                        }
 
-                    // current plan is still valid AND it satisfies the target
-                    if (previousPlanStillValid && target.GetHeuristic(datasets[0]) == 0)
-                    {
-                        m_Result.resultType = LGOAPPlan.Type.Unchanged;
-                        return;
+                        datasets.Copy(0, m_Blackboard);
                     }
-
-                    datasets.Copy(0, m_Blackboard);
                 }
 
                 new NewPlanFinder
