@@ -23,5 +23,18 @@ namespace HiraBots
 
         [Tooltip("The bottom-most layer, containing only executable tasks.")]
         [SerializeField, HideInInspector] private LGOAPTaskLayer m_BottomLayer = LGOAPTaskLayer.empty;
+
+        /// <summary>
+        /// The blackboard to use for this domain.
+        /// </summary>
+        internal BlackboardTemplate blackboard => m_Blackboard;
+
+        /// <summary>
+        /// Implicitly convert an LGOAPDomain to its public interface.
+        /// </summary>
+        public static implicit operator UnityEngine.LGOAPDomain(LGOAPDomain actualTemplate)
+        {
+            return new UnityEngine.LGOAPDomain(actualTemplate);
+        }
     }
 }
