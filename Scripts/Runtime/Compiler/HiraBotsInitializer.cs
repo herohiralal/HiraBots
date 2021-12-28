@@ -11,7 +11,7 @@ namespace HiraBots
     {
         // compile all HiraBots components in their required order
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Initialize()
+        private static void Load()
         {
             Profiler.BeginSample("HiraBots Initialization");
 
@@ -66,16 +66,18 @@ namespace HiraBots
             Profiler.EndSample();
         }
 
-        private void OnDestroy()
+        private void OnApplicationQuit()
         {
             Destroy(GetComponent<HiraBotsServiceRunner>());
             Destroy(GetComponent<HiraBotsTaskRunner>());
             Destroy(GetComponent<HiraBotsModule>());
-            Quit();
+            Unload();
+            Destroy(this);
+            Destroy(gameObject);
         }
 
         // Free all the compiled HiraBots components in a reverse order
-        private static void Quit()
+        private static void Unload()
         {
             Profiler.BeginSample("HiraBots Cleanup");
 
