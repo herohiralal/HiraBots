@@ -1,5 +1,4 @@
 ﻿using System;
-using Unity.Mathematics;
 
 namespace HiraBots
 {
@@ -126,7 +125,7 @@ namespace HiraBots
     {
         protected override void CompileInternal(ref BlackboardKeyCompilerContext context)
         {
-            BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, quaternion.Euler(m_DefaultValue));
+            BlackboardUnsafeHelpers.WriteQuaternionValue(context.address, 0, UnityEngine.Quaternion.Euler(m_DefaultValue));
         }
     }
 
