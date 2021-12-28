@@ -39,6 +39,11 @@ namespace HiraBots.Editor
             EditorGUILayout.PropertyField(m_Bot.domainProperty, true);
             m_Bot.ApplyModifiedProperties();
 
+            if (!EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return; // nothing is gonna be compiled unless in play mode
+            }
+
             if (m_Bot.domain != null && m_Bot.domain.blackboard != null && m_Bot.domain.blackboard.isCompiled && m_Bot.blackboard != null)
             {
                 var blackboardComponent = m_Bot.blackboard;
@@ -50,9 +55,9 @@ namespace HiraBots.Editor
                     blackboard.GetKeySet(m_Keys);
                 }
 
-                EditorGUILayout.Space();
+                EditorGUILayout.Space(12f, true);
                 var blackboardHeadingRect = EditorGUILayout.GetControlRect();
-                var editableButtonRect = EditorGUI.PrefixLabel( blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
+                var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
                 if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit"))
                 {
                     m_EditBlackboard = !m_EditBlackboard;
@@ -183,6 +188,41 @@ namespace HiraBots.Editor
             else
             {
                 m_Keys = null;
+            }
+
+            if (m_Bot.domain != null && m_Bot.domain.isCompiled && m_Bot.planner != null)
+            {
+                var planSet = new LGOAPPlannerComponent.Serialized(m_Bot.planner).executionSet;
+                var domain = m_Bot.domain.compiledData;
+
+                var layerCount = domain.layerCount;
+
+                for (var i = 0; i < layerCount; i++)
+                {
+                    var planAtCurrentLayer = planSet[i];
+                    var length = planAtCurrentLayer.length;
+                    var currentExecutionIndex = planAtCurrentLayer.currentIndex;
+
+                    EditorGUILayout.Space(12f, true);
+                    var lengthRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(),
+                        GUIHelpers.TempContent(i == 0 ? "GOALS [Layer Index: 0]" : $"TASKS [Layer Index: {i}]"),
+                        EditorStyles.boldLabel);
+
+                    EditorGUI.LabelField(lengthRect,
+                        GUIHelpers.TempContent($"[EXECUTED: {currentExecutionIndex}/{length}] [LENGTH: {length}/{planAtCurrentLayer.maxLength}]"),
+                        EditorStyles.miniLabel);
+
+
+                    for (short j = 0; j < length; j++)
+                    {
+                        var currentContainerIndex = planAtCurrentLayer[j];
+
+                        var containerName = domain.GetContainerName(i, currentContainerIndex);
+
+                        var progressBarRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.TempContent(containerName));
+                        EditorGUI.ProgressBar(progressBarRect, j < currentExecutionIndex ? 1 : 0, j == currentExecutionIndex ? ">> Executing <<" : "");
+                    }
+                }
             }
         }
     }
