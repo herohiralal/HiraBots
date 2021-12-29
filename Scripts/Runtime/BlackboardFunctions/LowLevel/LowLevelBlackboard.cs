@@ -38,5 +38,11 @@ namespace HiraBots
 
             return ref *(T*) (m_Address + memoryOffset);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UnityEngine.BlackboardComponent.LowLevel(LowLevelBlackboard lbb)
+        {
+            return new UnityEngine.BlackboardComponent.LowLevel(lbb);
+        }
     }
 }

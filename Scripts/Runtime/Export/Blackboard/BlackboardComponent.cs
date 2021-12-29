@@ -6,6 +6,29 @@
     [System.Serializable]
     public struct BlackboardComponent
     {
+        /// <summary>
+        /// Low-level representation of a blackboard.
+        /// </summary>
+        public readonly struct LowLevel
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            internal LowLevel(HiraBots.LowLevelBlackboard value)
+            {
+                m_Value = value;
+            }
+
+            private readonly HiraBots.LowLevelBlackboard m_Value;
+
+            /// <summary>
+            /// Access a portion of the memory.
+            /// </summary>
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            public ref T Access<T>(int memoryOffset) where T : unmanaged
+            {
+                return ref m_Value.Access<T>(memoryOffset);
+            }
+        }
+
         internal BlackboardComponent(HiraBots.BlackboardComponent value)
         {
             m_Value = value;
