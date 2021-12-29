@@ -124,8 +124,10 @@ namespace HiraBots.Editor
                 }
             }
 
+            var manifestContent = string.Join("\n", generatedFiles);
+
             // remove useless folders
-            foreach (var uselessFolder in potentiallyUselessFolders.Where(folder => generatedFiles.All(filePath => !filePath.Contains(folder))))
+            foreach (var uselessFolder in potentiallyUselessFolders.Where(folder => !manifestContent.Contains(folder)))
             {
                 UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
                     $"Remove orphaned folder: {uselessFolder}");
@@ -144,7 +146,7 @@ namespace HiraBots.Editor
             }
 
             // write manifest
-            File.WriteAllText(manifestLocation, string.Join("\n", generatedFiles));
+            File.WriteAllText(manifestLocation, manifestContent);
         }
     }
 }
