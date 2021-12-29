@@ -71,7 +71,7 @@ namespace HiraBots.Editor
             }
 
             // generate manifest
-            EditorSerializationUtility.CleanupAndGenerateManifest("hirabots_objects", string.Join("\n", generatedFiles));
+            EditorSerializationUtility.CleanupAndGenerateManifest("hirabots_objects", generatedFiles);
 
             // import new files
             AssetDatabase.Refresh();

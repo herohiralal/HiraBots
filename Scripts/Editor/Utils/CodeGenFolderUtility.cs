@@ -75,10 +75,11 @@ namespace HiraBots.Editor
         /// <summary>
         /// Clean up orphaned files/folders and write a manifest for all the generated files.
         /// </summary>
-        internal static void CleanupAndGenerateManifest(string manifestName, string generatedFiles)
+        internal static void CleanupAndGenerateManifest(string manifestName, string[] generatedFiles)
         {
-            generatedFiles += $"\n{k_CodeGenManualExtensionsFolderName}/info.txt" +
-                              $"\n{k_CodeGenAssemblyName}.asmdef";
+            System.Array.Resize(ref generatedFiles, generatedFiles.Length + 2);
+            generatedFiles[generatedFiles.Length - 2] = $"{k_CodeGenManualExtensionsFolderName}/info.txt";
+            generatedFiles[generatedFiles.Length - 1] = $"{k_CodeGenAssemblyName}.asmdef";
 
             var directory = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName);
             var manifestLocation = Path.Combine(directory, $"{manifestName}_manifest.txt");
@@ -115,7 +116,7 @@ namespace HiraBots.Editor
             }
 
             // remove useless folders
-            foreach (var uselessFolder in potentiallyUselessFolders.Where(s => !generatedFiles.Contains(s)))
+            foreach (var uselessFolder in potentiallyUselessFolders.Where(folder => generatedFiles.All(filePath => !filePath.Contains(folder))))
             {
                 UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
                     $"Remove orphaned folder: {uselessFolder}");
@@ -134,7 +135,7 @@ namespace HiraBots.Editor
             }
 
             // write manifest
-            File.WriteAllText(manifestLocation, generatedFiles);
+            File.WriteAllText(manifestLocation, string.Join("\n", generatedFiles));
         }
     }
 }

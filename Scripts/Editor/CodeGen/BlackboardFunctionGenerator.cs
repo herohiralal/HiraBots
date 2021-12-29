@@ -169,7 +169,7 @@ namespace HiraBots.Editor
             }
             
             // generate manifest
-            EditorSerializationUtility.CleanupAndGenerateManifest("hirabots_blackboard_functions", string.Join("\n", generatedFiles));
+            EditorSerializationUtility.CleanupAndGenerateManifest("hirabots_blackboard_functions", generatedFiles);
             
             // import new files
             AssetDatabase.Refresh();
