@@ -11,7 +11,15 @@ namespace HiraBots.Editor
     [CustomEditor(typeof(HiraLGOAPBot))]
     internal class HiraLGOAPBotEditor : UnityEditor.Editor
     {
+        [System.Serializable]
+        private enum EditType
+        {
+            Unexpected,
+            Expected
+        }
+
         private bool m_EditBlackboard;
+        private EditType m_EditType = EditType.Unexpected;
 
         private HiraLGOAPBot.Serialized m_Bot;
         private HashSet<BlackboardKey> m_Keys;
@@ -58,13 +66,17 @@ namespace HiraBots.Editor
                 EditorGUILayout.Space(12f, true);
                 var blackboardHeadingRect = EditorGUILayout.GetControlRect();
                 var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
-                if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit"))
+                if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit (NO UNDO/REDO)"))
                 {
                     m_EditBlackboard = !m_EditBlackboard;
                 }
 
                 using (new GUIEnabledChanger(m_EditBlackboard))
                 {
+                    m_EditType = (EditType) EditorGUILayout.EnumPopup(
+                        GUIHelpers.TempContent("Edit Type", "The type of edit to perform on the blackboard."),
+                        m_EditType);
+
                     foreach (var key in m_Keys)
                     {
                         var keyName = key.name;
@@ -78,7 +90,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetBooleanValue(keyName, newValue);
+                                    blackboardComponent.SetBooleanValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -103,7 +117,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetEnumValue(keyName, newValue);
+                                    blackboardComponent.SetEnumValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -116,7 +132,9 @@ namespace HiraBots.Editor
 
                                 if (Mathf.Abs(newValue - currentValue) >= 0.0001f)
                                 {
-                                    blackboardComponent.SetFloatValue(keyName, newValue);
+                                    blackboardComponent.SetFloatValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -129,7 +147,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetIntegerValue(keyName, newValue);
+                                    blackboardComponent.SetIntegerValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -142,7 +162,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetObjectValue(keyName, newValue);
+                                    blackboardComponent.SetObjectValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -155,7 +177,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetQuaternionValue(keyName, Quaternion.Euler(newValue));
+                                    blackboardComponent.SetQuaternionValue(keyName,
+                                        Quaternion.Euler(newValue),
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
@@ -168,7 +192,9 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    blackboardComponent.SetVectorValue(keyName, newValue);
+                                    blackboardComponent.SetVectorValue(keyName,
+                                        newValue,
+                                        m_EditType == EditType.Expected);
                                 }
 
                                 break;
