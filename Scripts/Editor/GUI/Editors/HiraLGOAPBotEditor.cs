@@ -78,7 +78,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetBooleanValue(keyName, newValue));
+                                    blackboardComponent.SetBooleanValue(keyName, newValue);
                                 }
 
                                 break;
@@ -103,7 +103,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetEnumValue(keyName, newValue));
+                                    blackboardComponent.SetEnumValue(keyName, newValue);
                                 }
 
                                 break;
@@ -114,10 +114,9 @@ namespace HiraBots.Editor
                                 var currentValue = blackboardComponent.GetFloatValue(keyName);
                                 var newValue = EditorGUILayout.DelayedFloatField(keyName, currentValue);
 
-                                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                                if (currentValue != newValue)
+                                if (Mathf.Abs(newValue - currentValue) >= 0.0001f)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetFloatValue(keyName, newValue));
+                                    blackboardComponent.SetFloatValue(keyName, newValue);
                                 }
 
                                 break;
@@ -130,7 +129,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetIntegerValue(keyName, newValue));
+                                    blackboardComponent.SetIntegerValue(keyName, newValue);
                                 }
 
                                 break;
@@ -143,7 +142,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetObjectValue(keyName, newValue));
+                                    blackboardComponent.SetObjectValue(keyName, newValue);
                                 }
 
                                 break;
@@ -156,8 +155,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() =>
-                                        blackboardComponent.SetQuaternionValue(keyName, Quaternion.Euler(newValue)));
+                                    blackboardComponent.SetQuaternionValue(keyName, Quaternion.Euler(newValue));
                                 }
 
                                 break;
@@ -170,7 +168,7 @@ namespace HiraBots.Editor
 
                                 if (currentValue != newValue)
                                 {
-                                    HiraBotsModule.DispatchOnMainThread(() => blackboardComponent.SetVectorValue(keyName, newValue));
+                                    blackboardComponent.SetVectorValue(keyName, newValue);
                                 }
 
                                 break;

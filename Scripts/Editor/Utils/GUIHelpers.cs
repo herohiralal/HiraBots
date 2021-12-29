@@ -436,22 +436,25 @@ namespace HiraBots.Editor
                 headerClr = EditorGUIUtility.isProSkin ? new Color(0.1f, 0.1f, 0.1f, 0.5f) : new Color(0.9f, 0.9f, 0.9f, 0.5f);
             }
 
-            EditorGUI.DrawRect(bgRect, headerClr);
-
-            // title
-            EditorGUI.LabelField(labelRect, TempContent(title), EditorStyles.boldLabel);
-
-            // foldout
-            expansionProperty.isExpanded = GUI.Toggle(foldoutRect, expansionProperty.isExpanded, GUIContent.none, EditorStyles.foldout);
-
-            var e = Event.current;
-            if (e.type == EventType.MouseDown && bgRect.Contains(e.mousePosition) && e.button == 0)
+            using (new GUIEnabledChanger(true))
             {
-                expansionProperty.isExpanded = !expansionProperty.isExpanded;
-                e.Use();
-            }
+                EditorGUI.DrawRect(bgRect, headerClr);
 
-            DrawSplitter();
+                // title
+                EditorGUI.LabelField(labelRect, TempContent(title), EditorStyles.boldLabel);
+
+                // foldout
+                expansionProperty.isExpanded = GUI.Toggle(foldoutRect, expansionProperty.isExpanded, GUIContent.none, EditorStyles.foldout);
+
+                var e = Event.current;
+                if (e.type == EventType.MouseDown && bgRect.Contains(e.mousePosition) && e.button == 0)
+                {
+                    expansionProperty.isExpanded = !expansionProperty.isExpanded;
+                    e.Use();
+                }
+
+                DrawSplitter();
+            }
         }
 
         internal static void DrawSplitter()
