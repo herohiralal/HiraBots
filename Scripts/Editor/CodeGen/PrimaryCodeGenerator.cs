@@ -5,9 +5,9 @@ using UnityEngine;
 namespace HiraBots.Editor
 {
     /// <summary>
-    /// The main entry point for code generation
+    /// The main entry point for primary code generation
     /// </summary>
-    internal static class CodeGeneratorEntryPoint
+    internal static class PrimaryCodeGenerator
     {
         /// <summary>
         /// Generate code for all HiraBots objects.
