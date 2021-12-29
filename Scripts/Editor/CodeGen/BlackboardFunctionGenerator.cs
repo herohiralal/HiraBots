@@ -13,6 +13,8 @@ namespace HiraBots.Editor
     /// </summary>
     internal static class BlackboardFunctionGenerator
     {
+        private const string k_CodeGenSubFolderName = "BlackboardFunctions";
+
         private readonly struct BlackboardFunctionParameterInfo
         {
             internal enum Type : byte
@@ -95,9 +97,9 @@ namespace HiraBots.Editor
             EditorSerializationUtility.ConfirmCodeGenFolder();
             EditorSerializationUtility.CreateCodeGenAssemblyDefinition();
             
-            var generatedCode = new List<(string path, string contents)>();
+            var generatedCode = new List<(string path, string contents, string guid)>();
 
-            var invalidatedMethods = new List<(string typeName, string methodName)>();
+            var invalidatedMethods = new List<(string typeName, string methodName, string guid)>();
 
             var functionInfos = new List<BlackboardFunctionInfo>();
 
@@ -105,7 +107,9 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(decoratorWannabeFunction, typeof(bool), out var paramInfos))
                 {
-                    invalidatedMethods.Add(($"{decoratorWannabeFunction.DeclaringType}", decoratorWannabeFunction.Name));
+                    invalidatedMethods.Add(($"{decoratorWannabeFunction.DeclaringType}",
+                        decoratorWannabeFunction.Name,
+                        decoratorWannabeFunction.GetCustomAttribute<GenerateHiraBotsDecoratorAttribute>().guid));
                     continue;
                 }
 
@@ -124,7 +128,9 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(scoreCalculatorWannabeFunction, typeof(float), out var paramInfos, typeof(float)))
                 {
-                    invalidatedMethods.Add(($"{scoreCalculatorWannabeFunction.DeclaringType}", scoreCalculatorWannabeFunction.Name));
+                    invalidatedMethods.Add(($"{scoreCalculatorWannabeFunction.DeclaringType}",
+                        scoreCalculatorWannabeFunction.Name,
+                        scoreCalculatorWannabeFunction.GetCustomAttribute<GenerateHiraBotsScoreCalculatorAttribute>().guid));
                     continue;
                 }
 
@@ -143,7 +149,9 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(effectorWannabeFunction, typeof(void), out var paramInfos))
                 {
-                    invalidatedMethods.Add(($"{effectorWannabeFunction.DeclaringType}", effectorWannabeFunction.Name));
+                    invalidatedMethods.Add(($"{effectorWannabeFunction.DeclaringType}",
+                        effectorWannabeFunction.Name,
+                        effectorWannabeFunction.GetCustomAttribute<GenerateHiraBotsEffectorAttribute>().guid));
                     continue;
                 }
 
@@ -158,14 +166,22 @@ namespace HiraBots.Editor
                 functionInfos.Add(functionInfo);
             }
 
+            foreach (var (typeName, methodName, guid) in invalidatedMethods)
+            {
+                var invalidFunctionTemplate = CodeGenHelpers.ReadTemplate("BlackboardFunctions/InvalidFunction",
+                    ("<METHOD-NAME>", methodName));
+
+                generatedCode.Add(($"{k_CodeGenSubFolderName}/{typeName}/{methodName}.cs", invalidFunctionTemplate, guid));
+            }
+
             // write all c# code
             var generatedFiles = new string[generatedCode.Count];
             for (var i = 0; i < generatedCode.Count; i++)
             {
-                var (path, contents) = generatedCode[i];
+                var (path, contents, guid) = generatedCode[i];
                 generatedFiles[i] = path;
             
-                EditorSerializationUtility.GenerateCode(path, contents);
+                EditorSerializationUtility.GenerateCode(path, contents, guid);
             }
             
             // generate manifest

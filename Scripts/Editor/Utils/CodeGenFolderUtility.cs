@@ -50,7 +50,7 @@ namespace HiraBots.Editor
         /// <summary>
         /// Save generated code to a relative path within the codegen folder.
         /// </summary>
-        internal static void GenerateCode(string pathR, string contents)
+        internal static void GenerateCode(string pathR, string contents, string guid = null)
         {
             var directory = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName);
 
@@ -70,6 +70,15 @@ namespace HiraBots.Editor
 
             // write
             File.WriteAllText(path, contents);
+
+            if (guid != null)
+            {
+                File.WriteAllText(path + ".meta",
+                    "" +
+                    "fileFormatVersion: 2\n" +
+                    $"guid: {guid}\n" +
+                    $"timeCreated: {System.DateTimeOffset.Now.ToUnixTimeSeconds()}");
+            }
         }
 
         /// <summary>
