@@ -91,7 +91,7 @@ namespace HiraBots.Editor
         /// <summary>
         /// Validate all the blackboard templates to generate code for, and pack them into an array.
         /// </summary>
-        internal static bool TryGetBlackboardTemplatesToGenerateCodeFor(out (string path, BlackboardTemplate template)[] output)
+        internal static void TryGetBlackboardTemplatesToGenerateCodeFor(out (string path, BlackboardTemplate template)[] output, List<string> invalidObjectPaths)
         {
             var validator = new BlackboardTemplateValidator();
 
@@ -103,8 +103,6 @@ namespace HiraBots.Editor
                 .Select(path => (System.IO.Path.ChangeExtension(path, "cs"), AssetDatabase.LoadAssetAtPath<BlackboardTemplate>(path)))
                 .Where(tuple => tuple.Item2.backends.HasFlag(BackendType.CodeGenerator));
 
-            var result = true;
-
             var validatedTemplatesToGenerateCodeFor = new List<(string path, BlackboardTemplate template)>();
 
             foreach (var (path, template) in templatesToGenerateCodeFor)
@@ -115,20 +113,19 @@ namespace HiraBots.Editor
                     continue;
                 }
 
+                invalidObjectPaths.Add(path);
                 Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, template, errorText);
-                result = false;
             }
 
             output = validatedTemplatesToGenerateCodeFor.ToArray();
-            return result;
         }
 
         /// <summary>
         /// Validate all the LGOAP domains to generate code for, and pack them into an array.
         /// </summary>
-        internal static bool TryGetLGOAPDomainsToGenerateCodeFor(
+        internal static void TryGetLGOAPDomainsToGenerateCodeFor(
             ReadOnlyDictionaryAccessor<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>> blackboardData,
-            out (string path, LGOAPDomain domain)[] output)
+            out (string path, LGOAPDomain domain)[] output, List<string> invalidObjectPaths)
         {
             var validator = new LGOAPDomainValidator(blackboardData);
 
@@ -137,8 +134,6 @@ namespace HiraBots.Editor
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(path => (System.IO.Path.ChangeExtension(path, "cs"), AssetDatabase.LoadAssetAtPath<LGOAPDomain>(path)))
                 .Where(tuple => tuple.Item2.backends.HasFlag(BackendType.CodeGenerator));
-
-            var result = true;
 
             var validatedTemplatesToGenerateCodeFor = new List<(string path, LGOAPDomain domain)>();
 
@@ -150,12 +145,11 @@ namespace HiraBots.Editor
                     continue;
                 }
 
+                invalidObjectPaths.Add(path);
                 Debug.LogFormat(LogType.Error, LogOption.NoStacktrace, domain, errorText);
-                result = false;
             }
 
             output = validatedTemplatesToGenerateCodeFor.ToArray();
-            return result;
         }
     }
 }

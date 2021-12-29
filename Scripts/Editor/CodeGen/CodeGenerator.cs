@@ -15,16 +15,13 @@ namespace HiraBots.Editor
         [MenuItem("Assets/Generate HiraBots Code", false, priority = 800)]
         private static void GenerateHiraBotsCode()
         {
-            var success = true;
-
             // create folder/asmdef
             EditorSerializationUtility.ConfirmCodeGenFolder();
             EditorSerializationUtility.CreateCodeGenAssemblyDefinition();
 
-            if (!CookingHelpers.TryGetBlackboardTemplatesToGenerateCodeFor(out var blackboardTemplates))
-            {
-                success = false;
-            }
+            var invalidatedHiraBotsObjects = new List<string>();
+
+            CookingHelpers.TryGetBlackboardTemplatesToGenerateCodeFor(out var blackboardTemplates, invalidatedHiraBotsObjects);
 
             var blackboardData = new Dictionary<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>>();
 
@@ -35,18 +32,22 @@ namespace HiraBots.Editor
                 blackboardData.Add(template, hs.ReadOnly());
             }
 
-            if (!CookingHelpers.TryGetLGOAPDomainsToGenerateCodeFor(blackboardData.ReadOnly(), out var lgoapDomains))
-            {
-                success = false;
-            }
-
-            if (!success)
-            {
-                blackboardTemplates = new (string path, BlackboardTemplate template)[0];
-                lgoapDomains = new (string path, LGOAPDomain domain)[0];
-            }
+            CookingHelpers.TryGetLGOAPDomainsToGenerateCodeFor(blackboardData.ReadOnly(), out var lgoapDomains, invalidatedHiraBotsObjects);
 
             var generatedCode = new List<(string path, string contents)>();
+
+            if (invalidatedHiraBotsObjects.Count > 0)
+            {
+                var s = "The following HiraBots objects could not be validated, and so they will not be generated.\n\n";
+
+                foreach (var invalidatedHiraBotsObject in invalidatedHiraBotsObjects)
+                {
+                    s += $"{invalidatedHiraBotsObject}\n";
+                    generatedCode.Add((invalidatedHiraBotsObject, "// the HiraBots object associated with this file could not be validated"));
+                }
+
+                Debug.LogFormat(LogType.Warning, LogOption.NoStacktrace, null, s);
+            }
 
             // generate all code as strings
             foreach (var (path, template) in blackboardTemplates)

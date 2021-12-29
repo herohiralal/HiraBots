@@ -90,7 +90,8 @@ namespace HiraBots.Editor
             // remove useless files
             foreach (var uselessFile in previouslyWrittenFiles.Where(s => !generatedFiles.Contains(s)))
             {
-                UnityEngine.Debug.Log($"Remove orphaned file: {uselessFile}");
+                UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
+                    $"Remove orphaned file: {uselessFile}");
                 var actualFile = Path.Combine(directory, uselessFile);
 
                 if (File.Exists(actualFile))
@@ -116,7 +117,8 @@ namespace HiraBots.Editor
             // remove useless folders
             foreach (var uselessFolder in potentiallyUselessFolders.Where(s => !generatedFiles.Contains(s)))
             {
-                UnityEngine.Debug.Log($"Remove orphaned folder: {uselessFolder}");
+                UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
+                    $"Remove orphaned folder: {uselessFolder}");
                 var actualFolder = Path.Combine(directory, uselessFolder);
 
                 if (Directory.Exists(actualFolder))
