@@ -15,9 +15,9 @@ namespace HiraBots
         {
         }
 
-        internal abstract class Serialized : CustomSerializedObject<BlackboardFunction>
+        internal class Serialized : CustomSerializedObject<BlackboardFunction>
         {
-            protected Serialized(BlackboardFunction obj) : base(obj)
+            internal Serialized(BlackboardFunction obj) : base(obj)
             {
             }
 
@@ -40,34 +40,15 @@ namespace HiraBots
     internal abstract partial class BlackboardFunction<TFunction>
         where TFunction : System.Delegate
     {
-        internal new abstract class Serialized : BlackboardFunction.Serialized
-        {
-            protected Serialized(BlackboardFunction<TFunction> obj) : base(obj)
-            {
-            }
-        }
     }
 
     internal abstract partial class DecoratorBlackboardFunction
     {
         protected string scoreString => $"{(m_Header.m_Score >= 0 ? '+' : '-')}{m_Header.m_Score}.";
-
-        internal new class Serialized : BlackboardFunction<DecoratorDelegate>.Serialized
-        {
-            internal Serialized(DecoratorBlackboardFunction obj) : base(obj)
-            {
-            }
-        }
     }
 
     internal abstract partial class EffectorBlackboardFunction
     {
-        internal new class Serialized : BlackboardFunction<EffectorDelegate>.Serialized
-        {
-            internal Serialized(EffectorBlackboardFunction obj) : base(obj)
-            {
-            }
-        }
     }
 }
 #endif
