@@ -75,13 +75,13 @@ namespace HiraBots.Editor
         /// <summary>
         /// Clean up orphaned files/folders and write a manifest for all the generated files.
         /// </summary>
-        internal static void CleanupAndGenerateManifest(string generatedFiles)
+        internal static void CleanupAndGenerateManifest(string manifestName, string generatedFiles)
         {
             generatedFiles += $"\n{k_CodeGenManualExtensionsFolderName}/info.txt" +
                               $"\n{k_CodeGenAssemblyName}.asmdef";
 
             var directory = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName);
-            var manifestLocation = Path.Combine(directory, "manifest.txt");
+            var manifestLocation = Path.Combine(directory, $"{manifestName}_manifest.txt");
 
             var previouslyWrittenFiles = !File.Exists(manifestLocation) ? new string[0] : File.ReadAllLines(manifestLocation);
 
