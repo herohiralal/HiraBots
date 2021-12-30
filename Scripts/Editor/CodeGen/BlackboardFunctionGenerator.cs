@@ -783,9 +783,9 @@ namespace HiraBots.Editor
             {
                 descriptionUpdater =
                     $"{function.m_TypeName}.{function.m_Name}UpdateDescription("
-                    + string.Join(", ", function
+                    + string.Join("", function
                         .m_Parameters
-                        .Select(i => i.m_Name))
+                        .Select(i => $"{i.m_Name}, "))
                     + "out staticDescription);";
             }
             else
