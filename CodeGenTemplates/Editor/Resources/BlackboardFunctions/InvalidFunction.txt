@@ -12,7 +12,7 @@
 
 namespace UnityEngine
 {
-    public partial class <METHOD-NAME> : ScriptableObject
+    public partial class <BLACKBOARD-FUNCTION-METHOD-NAME> : <BLACKBOARD-FUNCTION-BASE-CLASS>
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
@@ -78,6 +79,22 @@ namespace HiraBots.Editor
             internal readonly BlackboardFunctionParameterInfo[] m_Parameters;
         }
 
+        private readonly struct InvalidatedBlackboardFunctionInfo
+        {
+            public InvalidatedBlackboardFunctionInfo(string typeName, string methodName, string guid, string baseClass)
+            {
+                m_TypeName = typeName;
+                m_MethodName = methodName;
+                m_Guid = guid;
+                m_BaseClass = baseClass;
+            }
+
+            internal readonly string m_TypeName;
+            internal readonly string m_MethodName;
+            internal readonly string m_Guid;
+            internal readonly string m_BaseClass;
+        }
+
         /// <summary>
         /// Only allow code generation if in Edit mode.
         /// </summary>
@@ -96,10 +113,10 @@ namespace HiraBots.Editor
             // create folder/asmdef
             EditorSerializationUtility.ConfirmCodeGenFolder();
             EditorSerializationUtility.CreateCodeGenAssemblyDefinition();
-            
+
             var generatedCode = new List<(string path, string contents, string guid)>();
 
-            var invalidatedMethods = new List<(string typeName, string methodName, string guid)>();
+            var invalidatedMethods = new List<InvalidatedBlackboardFunctionInfo>();
 
             var functionInfos = new List<BlackboardFunctionInfo>();
 
@@ -107,9 +124,11 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(decoratorWannabeFunction, typeof(bool), out var paramInfos))
                 {
-                    invalidatedMethods.Add(($"{decoratorWannabeFunction.DeclaringType}",
+                    invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
+                        $"{decoratorWannabeFunction.DeclaringType}",
                         decoratorWannabeFunction.Name,
-                        decoratorWannabeFunction.GetCustomAttribute<GenerateHiraBotsDecoratorAttribute>().guid));
+                        decoratorWannabeFunction.GetCustomAttribute<GenerateHiraBotsDecoratorAttribute>().guid,
+                        nameof(HiraBotsDecoratorBlackboardFunction)));
                     continue;
                 }
 
@@ -128,9 +147,11 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(scoreCalculatorWannabeFunction, typeof(float), out var paramInfos, typeof(float)))
                 {
-                    invalidatedMethods.Add(($"{scoreCalculatorWannabeFunction.DeclaringType}",
+                    invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
+                        $"{scoreCalculatorWannabeFunction.DeclaringType}",
                         scoreCalculatorWannabeFunction.Name,
-                        scoreCalculatorWannabeFunction.GetCustomAttribute<GenerateHiraBotsScoreCalculatorAttribute>().guid));
+                        scoreCalculatorWannabeFunction.GetCustomAttribute<GenerateHiraBotsScoreCalculatorAttribute>().guid,
+                        nameof(HiraBotsScoreCalculatorBlackboardFunction)));
                     continue;
                 }
 
@@ -149,9 +170,11 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(effectorWannabeFunction, typeof(void), out var paramInfos))
                 {
-                    invalidatedMethods.Add(($"{effectorWannabeFunction.DeclaringType}",
+                    invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
+                        $"{effectorWannabeFunction.DeclaringType}",
                         effectorWannabeFunction.Name,
-                        effectorWannabeFunction.GetCustomAttribute<GenerateHiraBotsEffectorAttribute>().guid));
+                        effectorWannabeFunction.GetCustomAttribute<GenerateHiraBotsEffectorAttribute>().guid,
+                        nameof(HiraBotsEffectorBlackboardFunction)));
                     continue;
                 }
 
@@ -166,12 +189,22 @@ namespace HiraBots.Editor
                 functionInfos.Add(functionInfo);
             }
 
-            foreach (var (typeName, methodName, guid) in invalidatedMethods)
+            foreach (var invalidatedMethod in invalidatedMethods)
             {
                 var invalidFunctionTemplate = CodeGenHelpers.ReadTemplate("BlackboardFunctions/InvalidFunction",
-                    ("<METHOD-NAME>", methodName));
+                    ("<BLACKBOARD-FUNCTION-METHOD-NAME>", invalidatedMethod.m_MethodName),
+                    ("<BLACKBOARD-FUNCTION-BASE-CLASS", invalidatedMethod.m_BaseClass));
 
-                generatedCode.Add(($"{k_CodeGenSubFolderName}/{typeName}/{methodName}.cs", invalidFunctionTemplate, guid));
+                generatedCode.Add(($"{k_CodeGenSubFolderName}/{invalidatedMethod.m_TypeName}/{invalidatedMethod.m_MethodName}.cs",
+                    invalidFunctionTemplate, invalidatedMethod.m_Guid));
+            }
+
+            foreach (var functionInfo in functionInfos)
+            {
+                var code = GenerateCode(in functionInfo);
+
+                generatedCode.Add(($"{k_CodeGenSubFolderName}/{functionInfo.m_TypeName}/{functionInfo.m_Name}.cs",
+                    code, functionInfo.m_Guid));
             }
 
             // write all c# code
@@ -180,13 +213,13 @@ namespace HiraBots.Editor
             {
                 var (path, contents, guid) = generatedCode[i];
                 generatedFiles[i] = path;
-            
+
                 EditorSerializationUtility.GenerateCode(path, contents, guid);
             }
-            
+
             // generate manifest
             EditorSerializationUtility.CleanupAndGenerateManifest("hirabots_blackboard_functions", generatedFiles);
-            
+
             // import new files
             AssetDatabase.Refresh();
         }
@@ -460,6 +493,176 @@ namespace HiraBots.Editor
             }
 
             return true;
+        }
+
+        private static string GenerateCode(in BlackboardFunctionInfo function)
+        {
+            string baseClass, returnType, extraParams, extraPassingParams;
+            switch (function.m_Type)
+            {
+                case BlackboardFunctionInfo.Type.Decorator:
+                    baseClass = nameof(HiraBotsDecoratorBlackboardFunction);
+                    returnType = "bool";
+                    extraParams = "";
+                    extraPassingParams = "";
+                    break;
+                case BlackboardFunctionInfo.Type.ScoreCalculator:
+                    baseClass = nameof(HiraBotsScoreCalculatorBlackboardFunction);
+                    returnType = "float";
+                    extraParams = ", float currentScore";
+                    extraPassingParams = "currentScore";
+                    break;
+                case BlackboardFunctionInfo.Type.Effector:
+                    baseClass = nameof(HiraBotsEffectorBlackboardFunction);
+                    returnType = "void";
+                    extraParams = "";
+                    extraPassingParams = "";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var unmanagedFields = string.Join("", function
+                .m_Parameters
+                .Select(i =>
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionUnmanagedField",
+                        ("<BLACKBOARD-FUNCTION-PARAM-UNMANAGED-TYPE>", GetUnmanagedTypeName(in i)),
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", $"_{i.m_Name}"))));
+
+            var managedFields = string.Join("", function
+                .m_Parameters
+                .Select(i =>
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionManagedField",
+                        ("<BLACKBOARD-FUNCTION-PARAM-MANAGED-TYPE>", GetManagedTypeName(in i)),
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name))));
+
+            var unmanagedToManagedWithComma = string.Join(", ", function
+                .m_Parameters
+                .Select(i =>
+                {
+                    switch (i.m_Type)
+                    {
+                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                            return $"_{i.m_Name} = {i.m_Name}";
+                        case BlackboardFunctionParameterInfo.Type.BooleanKey:
+                        case BlackboardFunctionParameterInfo.Type.EnumKey:
+                        case BlackboardFunctionParameterInfo.Type.FloatKey:
+                        case BlackboardFunctionParameterInfo.Type.IntegerKey:
+                        case BlackboardFunctionParameterInfo.Type.ObjectKey:
+                        case BlackboardFunctionParameterInfo.Type.QuaternionKey:
+                        case BlackboardFunctionParameterInfo.Type.VectorKey:
+                            return $"_{i.m_Name} = {i.m_Name}.selectedKey.offset";
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                            return $"_{i.m_Name} = {i.m_Name}.GetInstanceID()";
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }));
+
+            var allUnmanagedFunctionParams = Enumerable
+                .Empty<string>()
+                .Append("blackboard");
+
+            var allManagedFunctionParams = Enumerable
+                .Empty<string>()
+                .Append("blackboard, expected");
+
+            if (!string.IsNullOrWhiteSpace(extraPassingParams))
+            {
+                allUnmanagedFunctionParams = allUnmanagedFunctionParams.Append(extraPassingParams);
+                allManagedFunctionParams = allManagedFunctionParams.Append(extraPassingParams);
+            }
+
+            allUnmanagedFunctionParams = allUnmanagedFunctionParams.Concat(function
+                .m_Parameters
+                .Select(i => $"memory->_{i.m_Name}"));
+
+            allManagedFunctionParams = allManagedFunctionParams.Concat(function
+                .m_Parameters
+                .Select(i =>
+                {
+                    switch (i.m_Type)
+                    {
+                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                            return i.m_Name;
+                        case BlackboardFunctionParameterInfo.Type.BooleanKey:
+                        case BlackboardFunctionParameterInfo.Type.EnumKey:
+                        case BlackboardFunctionParameterInfo.Type.FloatKey:
+                        case BlackboardFunctionParameterInfo.Type.IntegerKey:
+                        case BlackboardFunctionParameterInfo.Type.ObjectKey:
+                        case BlackboardFunctionParameterInfo.Type.QuaternionKey:
+                        case BlackboardFunctionParameterInfo.Type.VectorKey:
+                            return $"{i.m_Name}.selectedKey";
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }));
+
+            var unmanagedFunctionCall = (returnType == "void" ? "" : "return ") +
+                                        $"{function.m_TypeName}.{function.m_Name}Unmanaged({string.Join(", ", allUnmanagedFunctionParams)});";
+
+            var managedFunctionCall = (returnType == "void" ? "" : "return ") +
+                                      $"{function.m_TypeName}.{function.m_Name}({string.Join(", ", allManagedFunctionParams)});";
+
+            return CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunction",
+                ("<BLACKBOARD-FUNCTION-METHOD-NAME>", function.m_Name),
+                ("<BLACKBOARD-FUNCTION-BASE-CLASS>", baseClass),
+                ("<BLACKBOARD-FUNCTION-UNMANAGED-FIELDS>", unmanagedFields),
+                ("<BLACKBOARD-FUNCTION-MANAGED-FIELDS>", managedFields),
+                ("<BLACKBOARD-FUNCTION-MANAGED-TO-UNMANAGED-WITH-COMMA>", unmanagedToManagedWithComma),
+                ("<BLACKBOARD-FUNCTION-RETURN-TYPE>", returnType),
+                ("<BLACKBOARD-FUNCTION-EXTRA-PARAMS>", extraParams),
+                ("<BLACKBOARD-FUNCTION-UNMANAGED-FUNCTION-CALL>", unmanagedFunctionCall),
+                ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall)
+            );
+        }
+
+        private static string GetUnmanagedTypeName(in BlackboardFunctionParameterInfo info)
+        {
+            switch (info.m_Type)
+            {
+                case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                    return info.m_ObjectType.FullName;
+                case BlackboardFunctionParameterInfo.Type.BooleanKey:
+                case BlackboardFunctionParameterInfo.Type.EnumKey:
+                case BlackboardFunctionParameterInfo.Type.FloatKey:
+                case BlackboardFunctionParameterInfo.Type.IntegerKey:
+                case BlackboardFunctionParameterInfo.Type.ObjectKey:
+                case BlackboardFunctionParameterInfo.Type.QuaternionKey:
+                case BlackboardFunctionParameterInfo.Type.VectorKey:
+                    return "ushort";
+                case BlackboardFunctionParameterInfo.Type.Object:
+                    return "int";
+                case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                    return "byte";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static string GetManagedTypeName(in BlackboardFunctionParameterInfo info)
+        {
+            switch (info.m_Type)
+            {
+                case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                case BlackboardFunctionParameterInfo.Type.Object:
+                    return info.m_ObjectType.FullName;
+                case BlackboardFunctionParameterInfo.Type.BooleanKey:
+                case BlackboardFunctionParameterInfo.Type.EnumKey:
+                case BlackboardFunctionParameterInfo.Type.FloatKey:
+                case BlackboardFunctionParameterInfo.Type.IntegerKey:
+                case BlackboardFunctionParameterInfo.Type.ObjectKey:
+                case BlackboardFunctionParameterInfo.Type.QuaternionKey:
+                case BlackboardFunctionParameterInfo.Type.VectorKey:
+                    return "BlackboardTemplate.KeySelector";
+                case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                    return "DynamicEnum";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
