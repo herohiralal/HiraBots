@@ -12,24 +12,22 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class FloatComparisonDecorator : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class ObjectEqualsDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal System.Single _secondValue;
-            internal System.Single _equalityTolerance;
-            internal HiraBots.FloatComparisonType _comparisonType;
+            internal int _value;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal System.Single secondValue;
-        [SerializeField] internal System.Single equalityTolerance;
-        [SerializeField] internal HiraBots.FloatComparisonType comparisonType;
+        [SerializeField] internal UnityEngine.Object value;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _secondValue = secondValue, _equalityTolerance = equalityTolerance, _comparisonType = comparisonType };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _value = GeneratedBlackboardHelpers.ObjectToInstanceID(value) };
 
         #region Execution
 
@@ -38,13 +36,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(ref blackboard.Access<float>(memory->_key.offset), memory->_secondValue, memory->_equalityTolerance, memory->_comparisonType);
+            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(memory->_invert, ref blackboard.Access<int>(memory->_key.offset), memory->_value);
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetFloatValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(ref _key, secondValue, equalityTolerance, comparisonType); return output;
+            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); var output = HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(invert, ref _key, value.GetInstanceID()); return output;
         }
 
         #endregion
@@ -97,7 +95,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object;
             // no external validator
         }
 
@@ -115,7 +113,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object, ref context, nameof(key));
         }
 
         #endregion

@@ -36,132 +36,168 @@ namespace HiraBots
     internal static class SampleDecoratorBlackboardFunctions
     {
         [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f02")]
-        internal static bool AlwaysSucceedDecorator()
+        internal static bool AlwaysSucceedDecorator(bool invert)
         {
-            return true;
+            return !invert;
         }
 
         [GenerateInternalBlackboardFunction("76cf91d3f677494e89e4545c520c6644")]
-        internal static bool EnumEqualsDecorator(ref byte key, [MatchTypeToEnumKey("key")] byte value)
+        internal static bool EnumEqualsDecorator(bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value)
         {
-            return key == value;
+            var result = key == value;
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea57")]
-        internal static bool EnumHasFlagsDecorator(ref byte key, [MatchTypeToEnumKey("key")] byte value)
+        internal static bool EnumHasFlagsDecorator(bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value)
         {
-            return (key & value) != 0;
+            var result = (key & value) != 0;
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9b5ff847474ea57")]
-        internal static bool BooleanIsSetDecorator(ref bool key)
+        internal static bool BooleanIsSetDecorator(bool invert, ref bool key)
         {
-            return key;
+            var result = key;
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948c9a5ff847474ea57")]
-        internal static bool QuaternionIsSetDecorator(ref quaternion key)
+        internal static bool QuaternionIsSetDecorator(bool invert, ref quaternion key)
         {
             var value4 = key.value == quaternion.identity.value;
-            return !value4.w || !value4.x || !value4.y || !value4.z;
+            var result = !value4.w || !value4.x || !value4.y || !value4.z;
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94d48b9a5ff847474ea57")]
-        internal static bool VectorIsSetDecorator(ref float3 key)
+        internal static bool VectorIsSetDecorator(bool invert, ref float3 key)
         {
             var value3 = key == float3.zero;
-            return !value3.x || !value3.y || !value3.z;
+            var result = !value3.x || !value3.y || !value3.z;
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f045171ef4871cd")]
-        internal static bool IntegerComparisonDecorator(ref int key, int secondValue, IntegerComparisonType comparisonType)
+        internal static bool IntegerComparisonDecorator(bool invert, ref int key, int secondValue, IntegerComparisonType comparisonType)
         {
+            bool result;
             switch (comparisonType)
             {
-                case IntegerComparisonType.Equals: return key == secondValue;
-                case IntegerComparisonType.GreaterThan: return key > secondValue;
-                case IntegerComparisonType.GreaterThanEqualTo: return key >= secondValue;
-                case IntegerComparisonType.LesserThan: return key < secondValue;
-                case IntegerComparisonType.LesserThanEqualTo: return key <= secondValue;
-                default: return false;
+                case IntegerComparisonType.Equals:
+                    result = key == secondValue;
+                    break;
+                case IntegerComparisonType.GreaterThan:
+                    result = key > secondValue;
+                    break;
+                case IntegerComparisonType.GreaterThanEqualTo:
+                    result = key >= secondValue;
+                    break;
+                case IntegerComparisonType.LesserThan:
+                    result = key < secondValue;
+                    break;
+                case IntegerComparisonType.LesserThanEqualTo:
+                    result = key <= secondValue;
+                    break;
+                default:
+                    result = false;
+                    break;
             }
+
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f145171ef4871cd")]
-        internal static bool FloatComparisonDecorator(ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType)
+        internal static bool FloatComparisonDecorator(bool invert, ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType)
         {
+            bool result;
             switch (comparisonType)
             {
-                case FloatComparisonType.AlmostEquals: return math.abs(key - secondValue) <= equalityTolerance;
-                case FloatComparisonType.GreaterThan: return key > secondValue;
-                case FloatComparisonType.GreaterThanEqualTo: return key >= secondValue;
-                case FloatComparisonType.LesserThan: return key < secondValue;
-                case FloatComparisonType.LesserThanEqualTo: return key <= secondValue;
-                default: return false;
+                case FloatComparisonType.AlmostEquals:
+                    result = math.abs(key - secondValue) <= equalityTolerance;
+                    break;
+                case FloatComparisonType.GreaterThan:
+                    result = key > secondValue;
+                    break;
+                case FloatComparisonType.GreaterThanEqualTo:
+                    result = key >= secondValue;
+                    break;
+                case FloatComparisonType.LesserThan:
+                    result = key < secondValue;
+                    break;
+                case FloatComparisonType.LesserThanEqualTo:
+                    result = key <= secondValue;
+                    break;
+                default:
+                    result = false;
+                    break;
             }
+
+            return invert != result;
         }
 
         [GenerateInternalBlackboardFunction("e1ecc27574ca4a030ff85de39d096ccb")]
-        internal static bool ObjectEqualsDecorator([HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)
+        internal static bool ObjectEqualsDecorator(bool invert, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)
         {
-            return key == value;
+            var result = key == value;
+            return invert != result;
         }
     }
 
     internal static class SampleScoreCalculatorBlackboardFunctions
     {
         [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f0c")]
-        internal static float AlwaysSucceedScoreCalculator(float currentScore, float score)
+        internal static float AlwaysSucceedScoreCalculator(float currentScore, bool invert, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator() ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(invert) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("76cf91d3f677494e89e4545c520c664c")]
-        internal static float EnumEqualsScoreCalculator(float currentScore, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
+        internal static float EnumEqualsScoreCalculator(float currentScore, bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(ref key, value) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(invert, ref key, value) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea5c")]
-        internal static float EnumHasFlagsScoreCalculator(float currentScore, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
+        internal static float EnumHasFlagsScoreCalculator(float currentScore, bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(ref key, value) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(invert, ref key, value) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9b5ff847474ea5c")]
-        internal static float BooleanIsSetScoreCalculator(float currentScore, ref bool key, float score)
+        internal static float BooleanIsSetScoreCalculator(float currentScore, bool invert, ref bool key, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(ref key) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(invert, ref key) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94948c9a5ff847474ea5c")]
-        internal static float QuaternionIsSetScoreCalculator(float currentScore, ref quaternion key, float score)
+        internal static float QuaternionIsSetScoreCalculator(float currentScore, bool invert, ref quaternion key, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(ref key) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(invert, ref key) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("841fea4ba9b94d48b9a5ff847474ea5c")]
-        internal static float VectorIsSetScoreCalculator(float currentScore, ref float3 key, float score)
+        internal static float VectorIsSetScoreCalculator(float currentScore, bool invert, ref float3 key, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(ref key) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(invert, ref key) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f045171ef4871cc")]
-        internal static float IntegerComparisonScoreCalculator(float currentScore, ref int key, int secondValue, IntegerComparisonType comparisonType, float score)
+        internal static float IntegerComparisonScoreCalculator(float currentScore, bool invert, ref int key, int secondValue, IntegerComparisonType comparisonType, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.IntegerComparisonDecorator(ref key, secondValue, comparisonType) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.IntegerComparisonDecorator(invert, ref key, secondValue, comparisonType) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f145171ef4871cc")]
-        internal static float FloatComparisonScoreCalculator(float currentScore, ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType, float score)
+        internal static float FloatComparisonScoreCalculator(float currentScore, bool invert, ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(ref key, secondValue, equalityTolerance, comparisonType) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(invert, ref key, secondValue, equalityTolerance, comparisonType) ? score : 0f);
         }
 
         [GenerateInternalBlackboardFunction("e1ecc27574ca4a030ff85de39d096ccc")]
-        internal static float ObjectEqualsScoreCalculator(float currentScore, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value, float score)
+        internal static float ObjectEqualsScoreCalculator(float currentScore, bool invert, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(ref key, value) ? score : 0f);
+            return currentScore + (SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(invert, ref key, value) ? score : 0f);
         }
     }
 

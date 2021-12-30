@@ -12,33 +12,37 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class QuaternionIsSetDecorator : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class VectorIsSetScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
+            internal System.Single _score;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
+        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey) };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _score = score };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
+        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_key.offset));
+            return HiraBots.SampleScoreCalculatorBlackboardFunctions.VectorIsSetScoreCalculator(currentScore, memory->_invert, ref blackboard.Access<Unity.Mathematics.float3>(memory->_key.offset), memory->_score);
         }
 
         // non-VM execution
-        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
         {
-            var _key = blackboard.GetQuaternionValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(ref _key); return output;
+            var _key = blackboard.GetVectorValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.VectorIsSetScoreCalculator(currentScore, invert, ref _key, score); return output;
         }
 
         #endregion
@@ -91,7 +95,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Vector;
             // no external validator
         }
 
@@ -109,7 +113,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Vector, ref context, nameof(key));
         }
 
         #endregion

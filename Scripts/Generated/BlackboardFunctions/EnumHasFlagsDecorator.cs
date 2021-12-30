@@ -12,20 +12,22 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class ObjectEqualsDecorator : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class EnumHasFlagsDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal int _value;
+            internal byte _value;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal UnityEngine.Object value;
+        [SerializeField] internal DynamicEnum value;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _value = GeneratedBlackboardHelpers.ObjectToInstanceID(value) };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _value = value };
 
         #region Execution
 
@@ -34,13 +36,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(ref blackboard.Access<int>(memory->_key.offset), memory->_value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(memory->_invert, ref blackboard.Access<byte>(memory->_key.offset), memory->_value);
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); var output = HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(ref _key, value.GetInstanceID()); return output;
+            var _key = blackboard.GetEnumValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(invert, ref _key, value); return output;
         }
 
         #endregion
@@ -93,7 +95,8 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
+            value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
             // no external validator
         }
 
@@ -111,7 +114,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum, ref context, nameof(key));
         }
 
         #endregion

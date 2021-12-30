@@ -12,22 +12,24 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class ObjectEqualsScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class EnumEqualsScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal int _value;
+            internal byte _value;
             internal System.Single _score;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal UnityEngine.Object value;
+        [SerializeField] internal DynamicEnum value;
         [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _value = GeneratedBlackboardHelpers.ObjectToInstanceID(value), _score = score };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _value = value, _score = score };
 
         #region Execution
 
@@ -36,13 +38,13 @@ namespace UnityEngine
         private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.ObjectEqualsScoreCalculator(currentScore, ref blackboard.Access<int>(memory->_key.offset), memory->_value, memory->_score);
+            return HiraBots.SampleScoreCalculatorBlackboardFunctions.EnumEqualsScoreCalculator(currentScore, memory->_invert, ref blackboard.Access<byte>(memory->_key.offset), memory->_value, memory->_score);
         }
 
         // non-VM execution
         protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
         {
-            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.ObjectEqualsScoreCalculator(currentScore, ref _key, value.GetInstanceID(), score); return output;
+            var _key = blackboard.GetEnumValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.EnumEqualsScoreCalculator(currentScore, invert, ref _key, value, score); return output;
         }
 
         #endregion
@@ -95,7 +97,8 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
+            value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
             // no external validator
         }
 
@@ -113,7 +116,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum, ref context, nameof(key));
         }
 
         #endregion

@@ -12,35 +12,35 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class VectorIsSetScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class VectorIsSetDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal System.Single _score;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _score = score };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey) };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
+        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.VectorIsSetScoreCalculator(currentScore, ref blackboard.Access<Unity.Mathematics.float3>(memory->_key.offset), memory->_score);
+            return HiraBots.SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(memory->_invert, ref blackboard.Access<Unity.Mathematics.float3>(memory->_key.offset));
         }
 
         // non-VM execution
-        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetVectorValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.VectorIsSetScoreCalculator(currentScore, ref _key, score); return output;
+            var _key = blackboard.GetVectorValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(invert, ref _key); return output;
         }
 
         #endregion

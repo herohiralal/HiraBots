@@ -34,7 +34,7 @@
         protected const string k_CodeGenAssemblyName = "HiraBots.CodeGen";
         protected const string k_CodeGenManualExtensionsFolderName = "ManualExtensions";
 
-        protected const string k_InternalCodeGenFolderName = "CodeGen";
+        protected const string k_InternalCodeGenFolderName = "Generated";
         protected const string k_InternalCodeGenAssemblyName = "HiraBots.Generated";
 
         /// <summary>

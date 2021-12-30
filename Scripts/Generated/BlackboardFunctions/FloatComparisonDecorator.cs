@@ -12,18 +12,26 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class VectorIsSetDecorator : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class FloatComparisonDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
+            internal System.Single _secondValue;
+            internal System.Single _equalityTolerance;
+            internal HiraBots.FloatComparisonType _comparisonType;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
+        [SerializeField] internal System.Single secondValue;
+        [SerializeField] internal System.Single equalityTolerance;
+        [SerializeField] internal HiraBots.FloatComparisonType comparisonType;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey) };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _secondValue = secondValue, _equalityTolerance = equalityTolerance, _comparisonType = comparisonType };
 
         #region Execution
 
@@ -32,13 +40,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(ref blackboard.Access<Unity.Mathematics.float3>(memory->_key.offset));
+            return HiraBots.SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(memory->_invert, ref blackboard.Access<float>(memory->_key.offset), memory->_secondValue, memory->_equalityTolerance, memory->_comparisonType);
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetVectorValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(ref _key); return output;
+            var _key = blackboard.GetFloatValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(invert, ref _key, secondValue, equalityTolerance, comparisonType); return output;
         }
 
         #endregion
@@ -91,7 +99,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Vector;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float;
             // no external validator
         }
 
@@ -109,7 +117,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Vector, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float, ref context, nameof(key));
         }
 
         #endregion

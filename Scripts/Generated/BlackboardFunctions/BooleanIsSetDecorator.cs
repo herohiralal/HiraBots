@@ -12,39 +12,35 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class IntegerComparisonScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class BooleanIsSetDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal System.Int32 _secondValue;
-            internal HiraBots.IntegerComparisonType _comparisonType;
-            internal System.Single _score;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal System.Int32 secondValue;
-        [SerializeField] internal HiraBots.IntegerComparisonType comparisonType;
-        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _secondValue = secondValue, _comparisonType = comparisonType, _score = score };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey) };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
+        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.IntegerComparisonScoreCalculator(currentScore, ref blackboard.Access<int>(memory->_key.offset), memory->_secondValue, memory->_comparisonType, memory->_score);
+            return HiraBots.SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(memory->_invert, ref blackboard.Access<bool>(memory->_key.offset));
         }
 
         // non-VM execution
-        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetIntegerValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.IntegerComparisonScoreCalculator(currentScore, ref _key, secondValue, comparisonType, score); return output;
+            var _key = blackboard.GetBooleanValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(invert, ref _key); return output;
         }
 
         #endregion
@@ -97,7 +93,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Integer;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Boolean;
             // no external validator
         }
 
@@ -115,7 +111,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Integer, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Boolean, ref context, nameof(key));
         }
 
         #endregion

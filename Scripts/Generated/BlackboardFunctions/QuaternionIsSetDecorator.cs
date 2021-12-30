@@ -12,37 +12,35 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class EnumHasFlagsScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class QuaternionIsSetDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal byte _value;
-            internal System.Single _score;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal DynamicEnum value;
-        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _value = value, _score = score };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey) };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
+        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.EnumHasFlagsScoreCalculator(currentScore, ref blackboard.Access<byte>(memory->_key.offset), memory->_value, memory->_score);
+            return HiraBots.SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(memory->_invert, ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_key.offset));
         }
 
         // non-VM execution
-        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetEnumValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.EnumHasFlagsScoreCalculator(currentScore, ref _key, value, score); return output;
+            var _key = blackboard.GetQuaternionValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(invert, ref _key); return output;
         }
 
         #endregion
@@ -95,8 +93,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
-            value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion;
             // no external validator
         }
 
@@ -114,7 +111,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion, ref context, nameof(key));
         }
 
         #endregion

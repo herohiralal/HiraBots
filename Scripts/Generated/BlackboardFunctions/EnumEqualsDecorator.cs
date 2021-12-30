@@ -12,41 +12,37 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class FloatComparisonScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class EnumEqualsDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
+            internal System.Boolean _invert;
             internal BlackboardKey.LowLevel _key;
-            internal System.Single _secondValue;
-            internal System.Single _equalityTolerance;
-            internal HiraBots.FloatComparisonType _comparisonType;
-            internal System.Single _score;
+            internal byte _value;
         }
 
+        [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal System.Single secondValue;
-        [SerializeField] internal System.Single equalityTolerance;
-        [SerializeField] internal HiraBots.FloatComparisonType comparisonType;
-        [SerializeField] internal System.Single score;
+        [SerializeField] internal DynamicEnum value;
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _secondValue = secondValue, _equalityTolerance = equalityTolerance, _comparisonType = comparisonType, _score = score };
+        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _value = value };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
+        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.FloatComparisonScoreCalculator(currentScore, ref blackboard.Access<float>(memory->_key.offset), memory->_secondValue, memory->_equalityTolerance, memory->_comparisonType, memory->_score);
+            return HiraBots.SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(memory->_invert, ref blackboard.Access<byte>(memory->_key.offset), memory->_value);
         }
 
         // non-VM execution
-        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetFloatValue(key.selectedKey.name); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.FloatComparisonScoreCalculator(currentScore, ref _key, secondValue, equalityTolerance, comparisonType, score); return output;
+            var _key = blackboard.GetEnumValue(key.selectedKey.name); var output = HiraBots.SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(invert, ref _key, value); return output;
         }
 
         #endregion
@@ -99,7 +95,8 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float;
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
+            value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
             // no external validator
         }
 
@@ -117,7 +114,7 @@ namespace UnityEngine
         protected override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Float, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum, ref context, nameof(key));
         }
 
         #endregion
