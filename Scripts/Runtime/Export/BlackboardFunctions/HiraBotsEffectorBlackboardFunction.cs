@@ -18,7 +18,10 @@
             }
         }
 
-        protected abstract void ExecuteFunction(BlackboardComponent blackboard, bool expected);
+        protected virtual void ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        {
+            Debug.LogError($"{GetType()} does not implement ExecuteFunction(). This is not supposed to happen.");
+        }
 
         #endregion
     }

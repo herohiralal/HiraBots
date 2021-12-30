@@ -36,7 +36,7 @@
         /// <summary>
         /// The pointer to the function.
         /// </summary>
-        protected abstract System.IntPtr functionPtr { get; }
+        protected System.IntPtr functionPtr { get; set; }
 
         protected static class CompilationRegistry
         {

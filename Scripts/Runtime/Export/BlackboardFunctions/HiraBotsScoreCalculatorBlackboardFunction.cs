@@ -19,7 +19,11 @@
             }
         }
 
-        protected abstract float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore);
+        protected virtual float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        {
+            Debug.LogError($"{GetType()} does not implement ExecuteFunction(). This is not supposed to happen.");
+            return currentScore;
+        }
 
         #endregion
     }

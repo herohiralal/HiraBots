@@ -68,6 +68,8 @@ namespace UnityEngine
                 s_ActualFunction = Unity.Burst.BurstCompiler.CompileFunctionPointer<Delegate>(ActualFunction);
                 s_ActualFunctionCompiled = true;
             }
+
+            functionPtr = s_ActualFunction.Value;
         }
 
         // compile override
@@ -86,8 +88,6 @@ namespace UnityEngine
 
             CompilationRegistry.DecreaseDepth();
         }
-
-        protected override System.IntPtr functionPtr => s_ActualFunction.Value;
 
         #endregion
 
