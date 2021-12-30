@@ -12,33 +12,33 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class AlwaysSucceedDecorator : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class BaseScoreScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
     {
         private struct Memory
         {
-            internal System.Boolean _invert;
+            internal System.Single _score;
         }
 
-        [SerializeField] internal System.Boolean invert;
+        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _invert = invert };
+        { _score = score };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
+        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(memory->_invert);
+            return HiraBots.SampleScoreCalculatorBlackboardFunctions.BaseScoreScoreCalculator(currentScore, memory->_score);
         }
 
         // non-VM execution
-        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
+        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
         {
-            var output = HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(invert); return output;
+            var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.BaseScoreScoreCalculator(currentScore, score); return output;
         }
 
         #endregion

@@ -12,35 +12,31 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class AlwaysSucceedScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
+    public unsafe partial class AlwaysFailDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
-            internal System.Boolean _invert;
-            internal System.Single _score;
         }
 
-        [SerializeField] internal System.Boolean invert;
-        [SerializeField] internal System.Single score;
 
         // pack memory
         private Memory memory => new Memory
-        { _invert = invert, _score = score };
+        {  };
 
         #region Execution
 
         // actual function
         [Unity.Burst.BurstCompile(DisableDirectCall = true), AOT.MonoPInvokeCallback(typeof(Delegate))]
-        private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
+        private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.AlwaysSucceedScoreCalculator(currentScore, memory->_invert, memory->_score);
+            return HiraBots.SampleDecoratorBlackboardFunctions.AlwaysFailDecorator();
         }
 
         // non-VM execution
-        protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
+        protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.AlwaysSucceedScoreCalculator(currentScore, invert, score); return output;
+            var output = HiraBots.SampleDecoratorBlackboardFunctions.AlwaysFailDecorator(); return output;
         }
 
         #endregion
@@ -97,7 +93,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleDecoratorBlackboardFunctions.AlwaysFailDecoratorUpdateDescription(out staticDescription);
         }
 
         #endregion

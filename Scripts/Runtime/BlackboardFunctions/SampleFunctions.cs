@@ -38,9 +38,14 @@ namespace HiraBots
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f02")]
-        internal static bool AlwaysSucceedDecorator(bool invert)
+        internal static bool AlwaysFailDecorator()
         {
-            return !invert;
+            return false;
+        }
+
+        internal static void AlwaysFailDecoratorUpdateDescription(out string staticDescription)
+        {
+            staticDescription = "Always fail. Used to disable a goal/task for debugging purposes.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -158,9 +163,9 @@ namespace HiraBots
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f0c")]
-        internal static float AlwaysSucceedScoreCalculator(float currentScore, bool invert, float score)
+        internal static float BaseScoreScoreCalculator(float currentScore, float score)
         {
-            return currentScore + (SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(invert) ? score : 0f);
+            return currentScore + score;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -303,6 +308,7 @@ namespace HiraBots
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void FloatOperatorEffectorOnValidate(ref UnityEngine.BlackboardTemplate.KeySelector key, ref FloatOperationType operationType, ref float value)
         {
             if (operationType == FloatOperationType.Divide && value == 0f)
@@ -343,6 +349,15 @@ namespace HiraBots
                     break;
                 default:
                     return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void IntegerOperatorEffectorOnValidate(ref UnityEngine.BlackboardTemplate.KeySelector key, ref IntegerOperationType operationType, ref int value)
+        {
+            if (operationType == IntegerOperationType.Divide && value == 0)
+            {
+                value = 1;
             }
         }
 

@@ -96,7 +96,7 @@ namespace UnityEngine
         protected override void OnValidateCallback()
         {
             key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Integer;
-            // no external validator
+            HiraBots.SampleEffectorBlackboardFunctions.IntegerOperatorEffectorOnValidate(ref key, ref operationType, ref value);
         }
 
         protected override void UpdateDescription(out string staticDescription)

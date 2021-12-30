@@ -1,4 +1,4 @@
-BlackboardFunctions/AlwaysSucceedDecorator.cs
+BlackboardFunctions/AlwaysFailDecorator.cs
 BlackboardFunctions/EnumEqualsDecorator.cs
 BlackboardFunctions/EnumHasFlagsDecorator.cs
 BlackboardFunctions/BooleanIsSetDecorator.cs
@@ -7,7 +7,7 @@ BlackboardFunctions/VectorIsSetDecorator.cs
 BlackboardFunctions/IntegerComparisonDecorator.cs
 BlackboardFunctions/FloatComparisonDecorator.cs
 BlackboardFunctions/ObjectEqualsDecorator.cs
-BlackboardFunctions/AlwaysSucceedScoreCalculator.cs
+BlackboardFunctions/BaseScoreScoreCalculator.cs
 BlackboardFunctions/EnumEqualsScoreCalculator.cs
 BlackboardFunctions/EnumHasFlagsScoreCalculator.cs
 BlackboardFunctions/BooleanIsSetScoreCalculator.cs
