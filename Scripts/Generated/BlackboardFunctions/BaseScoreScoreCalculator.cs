@@ -104,7 +104,7 @@ namespace UnityEngine
 #if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
         #region Validation
 
-        protected override void Validate(ref ValidatorContext context)
+        public override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
         }

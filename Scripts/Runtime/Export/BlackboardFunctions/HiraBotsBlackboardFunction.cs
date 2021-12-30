@@ -179,7 +179,7 @@
         /// <summary>
         /// Validate this blackboard function.
         /// </summary>
-        protected virtual void Validate(ref ValidatorContext context)
+        public virtual void Validate(ref ValidatorContext context)
         {
         }
 
