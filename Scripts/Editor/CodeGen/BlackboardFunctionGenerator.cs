@@ -68,12 +68,14 @@ namespace HiraBots.Editor
                 Effector
             }
 
-            internal BlackboardFunctionInfo(Type type, string typeName, string name, string guid, BlackboardFunctionParameterInfo[] parameters = null)
+            internal BlackboardFunctionInfo(Type type, string typeName, string name, string guid, bool hasDescription, bool hasValidation, BlackboardFunctionParameterInfo[] parameters = null)
             {
                 m_Type = type;
                 m_TypeName = typeName;
                 m_Name = name;
                 m_Guid = guid;
+                m_HasDescription = hasDescription;
+                m_HasValidation = hasValidation;
                 m_Parameters = parameters ?? new BlackboardFunctionParameterInfo[0];
             }
 
@@ -81,10 +83,12 @@ namespace HiraBots.Editor
             internal readonly string m_TypeName;
             internal readonly string m_Name;
             internal readonly string m_Guid;
+            internal readonly bool m_HasDescription;
+            internal readonly bool m_HasValidation;
             internal readonly BlackboardFunctionParameterInfo[] m_Parameters;
         }
 
-        internal readonly struct InvalidatedBlackboardFunctionInfo
+        private readonly struct InvalidatedBlackboardFunctionInfo
         {
             public InvalidatedBlackboardFunctionInfo(string typeName, string methodName, string guid, string baseClass)
             {
@@ -129,7 +133,7 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(decoratorWannabeFunction,
                         typeof(bool),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         false))
                 {
                     invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
@@ -145,6 +149,8 @@ namespace HiraBots.Editor
                     $"{decoratorWannabeFunction.DeclaringType}",
                     decoratorWannabeFunction.Name,
                     decoratorWannabeFunction.GetCustomAttribute<GenerateHiraBotsDecoratorAttribute>().guid,
+                    hasDescription,
+                    hasValidation,
                     paramInfos
                 );
 
@@ -155,7 +161,7 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(scoreCalculatorWannabeFunction,
                         typeof(float),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         false,
                         typeof(float)))
                 {
@@ -172,6 +178,8 @@ namespace HiraBots.Editor
                     $"{scoreCalculatorWannabeFunction.DeclaringType}",
                     scoreCalculatorWannabeFunction.Name,
                     scoreCalculatorWannabeFunction.GetCustomAttribute<GenerateHiraBotsScoreCalculatorAttribute>().guid,
+                    hasDescription,
+                    hasValidation,
                     paramInfos
                 );
 
@@ -182,7 +190,7 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(effectorWannabeFunction,
                         typeof(void),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         false))
                 {
                     invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
@@ -198,6 +206,8 @@ namespace HiraBots.Editor
                     $"{effectorWannabeFunction.DeclaringType}",
                     effectorWannabeFunction.Name,
                     effectorWannabeFunction.GetCustomAttribute<GenerateHiraBotsEffectorAttribute>().guid,
+                    hasDescription,
+                    hasValidation,
                     paramInfos
                 );
 
@@ -240,9 +250,12 @@ namespace HiraBots.Editor
         }
 
         internal static bool ValidateMethodInfo(MethodInfo wannabeFunction, Type expectedReturnType,
-            out BlackboardFunctionParameterInfo[] paramInfos, bool skipPublicStaticCheck, params Type[] extraExpectedArgs)
+            out BlackboardFunctionParameterInfo[] paramInfos, out bool hasDescription, out bool hasValidation,
+            bool skipPublicStaticCheck, params Type[] extraExpectedArgs)
         {
             paramInfos = null;
+            hasValidation = false;
+            hasDescription = false;
 
             var numberOfExtraArguments = extraExpectedArgs.Length;
 
@@ -279,15 +292,6 @@ namespace HiraBots.Editor
                     $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} does not have enough arguments.");
                 return false;
             }
-
-            // first two args check
-            // if (parameters[0].ParameterType != typeof(UnityEngine.BlackboardComponent) || parameters[1].ParameterType != typeof(bool))
-            // {
-            //     Debug.LogError(
-            //         $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} does not" +
-            //         $" have (BlackboardComponent blackboard) and (bool expected) as first two arguments.");
-            //     return false;
-            // }
 
             // extra args check
             for (var i = 0; i < numberOfExtraArguments; i++)
@@ -413,6 +417,140 @@ namespace HiraBots.Editor
                         $"Argument {param.Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} is unsupported.");
                     return false;
                 }
+            }
+
+            var declaringType = wannabeFunction.DeclaringType;
+
+            if (declaringType == null)
+            {
+                return true;
+            }
+
+            var updateDescriptionMethod = declaringType.GetMethod($"{wannabeFunction.Name}UpdateDescription",
+                (skipPublicStaticCheck
+                    ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
+                    : BindingFlags.Public | BindingFlags.Static));
+
+            if (updateDescriptionMethod != null)
+            {
+                var updateDescParams = updateDescriptionMethod.GetParameters();
+
+                if (updateDescParams.Length != paramInfos.Length + 1) // last one should be out string staticDescription
+                {
+                    Debug.LogError(
+                        $"{declaringType}.{updateDescriptionMethod.Name} is not a valid description updater because it" +
+                        $" doesn't have the correct number of arguments {paramInfos.Length + 1}.");
+                    return false;
+                }
+
+                var lastParam = updateDescParams[paramInfos.Length];
+
+                if (!lastParam.IsOut || lastParam.ParameterType != typeof(string).MakeByRefType())
+                {
+                    Debug.LogError($"{declaringType}.{updateDescriptionMethod.Name} is not a valid description updater because it" +
+                                   $" doesn't have \"out string\" as the last argument.");
+                    return false;
+                }
+
+                for (var i = 0; i < paramInfos.Length; i++)
+                {
+                    var updateDescParam = updateDescParams[i];
+                    var paramInfo = paramInfos[i];
+                    switch (paramInfo.m_Type)
+                    {
+                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                            if (updateDescParam.ParameterType != paramInfo.m_ObjectType)
+                            {
+                                Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.BlackboardKey:
+                            if (updateDescParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector))
+                            {
+                                Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                            if (updateDescParam.ParameterType != paramInfo.m_ObjectType)
+                            {
+                                Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                            if (updateDescParam.ParameterType != typeof(UnityEngine.DynamicEnum))
+                            {
+                                Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                hasDescription = true;
+            }
+
+            var validateMethod = declaringType.GetMethod($"{wannabeFunction.Name}OnValidate",
+                (skipPublicStaticCheck
+                    ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static
+                    : BindingFlags.Public | BindingFlags.Static));
+
+            if (validateMethod != null)
+            {
+                var validateMethodParams = validateMethod.GetParameters();
+
+                if (validateMethodParams.Length != paramInfos.Length)
+                {
+                    Debug.LogError(
+                        $"{declaringType}.{validateMethod.Name} is not a valid validator because it" +
+                        $" doesn't have the correct number of arguments {paramInfos.Length}.");
+                    return false;
+                }
+
+                for (var i = 0; i < paramInfos.Length; i++)
+                {
+                    var validateParam = validateMethodParams[i];
+                    var paramInfo = paramInfos[i];
+                    switch (paramInfo.m_Type)
+                    {
+                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                            if (validateParam.ParameterType != paramInfo.m_ObjectType.MakeByRefType())
+                            {
+                                Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.BlackboardKey:
+                            if (validateParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector).MakeByRefType())
+                            {
+                                Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                            if (validateParam.ParameterType != paramInfo.m_ObjectType.MakeByRefType())
+                            {
+                                Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                            if (validateParam.ParameterType != typeof(UnityEngine.DynamicEnum).MakeByRefType())
+                            {
+                                Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
+                                return false;
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                hasValidation = true;
             }
 
             return true;

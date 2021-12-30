@@ -26,7 +26,7 @@ namespace HiraBots.Editor
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
                         typeof(bool),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         true))
                 {
                     var functionInfo = new BlackboardFunctionGenerator.BlackboardFunctionInfo(
@@ -34,6 +34,8 @@ namespace HiraBots.Editor
                         $"{methodInfo.DeclaringType}",
                         methodInfo.Name,
                         methodInfo.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>().guid,
+                        hasDescription,
+                        hasValidation,
                         paramInfos
                     );
 
@@ -47,7 +49,7 @@ namespace HiraBots.Editor
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
                         typeof(float),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         true,
                         typeof(float)))
                 {
@@ -56,6 +58,8 @@ namespace HiraBots.Editor
                         $"{methodInfo.DeclaringType}",
                         methodInfo.Name,
                         methodInfo.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>().guid,
+                        hasDescription,
+                        hasValidation,
                         paramInfos
                     );
 
@@ -69,7 +73,7 @@ namespace HiraBots.Editor
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
                         typeof(void),
-                        out var paramInfos,
+                        out var paramInfos, out var hasDescription, out var hasValidation,
                         true))
                 {
                     var functionInfo = new BlackboardFunctionGenerator.BlackboardFunctionInfo(
@@ -77,6 +81,8 @@ namespace HiraBots.Editor
                         $"{methodInfo.DeclaringType}",
                         methodInfo.Name,
                         methodInfo.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>().guid,
+                        hasDescription,
+                        hasValidation,
                         paramInfos
                     );
 
