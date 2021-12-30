@@ -59,7 +59,10 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
-                function.OnTargetBlackboardTemplateChanged(target.blackboard, keys);
+                if (function != null)
+                {
+                    function.OnTargetBlackboardTemplateChanged(target.blackboard, keys);
+                }
             }
         }
     }

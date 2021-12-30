@@ -188,7 +188,8 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="target">The main object.</param>
         /// <param name="objectsThatMustBeInFile">The objects that must be in the file.</param>
-        internal static void SynchronizeFileToCompoundObject(Object target, HashSet<Object> objectsThatMustBeInFile)
+        /// <param name="allowRemove">Whether to allow removing of objects.</param>
+        internal static void SynchronizeFileToCompoundObject(Object target, HashSet<Object> objectsThatMustBeInFile, bool allowRemove)
         {
             var path = AssetDatabase.GetAssetPath(target);
             var subAssets = new HashSet<Object>(AssetDatabase.LoadAllAssetsAtPath(path));
@@ -196,11 +197,14 @@ namespace HiraBots.Editor
 
             var assetDirty = false;
 
-            foreach (var subAsset in subAssets.Where(subAsset => !objectsThatMustBeInFile.Contains(subAsset)))
+            if (allowRemove)
             {
-                Debug.Log($"Object clean-up: removed {subAsset.name} from {path}.");
-                AssetDatabase.RemoveObjectFromAsset(subAsset);
-                assetDirty = true;
+                foreach (var subAsset in subAssets.Where(subAsset => !objectsThatMustBeInFile.Contains(subAsset)))
+                {
+                    Debug.Log($"Object clean-up: removed {subAsset.name} from {path}.");
+                    AssetDatabase.RemoveObjectFromAsset(subAsset);
+                    assetDirty = true;
+                }
             }
 
             foreach (var requiredObject in objectsThatMustBeInFile.Where(rObj => rObj != null && !subAssets.Contains(rObj)))

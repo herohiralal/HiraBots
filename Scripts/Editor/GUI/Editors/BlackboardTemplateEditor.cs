@@ -88,9 +88,15 @@ namespace HiraBots.Editor
                     var hs = new HashSet<Object>(
                         m_SerializedObject.keys
                             .ToSerializedArrayProperty()
-                            .Select(p => p.objectReferenceValue));
+                            .Select(p => p.objectReferenceValue)
+                            .Where(o => o != null));
 
-                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, hs);
+                    var allowRemove = m_SerializedObject.keys
+                        .ToSerializedArrayProperty()
+                        .All(k => k.objectReferenceValue != null);
+
+                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, hs, allowRemove);
+
                     m_Dirty = false;
                     m_SerializedObject.ApplyModifiedProperties();
                 }

@@ -138,7 +138,11 @@ namespace HiraBots.Editor
                     m_SerializedObject.IntermediateLayersCountRecheck();
                     LGOAPAbstractTaskROLDrawer.Rebind(ref m_IntermediateLayers, domain);
                     FallbackPlanDrawer.RebindIntermediateLayers(ref m_IntermediateLayersFallbacks, domain);
-                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target, subAssetsThatMustBeInFile);
+
+                    AssetDatabaseUtility.SynchronizeFileToCompoundObject(target,
+                        GetSubAssetsThatMustBeInFileAndWhetherToAllowRemove(out var allowRemove),
+                        allowRemove);
+
                     m_Dirty = false;
                     m_SerializedObject.ApplyModifiedProperties();
                     m_SerializedObject.OnBlackboardUpdate();
@@ -257,102 +261,156 @@ namespace HiraBots.Editor
             m_SerializedObject.ApplyModifiedProperties();
         }
 
-        private HashSet<Object> subAssetsThatMustBeInFile
+        private HashSet<Object> GetSubAssetsThatMustBeInFileAndWhetherToAllowRemove(out bool allowRemove)
         {
-            get
+            var hs = new HashSet<Object>();
+            allowRemove = true;
+
+            foreach (var goal in m_SerializedObject.topLayer.ToSerializedArrayProperty().Select(p => (LGOAPGoal) p.objectReferenceValue))
             {
-                var hs = new HashSet<Object>();
-
-                foreach (var goal in m_SerializedObject.topLayer.ToSerializedArrayProperty().Select(p => (LGOAPGoal) p.objectReferenceValue))
+                if (goal == null)
                 {
-                    hs.Add(goal);
+                    allowRemove = false;
+                    continue;
+                }
 
-                    foreach (var s in goal.insistence.m_Insistence)
-                    {
+                hs.Add(goal);
+
+                foreach (var s in goal.insistence.m_Insistence)
+                {
+                    if (s != null)
                         hs.Add(s);
-                    }
+                }
 
-                    foreach (var d in goal.target.m_Target)
-                    {
+                foreach (var d in goal.target.m_Target)
+                {
+                    if (d != null)
                         hs.Add(d);
-                    }
                 }
+            }
 
-                foreach (var intermediateLayer in m_SerializedObject.intermediateLayers)
+            foreach (var intermediateLayer in m_SerializedObject.intermediateLayers)
+            {
+                foreach (var task in intermediateLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
                 {
-                    foreach (var task in intermediateLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
+                    if (task == null)
                     {
-                        hs.Add(task);
-
-                        foreach (var d in task.action.m_Precondition)
-                        {
-                            hs.Add(d);
-                        }
-
-                        foreach (var s in task.action.m_Cost)
-                        {
-                            hs.Add(s);
-                        }
-
-                        foreach (var e in task.action.m_Effect)
-                        {
-                            hs.Add(e);
-                        }
-
-                        foreach (var d in task.target.m_Target)
-                        {
-                            hs.Add(d);
-                        }
-
-                        foreach (var t in task.taskProviders)
-                        {
-                            hs.Add(t);
-                        }
-
-                        foreach (var s in task.serviceProviders)
-                        {
-                            hs.Add(s);
-                        }
+                        allowRemove = false;
+                        continue;
                     }
-                }
 
-                foreach (var task in m_SerializedObject.bottomLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
-                {
                     hs.Add(task);
 
                     foreach (var d in task.action.m_Precondition)
                     {
-                        hs.Add(d);
+                        if (d != null)
+                            hs.Add(d);
+                        else
+                            allowRemove = false;
                     }
 
                     foreach (var s in task.action.m_Cost)
                     {
-                        hs.Add(s);
+                        if (s != null)
+                            hs.Add(s);
+                        else
+                            allowRemove = false;
                     }
 
                     foreach (var e in task.action.m_Effect)
                     {
-                        hs.Add(e);
+                        if (e != null)
+                            hs.Add(e);
+                        else
+                            allowRemove = false;
                     }
 
                     foreach (var d in task.target.m_Target)
                     {
-                        hs.Add(d);
+                        if (d != null)
+                            hs.Add(d);
+                        else
+                            allowRemove = false;
                     }
 
                     foreach (var t in task.taskProviders)
                     {
-                        hs.Add(t);
+                        if (t != null)
+                            hs.Add(t);
+                        else
+                            allowRemove = false;
                     }
 
                     foreach (var s in task.serviceProviders)
                     {
-                        hs.Add(s);
+                        if (s != null)
+                            hs.Add(s);
+                        else
+                            allowRemove = false;
                     }
                 }
-
-                return hs;
             }
+
+            foreach (var task in m_SerializedObject.bottomLayer.ToSerializedArrayProperty().Select(p => (LGOAPTask) p.objectReferenceValue))
+            {
+                if (task == null)
+                {
+                    allowRemove = false;
+                    continue;
+                }
+
+                hs.Add(task);
+
+                foreach (var d in task.action.m_Precondition)
+                {
+                    if (d != null)
+                        hs.Add(d);
+                    else
+                        allowRemove = false;
+                }
+
+                foreach (var s in task.action.m_Cost)
+                {
+                    if (s != null)
+                        hs.Add(s);
+                    else
+                        allowRemove = false;
+                }
+
+                foreach (var e in task.action.m_Effect)
+                {
+                    if (e != null)
+                        hs.Add(e);
+                    else
+                        allowRemove = false;
+                }
+
+                foreach (var d in task.target.m_Target)
+                {
+                    if (d != null)
+                        hs.Add(d);
+                    else
+                        allowRemove = false;
+                }
+
+                foreach (var t in task.taskProviders)
+                {
+                    if (t != null)
+                        hs.Add(t);
+                    else
+                        allowRemove = false;
+                }
+
+                foreach (var s in task.serviceProviders)
+                {
+                    if (s != null)
+                        hs.Add(s);
+                    else
+                        allowRemove = false;
+                }
+            }
+
+            return hs;
         }
 
         private static class FallbackPlanDrawer

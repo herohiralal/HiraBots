@@ -220,6 +220,11 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(LGOAPGoal goal, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
+                if (goal == null)
+                {
+                    return;
+                }
+
                 goal.blackboard = target.m_Blackboard;
 
                 foreach (var scoreCalculator in goal.insistence.m_Insistence)
@@ -235,6 +240,11 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(LGOAPTask task, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
+                if (task == null)
+                {
+                    return;
+                }
+
                 task.blackboard = target.m_Blackboard;
 
                 var action = task.action;
@@ -277,7 +287,10 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
-                function.OnTargetBlackboardTemplateChanged(target.m_Blackboard, keys);
+                if (function != null)
+                {
+                    function.OnTargetBlackboardTemplateChanged(target.m_Blackboard, keys);
+                }
             }
 
             internal void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider)
@@ -287,7 +300,10 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
-                taskProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
+                if (taskProvider != null)
+                {
+                    taskProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
+                }
             }
 
             internal void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider)
@@ -297,7 +313,10 @@ namespace HiraBots
 
             private void OnBlackboardUpdate(HiraBotsServiceProvider serviceProvider, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
-                serviceProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
+                if (serviceProvider != null)
+                {
+                    serviceProvider.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
+                }
             }
         }
     }
