@@ -605,7 +605,7 @@ namespace HiraBots.Editor
                         ("<BLACKBOARD-FUNCTION-PARAM-MANAGED-TYPE>", GetManagedTypeName(in i)),
                         ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name))));
 
-            var unmanagedToManagedWithComma = string.Join(", ", function
+            var managedToUnmanagedWithComma = string.Join(", ", function
                 .m_Parameters
                 .Select(i =>
                 {
@@ -615,7 +615,7 @@ namespace HiraBots.Editor
                         case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                             return $"_{i.m_Name} = {i.m_Name}";
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            return $"_{i.m_Name} = new BlackboardKey.LowLevel({i.m_Name}.selectedKey)";
+                            return $"_{i.m_Name} = {i.m_Name}.selectedKey.offset";
                         case BlackboardFunctionParameterInfo.Type.Object:
                             return $"_{i.m_Name} = GeneratedBlackboardHelpers.ObjectToInstanceID({i.m_Name})";
                         default:
@@ -623,11 +623,9 @@ namespace HiraBots.Editor
                     }
                 }));
 
-            var allUnmanagedFunctionParams = Enumerable
-                .Empty<string>();
+            var allUnmanagedFunctionParams = Enumerable.Empty<string>();
 
-            var allManagedFunctionParams = Enumerable
-                .Empty<string>();
+            var allManagedFunctionParams = Enumerable.Empty<string>();
 
             if (!string.IsNullOrWhiteSpace(extraPassingParams))
             {
@@ -649,18 +647,18 @@ namespace HiraBots.Editor
                             switch (i.m_KeyType)
                             {
                                 case UnityEngine.BlackboardKeyType.Boolean:
-                                    return $"ref blackboard.Access<bool>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<bool>(memory->_{i.m_Name})";
                                 case UnityEngine.BlackboardKeyType.Enum:
-                                    return $"ref blackboard.Access<byte>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<byte>(memory->_{i.m_Name})";
                                 case UnityEngine.BlackboardKeyType.Float:
-                                    return $"ref blackboard.Access<float>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<float>(memory->_{i.m_Name})";
                                 case UnityEngine.BlackboardKeyType.Integer:
                                 case UnityEngine.BlackboardKeyType.Object:
-                                    return $"ref blackboard.Access<int>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<int>(memory->_{i.m_Name})";
                                 case UnityEngine.BlackboardKeyType.Quaternion:
-                                    return $"ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_{i.m_Name})";
                                 case UnityEngine.BlackboardKeyType.Vector:
-                                    return $"ref blackboard.Access<Unity.Mathematics.float3>(memory->_{i.m_Name}.offset)";
+                                    return $"ref blackboard.Access<Unity.Mathematics.float3>(memory->_{i.m_Name})";
                                 default:
                                     throw new ArgumentOutOfRangeException();
                             }
@@ -813,7 +811,7 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-BASE-CLASS>", baseClass),
                 ("<BLACKBOARD-FUNCTION-UNMANAGED-FIELDS>", unmanagedFields),
                 ("<BLACKBOARD-FUNCTION-MANAGED-FIELDS>", managedFields),
-                ("<BLACKBOARD-FUNCTION-MANAGED-TO-UNMANAGED-WITH-COMMA>", unmanagedToManagedWithComma),
+                ("<BLACKBOARD-FUNCTION-MANAGED-TO-UNMANAGED-WITH-COMMA>", managedToUnmanagedWithComma),
                 ("<BLACKBOARD-FUNCTION-RETURN-TYPE>", returnType),
                 ("<BLACKBOARD-FUNCTION-EXTRA-PARAMS>", extraParams),
                 ("<BLACKBOARD-FUNCTION-UNMANAGED-FUNCTION-CALL>", unmanagedFunctionCall),
@@ -833,7 +831,7 @@ namespace HiraBots.Editor
                 case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
                     return info.m_ObjectType.FullName;
                 case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                    return $"{nameof(UnityEngine.BlackboardKey)}.{nameof(UnityEngine.BlackboardKey.LowLevel)}";
+                    return "ushort";
                 case BlackboardFunctionParameterInfo.Type.Object:
                     return "int";
                 case BlackboardFunctionParameterInfo.Type.DynamicEnum:

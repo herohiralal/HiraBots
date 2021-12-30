@@ -17,7 +17,7 @@ namespace UnityEngine
         private struct Memory
         {
             internal System.Boolean _invert;
-            internal BlackboardKey.LowLevel _key;
+            internal ushort _key;
             internal System.Single _secondValue;
             internal System.Single _equalityTolerance;
             internal HiraBots.FloatComparisonType _comparisonType;
@@ -33,7 +33,7 @@ namespace UnityEngine
 
         // pack memory
         private Memory memory => new Memory
-        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _secondValue = secondValue, _equalityTolerance = equalityTolerance, _comparisonType = comparisonType, _score = score };
+        { _invert = invert, _key = key.selectedKey.offset, _secondValue = secondValue, _equalityTolerance = equalityTolerance, _comparisonType = comparisonType, _score = score };
 
         #region Execution
 
@@ -42,7 +42,7 @@ namespace UnityEngine
         private static float ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory, float currentScore)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleScoreCalculatorBlackboardFunctions.FloatComparisonScoreCalculator(currentScore, memory->_invert, ref blackboard.Access<float>(memory->_key.offset), memory->_secondValue, memory->_equalityTolerance, memory->_comparisonType, memory->_score);
+            return HiraBots.SampleScoreCalculatorBlackboardFunctions.FloatComparisonScoreCalculator(currentScore, memory->_invert, ref blackboard.Access<float>(memory->_key), memory->_secondValue, memory->_equalityTolerance, memory->_comparisonType, memory->_score);
         }
 
         // non-VM execution

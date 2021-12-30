@@ -17,7 +17,7 @@ namespace UnityEngine
         private struct Memory
         {
             internal System.Boolean _invert;
-            internal BlackboardKey.LowLevel _key;
+            internal ushort _key;
             internal byte _value;
         }
 
@@ -27,7 +27,7 @@ namespace UnityEngine
 
         // pack memory
         private Memory memory => new Memory
-        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey), _value = value };
+        { _invert = invert, _key = key.selectedKey.offset, _value = value };
 
         #region Execution
 
@@ -36,7 +36,7 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(memory->_invert, ref blackboard.Access<byte>(memory->_key.offset), memory->_value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(memory->_invert, ref blackboard.Access<byte>(memory->_key), memory->_value);
         }
 
         // non-VM execution

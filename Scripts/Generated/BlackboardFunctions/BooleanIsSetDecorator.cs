@@ -17,7 +17,7 @@ namespace UnityEngine
         private struct Memory
         {
             internal System.Boolean _invert;
-            internal BlackboardKey.LowLevel _key;
+            internal ushort _key;
         }
 
         [SerializeField] internal System.Boolean invert;
@@ -25,7 +25,7 @@ namespace UnityEngine
 
         // pack memory
         private Memory memory => new Memory
-        { _invert = invert, _key = new BlackboardKey.LowLevel(key.selectedKey) };
+        { _invert = invert, _key = key.selectedKey.offset };
 
         #region Execution
 
@@ -34,7 +34,7 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(memory->_invert, ref blackboard.Access<bool>(memory->_key.offset));
+            return HiraBots.SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(memory->_invert, ref blackboard.Access<bool>(memory->_key));
         }
 
         // non-VM execution

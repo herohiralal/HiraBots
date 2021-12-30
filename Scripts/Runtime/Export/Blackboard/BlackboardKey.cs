@@ -3,22 +3,6 @@
     [System.Serializable]
     public struct BlackboardKey
     {
-        /// <summary>
-        /// Low-level representation of a blackboard key.
-        /// </summary>
-        public readonly struct LowLevel
-        {
-            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            public LowLevel(BlackboardKey key)
-            {
-                offset = key.offset;
-                keyType = key.keyType;
-            }
-
-            public ushort offset { get; }
-            public BlackboardKeyType keyType { get; }
-        }
-
         internal BlackboardKey(HiraBots.BlackboardKey value)
         {
             m_Value = value;

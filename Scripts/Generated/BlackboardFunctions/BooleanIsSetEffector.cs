@@ -16,7 +16,7 @@ namespace UnityEngine
     {
         private struct Memory
         {
-            internal BlackboardKey.LowLevel _key;
+            internal ushort _key;
             internal HiraBots.SetOperationType _operationType;
         }
 
@@ -25,7 +25,7 @@ namespace UnityEngine
 
         // pack memory
         private Memory memory => new Memory
-        { _key = new BlackboardKey.LowLevel(key.selectedKey), _operationType = operationType };
+        { _key = key.selectedKey.offset, _operationType = operationType };
 
         #region Execution
 
@@ -34,7 +34,7 @@ namespace UnityEngine
         private static void ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            HiraBots.SampleEffectorBlackboardFunctions.BooleanIsSetEffector(ref blackboard.Access<bool>(memory->_key.offset), memory->_operationType);
+            HiraBots.SampleEffectorBlackboardFunctions.BooleanIsSetEffector(ref blackboard.Access<bool>(memory->_key), memory->_operationType);
         }
 
         // non-VM execution
