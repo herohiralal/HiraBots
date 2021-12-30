@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -66,7 +67,16 @@ namespace HiraBots
         {
             Reset();
 
-            target.Validate(this);
+            try
+            {
+                target.Validate(this);
+            }
+            catch (System.Exception e)
+            {
+                errorText = e.Message;
+                Debug.LogException(e);
+                return false;
+            }
 
             if (m_Validated)
             {

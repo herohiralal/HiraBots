@@ -67,7 +67,16 @@ namespace HiraBots
         {
             Reset();
 
-            target.Validate(this);
+            try
+            {
+                target.Validate(this);
+            }
+            catch (System.Exception e)
+            {
+                errorText = e.Message;
+                Debug.LogException(e);
+                return false;
+            }
 
             if (m_Validated)
             {
