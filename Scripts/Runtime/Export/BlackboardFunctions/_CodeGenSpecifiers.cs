@@ -47,37 +47,13 @@ namespace UnityEngine
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsBooleanKeyAttribute : Attribute
+    public class HiraBotsBlackboardKeyAttribute : Attribute
     {
-    }
+        public HiraBotsBlackboardKeyAttribute(BlackboardKeyType keyType)
+        {
+            this.keyType = keyType;
+        }
 
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsEnumKeyAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsFloatKeyAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsIntegerKeyAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsObjectKeyAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsQuaternionKeyAttribute : Attribute
-    {
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsVectorKeyAttribute : Attribute
-    {
+        public BlackboardKeyType keyType { get; }
     }
 }
