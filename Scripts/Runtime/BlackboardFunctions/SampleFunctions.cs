@@ -1,4 +1,6 @@
-﻿namespace HiraBots
+﻿using UnityEngine;
+
+namespace HiraBots
 {
     internal class GenerateInternalBlackboardFunctionAttribute : System.Attribute
     {
@@ -21,6 +23,17 @@
         internal static bool AlwaysSucceedDecoratorBlackboardFunctionUnmanaged(UnityEngine.BlackboardComponent.LowLevel blackboard)
         {
             return true;
+        }
+
+        [GenerateInternalBlackboardFunction("02699b8440814f6a8f957e561f36a32c")]
+        internal static bool ObjectEqualsDecoratorBlackboardFunction(UnityEngine.BlackboardComponent blackboard, bool expected, [HiraBotsBlackboardKey(UnityEngine.BlackboardKeyType.Object)] UnityEngine.BlackboardKey key, Object value)
+        {
+            return blackboard.GetObjectValue(key.name) == value;
+        }
+
+        internal static bool ObjectEqualsDecoratorBlackboardFunctionUnmanaged(UnityEngine.BlackboardComponent.LowLevel blackboard, UnityEngine.BlackboardKey.LowLevel key, int value)
+        {
+            return blackboard.Access<int>(key.offset) == value;
         }
     }
 

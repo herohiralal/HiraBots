@@ -595,6 +595,12 @@ namespace HiraBots.Editor
             var templateChangedCallback = string.Join(" ", keyParams
                 .Select(i => $"{i.m_Name}.OnTargetBlackboardTemplateChanged(template, in keySet);"));
 
+            var keySelectorValidators = string.Join("", keyParams
+                .Select(i =>
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionKeySelectorValidator",
+                    ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
+                    ("<BLACKBOARD-FUNCTION-PARAM-KEY-FILTER>", i.m_KeyType.ToCode()))));
+
             return CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunction",
                 ("<BLACKBOARD-FUNCTION-METHOD-NAME>", function.m_Name),
                 ("<BLACKBOARD-FUNCTION-BASE-CLASS>", baseClass),
@@ -605,7 +611,8 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-EXTRA-PARAMS>", extraParams),
                 ("<BLACKBOARD-FUNCTION-UNMANAGED-FUNCTION-CALL>", unmanagedFunctionCall),
                 ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall),
-                ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback)
+                ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback),
+                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>",  keySelectorValidators)
             );
         }
 
@@ -640,6 +647,29 @@ namespace HiraBots.Editor
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private static string ToCode(this UnityEngine.BlackboardKeyType keyType)
+        {
+            var output = $"{typeof(UnityEngine.BlackboardKeyType)}.{UnityEngine.BlackboardKeyType.Invalid}";
+
+            string Check(UnityEngine.BlackboardKeyType flag)
+            {
+                // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                return (keyType & flag) != UnityEngine.BlackboardKeyType.Invalid
+                    ? $" | {typeof(UnityEngine.BlackboardKeyType)}.{flag}"
+                    : "";
+            }
+
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 0));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 1));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 2));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 3));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 4));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 5));
+            output += Check((UnityEngine.BlackboardKeyType) (1 << 6));
+
+            return output;
         }
     }
 }
