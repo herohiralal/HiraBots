@@ -13,6 +13,7 @@ namespace HiraBots
         internal string guid { get; }
     }
 
+    [System.Serializable]
     internal enum IntegerComparisonType : byte
     {
         Equals,
@@ -22,6 +23,7 @@ namespace HiraBots
         LesserThanEqualTo
     }
 
+    [System.Serializable]
     internal enum FloatComparisonType : byte
     {
         AlmostEquals,
@@ -163,7 +165,174 @@ namespace HiraBots
         }
     }
 
+    [System.Serializable]
+    internal enum EnumOperationType
+    {
+        Set,
+        AddFlags,
+        RemoveFlags
+    }
+
+    [System.Serializable]
+    internal enum FloatOperationType
+    {
+        Set,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+    }
+
+    [System.Serializable]
+    internal enum IntegerOperationType
+    {
+        Set,
+        Add,
+        Subtract,
+        Multiply,
+        Divide,
+        BitwiseAnd,
+        BitwiseOr,
+        BitwiseXor,
+    }
+
+    [System.Serializable]
+    internal enum SetOperationType
+    {
+        Set,
+        Unset
+    }
+
     internal static class SampleEffectorBlackboardFunctions
     {
+        [GenerateInternalBlackboardFunction("ad6818e4de9846adba80edd01785671e")]
+        internal static void EnumOperatorEffector(ref byte key, EnumOperationType operationType, [MatchTypeToEnumKey("key")] byte value)
+        {
+            switch (operationType)
+            {
+                case EnumOperationType.Set: key = value;
+                    break;
+                case EnumOperationType.AddFlags: key |= value;
+                    break;
+                case EnumOperationType.RemoveFlags: key = (byte) (key & ~value);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("89af0e100fac43f1ba83126b2d7c87de")]
+        internal static void FloatOperatorEffector(ref float key, FloatOperationType operationType, float value)
+        {
+            switch (operationType)
+            {
+                case FloatOperationType.Set:
+                    key = value;
+                    break;
+                case FloatOperationType.Add:
+                    key += value;
+                    break;
+                case FloatOperationType.Subtract:
+                    key -= value;
+                    break;
+                case FloatOperationType.Multiply:
+                    key *= value;
+                    break;
+                case FloatOperationType.Divide:
+                    key /= value;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("f073722b6c814acdb3f6485ca22b0f0e")]
+        internal static void IntegerOperatorEffector(ref int key, IntegerOperationType operationType, int value)
+        {
+            switch (operationType)
+            {
+                case IntegerOperationType.Set:
+                    key = value;
+                    break;
+                case IntegerOperationType.Add:
+                    key += value;
+                    break;
+                case IntegerOperationType.Subtract:
+                    key -= value;
+                    break;
+                case IntegerOperationType.Multiply:
+                    key *= value;
+                    break;
+                case IntegerOperationType.Divide:
+                    key /= value;
+                    break;
+                case IntegerOperationType.BitwiseAnd:
+                    key &= value;
+                    break;
+                case IntegerOperationType.BitwiseOr:
+                    key |= value;
+                    break;
+                case IntegerOperationType.BitwiseXor:
+                    key ^= value;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("bf5cce8d3ca6458bbcf415de101c99e1")]
+        internal static void BooleanIsSetEffector(ref bool key, SetOperationType operationType)
+        {
+            switch (operationType)
+            {
+                case SetOperationType.Set:
+                    key = true;
+                    break;
+                case SetOperationType.Unset:
+                    key = false;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("3e0f93fa04dd434da94e08d68526c5b0")]
+        internal static void VectorIsSetEffector(ref float3 key, SetOperationType operationType)
+        {
+            switch (operationType)
+            {
+                case SetOperationType.Set:
+                    key = 1;
+                    break;
+                case SetOperationType.Unset:
+                    key = float3.zero;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("81995b480d8141c2903d789771e5cd7c")]
+        internal static void QuaternionIsSetEffector(ref quaternion key, SetOperationType operationType)
+        {
+            switch (operationType)
+            {
+                case SetOperationType.Set:
+                    key = quaternion.Euler(new float3(10));
+                    break;
+                case SetOperationType.Unset:
+                    key = quaternion.identity;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [GenerateInternalBlackboardFunction("da5818b29555439cb0a6adc4d0937280")]
+        // ReSharper disable once RedundantAssignment
+        internal static void ObjectEqualsEffector([HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)
+        {
+            key = value;
+        }
     }
 }
