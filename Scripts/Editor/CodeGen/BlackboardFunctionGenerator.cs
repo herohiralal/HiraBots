@@ -5,7 +5,6 @@ using System.Reflection;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {

@@ -1,2 +1,10 @@
 BlackboardFunctions/AlwaysSucceedDecorator.cs
+BlackboardFunctions/EnumEqualsDecorator.cs
+BlackboardFunctions/EnumHasFlagsDecorator.cs
+BlackboardFunctions/BooleanIsSetDecorator.cs
+BlackboardFunctions/QuaternionIsSetDecorator.cs
+BlackboardFunctions/VectorIsSetDecorator.cs
+BlackboardFunctions/IntegerComparisonDecorator.cs
+BlackboardFunctions/FloatComparisonDecorator.cs
+BlackboardFunctions/ObjectEqualsDecorator.cs
 HiraBots.Generated.asmdef
