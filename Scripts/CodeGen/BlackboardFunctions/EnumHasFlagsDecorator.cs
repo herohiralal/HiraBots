@@ -12,7 +12,7 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class EnumHasFlagsDecoratorBlackboardFunction : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class EnumHasFlagsDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
@@ -34,13 +34,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecoratorBlackboardFunctionUnmanaged(blackboard, memory->_key, memory->_value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecoratorUnmanaged(blackboard, memory->_key, memory->_value);
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            return HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecoratorBlackboardFunction(blackboard, expected, key.selectedKey, value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(blackboard, expected, key.selectedKey, value);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-BlackboardFunctions/AlwaysSucceedDecoratorBlackboardFunction.cs
-BlackboardFunctions/ObjectEqualsDecoratorBlackboardFunction.cs
-BlackboardFunctions/EnumHasFlagsDecoratorBlackboardFunction.cs
+BlackboardFunctions/AlwaysSucceedDecorator.cs
+BlackboardFunctions/ObjectEqualsDecorator.cs
+BlackboardFunctions/EnumHasFlagsDecorator.cs
 HiraBots.Generated.asmdef

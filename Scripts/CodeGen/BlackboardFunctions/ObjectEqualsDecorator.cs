@@ -12,7 +12,7 @@
 
 namespace UnityEngine
 {
-    public unsafe partial class ObjectEqualsDecoratorBlackboardFunction : HiraBotsDecoratorBlackboardFunction
+    public unsafe partial class ObjectEqualsDecorator : HiraBotsDecoratorBlackboardFunction
     {
         private struct Memory
         {
@@ -34,13 +34,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecoratorBlackboardFunctionUnmanaged(blackboard, memory->_key, memory->_value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecoratorUnmanaged(blackboard, memory->_key, memory->_value);
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecoratorBlackboardFunction(blackboard, expected, key.selectedKey, value);
+            return HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(blackboard, expected, key.selectedKey, value);
         }
 
         #endregion
