@@ -43,6 +43,7 @@ namespace HiraBots
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void AlwaysFailDecoratorUpdateDescription(out string staticDescription)
         {
             staticDescription = "Always fail. Used to disable a goal/task for debugging purposes.";
@@ -57,6 +58,18 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnumEqualsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be equal to the selected value.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea57")]
         internal static bool EnumHasFlagsDecorator(bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value)
         {
@@ -65,11 +78,35 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnumHasFlagsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} have these flags.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9b5ff847474ea57")]
         internal static bool BooleanIsSetDecorator(bool invert, ref bool key)
         {
             var result = key;
             return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void BooleanIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be set.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,12 +119,36 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void QuaternionIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be set.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94d48b9a5ff847474ea57")]
         internal static bool VectorIsSetDecorator(bool invert, ref float3 key)
         {
             var value3 = key == float3.zero;
             var result = !value3.x || !value3.y || !value3.z;
             return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void VectorIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be set.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,6 +182,41 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void IntegerComparisonDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, int secondValue, IntegerComparisonType comparisonType, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            string comparison;
+            switch (comparisonType)
+            {
+                case IntegerComparisonType.Equals:
+                    comparison = "equal to";
+                    break;
+                case IntegerComparisonType.GreaterThan:
+                    comparison = "greater than";
+                    break;
+                case IntegerComparisonType.GreaterThanEqualTo:
+                    comparison = "greater than or equal to";
+                    break;
+                case IntegerComparisonType.LesserThan:
+                    comparison = "lesser than";
+                    break;
+                case IntegerComparisonType.LesserThanEqualTo:
+                    comparison = "lesser than or equal to";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be {comparison} {secondValue}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f145171ef4871cd")]
         internal static bool FloatComparisonDecorator(bool invert, ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType)
         {
@@ -151,11 +247,64 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void FloatComparisonDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            var valueStr = $"{secondValue}";
+
+            string comparison;
+            switch (comparisonType)
+            {
+                case FloatComparisonType.AlmostEquals:
+                    comparison = "equal to";
+                    if (equalityTolerance != 0f)
+                    {
+                        valueStr = $"{valueStr} ± {equalityTolerance}";
+                    }
+                    break;
+                case FloatComparisonType.GreaterThan:
+                    comparison = "greater than";
+                    break;
+                case FloatComparisonType.GreaterThanEqualTo:
+                    comparison = "greater than or equal to";
+                    break;
+                case FloatComparisonType.LesserThan:
+                    comparison = "lesser than";
+                    break;
+                case FloatComparisonType.LesserThanEqualTo:
+                    comparison = "lesser than or equal to";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be {comparison} {valueStr}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("e1ecc27574ca4a030ff85de39d096ccb")]
         internal static bool ObjectEqualsDecorator(bool invert, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)
         {
             var result = key == value;
             return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ObjectEqualsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be set to {(value == null ? "null" : value.name)}.";
         }
     }
 

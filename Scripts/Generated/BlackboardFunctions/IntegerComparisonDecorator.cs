@@ -103,7 +103,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleDecoratorBlackboardFunctions.IntegerComparisonDecoratorUpdateDescription(invert, key, secondValue, comparisonType, out staticDescription);
         }
 
         #endregion

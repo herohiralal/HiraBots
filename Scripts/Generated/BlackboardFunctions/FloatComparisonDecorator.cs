@@ -105,7 +105,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleDecoratorBlackboardFunctions.FloatComparisonDecoratorUpdateDescription(invert, key, secondValue, equalityTolerance, comparisonType, out staticDescription);
         }
 
         #endregion
