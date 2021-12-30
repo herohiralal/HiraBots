@@ -1,0 +1,2 @@
+BlackboardFunctions/AlwaysSucceedDecoratorBlackboardFunction.cs
+HiraBots.Generated.asmdef
