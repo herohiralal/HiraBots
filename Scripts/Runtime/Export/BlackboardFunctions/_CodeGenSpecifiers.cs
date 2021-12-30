@@ -47,13 +47,18 @@ namespace UnityEngine
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class HiraBotsBlackboardKeyAttribute : Attribute
+    public class HiraBotsObjectKey : Attribute
     {
-        public HiraBotsBlackboardKeyAttribute(BlackboardKeyType keyType)
+    }
+
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class HiraBotsObjectValue : Attribute
+    {
+        public HiraBotsObjectValue(Type o = null)
         {
-            this.keyType = keyType;
+            objectType = o == null || !typeof(Object).IsAssignableFrom(o) ? typeof(Object) : o;
         }
 
-        public BlackboardKeyType keyType { get; }
+        public Type objectType { get; }
     }
 }

@@ -156,7 +156,7 @@ namespace HiraBots.Editor
             {
                 if (!ValidateMethodInfo(scoreCalculatorWannabeFunction,
                         typeof(float),
-                        out var paramInfos, 
+                        out var paramInfos,
                         false,
                         typeof(float)))
                 {
@@ -274,7 +274,7 @@ namespace HiraBots.Editor
             var parameters = wannabeFunction.GetParameters();
 
             // check if it even has enough params
-            if (parameters.Length < 2 + numberOfExtraArguments)
+            if (parameters.Length < numberOfExtraArguments)
             {
                 Debug.LogError(
                     $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} does not have enough arguments.");
@@ -282,33 +282,33 @@ namespace HiraBots.Editor
             }
 
             // first two args check
-            if (parameters[0].ParameterType != typeof(UnityEngine.BlackboardComponent) || parameters[1].ParameterType != typeof(bool))
-            {
-                Debug.LogError(
-                    $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} does not" +
-                    $" have (BlackboardComponent blackboard) and (bool expected) as first two arguments.");
-                return false;
-            }
+            // if (parameters[0].ParameterType != typeof(UnityEngine.BlackboardComponent) || parameters[1].ParameterType != typeof(bool))
+            // {
+            //     Debug.LogError(
+            //         $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} does not" +
+            //         $" have (BlackboardComponent blackboard) and (bool expected) as first two arguments.");
+            //     return false;
+            // }
 
             // extra args check
             for (var i = 0; i < numberOfExtraArguments; i++)
             {
-                if (extraExpectedArgs[i] != parameters[2 + i].ParameterType)
+                if (extraExpectedArgs[i] != parameters[i].ParameterType)
                 {
                     Debug.LogError(
-                        $"Argument {parameters[2 + i].Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} must" +
+                        $"Argument {parameters[i].Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} must" +
                         $" be of type {extraExpectedArgs[i]}.");
                     return false;
                 }
             }
 
-            paramInfos = new BlackboardFunctionParameterInfo[parameters.Length - 2 - numberOfExtraArguments];
+            paramInfos = new BlackboardFunctionParameterInfo[parameters.Length - numberOfExtraArguments];
 
             // individual args checks
-            for (var i = 0; i < parameters.Length - 2 - numberOfExtraArguments; i++)
+            for (var i = 0; i < parameters.Length - numberOfExtraArguments; i++)
             {
                 // start with the third arg
-                var param = parameters[i + 2 + numberOfExtraArguments];
+                var param = parameters[i + numberOfExtraArguments];
                 var paramType = param.ParameterType;
 
                 // dynamic enum
@@ -348,24 +348,59 @@ namespace HiraBots.Editor
 
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, matchTypeToEnumKey.argumentName);
                 }
-                else if (paramType == typeof(UnityEngine.BlackboardKey))
+                // blackboard key
+                else if (paramType.IsByRef)
                 {
-                    var keyTypeAttribute = param.GetCustomAttribute<HiraBotsBlackboardKeyAttribute>();
-
-                    if (keyTypeAttribute == null)
+                    UnityEngine.BlackboardKeyType keyType;
+                    if (paramType == typeof(bool).MakeByRefType())
+                    {
+                        keyType = UnityEngine.BlackboardKeyType.Boolean;
+                    }
+                    else if (paramType == typeof(byte).MakeByRefType())
+                    {
+                        keyType = UnityEngine.BlackboardKeyType.Enum;
+                    }
+                    else if (paramType == typeof(float).MakeByRefType())
+                    {
+                        keyType = UnityEngine.BlackboardKeyType.Float;
+                    }
+                    else if (paramType == typeof(int).MakeByRefType())
+                    {
+                        keyType = param.GetCustomAttribute<HiraBotsObjectKey>() == null
+                            ? UnityEngine.BlackboardKeyType.Integer
+                            : UnityEngine.BlackboardKeyType.Object;
+                    }
+                    else if (paramType == typeof(Unity.Mathematics.quaternion).MakeByRefType())
+                    {
+                        keyType = UnityEngine.BlackboardKeyType.Quaternion;
+                    }
+                    else if (paramType == typeof(Unity.Mathematics.float3).MakeByRefType())
+                    {
+                        keyType = UnityEngine.BlackboardKeyType.Vector;
+                    }
+                    else
                     {
                         Debug.LogError(
                             $"Argument {param.Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} is not a valid" +
-                            $" blackboard key argument because it does not provide [HiraBotsBlackboardKey] attribute.");
+                            " blackboard key argument because it doesn't use a supported type.");
                         return false;
                     }
 
-                    paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, keyTypeAttribute.keyType);
+                    paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, keyType);
                 }
                 // object
-                else if (typeof(Object).IsAssignableFrom(paramType))
+                else if (param.GetCustomAttribute<HiraBotsObjectValue>() != null)
                 {
-                    paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, paramType);
+                    var attr = param.GetCustomAttribute<HiraBotsObjectValue>();
+                    if (paramType != typeof(int))
+                    {
+                        Debug.LogError(
+                            $"Argument {param.Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} is not a valid" +
+                            $" Object value argument because it isn't an integer.");
+                        return false;
+                    }
+
+                    paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, attr.objectType);
                 }
                 // unmanaged value
                 else if (UnsafeUtility.IsUnmanaged(paramType))
@@ -378,109 +413,6 @@ namespace HiraBots.Editor
                     Debug.LogError(
                         $"Argument {param.Name} in {wannabeFunction.DeclaringType}.{wannabeFunction.Name} is unsupported.");
                     return false;
-                }
-            }
-
-            // unmanaged function finding
-            {
-                var declaringType = wannabeFunction.DeclaringType;
-
-                // bs so rider doesn't throw warnings
-                if (declaringType == null)
-                {
-                    Debug.LogError(
-                        $"For some reason, the declaring type is null on {wannabeFunction.Name}.");
-                    return false;
-                }
-
-                // find paired method
-                var unmanagedMethod = declaringType.GetMethod($"{wannabeFunction.Name}Unmanaged",
-                    (skipPublicStaticCheck
-                        ? BindingFlags.Public | BindingFlags.NonPublic
-                        : BindingFlags.Public)
-                    | BindingFlags.Static);
-                if (unmanagedMethod == null)
-                {
-                    Debug.LogError(
-                        $"{declaringType}.{wannabeFunction.Name} does not have an unmanaged" +
-                        $" paired function {wannabeFunction.Name}Unmanaged.");
-                    return false;
-                }
-
-                var unmanagedParams = unmanagedMethod.GetParameters();
-
-                // param min-length check
-                if (unmanagedParams.Length < 1 + numberOfExtraArguments)
-                {
-                    Debug.LogError(
-                        $"{declaringType}.{unmanagedMethod.Name} does not have enough parameters.");
-                    return false;
-                }
-
-                // param length check
-                if (paramInfos.Length + 1 + numberOfExtraArguments != unmanagedParams.Length)
-                {
-                    Debug.LogError(
-                        $"{declaringType}.{unmanagedMethod.Name} does not the correct number of parameters.");
-                    return false;
-                }
-
-                // first arg check
-                if (unmanagedParams[0].ParameterType != typeof(UnityEngine.BlackboardComponent.LowLevel))
-                {
-                    Debug.LogError(
-                        $"{declaringType}.{unmanagedMethod.Name} does not have the first argument as (BlackboardComponent.LowLevel).");
-                    return false;
-                }
-
-                // extra args check
-                for (var i = 0; i < numberOfExtraArguments; i++)
-                {
-                    if (extraExpectedArgs[i] != unmanagedParams[1 + i].ParameterType)
-                    {
-                        Debug.LogError(
-                            $"Argument {unmanagedParams[1 + i].Name} in {declaringType}.{unmanagedMethod.Name} must" +
-                            $" be of type {extraExpectedArgs[i]}.");
-                        return false;
-                    }
-                }
-
-                // individual arg matches
-                for (var i = 0; i < unmanagedParams.Length - 1 - numberOfExtraArguments; i++)
-                {
-                    // which type it should match
-                    var paramInfo = paramInfos[i];
-                    var unmanagedParam = unmanagedParams[i + 1 + numberOfExtraArguments];
-                    var supposedType = paramInfo.m_Type;
-                    var actualType = unmanagedParam.ParameterType;
-
-                    bool success;
-
-                    switch (supposedType)
-                    {
-                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
-                            success = (actualType == paramInfo.m_ObjectType);
-                            break;
-                        case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            success = (actualType == typeof(UnityEngine.BlackboardKey.LowLevel));
-                            break;
-                        case BlackboardFunctionParameterInfo.Type.Object:
-                            success = (actualType == typeof(int));
-                            break;
-                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
-                            success = (actualType == typeof(byte));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    if (!success)
-                    {
-                        Debug.LogError(
-                            $"Argument {unmanagedParam.Name} in {declaringType}.{unmanagedMethod.Name} could not be" +
-                            $" paired with {paramInfo.m_Name} in {declaringType}.{wannabeFunction.Name}.");
-                        return false;
-                    }
                 }
             }
 
@@ -540,19 +472,17 @@ namespace HiraBots.Editor
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
                             return $"_{i.m_Name} = new BlackboardKey.LowLevel({i.m_Name}.selectedKey)";
                         case BlackboardFunctionParameterInfo.Type.Object:
-                            return $"_{i.m_Name} = {i.m_Name}.GetInstanceID()";
+                            return $"_{i.m_Name} = GeneratedBlackboardHelpers.ObjectToInstanceID({i.m_Name})";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }));
 
             var allUnmanagedFunctionParams = Enumerable
-                .Empty<string>()
-                .Append("blackboard");
+                .Empty<string>();
 
             var allManagedFunctionParams = Enumerable
-                .Empty<string>()
-                .Append("blackboard, expected");
+                .Empty<string>();
 
             if (!string.IsNullOrWhiteSpace(extraPassingParams))
             {
@@ -562,7 +492,37 @@ namespace HiraBots.Editor
 
             allUnmanagedFunctionParams = allUnmanagedFunctionParams.Concat(function
                 .m_Parameters
-                .Select(i => $"memory->_{i.m_Name}"));
+                .Select(i =>
+                {
+                    switch (i.m_Type)
+                    {
+                        case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                        case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                            return $"memory->_{i.m_Name}";
+                        case BlackboardFunctionParameterInfo.Type.BlackboardKey:
+                            switch (i.m_KeyType)
+                            {
+                                case UnityEngine.BlackboardKeyType.Boolean:
+                                    return $"ref blackboard.Access<bool>(memory->_{i.m_Name}.offset)";
+                                case UnityEngine.BlackboardKeyType.Enum:
+                                    return $"ref blackboard.Access<byte>(memory->_{i.m_Name}.offset)";
+                                case UnityEngine.BlackboardKeyType.Float:
+                                    return $"ref blackboard.Access<float>(memory->_{i.m_Name}.offset)";
+                                case UnityEngine.BlackboardKeyType.Integer:
+                                case UnityEngine.BlackboardKeyType.Object:
+                                    return $"ref blackboard.Access<int>(memory->_{i.m_Name}.offset)";
+                                case UnityEngine.BlackboardKeyType.Quaternion:
+                                    return $"ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_{i.m_Name}.offset)";
+                                case UnityEngine.BlackboardKeyType.Vector:
+                                    return $"ref blackboard.Access<Unity.Mathematics.float3>(memory->_{i.m_Name}.offset)";
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }));
 
             allManagedFunctionParams = allManagedFunctionParams.Concat(function
                 .m_Parameters
@@ -571,20 +531,21 @@ namespace HiraBots.Editor
                     switch (i.m_Type)
                     {
                         case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
-                        case BlackboardFunctionParameterInfo.Type.Object:
                         case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                             return i.m_Name;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            return $"{i.m_Name}.selectedKey";
+                            return $"ref _{i.m_Name}";
+                        case BlackboardFunctionParameterInfo.Type.Object:
+                            return $"{i.m_Name}.GetInstanceID()";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }));
 
             var unmanagedFunctionCall = (returnType == "void" ? "" : "return ") +
-                                        $"{function.m_TypeName}.{function.m_Name}Unmanaged({string.Join(", ", allUnmanagedFunctionParams)});";
+                                        $"{function.m_TypeName}.{function.m_Name}({string.Join(", ", allUnmanagedFunctionParams)});";
 
-            var managedFunctionCall = (returnType == "void" ? "" : "return ") +
+            var managedFunctionCall = (returnType == "void" ? "" : "var output = ") +
                                       $"{function.m_TypeName}.{function.m_Name}({string.Join(", ", allManagedFunctionParams)});";
 
             var keyParams = function
@@ -592,16 +553,69 @@ namespace HiraBots.Editor
                 .Where(i => i.m_Type == BlackboardFunctionParameterInfo.Type.BlackboardKey)
                 .ToArray();
 
+            var managedFunctionCallKeyParamTempVars = string.Join("", keyParams.Select(i =>
+            {
+                switch (i.m_KeyType)
+                {
+                    case UnityEngine.BlackboardKeyType.Boolean:
+                        return $"var _{i.m_Name} = blackboard.GetBooleanValue({i.m_Name}.selectedKey.name); ";
+                    case UnityEngine.BlackboardKeyType.Enum:
+                        return $"var _{i.m_Name} = blackboard.GetEnumValue({i.m_Name}.selectedKey.name); ";
+                    case UnityEngine.BlackboardKeyType.Float:
+                        return $"var _{i.m_Name} = blackboard.GetFloatValue({i.m_Name}.selectedKey.name); ";
+                    case UnityEngine.BlackboardKeyType.Integer:
+                        return $"var _{i.m_Name} = blackboard.GetIntegerValue({i.m_Name}.selectedKey.name); ";
+                    case UnityEngine.BlackboardKeyType.Object:
+                        return $"var _{i.m_Name} = blackboard.GetObjectValue({i.m_Name}.selectedKey.name).GetInstanceID(); ";
+                    case UnityEngine.BlackboardKeyType.Quaternion:
+                        return $"var _{i.m_Name} = blackboard.GetQuaternionValue({i.m_Name}.selectedKey.name); ";
+                    case UnityEngine.BlackboardKeyType.Vector:
+                        return $"var _{i.m_Name} = blackboard.GetVectorValue({i.m_Name}.selectedKey.name); ";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }));
+
+            var managedFunctionCallKeyTempVarsClearUp = string.Join("", keyParams.Select(i =>
+            {
+                switch (i.m_KeyType)
+                {
+                    case UnityEngine.BlackboardKeyType.Boolean:
+                        return $" blackboard.SetBooleanValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    case UnityEngine.BlackboardKeyType.Enum:
+                        return $" blackboard.SetEnumValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    case UnityEngine.BlackboardKeyType.Float:
+                        return $" blackboard.SetFloatValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    case UnityEngine.BlackboardKeyType.Integer:
+                        return $" blackboard.SetIntegerValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    case UnityEngine.BlackboardKeyType.Object:
+                        return $" blackboard.SetObjectValue({i.m_Name}.selectedKey.name, GeneratedBlackboardHelpers.InstanceIDToObject(_{i.m_Name}), expected);";
+                    case UnityEngine.BlackboardKeyType.Quaternion:
+                        return $" blackboard.SetQuaternionValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    case UnityEngine.BlackboardKeyType.Vector:
+                        return $" blackboard.SetVectorValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }));
+
+            managedFunctionCall = managedFunctionCallKeyParamTempVars
+                                  + managedFunctionCall
+                                  + (function.m_Type == BlackboardFunctionInfo.Type.Effector
+                                      ? managedFunctionCallKeyTempVarsClearUp
+                                      : "")
+                                  + (returnType == "void" ? "" : " return output;");
+
             var templateChangedCallback = string.Join(" ", keyParams
-                .Select(i => 
+                .Select(i =>
                     CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionTemplateChangedCallback",
-                    ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name))));
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name))));
 
             var keySelectorValidators = string.Join("", keyParams
                 .Select(i =>
                     CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionKeySelectorValidator",
-                    ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
-                    ("<BLACKBOARD-FUNCTION-PARAM-KEY-FILTER>", i.m_KeyType.ToCode()))));
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
+                        ("<BLACKBOARD-FUNCTION-PARAM-KEY-FILTER>", i.m_KeyType.ToCode()))));
 
             var keyFilterUpdates = string.Join("", keyParams
                 .Select(i =>
@@ -631,7 +645,7 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall),
                 ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback),
                 ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-FILTER-UPDATE>", keyFilterUpdates),
-                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>",  keySelectorValidators)
+                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>", keySelectorValidators)
             );
         }
 

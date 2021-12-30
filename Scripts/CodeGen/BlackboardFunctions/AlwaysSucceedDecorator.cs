@@ -30,13 +30,13 @@ namespace UnityEngine
         private static bool ActualFunction(in BlackboardComponent.LowLevel blackboard, byte* rawMemory)
         {
             var memory = (Memory*) rawMemory;
-            return HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecoratorUnmanaged(blackboard);
+            return HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator();
         }
 
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            return HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(blackboard, expected);
+            var output = HiraBots.SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator(); return output;
         }
 
         #endregion
