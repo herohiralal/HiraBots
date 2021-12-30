@@ -93,6 +93,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
+            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Object;
         }
 
         #endregion

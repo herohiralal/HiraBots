@@ -84,7 +84,6 @@ namespace UnityEngine
 
         protected override void OnTargetBlackboardTemplateChanged(BlackboardTemplate template, in BlackboardTemplate.KeySet keySet)
         {
-            
         }
 
         protected override void OnValidateCallback()

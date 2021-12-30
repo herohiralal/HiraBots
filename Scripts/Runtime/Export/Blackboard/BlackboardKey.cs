@@ -59,5 +59,14 @@
         /// The memory offset of the blackboard key.
         /// </summary>
         public ushort offset => m_Value.compiledData.memoryOffset;
+
+        /// <summary>
+        /// Enum type identifier of the key.
+        /// </summary>
+#if UNITY_EDITOR
+        public string enumTypeIdentifier => m_Value is HiraBots.EnumBlackboardKey enumKey ? enumKey.typeIdentifier : "";
+#else
+        public string enumTypeIdentifier => "";
+#endif
     }
 }

@@ -1,0 +1,2 @@
+﻿
+            <BLACKBOARD-FUNCTION-PARAM-NAME>.typeIdentifier = <BLACKBOARD-FUNCTION-DEPENDENT-KEY-NAME>.selectedKey.enumTypeIdentifier;

@@ -593,13 +593,31 @@ namespace HiraBots.Editor
                 .ToArray();
 
             var templateChangedCallback = string.Join(" ", keyParams
-                .Select(i => $"{i.m_Name}.OnTargetBlackboardTemplateChanged(template, in keySet);"));
+                .Select(i => 
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionTemplateChangedCallback",
+                    ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name))));
 
             var keySelectorValidators = string.Join("", keyParams
                 .Select(i =>
                     CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionKeySelectorValidator",
                     ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
                     ("<BLACKBOARD-FUNCTION-PARAM-KEY-FILTER>", i.m_KeyType.ToCode()))));
+
+            var keyFilterUpdates = string.Join("", keyParams
+                .Select(i =>
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionKeyTypeFilterUpdate",
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
+                        ("<BLACKBOARD-FUNCTION-PARAM-KEY-FILTER>", i.m_KeyType.ToCode()))));
+
+            var enumTypeIdentifierUpdates = string.Join("", function
+                .m_Parameters
+                .Where(i => i.m_Type == BlackboardFunctionParameterInfo.Type.DynamicEnum)
+                .Select(i =>
+                    CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunctionEnumKeyTypeIdentifierFilterUpdate",
+                        ("<BLACKBOARD-FUNCTION-PARAM-NAME>", i.m_Name),
+                        ("<BLACKBOARD-FUNCTION-DEPENDENT-KEY-NAME>", i.m_DynamicEnumKeyDependency))));
+
+            keyFilterUpdates += enumTypeIdentifierUpdates;
 
             return CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunction",
                 ("<BLACKBOARD-FUNCTION-METHOD-NAME>", function.m_Name),
@@ -612,6 +630,7 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-UNMANAGED-FUNCTION-CALL>", unmanagedFunctionCall),
                 ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall),
                 ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback),
+                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-FILTER-UPDATE>", keyFilterUpdates),
                 ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>",  keySelectorValidators)
             );
         }

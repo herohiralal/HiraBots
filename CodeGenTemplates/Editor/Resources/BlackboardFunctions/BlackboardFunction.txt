@@ -83,12 +83,11 @@ namespace UnityEngine
         #region EditorOnlyInterface
 
         protected override void OnTargetBlackboardTemplateChanged(BlackboardTemplate template, in BlackboardTemplate.KeySet keySet)
-        {
-            <BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>
+        {<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>
         }
 
         protected override void OnValidateCallback()
-        {
+        {<BLACKBOARD-FUNCTION-KEY-SELECTOR-FILTER-UPDATE>
         }
 
         #endregion
