@@ -101,7 +101,7 @@
         /// <summary>
         /// Get Vector value from the blackboard component using the key name.
         /// </summary>
-        public Vector3 GetVectorValue(string keyName)
+        public Unity.Mathematics.float3 GetVectorValue(string keyName)
         {
             return m_Value.GetVectorValue(keyName);
         }
@@ -109,7 +109,7 @@
         /// <summary>
         /// Get Quaternion value from the blackboard component using the key name.
         /// </summary>
-        public Quaternion GetQuaternionValue(string keyName)
+        public Unity.Mathematics.quaternion GetQuaternionValue(string keyName)
         {
             return m_Value.GetQuaternionValue(keyName);
         }
@@ -165,7 +165,7 @@
         /// <summary>
         /// Set Vector value on the blackboard component using the key name.
         /// </summary>
-        public void SetVectorValue(string key, Vector3 value, bool expected = false)
+        public void SetVectorValue(string key, Unity.Mathematics.float3 value, bool expected = false)
         {
             m_Value.SetVectorValue(key, value, expected);
         }
@@ -173,7 +173,7 @@
         /// <summary>
         /// Set Quaternion value on the blackboard component using the key name.
         /// </summary>
-        public void SetQuaternionValue(string key, Quaternion value, bool expected = false)
+        public void SetQuaternionValue(string key, Unity.Mathematics.quaternion value, bool expected = false)
         {
             m_Value.SetQuaternionValue(key, value, expected);
         }

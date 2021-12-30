@@ -83,7 +83,7 @@
         /// <summary>
         /// Get instance-synced Vector value from the blackboard template using the key name.
         /// </summary>
-        public Vector3 GetInstanceSyncedVectorValue(string keyName)
+        public Unity.Mathematics.float3 GetInstanceSyncedVectorValue(string keyName)
         {
             return m_Value.compiledData.GetInstanceSyncedVectorValue(keyName);
         }
@@ -91,7 +91,7 @@
         /// <summary>
         /// Get instance-synced Quaternion value from the blackboard template using the key name.
         /// </summary>
-        public Quaternion GetInstanceSyncedQuaternionValue(string keyName)
+        public Unity.Mathematics.quaternion GetInstanceSyncedQuaternionValue(string keyName)
         {
             return m_Value.compiledData.GetInstanceSyncedQuaternionValue(keyName);
         }
@@ -147,7 +147,7 @@
         /// <summary>
         /// Set instance-synced Vector value on the blackboard template using the key name.
         /// </summary>
-        public void SetInstanceSyncedVectorValue(string key, Vector3 value)
+        public void SetInstanceSyncedVectorValue(string key, Unity.Mathematics.float3 value)
         {
             m_Value.compiledData.SetInstanceSyncedVectorValue(key, value);
         }
@@ -155,7 +155,7 @@
         /// <summary>
         /// Set instance-synced Quaternion value on the blackboard template using the key name.
         /// </summary>
-        public void SetInstanceSyncedQuaternionValue(string key, Quaternion value)
+        public void SetInstanceSyncedQuaternionValue(string key, Unity.Mathematics.quaternion value)
         {
             m_Value.compiledData.SetInstanceSyncedQuaternionValue(key, value);
         }
