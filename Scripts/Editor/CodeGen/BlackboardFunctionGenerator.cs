@@ -199,7 +199,7 @@ namespace HiraBots.Editor
             {
                 var invalidFunctionTemplate = CodeGenHelpers.ReadTemplate("BlackboardFunctions/InvalidFunction",
                     ("<BLACKBOARD-FUNCTION-METHOD-NAME>", invalidatedMethod.m_MethodName),
-                    ("<BLACKBOARD-FUNCTION-BASE-CLASS", invalidatedMethod.m_BaseClass));
+                    ("<BLACKBOARD-FUNCTION-BASE-CLASS>", invalidatedMethod.m_BaseClass));
 
                 generatedCode.Add(($"{k_CodeGenSubFolderName}/{invalidatedMethod.m_TypeName}/{invalidatedMethod.m_MethodName}.cs",
                     invalidFunctionTemplate, invalidatedMethod.m_Guid));
@@ -448,7 +448,7 @@ namespace HiraBots.Editor
                             success = (actualType == paramInfo.m_ObjectType);
                             break;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            success = (actualType == typeof(ushort));
+                            success = (actualType == typeof(UnityEngine.BlackboardKey.LowLevel));
                             break;
                         case BlackboardFunctionParameterInfo.Type.Object:
                             success = (actualType == typeof(int));
@@ -524,7 +524,7 @@ namespace HiraBots.Editor
                         case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                             return $"_{i.m_Name} = {i.m_Name}";
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            return $"_{i.m_Name} = {i.m_Name}.selectedKey.offset";
+                            return $"_{i.m_Name} = new BlackboardKey.LowLevel({i.m_Name}.selectedKey)";
                         case BlackboardFunctionParameterInfo.Type.Object:
                             return $"_{i.m_Name} = {i.m_Name}.GetInstanceID()";
                         default:
@@ -602,7 +602,7 @@ namespace HiraBots.Editor
                 case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
                     return info.m_ObjectType.FullName;
                 case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                    return "ushort";
+                    return $"{nameof(UnityEngine.BlackboardKey)}.{nameof(UnityEngine.BlackboardKey.LowLevel)}";
                 case BlackboardFunctionParameterInfo.Type.Object:
                     return "int";
                 case BlackboardFunctionParameterInfo.Type.DynamicEnum:
