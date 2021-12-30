@@ -152,12 +152,9 @@ namespace HiraBots.Editor
 
         protected override void ProcessCreatedObject(CustomSerializedObject<TTargetSerializedObject> serializedObject, BlackboardFunction newObject)
         {
-            InlinedObjectReferencesHelper.Expand(newObject, out var cso);
+            InlinedObjectReferencesHelper.Expand(newObject, out _);
 
-            if (cso is BlackboardFunction.Serialized sbf)
-            {
-                sbf.Validate();
-            }
+            newObject.OnValidate();
         }
 
         protected override Color GetThemeColor(BlackboardFunction value)

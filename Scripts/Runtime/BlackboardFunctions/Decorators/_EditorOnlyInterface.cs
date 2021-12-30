@@ -5,7 +5,7 @@ namespace HiraBots
 {
     internal partial class AlwaysSucceedDecoratorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -33,7 +33,7 @@ namespace HiraBots
 
     internal partial class EnumHasFlagsDecoratorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -71,7 +71,7 @@ namespace HiraBots
 
     internal partial class IsSetDecoratorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -115,7 +115,7 @@ namespace HiraBots
 
     internal partial class NumericalComparisonDecoratorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -192,7 +192,7 @@ namespace HiraBots
 
     internal partial class ObjectEqualsDecoratorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 

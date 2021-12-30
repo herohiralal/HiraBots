@@ -47,12 +47,12 @@ namespace HiraBots.Editor
 
             if (InlinedObjectReferencesHelper.DrawHeader(currentRect, value,
                 BlackboardFunctionGUIHelpers.GetBlackboardFunctionColorFaded(value), value.subtitle,
-                out var cso) && cso is BlackboardFunction.Serialized serializedObject)
+                out var cso))
             {
-                if (serializedObject.hasError)
+                if (cso.hasError)
                 {
                     currentRect.y += 22f;
-                    EditorGUI.HelpBox(currentRect, serializedObject.error, MessageType.Error);
+                    EditorGUI.HelpBox(currentRect, cso.error, MessageType.Error);
                     return;
                 }
 

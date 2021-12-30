@@ -11,20 +11,8 @@ namespace HiraBots
         [SerializeField, HideInInspector] protected string m_Description = "";
         internal string description => m_Description;
 
-        protected virtual void OnValidate()
+        internal virtual void OnValidate()
         {
-        }
-
-        internal class Serialized : CustomSerializedObject<BlackboardFunction>
-        {
-            internal Serialized(BlackboardFunction obj) : base(obj)
-            {
-            }
-
-            internal void Validate()
-            {
-                target.OnValidate();
-            }
         }
 
         /// <summary>

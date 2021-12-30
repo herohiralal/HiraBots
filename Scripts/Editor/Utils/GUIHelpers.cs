@@ -194,9 +194,6 @@ namespace HiraBots.Editor
                 case BlackboardKey c:
                     return new BlackboardKey.Serialized(c);
 
-                case BlackboardFunction c:
-                    return new BlackboardFunction.Serialized(c);
-
                 case LGOAPGoal c:
                     return new LGOAPGoal.Serialized(c);
                 case LGOAPTask c:

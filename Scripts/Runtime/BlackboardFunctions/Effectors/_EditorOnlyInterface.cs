@@ -5,7 +5,7 @@ namespace HiraBots
 {
     internal partial class EnumOperatorEffectorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -55,7 +55,7 @@ namespace HiraBots
 
     internal partial class FloatOperatorEffectorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -112,7 +112,7 @@ namespace HiraBots
 
     internal partial class IntegerOperatorEffectorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -178,7 +178,7 @@ namespace HiraBots
 
     internal partial class IsSetEffectorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
@@ -221,7 +221,7 @@ namespace HiraBots
 
     internal partial class ObjectEqualsEffectorBlackboardFunction
     {
-        protected override void OnValidate()
+        internal override void OnValidate()
         {
             base.OnValidate();
 
