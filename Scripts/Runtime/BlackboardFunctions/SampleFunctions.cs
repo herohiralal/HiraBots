@@ -592,6 +592,32 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnumOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, EnumOperationType operationType, UnityEngine.DynamicEnum value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            switch (operationType)
+            {
+                case EnumOperationType.Set:
+                    staticDescription = $"Set {key.selectedKey.name} to this value.";
+                    break;
+                case EnumOperationType.AddFlags:
+                    staticDescription = $"Add these flags to {key.selectedKey.name}.";
+                    break;
+                case EnumOperationType.RemoveFlags:
+                    staticDescription = $"Remove these flags from {key.selectedKey.name}.";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("89af0e100fac43f1ba83126b2d7c87de")]
         internal static void FloatOperatorEffector(ref float key, FloatOperationType operationType, float value)
         {
@@ -623,6 +649,38 @@ namespace HiraBots
             if (operationType == FloatOperationType.Divide && value == 0f)
             {
                 value = 1f;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void FloatOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, FloatOperationType operationType, float value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            switch (operationType)
+            {
+                case FloatOperationType.Set:
+                    staticDescription = $"Set {key.selectedKey.name} to {value}.";
+                    break;
+                case FloatOperationType.Add:
+                    staticDescription = $"Add {value} to {key.selectedKey.name}.";
+                    break;
+                case FloatOperationType.Subtract:
+                    staticDescription = $"Subtract {value} from {key.selectedKey.name}.";
+                    break;
+                case FloatOperationType.Multiply:
+                    staticDescription = $"Multiply {key.selectedKey.name} by {value}.";
+                    break;
+                case FloatOperationType.Divide:
+                    staticDescription = $"Divide {key.selectedKey.name} by {value}.";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
             }
         }
 
@@ -671,6 +729,47 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void IntegerOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, IntegerOperationType operationType, int value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            switch (operationType)
+            {
+                case IntegerOperationType.Set:
+                    staticDescription = $"Set {key.selectedKey.name} to {value}.";
+                    break;
+                case IntegerOperationType.Add:
+                    staticDescription = $"Add {value} to {key.selectedKey.name}.";
+                    break;
+                case IntegerOperationType.Subtract:
+                    staticDescription = $"Subtract {value} from {key.selectedKey.name}.";
+                    break;
+                case IntegerOperationType.Multiply:
+                    staticDescription = $"Multiply {key.selectedKey.name} by {value}.";
+                    break;
+                case IntegerOperationType.Divide:
+                    staticDescription = $"Divide {key.selectedKey.name} by {value}.";
+                    break;
+                case IntegerOperationType.BitwiseAnd:
+                    staticDescription = $"{key.selectedKey.name} &= {value}.";
+                    break;
+                case IntegerOperationType.BitwiseOr:
+                    staticDescription = $"{key.selectedKey.name} |= {value}.";
+                    break;
+                case IntegerOperationType.BitwiseXor:
+                    staticDescription = $"{key.selectedKey.name} ^= {value}.";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("bf5cce8d3ca6458bbcf415de101c99e1")]
         internal static void BooleanIsSetEffector(ref bool key, SetOperationType operationType)
         {
@@ -688,35 +787,24 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GenerateInternalBlackboardFunction("3e0f93fa04dd434da94e08d68526c5b0")]
-        internal static void VectorIsSetEffector(ref float3 key, SetOperationType operationType)
+        internal static void BooleanIsSetEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, SetOperationType operationType, out string staticDescription)
         {
-            switch (operationType)
+            if (!key.selectedKey.isValid)
             {
-                case SetOperationType.Set:
-                    key = 1;
-                    break;
-                case SetOperationType.Unset:
-                    key = float3.zero;
-                    break;
-                default:
-                    return;
+                staticDescription = "";
+                return;
             }
-        }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [GenerateInternalBlackboardFunction("81995b480d8141c2903d789771e5cd7c")]
-        internal static void QuaternionIsSetEffector(ref quaternion key, SetOperationType operationType)
-        {
             switch (operationType)
             {
                 case SetOperationType.Set:
-                    key = quaternion.Euler(new float3(10));
+                    staticDescription = $"Set {key.selectedKey.name}.";
                     break;
                 case SetOperationType.Unset:
-                    key = quaternion.identity;
+                    staticDescription = $"Unset {key.selectedKey.name}.";
                     break;
                 default:
+                    staticDescription = "";
                     return;
             }
         }
@@ -727,6 +815,12 @@ namespace HiraBots
         internal static void ObjectEqualsEffector([HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)
         {
             key = value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ObjectEqualsEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
+        {
+            staticDescription = $"Set {key.selectedKey.name} to {(value == null ? "null" : value.name)}.";
         }
     }
 }

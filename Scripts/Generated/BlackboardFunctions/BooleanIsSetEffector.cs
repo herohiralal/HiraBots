@@ -99,7 +99,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleEffectorBlackboardFunctions.BooleanIsSetEffectorUpdateDescription(key, operationType, out staticDescription);
         }
 
         #endregion
