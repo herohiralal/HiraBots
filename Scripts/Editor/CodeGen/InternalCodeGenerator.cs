@@ -6,11 +6,10 @@ using UnityEditor;
 
 namespace HiraBots.Editor
 {
-    [InitializeOnLoad]
     internal static class InternalCodeGenerator
     {
-        // decorators
-        static InternalCodeGenerator()
+        [MenuItem("HiraBots/Regenerate Internal Code")]
+        private static void Run()
         {
             // create folder/asmdef
             EditorSerializationUtility.ConfirmInternalCodeGenFolder();
