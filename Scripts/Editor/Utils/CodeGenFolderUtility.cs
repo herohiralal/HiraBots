@@ -54,31 +54,34 @@ namespace HiraBots.Editor
         {
             var directory = Path.Combine(s_ProjectDirectoryA, k_AssetsFolderName, k_CodeGenFolderName);
 
-            // create directory as required
-            var subfolders = pathR.Split('/');
-            var current = directory;
-            for (var i = 0; i < subfolders.Length - 1; i++) // skip over the last element, which is the file name
-            {
-                current = Path.Combine(current, subfolders[i]);
-
-                if (!Directory.Exists(current))
-                    Directory.CreateDirectory(current);
-            }
-
-            // append filename & extension
-            var path = Path.Combine(current, subfolders[subfolders.Length - 1]);
+            var path = ConfirmDirectoryExistsAndGetAbsolutePath(directory, pathR);
 
             // write
             File.WriteAllText(path, contents);
 
             if (guid != null)
             {
-                File.WriteAllText(path + ".meta",
-                    "" +
-                    "fileFormatVersion: 2\n" +
-                    $"guid: {guid}\n" +
-                    $"timeCreated: {System.DateTimeOffset.Now.ToUnixTimeSeconds()}");
+                File.WriteAllText(path + ".meta", GetMonoImporterMetaFile(guid));
             }
+        }
+
+        /// <summary>
+        /// Get a default meta file given a GUID.
+        /// </summary>
+        private static string GetMonoImporterMetaFile(string guid)
+        {
+            return "" +
+                   "fileFormatVersion: 2\n" +
+                   $"guid: {guid}\n" +
+                   "MonoImporter:\n" +
+                   "  externalObjects: {}\n" +
+                   "  serializedVersion: 2\n" +
+                   "  defaultReferences: []\n" +
+                   "  executionOrder: 0\n" +
+                   "  icon: {instanceID: 0}\n" +
+                   "  userData: \n" +
+                   "  assetBundleName: \n" +
+                   "  assetBundleVariant: \n";
         }
 
         /// <summary>
@@ -95,6 +98,15 @@ namespace HiraBots.Editor
 
             var previouslyWrittenFiles = !File.Exists(manifestLocation) ? new string[0] : File.ReadAllLines(manifestLocation);
 
+            // write manifest
+            File.WriteAllText(manifestLocation, GenerateNewManifest(directory, previouslyWrittenFiles, generatedFiles));
+        }
+
+        /// <summary>
+        /// Generates a new manifest and cleans up useless old files.
+        /// </summary>
+        private static string GenerateNewManifest(string targetDirectory, string[] previouslyWrittenFiles, string[] generatedFiles)
+        {
             var potentiallyUselessFolders = new HashSet<string>();
 
             // remove useless files
@@ -102,13 +114,13 @@ namespace HiraBots.Editor
             {
                 UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
                     $"Remove orphaned file: {uselessFile}");
-                var actualFile = Path.Combine(directory, uselessFile);
+                var actualFile = Path.Combine(targetDirectory, uselessFile);
 
                 if (File.Exists(actualFile))
                 {
                     File.Delete(actualFile);
                 }
-                
+
                 if (File.Exists(actualFile + ".meta"))
                 {
                     File.Delete(actualFile + ".meta");
@@ -131,7 +143,7 @@ namespace HiraBots.Editor
             {
                 UnityEngine.Debug.LogFormat(UnityEngine.LogType.Log, UnityEngine.LogOption.NoStacktrace, null,
                     $"Remove orphaned folder: {uselessFolder}");
-                var actualFolder = Path.Combine(directory, uselessFolder);
+                var actualFolder = Path.Combine(targetDirectory, uselessFolder);
 
                 if (Directory.Exists(actualFolder))
                 {
@@ -145,8 +157,7 @@ namespace HiraBots.Editor
                 }
             }
 
-            // write manifest
-            File.WriteAllText(manifestLocation, manifestContent);
+            return manifestContent;
         }
     }
 }
