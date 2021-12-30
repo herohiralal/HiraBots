@@ -101,7 +101,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleScoreCalculatorBlackboardFunctions.BooleanIsSetScoreCalculatorUpdateDescription(invert, key, score, out staticDescription);
         }
 
         #endregion

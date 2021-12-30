@@ -311,10 +311,22 @@ namespace HiraBots
     internal static class SampleScoreCalculatorBlackboardFunctions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string ScoreString(float score)
+        {
+            return $"{(score >= 0 ? '+' : '-')}{score}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f0c")]
         internal static float BaseScoreScoreCalculator(float currentScore, float score)
         {
             return currentScore + score;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void BaseScoreScoreCalculatorUpdateDescription(float score, out string staticDescription)
+        {
+            staticDescription = $"{ScoreString(score)}";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -325,10 +337,34 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnumEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} equal to the selected value.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea5c")]
         internal static float EnumHasFlagsScoreCalculator(float currentScore, bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
         {
             return currentScore + (SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(invert, ref key, value) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void EnumHasFlagsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "does not have" : "has")} these flags.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -339,10 +375,34 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void BooleanIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} set.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948c9a5ff847474ea5c")]
         internal static float QuaternionIsSetScoreCalculator(float currentScore, bool invert, ref quaternion key, float score)
         {
             return currentScore + (SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(invert, ref key) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void QuaternionIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} set.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -353,10 +413,57 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void VectorIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} set.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f045171ef4871cc")]
         internal static float IntegerComparisonScoreCalculator(float currentScore, bool invert, ref int key, int secondValue, IntegerComparisonType comparisonType, float score)
         {
             return currentScore + (SampleDecoratorBlackboardFunctions.IntegerComparisonDecorator(invert, ref key, secondValue, comparisonType) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void IntegerComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, int secondValue, IntegerComparisonType comparisonType, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            string comparison;
+            switch (comparisonType)
+            {
+                case IntegerComparisonType.Equals:
+                    comparison = "equal to";
+                    break;
+                case IntegerComparisonType.GreaterThan:
+                    comparison = "greater than";
+                    break;
+                case IntegerComparisonType.GreaterThanEqualTo:
+                    comparison = "greater than or equal to";
+                    break;
+                case IntegerComparisonType.LesserThan:
+                    comparison = "lesser than";
+                    break;
+                case IntegerComparisonType.LesserThanEqualTo:
+                    comparison = "lesser than or equal to";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} {comparison} {secondValue}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -367,10 +474,63 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void FloatComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            var valueStr = $"{secondValue}";
+
+            string comparison;
+            switch (comparisonType)
+            {
+                case FloatComparisonType.AlmostEquals:
+                    comparison = "equal to";
+                    if (equalityTolerance != 0f)
+                    {
+                        valueStr = $"{valueStr} ± {equalityTolerance}";
+                    }
+                    break;
+                case FloatComparisonType.GreaterThan:
+                    comparison = "greater than";
+                    break;
+                case FloatComparisonType.GreaterThanEqualTo:
+                    comparison = "greater than or equal to";
+                    break;
+                case FloatComparisonType.LesserThan:
+                    comparison = "lesser than";
+                    break;
+                case FloatComparisonType.LesserThanEqualTo:
+                    comparison = "lesser than or equal to";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} {comparison} {valueStr}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("e1ecc27574ca4a030ff85de39d096ccc")]
         internal static float ObjectEqualsScoreCalculator(float currentScore, bool invert, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value, float score)
         {
             return currentScore + (SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(invert, ref key, value) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ObjectEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, Object value, float score, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} set to {(value == null ? "null" : value.name)}.";
         }
     }
 

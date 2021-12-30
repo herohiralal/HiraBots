@@ -107,7 +107,7 @@ namespace UnityEngine
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleScoreCalculatorBlackboardFunctions.FloatComparisonScoreCalculatorUpdateDescription(invert, key, secondValue, equalityTolerance, comparisonType, score, out staticDescription);
         }
 
         #endregion
