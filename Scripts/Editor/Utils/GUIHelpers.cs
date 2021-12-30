@@ -596,6 +596,11 @@ namespace HiraBots.Editor
         /// <returns>Its respective theme color.</returns>
         internal static Color GetBlackboardFunctionColor(BlackboardFunction value)
         {
+            if (value == null)
+            {
+                return Color.black;
+            }
+
             switch (value.subtitle)
             {
                 case k_GoalInsistence:
