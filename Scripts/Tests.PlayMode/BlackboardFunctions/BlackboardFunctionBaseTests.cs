@@ -13,13 +13,13 @@ namespace HiraBots.Editor.Tests
         private delegate void Action(in LowLevelBlackboard blackboard, byte* memory);
 
         [BurstCompile(CompileSynchronously = true)]
-        private sealed class SquareCalculator : BlackboardFunction<FuncInt>
+        private sealed class SquareCalculator : HiraBotsBlackboardFunction
         {
             private static bool s_FunctionCompiled = false;
             private static FunctionPointer<FuncInt> s_FunctionPointer;
 
             // compile and store the function pointer
-            internal override void PrepareForCompilation()
+            public override void PrepareForCompilation()
             {
                 base.PrepareForCompilation();
                 if (!s_FunctionCompiled)
@@ -27,10 +27,9 @@ namespace HiraBots.Editor.Tests
                     s_FunctionPointer = BurstCompiler.CompileFunctionPointer<FuncInt>(Square);
                     s_FunctionCompiled = true;
                 }
-            }
 
-            // override function pointer
-            protected override FunctionPointer<FuncInt> function => s_FunctionPointer;
+                functionPtr = s_FunctionPointer.Value;
+            }
 
             // calculates and returns the square of a number
             [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(FuncInt))]
@@ -42,7 +41,7 @@ namespace HiraBots.Editor.Tests
         }
 
         [BurstCompile(CompileSynchronously = true)]
-        private sealed class CubeCalculator : BlackboardFunction<Action>
+        private sealed class CubeCalculator : HiraBotsBlackboardFunction
         {
             // the memory to be stored by this function
             private readonly struct Memory
@@ -59,7 +58,7 @@ namespace HiraBots.Editor.Tests
             private static FunctionPointer<Action> s_FunctionPointer;
 
             // compile and store the function pointer
-            internal override void PrepareForCompilation()
+            public override void PrepareForCompilation()
             {
                 base.PrepareForCompilation();
                 m_MemorySize += ByteStreamHelpers.CombinedSizes<Memory>();
@@ -68,6 +67,8 @@ namespace HiraBots.Editor.Tests
                     s_FunctionPointer = BurstCompiler.CompileFunctionPointer<Action>(Cube);
                     s_FunctionCompiled = true;
                 }
+
+                functionPtr = s_FunctionPointer.Value;
             }
 
             // the value to cube
@@ -82,9 +83,6 @@ namespace HiraBots.Editor.Tests
 
                 // offset sizeof(Memory)
             }
-
-            // override function pointer
-            protected override FunctionPointer<Action> function => s_FunctionPointer;
 
             // calculates the cube of a number and saves it back in the blackboard
             [BurstCompile(DisableDirectCall = true), MonoPInvokeCallback(typeof(Action))]

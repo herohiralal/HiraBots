@@ -2,7 +2,7 @@
 {
     public abstract class HiraBotsScoreCalculatorBlackboardFunction : HiraBotsBlackboardFunction
     {
-        protected unsafe delegate float Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory, float currentScore);
+        public unsafe delegate float Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory, float currentScore);
 
         #region Execution
 

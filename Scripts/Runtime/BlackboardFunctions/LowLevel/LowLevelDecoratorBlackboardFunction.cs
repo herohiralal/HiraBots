@@ -45,28 +45,14 @@ namespace HiraBots
             }
         }
 
-        // whether the result must be inverted
-        private bool invert
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndAccess<bool>();
-        }
-
-        // the function memory state
-        private byte* functionMemory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<bool>(m_Function.memory).AndGetAPointerOf<byte>();
-        }
-
         /// <summary>
         /// Execute the decorator on a blackboard.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool Execute(LowLevelBlackboard blackboard)
         {
-            var fnPtr = new FunctionPointer<DecoratorDelegate>(m_Function.functionPtr);
-            return invert != fnPtr.Invoke(blackboard, functionMemory);
+            var fnPtr = new FunctionPointer<UnityEngine.HiraBotsDecoratorBlackboardFunction.Delegate>(m_Function.functionPtr);
+            return fnPtr.Invoke(blackboard, m_Function.memory);
         }
     }
 }

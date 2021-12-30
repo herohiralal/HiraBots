@@ -2,7 +2,7 @@
 {
     public abstract class HiraBotsEffectorBlackboardFunction : HiraBotsBlackboardFunction
     {
-        protected unsafe delegate void Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory);
+        public unsafe delegate void Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory);
 
         #region Execution
 

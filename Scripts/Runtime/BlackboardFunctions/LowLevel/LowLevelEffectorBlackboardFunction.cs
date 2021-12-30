@@ -46,22 +46,13 @@ namespace HiraBots
         }
 
         /// <summary>
-        /// The function memory state.
-        /// </summary>
-        private byte* functionMemory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndGetAPointerOf<byte>();
-        }
-
-        /// <summary>
         /// Execute the effector on a blackboard.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Execute(LowLevelBlackboard blackboard)
         {
-            var fnPtr = new FunctionPointer<EffectorDelegate>(m_Function.functionPtr);
-            fnPtr.Invoke(blackboard, functionMemory);
+            var fnPtr = new FunctionPointer<UnityEngine.HiraBotsEffectorBlackboardFunction.Delegate>(m_Function.functionPtr);
+            fnPtr.Invoke(blackboard, m_Function.memory);
         }
     }
 }

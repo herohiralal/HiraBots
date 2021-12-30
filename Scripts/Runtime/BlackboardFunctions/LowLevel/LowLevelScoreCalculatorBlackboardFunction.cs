@@ -45,35 +45,14 @@ namespace HiraBots
 
         private string info => m_Function.info;
 
-        // the score upon success
-        private float score
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOverNothing(m_Function.memory).AndAccess<float>();
-        }
-
-        // whether the result must be inverted
-        private bool invert
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<float>(m_Function.memory).AndAccess<bool>();
-        }
-
-        // the function memory state
-        private byte* functionMemory
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ByteStreamHelpers.JumpOver<float, bool>(m_Function.memory).AndGetAPointerOf<byte>();
-        }
-
         /// <summary>
         /// Execute the score calculator on a blackboard.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal float Execute(LowLevelBlackboard blackboard)
+        internal float Execute(LowLevelBlackboard blackboard, float currentScore)
         {
-            var fnPtr = new FunctionPointer<DecoratorDelegate>(m_Function.functionPtr);
-            return invert != fnPtr.Invoke(blackboard, functionMemory) ? score : 0;
+            var fnPtr = new FunctionPointer<UnityEngine.HiraBotsScoreCalculatorBlackboardFunction.Delegate>(m_Function.functionPtr);
+            return fnPtr.Invoke(blackboard, m_Function.memory, currentScore);
         }
     }
 }

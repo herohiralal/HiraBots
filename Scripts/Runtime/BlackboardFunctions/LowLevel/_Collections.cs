@@ -217,7 +217,7 @@ namespace HiraBots
             var enumerator = m_Collection.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                score += enumerator.current.Execute(blackboard);
+                score += enumerator.current.Execute(blackboard, score);
             }
 
             return score;
