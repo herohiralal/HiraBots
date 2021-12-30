@@ -21,7 +21,7 @@ namespace HiraBots.Editor
             var functionInfos = new List<BlackboardFunctionGenerator.BlackboardFunctionInfo>();
 
             foreach (var methodInfo in typeof(SampleDecoratorBlackboardFunctions)
-                         .GetMethods()
+                         .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
                          .Where(mi => mi.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>() != null))
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
@@ -42,7 +42,7 @@ namespace HiraBots.Editor
             }
 
             foreach (var methodInfo in typeof(SampleScoreCalculatorBlackboardFunctions)
-                         .GetMethods()
+                         .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
                          .Where(mi => mi.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>() != null))
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
@@ -64,7 +64,7 @@ namespace HiraBots.Editor
             }
 
             foreach (var methodInfo in typeof(SampleEffectorBlackboardFunctions)
-                         .GetMethods()
+                         .GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
                          .Where(mi => mi.GetCustomAttribute<GenerateInternalBlackboardFunctionAttribute>() != null))
             {
                 if (BlackboardFunctionGenerator.ValidateMethodInfo(methodInfo,
