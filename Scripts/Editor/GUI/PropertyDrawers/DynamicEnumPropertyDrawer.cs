@@ -11,6 +11,7 @@ namespace HiraBots.Editor
     /// todo: implement this in UIElements
     /// </summary>
     [CustomPropertyDrawer(typeof(DynamicEnum))]
+    [CustomPropertyDrawer(typeof(UnityEngine.DynamicEnum))]
     internal class DynamicEnumPropertyDrawer : PropertyDrawer
     {
         private const float k_PropertyHeight = 21f;

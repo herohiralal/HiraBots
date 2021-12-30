@@ -33,5 +33,15 @@
         /// The type of the blackboard key.
         /// </summary>
         public BlackboardKeyType keyType => (BlackboardKeyType) (byte) m_Value.keyType;
+
+        /// <summary>
+        /// Whether the key will provide an offset.
+        /// </summary>
+        public bool canGetOffset => m_Value != null && m_Value.isCompiled;
+
+        /// <summary>
+        /// The memory offset of the blackboard key.
+        /// </summary>
+        public ushort offset => m_Value.compiledData.memoryOffset;
     }
 }
