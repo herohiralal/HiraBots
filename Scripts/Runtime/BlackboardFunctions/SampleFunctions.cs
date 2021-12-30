@@ -35,6 +35,17 @@ namespace HiraBots
         {
             return blackboard.Access<int>(key.offset) == value;
         }
+
+        [GenerateInternalBlackboardFunction("c255772ed68446cf8dc50bb72e8372c6")]
+        internal static bool EnumHasFlagsDecoratorBlackboardFunction(UnityEngine.BlackboardComponent blackboard, bool expected, [HiraBotsBlackboardKey(UnityEngine.BlackboardKeyType.Enum)] UnityEngine.BlackboardKey key, [MatchTypeToEnumKey("key")] byte value)
+        {
+            return (blackboard.GetEnumValue(key.name) | value) != 0;
+        }
+
+        internal static bool EnumHasFlagsDecoratorBlackboardFunctionUnmanaged(UnityEngine.BlackboardComponent.LowLevel blackboard, UnityEngine.BlackboardKey.LowLevel key, byte value)
+        {
+            return (blackboard.Access<byte>(key.offset) | value) != 0;
+        }
     }
 
     internal static class SampleScoreCalculatorBlackboardFunctions
