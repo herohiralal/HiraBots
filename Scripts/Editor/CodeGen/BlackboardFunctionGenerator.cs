@@ -464,6 +464,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
                             if (updateDescParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector))
@@ -471,6 +472,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.Object:
                             if (updateDescParam.ParameterType != paramInfo.m_ObjectType)
@@ -478,6 +480,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                             if (updateDescParam.ParameterType != typeof(UnityEngine.DynamicEnum))
@@ -485,6 +488,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -523,6 +527,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
                             if (validateParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector).MakeByRefType())
@@ -530,6 +535,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.Object:
                             if (validateParam.ParameterType != paramInfo.m_ObjectType.MakeByRefType())
@@ -537,6 +543,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                             if (validateParam.ParameterType != typeof(UnityEngine.DynamicEnum).MakeByRefType())
@@ -544,6 +551,7 @@ namespace HiraBots.Editor
                                 Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
                                 return false;
                             }
+
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -770,6 +778,36 @@ namespace HiraBots.Editor
 
             keyFilterUpdates += enumTypeIdentifierUpdates;
 
+            string descriptionUpdater;
+            if (function.m_HasDescription)
+            {
+                descriptionUpdater =
+                    $"{function.m_TypeName}.{function.m_Name}UpdateDescription("
+                    + string.Join(", ", function
+                        .m_Parameters
+                        .Select(i => i.m_Name))
+                    + "out staticDescription);";
+            }
+            else
+            {
+                descriptionUpdater = "base.UpdateDescription(out staticDescription);";
+            }
+
+            string externalValidator;
+            if (function.m_HasValidation)
+            {
+                externalValidator =
+                    $"{function.m_TypeName}.{function.m_Name}OnValidate("
+                    + string.Join(", ", function
+                        .m_Parameters
+                        .Select(i => $"ref {i.m_Name}"))
+                    + ");";
+            }
+            else
+            {
+                externalValidator = "// no external validator";
+            }
+
             return CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunction",
                 ("<BLACKBOARD-FUNCTION-METHOD-NAME>", function.m_Name),
                 ("<BLACKBOARD-FUNCTION-BASE-CLASS>", baseClass),
@@ -782,7 +820,9 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall),
                 ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback),
                 ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-FILTER-UPDATE>", keyFilterUpdates),
-                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>", keySelectorValidators)
+                ("<BLACKBOARD-FUNCTION-KEY-SELECTOR-VALIDATORS>", keySelectorValidators),
+                ("<BLACKBOARD-FUNCTION-EXTERNAL-VALIDATOR>", externalValidator),
+                ("<BLACKBOARD-FUNCTION-EXTERNAL-DESCRIPTION-UPDATER>", descriptionUpdater)
             );
         }
 

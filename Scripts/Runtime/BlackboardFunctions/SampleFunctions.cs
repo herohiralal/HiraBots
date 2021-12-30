@@ -246,6 +246,14 @@ namespace HiraBots
             }
         }
 
+        internal static void FloatOperatorEffectorOnValidate(ref UnityEngine.BlackboardTemplate.KeySelector key, ref FloatOperationType operationType, ref float value)
+        {
+            if (operationType == FloatOperationType.Divide && value == 0f)
+            {
+                value = 1f;
+            }
+        }
+
         [GenerateInternalBlackboardFunction("f073722b6c814acdb3f6485ca22b0f0e")]
         internal static void IntegerOperatorEffector(ref int key, IntegerOperationType operationType, int value)
         {

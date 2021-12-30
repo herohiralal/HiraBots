@@ -88,6 +88,12 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
+            // no external validator
+        }
+
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            base.UpdateDescription(out staticDescription);
         }
 
         #endregion

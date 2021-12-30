@@ -88,6 +88,12 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {<BLACKBOARD-FUNCTION-KEY-SELECTOR-FILTER-UPDATE>
+            <BLACKBOARD-FUNCTION-EXTERNAL-VALIDATOR>
+        }
+
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            <BLACKBOARD-FUNCTION-EXTERNAL-DESCRIPTION-UPDATER>
         }
 
         #endregion

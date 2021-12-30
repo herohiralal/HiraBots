@@ -95,6 +95,12 @@ namespace UnityEngine
         {
             key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
             value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
+            // no external validator
+        }
+
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            base.UpdateDescription(out staticDescription);
         }
 
         #endregion

@@ -96,6 +96,12 @@ namespace UnityEngine
         protected override void OnValidateCallback()
         {
             key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Integer;
+            // no external validator
+        }
+
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            base.UpdateDescription(out staticDescription);
         }
 
         #endregion
