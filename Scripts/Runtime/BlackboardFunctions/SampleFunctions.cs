@@ -108,6 +108,59 @@ namespace HiraBots
 
     internal static class SampleScoreCalculatorBlackboardFunctions
     {
+        [GenerateInternalBlackboardFunction("88371d2dafc44604aee17d7062a33f0c")]
+        internal static float AlwaysSucceedScoreCalculator(float currentScore, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.AlwaysSucceedDecorator() ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("76cf91d3f677494e89e4545c520c664c")]
+        internal static float EnumEqualsScoreCalculator(float currentScore, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.EnumEqualsDecorator(ref key, value) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea5c")]
+        internal static float EnumHasFlagsScoreCalculator(float currentScore, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.EnumHasFlagsDecorator(ref key, value) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("841fea4ba9b94948b9b5ff847474ea5c")]
+        internal static float BooleanIsSetScoreCalculator(float currentScore, ref bool key, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.BooleanIsSetDecorator(ref key) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("841fea4ba9b94948c9a5ff847474ea5c")]
+        internal static float QuaternionIsSetScoreCalculator(float currentScore, ref quaternion key, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.QuaternionIsSetDecorator(ref key) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("841fea4ba9b94d48b9a5ff847474ea5c")]
+        internal static float VectorIsSetScoreCalculator(float currentScore, ref float3 key, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.VectorIsSetDecorator(ref key) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f045171ef4871cc")]
+        internal static float IntegerComparisonScoreCalculator(float currentScore, ref int key, int secondValue, IntegerComparisonType comparisonType, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.IntegerComparisonDecorator(ref key, secondValue, comparisonType) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("3b6d337fe0fa4b269f145171ef4871cc")]
+        internal static float FloatComparisonScoreCalculator(float currentScore, ref float key, float secondValue, float equalityTolerance, FloatComparisonType comparisonType, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.FloatComparisonDecorator(ref key, secondValue, equalityTolerance, comparisonType) ? score : 0f);
+        }
+
+        [GenerateInternalBlackboardFunction("e1ecc27574ca4a030ff85de39d096ccc")]
+        internal static float ObjectEqualsScoreCalculator(float currentScore, [HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(ref key, value) ? score : 0f);
+        }
     }
 
     internal static class SampleEffectorBlackboardFunctions
