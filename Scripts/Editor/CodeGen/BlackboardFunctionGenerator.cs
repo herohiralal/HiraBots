@@ -16,7 +16,7 @@ namespace HiraBots.Editor
     {
         private const string k_CodeGenSubFolderName = "BlackboardFunctions";
 
-        private readonly struct BlackboardFunctionParameterInfo
+        internal readonly struct BlackboardFunctionParameterInfo
         {
             internal enum Type : byte
             {
@@ -60,7 +60,7 @@ namespace HiraBots.Editor
             internal readonly System.Type m_ObjectType;
         }
 
-        private readonly struct BlackboardFunctionInfo
+        internal readonly struct BlackboardFunctionInfo
         {
             internal enum Type : byte
             {
@@ -85,7 +85,7 @@ namespace HiraBots.Editor
             internal readonly BlackboardFunctionParameterInfo[] m_Parameters;
         }
 
-        private readonly struct InvalidatedBlackboardFunctionInfo
+        internal readonly struct InvalidatedBlackboardFunctionInfo
         {
             public InvalidatedBlackboardFunctionInfo(string typeName, string methodName, string guid, string baseClass)
             {
@@ -128,7 +128,10 @@ namespace HiraBots.Editor
 
             foreach (var decoratorWannabeFunction in TypeCache.GetMethodsWithAttribute<GenerateHiraBotsDecoratorAttribute>())
             {
-                if (!ValidateMethodInfo(decoratorWannabeFunction, typeof(bool), out var paramInfos))
+                if (!ValidateMethodInfo(decoratorWannabeFunction,
+                        typeof(bool),
+                        out var paramInfos,
+                        false))
                 {
                     invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
                         $"{decoratorWannabeFunction.DeclaringType}",
@@ -151,7 +154,11 @@ namespace HiraBots.Editor
 
             foreach (var scoreCalculatorWannabeFunction in TypeCache.GetMethodsWithAttribute<GenerateHiraBotsScoreCalculatorAttribute>())
             {
-                if (!ValidateMethodInfo(scoreCalculatorWannabeFunction, typeof(float), out var paramInfos, typeof(float)))
+                if (!ValidateMethodInfo(scoreCalculatorWannabeFunction,
+                        typeof(float),
+                        out var paramInfos, 
+                        false,
+                        typeof(float)))
                 {
                     invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
                         $"{scoreCalculatorWannabeFunction.DeclaringType}",
@@ -174,7 +181,10 @@ namespace HiraBots.Editor
 
             foreach (var effectorWannabeFunction in TypeCache.GetMethodsWithAttribute<GenerateHiraBotsEffectorAttribute>())
             {
-                if (!ValidateMethodInfo(effectorWannabeFunction, typeof(void), out var paramInfos))
+                if (!ValidateMethodInfo(effectorWannabeFunction,
+                        typeof(void),
+                        out var paramInfos,
+                        false))
                 {
                     invalidatedMethods.Add(new InvalidatedBlackboardFunctionInfo(
                         $"{effectorWannabeFunction.DeclaringType}",
@@ -230,15 +240,15 @@ namespace HiraBots.Editor
             AssetDatabase.Refresh();
         }
 
-        private static bool ValidateMethodInfo(MethodInfo wannabeFunction, Type expectedReturnType,
-            out BlackboardFunctionParameterInfo[] paramInfos, params Type[] extraExpectedArgs)
+        internal static bool ValidateMethodInfo(MethodInfo wannabeFunction, Type expectedReturnType,
+            out BlackboardFunctionParameterInfo[] paramInfos, bool skipPublicStaticCheck, params Type[] extraExpectedArgs)
         {
             paramInfos = null;
 
             var numberOfExtraArguments = extraExpectedArgs.Length;
 
             // public/static check
-            if (!wannabeFunction.IsPublic || !wannabeFunction.IsStatic)
+            if (!skipPublicStaticCheck && (!wannabeFunction.IsPublic || !wannabeFunction.IsStatic))
             {
                 Debug.LogError(
                     $"{wannabeFunction.DeclaringType}.{wannabeFunction.Name} is not public/static.");
@@ -384,7 +394,11 @@ namespace HiraBots.Editor
                 }
 
                 // find paired method
-                var unmanagedMethod = declaringType.GetMethod($"{wannabeFunction.Name}Unmanaged", BindingFlags.Public | BindingFlags.Static);
+                var unmanagedMethod = declaringType.GetMethod($"{wannabeFunction.Name}Unmanaged",
+                    (skipPublicStaticCheck
+                        ? BindingFlags.Public | BindingFlags.NonPublic
+                        : BindingFlags.Public)
+                    | BindingFlags.Static);
                 if (unmanagedMethod == null)
                 {
                     Debug.LogError(
@@ -473,7 +487,7 @@ namespace HiraBots.Editor
             return true;
         }
 
-        private static string GenerateCode(in BlackboardFunctionInfo function)
+        internal static string GenerateCode(in BlackboardFunctionInfo function)
         {
             string baseClass, returnType, extraParams, extraPassingParams;
             switch (function.m_Type)
