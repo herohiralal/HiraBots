@@ -17,7 +17,7 @@ namespace UnityEngine
         private struct Memory
         {<BLACKBOARD-FUNCTION-UNMANAGED-FIELDS>
         }
-        <BLACKBOARD-FUNCTION-MANAGED-FIELDS>
+<BLACKBOARD-FUNCTION-MANAGED-FIELDS>
 
         // pack memory
         private Memory memory => new Memory
@@ -84,6 +84,7 @@ namespace UnityEngine
 
         protected override void OnTargetBlackboardTemplateChanged(BlackboardTemplate template, in BlackboardTemplate.KeySet keySet)
         {
+            <BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>
         }
 
         protected override void OnValidateCallback()

@@ -334,37 +334,37 @@ namespace HiraBots.Editor
                         matchTypeToEnumKey.argumentName);
                 }
                 // bool key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsBooleanKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsBooleanKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.BooleanKey);
                 }
                 // enum key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsEnumKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsEnumKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.EnumKey);
                 }
                 // float key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsFloatKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsFloatKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.FloatKey);
                 }
                 // int key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsIntegerKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsIntegerKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.IntegerKey);
                 }
                 // object key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsObjectKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsObjectKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.ObjectKey);
                 }
                 // quaternion key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsQuaternionKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsQuaternionKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.QuaternionKey);
                 }
                 // vector key
-                else if (paramType == typeof(string) && param.GetCustomAttribute<HiraBotsVectorKeyAttribute>() != null)
+                else if (paramType == typeof(UnityEngine.BlackboardKey) && param.GetCustomAttribute<HiraBotsVectorKeyAttribute>() != null)
                 {
                     paramInfos[i] = new BlackboardFunctionParameterInfo(param.Name, BlackboardFunctionParameterInfo.Type.VectorKey);
                 }
@@ -607,6 +607,11 @@ namespace HiraBots.Editor
             var managedFunctionCall = (returnType == "void" ? "" : "return ") +
                                       $"{function.m_TypeName}.{function.m_Name}({string.Join(", ", allManagedFunctionParams)});";
 
+            var keyParams = function.m_Parameters.Where(IsBlackboardKey).ToArray();
+
+            var templateChangedCallback = string.Join(" ", keyParams
+                .Select(i => $"{i.m_Name}.OnTargetBlackboardTemplateChanged(template, in keySet);"));
+
             return CodeGenHelpers.ReadTemplate("BlackboardFunctions/BlackboardFunction",
                 ("<BLACKBOARD-FUNCTION-METHOD-NAME>", function.m_Name),
                 ("<BLACKBOARD-FUNCTION-BASE-CLASS>", baseClass),
@@ -616,7 +621,8 @@ namespace HiraBots.Editor
                 ("<BLACKBOARD-FUNCTION-RETURN-TYPE>", returnType),
                 ("<BLACKBOARD-FUNCTION-EXTRA-PARAMS>", extraParams),
                 ("<BLACKBOARD-FUNCTION-UNMANAGED-FUNCTION-CALL>", unmanagedFunctionCall),
-                ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall)
+                ("<BLACKBOARD-FUNCTION-MANAGED-FUNCTION-CALL>", managedFunctionCall),
+                ("<BLACKBOARD-FUNCTION-TEMPLATE-CHANGED-CALLBACK>", templateChangedCallback)
             );
         }
 
@@ -657,9 +663,30 @@ namespace HiraBots.Editor
                 case BlackboardFunctionParameterInfo.Type.ObjectKey:
                 case BlackboardFunctionParameterInfo.Type.QuaternionKey:
                 case BlackboardFunctionParameterInfo.Type.VectorKey:
-                    return "BlackboardTemplate.KeySelector";
+                    return $"{nameof(UnityEngine.BlackboardTemplate)}.{nameof(UnityEngine.BlackboardTemplate.KeySelector)}";
                 case BlackboardFunctionParameterInfo.Type.DynamicEnum:
-                    return "DynamicEnum";
+                    return nameof(UnityEngine.DynamicEnum);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static bool IsBlackboardKey(BlackboardFunctionParameterInfo info)
+        {
+            switch (info.m_Type)
+            {
+                case BlackboardFunctionParameterInfo.Type.UnmanagedValue:
+                case BlackboardFunctionParameterInfo.Type.Object:
+                case BlackboardFunctionParameterInfo.Type.DynamicEnum:
+                    return false;
+                case BlackboardFunctionParameterInfo.Type.BooleanKey:
+                case BlackboardFunctionParameterInfo.Type.EnumKey:
+                case BlackboardFunctionParameterInfo.Type.FloatKey:
+                case BlackboardFunctionParameterInfo.Type.IntegerKey:
+                case BlackboardFunctionParameterInfo.Type.ObjectKey:
+                case BlackboardFunctionParameterInfo.Type.QuaternionKey:
+                case BlackboardFunctionParameterInfo.Type.VectorKey:
+                    return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
