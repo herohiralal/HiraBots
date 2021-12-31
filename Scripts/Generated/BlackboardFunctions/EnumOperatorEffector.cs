@@ -18,12 +18,12 @@ namespace UnityEngine
         private struct Memory
         {
             internal ushort _key;
-            internal HiraBots.EnumOperationType _operationType;
+            internal HiraBots.SampleBlackboardFunctionsEnumOperationType _operationType;
             internal byte _value;
         }
 
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal HiraBots.EnumOperationType operationType;
+        [SerializeField] internal HiraBots.SampleBlackboardFunctionsEnumOperationType operationType;
         [SerializeField] internal DynamicEnum value;
 
         // pack memory

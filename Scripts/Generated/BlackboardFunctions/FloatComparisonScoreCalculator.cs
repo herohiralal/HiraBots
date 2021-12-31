@@ -21,7 +21,7 @@ namespace UnityEngine
             internal ushort _key;
             internal System.Single _secondValue;
             internal System.Single _equalityTolerance;
-            internal HiraBots.FloatComparisonType _comparisonType;
+            internal HiraBots.SampleBlackboardFunctionsFloatComparisonType _comparisonType;
             internal System.Single _score;
         }
 
@@ -29,7 +29,7 @@ namespace UnityEngine
         [SerializeField] internal BlackboardTemplate.KeySelector key;
         [SerializeField] internal System.Single secondValue;
         [SerializeField] internal System.Single equalityTolerance;
-        [SerializeField] internal HiraBots.FloatComparisonType comparisonType;
+        [SerializeField] internal HiraBots.SampleBlackboardFunctionsFloatComparisonType comparisonType;
         [SerializeField] internal System.Single score;
 
         // pack memory

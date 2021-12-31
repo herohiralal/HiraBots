@@ -18,12 +18,12 @@ namespace UnityEngine
         private struct Memory
         {
             internal ushort _key;
-            internal HiraBots.IntegerOperationType _operationType;
+            internal HiraBots.SampleBlackboardFunctionsIntegerOperationType _operationType;
             internal System.Int32 _value;
         }
 
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal HiraBots.IntegerOperationType operationType;
+        [SerializeField] internal HiraBots.SampleBlackboardFunctionsIntegerOperationType operationType;
         [SerializeField] internal System.Int32 value;
 
         // pack memory

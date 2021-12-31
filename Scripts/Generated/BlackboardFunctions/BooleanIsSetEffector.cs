@@ -18,11 +18,11 @@ namespace UnityEngine
         private struct Memory
         {
             internal ushort _key;
-            internal HiraBots.SetOperationType _operationType;
+            internal HiraBots.SampleBlackboardFunctionsSetOperationType _operationType;
         }
 
         [SerializeField] internal BlackboardTemplate.KeySelector key;
-        [SerializeField] internal HiraBots.SetOperationType operationType;
+        [SerializeField] internal HiraBots.SampleBlackboardFunctionsSetOperationType operationType;
 
         // pack memory
         private Memory memory => new Memory

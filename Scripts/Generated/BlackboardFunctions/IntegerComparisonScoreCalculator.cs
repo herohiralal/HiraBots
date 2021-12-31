@@ -20,14 +20,14 @@ namespace UnityEngine
             internal System.Boolean _invert;
             internal ushort _key;
             internal System.Int32 _secondValue;
-            internal HiraBots.IntegerComparisonType _comparisonType;
+            internal HiraBots.SampleBlackboardFunctionsIntegerComparisonType _comparisonType;
             internal System.Single _score;
         }
 
         [SerializeField] internal System.Boolean invert;
         [SerializeField] internal BlackboardTemplate.KeySelector key;
         [SerializeField] internal System.Int32 secondValue;
-        [SerializeField] internal HiraBots.IntegerComparisonType comparisonType;
+        [SerializeField] internal HiraBots.SampleBlackboardFunctionsIntegerComparisonType comparisonType;
         [SerializeField] internal System.Single score;
 
         // pack memory
