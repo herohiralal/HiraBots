@@ -31,7 +31,7 @@
                 // if the plan is not over
                 if (currentIndex < planAtCurrentLayer.length)
                 {
-                    var currentContainerIndex = planAtCurrentLayer[planAtCurrentLayer[currentIndex]];
+                    var currentContainerIndex = planAtCurrentLayer[currentIndex];
 
                     // if precondition isn't satisfied, this layer has failed, try to solve it
                     if (!m_Domain.CheckPreconditionOnBlackboard(i, currentContainerIndex, m_Blackboard))
