@@ -67,6 +67,7 @@ namespace HiraBots
             // mark the status as planning
             m_Status = Status.Planning;
 
+            // RunPlannerJobSynchronously(index);
             var lastJobHandle = SchedulePlannerJob(index);
 
             {
@@ -139,6 +140,38 @@ namespace HiraBots
 
             // schedule a blackboard disposal job for after all the planner jobs have run
             return blackboard.Dispose(lastJobHandle);
+        }
+
+        // run the planner job synchronously (for debug purposes)
+        private void RunPlannerJobSynchronously(int index)
+        {
+            var layerCount = m_Domain.layerCount;
+
+            var domain = m_Domain.data;
+            var blackboard = m_Blackboard.Copy(Allocator.TempJob);
+
+            // goal calculator job
+            if (index == 0)
+            {
+                new LGOAPGoalCalculatorJob(domain, blackboard, m_Domain.fallbackPlans[0], m_PlansForExecution[0])
+                    .Run();
+                ++index;
+            }
+
+            for (var i = index; i < layerCount; i++)
+            {
+                new LGOAPMainPlannerJob(
+                    domain,
+                    blackboard,
+                    m_Domain.fallbackPlans[i],
+                    100f,
+                    i,
+                    m_PlansForExecution[i - 1],
+                    m_PlansForExecution[i])
+                    .Run();
+            }
+
+            blackboard.Dispose();
         }
 
         // this function is not inlined to ensure its synchronicity
