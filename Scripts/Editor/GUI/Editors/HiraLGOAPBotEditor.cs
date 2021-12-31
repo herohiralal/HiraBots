@@ -54,160 +54,7 @@ namespace HiraBots.Editor
 
             if (m_Bot.domain != null && m_Bot.domain.blackboard != null && m_Bot.domain.blackboard.isCompiled && m_Bot.blackboard != null)
             {
-                var blackboardComponent = m_Bot.blackboard;
-                var blackboard = m_Bot.domain.blackboard;
-
-                if (m_Keys == null)
-                {
-                    m_Keys = new HashSet<BlackboardKey>();
-                    blackboard.GetKeySet(m_Keys);
-                }
-
-                EditorGUILayout.Space(12f, true);
-                var blackboardHeadingRect = EditorGUILayout.GetControlRect();
-                var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
-                if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit (NO UNDO/REDO)"))
-                {
-                    m_EditBlackboard = !m_EditBlackboard;
-                }
-
-                using (new GUIEnabledChanger(m_EditBlackboard))
-                {
-                    m_EditType = (EditType) EditorGUILayout.EnumPopup(
-                        GUIHelpers.TempContent("Edit Type", "The type of edit to perform on the blackboard."),
-                        m_EditType);
-
-                    foreach (var key in m_Keys)
-                    {
-                        var keyName = key.name;
-
-                        switch (key)
-                        {
-                            case BooleanBlackboardKey _:
-                            {
-                                var currentValue = blackboardComponent.GetBooleanValue(keyName);
-                                var newValue = EditorGUILayout.Toggle(keyName, currentValue);
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetBooleanValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case EnumBlackboardKey enumKey:
-                            {
-                                var currentValue = blackboardComponent.GetEnumValue(keyName);
-                                byte newValue;
-
-                                unsafe
-                                {
-                                    var newValueTemp = currentValue;
-
-                                    GUIHelpers.DynamicEnumPopup(EditorGUILayout.GetControlRect(),
-                                        GUIHelpers.TempContent(keyName),
-                                        (System.IntPtr) (&newValueTemp),
-                                        DynamicEnum.Helpers.identifierToType[enumKey.typeIdentifier]);
-
-                                    newValue = newValueTemp;
-                                }
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetEnumValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case FloatBlackboardKey _:
-                            {
-                                var currentValue = blackboardComponent.GetFloatValue(keyName);
-                                var newValue = EditorGUILayout.DelayedFloatField(keyName, currentValue);
-
-                                if (Mathf.Abs(newValue - currentValue) >= 0.0001f)
-                                {
-                                    blackboardComponent.SetFloatValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case IntegerBlackboardKey _:
-                            {
-                                var currentValue = blackboardComponent.GetIntegerValue(keyName);
-                                var newValue = EditorGUILayout.DelayedIntField(keyName, currentValue);
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetIntegerValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case ObjectBlackboardKey _:
-                            {
-                                var currentValue = blackboardComponent.GetObjectValue(keyName);
-                                var newValue = EditorGUILayout.ObjectField(keyName, currentValue, typeof(Object), true);
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetObjectValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case QuaternionBlackboardKey _:
-                            {
-                                var currentValue = ((Quaternion) blackboardComponent.GetQuaternionValue(keyName)).eulerAngles;
-                                var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetQuaternionValue(keyName,
-                                        Quaternion.Euler(newValue),
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            case VectorBlackboardKey _:
-                            {
-                                var currentValue = (Vector3) blackboardComponent.GetVectorValue(keyName);
-                                var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
-
-                                if (currentValue != newValue)
-                                {
-                                    blackboardComponent.SetVectorValue(keyName,
-                                        newValue,
-                                        m_EditType == EditType.Expected);
-                                }
-
-                                break;
-                            }
-
-                            default:
-                            {
-                                EditorGUILayout.LabelField(keyName, "Unknown type.");
-                                break;
-                            }
-                        }
-                    }
-                }
+                DrawCurrentBlackboardState();
             }
             else
             {
@@ -216,36 +63,194 @@ namespace HiraBots.Editor
 
             if (m_Bot.domain != null && m_Bot.domain.isCompiled && m_Bot.planner != null)
             {
-                var planSet = new LGOAPPlannerComponent.Serialized(m_Bot.planner).executionSet;
-                var domain = m_Bot.domain.compiledData;
+                DrawCurrentlyRunningTasks();
+            }
+        }
 
-                var layerCount = domain.layerCount;
+        private unsafe void DrawCurrentBlackboardState()
+        {
+            var blackboardComponent = m_Bot.blackboard;
+            var blackboard = m_Bot.domain.blackboard;
 
-                for (var i = 0; i < layerCount; i++)
+            if (m_Keys == null)
+            {
+                m_Keys = new HashSet<BlackboardKey>();
+                blackboard.GetKeySet(m_Keys);
+            }
+
+            EditorGUILayout.Space(12f, true);
+            var blackboardHeadingRect = EditorGUILayout.GetControlRect();
+            var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
+            if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit (NO UNDO/REDO)"))
+            {
+                m_EditBlackboard = !m_EditBlackboard;
+            }
+
+            using (new GUIEnabledChanger(m_EditBlackboard))
+            {
+                m_EditType = (EditType) EditorGUILayout.EnumPopup(
+                    GUIHelpers.TempContent("Edit Type", "The type of edit to perform on the blackboard."),
+                    m_EditType);
+
+                foreach (var key in m_Keys)
                 {
-                    var planAtCurrentLayer = planSet[i];
-                    var length = planAtCurrentLayer.length;
-                    var currentExecutionIndex = planAtCurrentLayer.currentIndex;
+                    var keyName = key.name;
 
-                    EditorGUILayout.Space(12f, true);
-                    var lengthRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(),
-                        GUIHelpers.TempContent(i == 0 ? "GOALS [Layer Index: 0]" : $"TASKS [Layer Index: {i}]"),
-                        EditorStyles.boldLabel);
-
-                    EditorGUI.LabelField(lengthRect,
-                        GUIHelpers.TempContent($"[EXECUTED: {currentExecutionIndex}/{length}] [LENGTH: {length}/{planAtCurrentLayer.maxLength}]"),
-                        EditorStyles.miniLabel);
-
-
-                    for (short j = 0; j < length; j++)
+                    switch (key)
                     {
-                        var currentContainerIndex = planAtCurrentLayer[j];
+                        case BooleanBlackboardKey _:
+                        {
+                            var currentValue = blackboardComponent.GetBooleanValue(keyName);
+                            var newValue = EditorGUILayout.Toggle(keyName, currentValue);
 
-                        var containerName = domain.GetContainerName(i, currentContainerIndex);
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetBooleanValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
 
-                        var progressBarRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.TempContent(containerName));
-                        EditorGUI.ProgressBar(progressBarRect, j < currentExecutionIndex ? 1 : 0, j == currentExecutionIndex ? ">> Executing <<" : "");
+                            break;
+                        }
+
+                        case EnumBlackboardKey enumKey:
+                        {
+                            var currentValue = blackboardComponent.GetEnumValue(keyName);
+
+                            var newValueTemp = currentValue;
+
+                            GUIHelpers.DynamicEnumPopup(EditorGUILayout.GetControlRect(),
+                                GUIHelpers.TempContent(keyName),
+                                (System.IntPtr) (&newValueTemp),
+                                DynamicEnum.Helpers.identifierToType[enumKey.typeIdentifier]);
+
+                            var newValue = newValueTemp;
+
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetEnumValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        case FloatBlackboardKey _:
+                        {
+                            var currentValue = blackboardComponent.GetFloatValue(keyName);
+                            var newValue = EditorGUILayout.DelayedFloatField(keyName, currentValue);
+
+                            if (Mathf.Abs(newValue - currentValue) >= 0.0001f)
+                            {
+                                blackboardComponent.SetFloatValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        case IntegerBlackboardKey _:
+                        {
+                            var currentValue = blackboardComponent.GetIntegerValue(keyName);
+                            var newValue = EditorGUILayout.DelayedIntField(keyName, currentValue);
+
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetIntegerValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        case ObjectBlackboardKey _:
+                        {
+                            var currentValue = blackboardComponent.GetObjectValue(keyName);
+                            var newValue = EditorGUILayout.ObjectField(keyName, currentValue, typeof(Object), true);
+
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetObjectValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        case QuaternionBlackboardKey _:
+                        {
+                            var currentValue = ((Quaternion) blackboardComponent.GetQuaternionValue(keyName)).eulerAngles;
+                            var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
+
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetQuaternionValue(keyName,
+                                    Quaternion.Euler(newValue),
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        case VectorBlackboardKey _:
+                        {
+                            var currentValue = (Vector3) blackboardComponent.GetVectorValue(keyName);
+                            var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
+
+                            if (currentValue != newValue)
+                            {
+                                blackboardComponent.SetVectorValue(keyName,
+                                    newValue,
+                                    m_EditType == EditType.Expected);
+                            }
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            EditorGUILayout.LabelField(keyName, "Unknown type.");
+                            break;
+                        }
                     }
+                }
+            }
+        }
+
+        private void DrawCurrentlyRunningTasks()
+        {
+            var planSet = new LGOAPPlannerComponent.Serialized(m_Bot.planner).executionSet;
+            var domain = m_Bot.domain.compiledData;
+
+            var layerCount = domain.layerCount;
+
+            for (var i = 0; i < layerCount; i++)
+            {
+                var planAtCurrentLayer = planSet[i];
+                var length = planAtCurrentLayer.length;
+                var currentExecutionIndex = planAtCurrentLayer.currentIndex;
+
+                EditorGUILayout.Space(12f, true);
+                var lengthRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(),
+                    GUIHelpers.TempContent(i == 0 ? "GOALS [Layer Index: 0]" : $"TASKS [Layer Index: {i}]"),
+                    EditorStyles.boldLabel);
+
+                EditorGUI.LabelField(lengthRect,
+                    GUIHelpers.TempContent($"[EXECUTED: {currentExecutionIndex}/{length}] [LENGTH: {length}/{planAtCurrentLayer.maxLength}]"),
+                    EditorStyles.miniLabel);
+
+                for (short j = 0; j < length; j++)
+                {
+                    var currentContainerIndex = planAtCurrentLayer[j];
+
+                    var containerName = domain.GetContainerName(i, currentContainerIndex);
+
+                    var progressBarRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.TempContent(containerName));
+                    EditorGUI.ProgressBar(progressBarRect, j < currentExecutionIndex ? 1 : 0, j == currentExecutionIndex ? ">> Executing <<" : "");
                 }
             }
         }

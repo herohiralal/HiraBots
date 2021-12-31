@@ -51,6 +51,10 @@
             m_PlansForPlanning = new LGOAPPlan.Set(m_Domain.maxPlanSizesByLayer);
 
             domain.fallbackPlans.CopyTo(m_PlansForExecution);
+            m_PlansForExecution.MarkDone();
+            // mark the fallback goal as "achieved" when this object is constructed
+            // so that when the planner runs for the first time, it doesn't
+            // pick up the fallback planner and mark it as "unchanged"
 
             m_Status = Status.Normal;
             m_LayerToSchedulePlannerAt = null;

@@ -127,6 +127,17 @@ namespace HiraBots
             internal ref LGOAPPlan this[int layerIndex] => ref m_Internal[layerIndex];
 
             /// <summary>
+            /// Mark the plan set as done.
+            /// </summary>
+            internal void MarkDone()
+            {
+                for (var i = 0; i < m_Internal.Length; i++)
+                {
+                    m_Internal[i].currentIndex = m_Internal[i].length;
+                }
+            }
+
+            /// <summary>
             /// Copy the plan set to another.
             /// </summary>
             internal void CopyTo(Set dst)

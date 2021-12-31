@@ -133,7 +133,6 @@ namespace HiraBots
 
             m_DomainCurrentlyInUse = m_Domain;
 
-            GrabPlannerResults();
             m_Planner.StartPlannerAtLayer(0, true);
         }
 
