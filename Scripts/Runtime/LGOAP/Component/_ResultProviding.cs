@@ -48,6 +48,16 @@
                     }
 
                     // otherwise mark the results for collection
+
+                    // also mark all the plans underneath this layer as not required
+                    for (var j = i + 1; j < layerCount; j++)
+                    {
+                        var planAfterThisLayer = m_PlansForExecution[j];
+                        planAfterThisLayer.length = 0;
+                        planAfterThisLayer.currentIndex = 0;
+                        planAfterThisLayer.resultType = LGOAPPlan.Type.NotRequired;
+                    }
+
                     canProvidePlan = true;
                     return;
                 }
