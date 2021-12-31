@@ -12,6 +12,7 @@
 
 namespace UnityEngine
 {
+    [Unity.Burst.BurstCompile]
     public unsafe partial class ObjectEqualsScoreCalculator : HiraBotsScoreCalculatorBlackboardFunction
     {
         private struct Memory

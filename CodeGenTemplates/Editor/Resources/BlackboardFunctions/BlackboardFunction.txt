@@ -12,6 +12,7 @@
 
 namespace UnityEngine
 {
+    [Unity.Burst.BurstCompile]
     public unsafe partial class <BLACKBOARD-FUNCTION-METHOD-NAME> : <BLACKBOARD-FUNCTION-BASE-CLASS>
     {
         private struct Memory
