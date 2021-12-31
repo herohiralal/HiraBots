@@ -8,10 +8,10 @@ namespace HiraBots
     {
         internal static LGOAPTarget empty => new LGOAPTarget
         {
-            m_Target = new DecoratorBlackboardFunction[0]
+            m_Target = new HiraBotsDecoratorBlackboardFunction[0]
         };
 
         [Tooltip("The conditions that must be satisfied for this goal/task to be fulfilled.")]
-        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Target;
+        [SerializeField, HideInInspector] internal HiraBotsDecoratorBlackboardFunction[] m_Target;
     }
 }

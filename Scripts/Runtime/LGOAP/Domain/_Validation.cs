@@ -53,7 +53,7 @@ namespace HiraBots
         /// <summary>
         /// Pre-allocated list for badly selected keys.
         /// </summary>
-        List<BlackboardFunctionValidatorContext.BadKeyInfo> badlySelectedKeys { get; }
+        List<HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo> badlySelectedKeys { get; }
 
         /// <summary>
         /// Pre-allocated list for errors in executables.

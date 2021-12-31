@@ -8,18 +8,18 @@ namespace HiraBots
     {
         internal static LGOAPAction empty => new LGOAPAction
         {
-            m_Precondition = new DecoratorBlackboardFunction[0],
-            m_Cost = new DecoratorBlackboardFunction[0],
-            m_Effect = new EffectorBlackboardFunction[0]
+            m_Precondition = new HiraBotsDecoratorBlackboardFunction[0],
+            m_Cost = new HiraBotsScoreCalculatorBlackboardFunction[0],
+            m_Effect = new HiraBotsEffectorBlackboardFunction[0]
         };
 
         [Tooltip("The conditions that must be satisfied for this task to be valid.")]
-        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Precondition;
+        [SerializeField, HideInInspector] internal HiraBotsDecoratorBlackboardFunction[] m_Precondition;
 
         [Tooltip("The amount of cost this task entails.")]
-        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Cost;
+        [SerializeField, HideInInspector] internal HiraBotsScoreCalculatorBlackboardFunction[] m_Cost;
 
         [Tooltip("The effect this action has upon the execution of this task.")]
-        [SerializeField, HideInInspector] internal EffectorBlackboardFunction[] m_Effect;
+        [SerializeField, HideInInspector] internal HiraBotsEffectorBlackboardFunction[] m_Effect;
     }
 }

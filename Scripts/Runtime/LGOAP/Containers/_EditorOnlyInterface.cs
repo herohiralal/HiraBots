@@ -17,13 +17,13 @@ namespace HiraBots
                 name = GetProperty("m_Name",
                     SerializedPropertyType.String, false, true);
 
-                goalInsistence = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Insistence)}.{nameof(LGOAPInsistence.m_Insistence)}",
+                goalInsistence = GetProperty<HiraBotsScoreCalculatorBlackboardFunction>($"{nameof(m_Insistence)}.{nameof(LGOAPInsistence.m_Insistence)}",
                     true, true);
 
                 goalInsistenceROL = new ReorderableList((SerializedObject) this, goalInsistence,
                     true, true, true, true);
 
-                goalTarget = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Target)}.{nameof(LGOAPTarget.m_Target)}",
+                goalTarget = GetProperty<HiraBotsDecoratorBlackboardFunction>($"{nameof(m_Target)}.{nameof(LGOAPTarget.m_Target)}",
                     true, true);
 
                 goalTargetROL = new ReorderableList((SerializedObject) this, goalTarget,
@@ -52,16 +52,16 @@ namespace HiraBots
                 }
             }
 
-            internal void OnBlackboardUpdate(BlackboardFunction function)
+            internal void OnBlackboardUpdate(HiraBotsBlackboardFunction function)
             {
                 OnBlackboardUpdate(function, keySet);
             }
 
-            private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            private void OnBlackboardUpdate(HiraBotsBlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
                 if (function != null)
                 {
-                    function.OnTargetBlackboardTemplateChanged(target.blackboard, keys);
+                    function.OnTargetBlackboardTemplateChangedWrapped(target.blackboard, keys);
                 }
             }
         }
@@ -79,25 +79,25 @@ namespace HiraBots
                 name = GetProperty("m_Name",
                     SerializedPropertyType.String, false, true);
 
-                taskPrecondition = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Precondition)}",
+                taskPrecondition = GetProperty<HiraBotsDecoratorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Precondition)}",
                     true, true);
 
                 taskPreconditionROL = new ReorderableList((SerializedObject) this, taskPrecondition,
                     true, true, true, true);
 
-                taskCost = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Cost)}",
+                taskCost = GetProperty<HiraBotsScoreCalculatorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Cost)}",
                     true, true);
 
                 taskCostROL = new ReorderableList((SerializedObject) this, taskCost,
                     true, true, true, true);
 
-                taskEffect = GetProperty<EffectorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Effect)}",
+                taskEffect = GetProperty<HiraBotsEffectorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Effect)}",
                     true, true);
 
                 taskEffectROL = new ReorderableList((SerializedObject) this, taskEffect,
                     true, true, true, true);
 
-                taskTarget = GetProperty<DecoratorBlackboardFunction>($"{nameof(m_Target)}.{nameof(LGOAPTarget.m_Target)}",
+                taskTarget = GetProperty<HiraBotsDecoratorBlackboardFunction>($"{nameof(m_Target)}.{nameof(LGOAPTarget.m_Target)}",
                     true, true);
 
                 taskTargetROL = new ReorderableList((SerializedObject) this, taskTarget,
@@ -152,14 +152,14 @@ namespace HiraBots
                 }
             }
 
-            internal void OnBlackboardUpdate(BlackboardFunction function)
+            internal void OnBlackboardUpdate(HiraBotsBlackboardFunction function)
             {
                 OnBlackboardUpdate(function, keySet);
             }
 
-            private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            private void OnBlackboardUpdate(HiraBotsBlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
-                function.OnTargetBlackboardTemplateChanged(target.blackboard, keys);
+                function.OnTargetBlackboardTemplateChangedWrapped(target.blackboard, keys);
             }
 
             internal void OnBlackboardUpdate(HiraBotsTaskProvider taskProvider)

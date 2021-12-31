@@ -14,26 +14,13 @@ namespace HiraBots
             return m_TaskLayers[layerIndex - 1][containerIndex].isAbstract;
         }
 
-        internal float GetInsistenceOnBlackboard(int containerIndex, BlackboardComponent blackboard)
-        {
-            var insistence = m_Goals[containerIndex].insistence;
-
-            var score = 0f;
-            for (var i = 0; i < insistence.count; i++)
-            {
-                score += insistence[i].ExecuteScoreCalculator(blackboard);
-            }
-
-            return score;
-        }
-
         internal bool CheckTargetOnBlackboard(int layerIndex, int containerIndex, BlackboardComponent blackboard)
         {
             var target = layerIndex == 0 ? m_Goals[containerIndex].target : m_TaskLayers[layerIndex - 1][containerIndex].target;
 
             for (var i = 0; i < target.count; i++)
             {
-                if (!target[i].ExecuteDecorator(blackboard))
+                if (!target[i].Execute(blackboard, true))
                 {
                     return false;
                 }
@@ -48,7 +35,7 @@ namespace HiraBots
 
             for (var i = 0; i < precondition.count; i++)
             {
-                if (!precondition[i].ExecuteDecorator(blackboard))
+                if (!precondition[i].Execute(blackboard, true))
                 {
                     return false;
                 }

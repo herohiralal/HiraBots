@@ -3,7 +3,7 @@
     internal unsafe partial struct LGOAPInsistence : ILowLevelObjectProvider
     {
         [System.NonSerialized] internal UnityEngine.Object m_Owner;
-        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<DecoratorBlackboardFunction> m_CompilationHelper;
+        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<UnityEngine.HiraBotsScoreCalculatorBlackboardFunction> m_CompilationHelper;
 
         internal void PrepareForCompilation()
         {
@@ -35,7 +35,7 @@
     internal unsafe partial struct LGOAPTarget : ILowLevelObjectProvider
     {
         [System.NonSerialized] internal UnityEngine.Object m_Owner;
-        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<DecoratorBlackboardFunction> m_CompilationHelper;
+        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<UnityEngine.HiraBotsDecoratorBlackboardFunction> m_CompilationHelper;
         [System.NonSerialized] private int m_ActualMemorySize;
         [System.NonSerialized] private bool m_IsFake;
 
@@ -81,9 +81,9 @@
     internal unsafe partial struct LGOAPAction : ILowLevelObjectProvider
     {
         [System.NonSerialized] internal UnityEngine.Object m_Owner;
-        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<DecoratorBlackboardFunction> m_PreconditionCompiler;
-        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<DecoratorBlackboardFunction> m_CostCompiler;
-        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<EffectorBlackboardFunction> m_EffectCompiler;
+        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<UnityEngine.HiraBotsDecoratorBlackboardFunction> m_PreconditionCompiler;
+        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<UnityEngine.HiraBotsScoreCalculatorBlackboardFunction> m_CostCompiler;
+        [System.NonSerialized] private DefaultLowLevelObjectProviderCollection<UnityEngine.HiraBotsEffectorBlackboardFunction> m_EffectCompiler;
         [System.NonSerialized] private int m_Size;
 
         internal void PrepareForCompilation()

@@ -14,7 +14,7 @@ namespace HiraBots
             m_BadContainers = new List<LGOAPDomainValidatorContext.BadContainerInfo>();
             m_BadFunctions = new List<LGOAPContainerValidatorContext.BadFunctionInfo>();
             m_BadExecutables = new List<LGOAPContainerValidatorContext.BadExecutableInfo>();
-            m_BadlySelectedKeys = new List<BlackboardFunctionValidatorContext.BadKeyInfo>();
+            m_BadlySelectedKeys = new List<HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo>();
             m_ExecutablesErrors = new List<string>();
             m_ValidatedBlackboardsAndTheirKeySets = validatedBlackboardsAndTheirKeySets;
         }
@@ -55,7 +55,7 @@ namespace HiraBots
         private readonly List<LGOAPContainerValidatorContext.BadExecutableInfo> m_BadExecutables;
 
         // pre-allocated list of badly selected keys
-        private readonly List<BlackboardFunctionValidatorContext.BadKeyInfo> m_BadlySelectedKeys;
+        private readonly List<HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo> m_BadlySelectedKeys;
 
         // pre-allocated list of executables errors
         private readonly List<string> m_ExecutablesErrors;
@@ -129,18 +129,6 @@ namespace HiraBots
                                 m_ErrorString.AppendLine(FormatStringForNullFunction(target,
                                     ref badContainerInfo, ref badFunctionInfo));
                                 continue;
-                            }
-
-                            if (badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe)
-                            {
-                                m_ErrorString.AppendLine(FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(target,
-                                    ref badContainerInfo, ref badFunctionInfo));
-                            }
-
-                            if (badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe)
-                            {
-                                m_ErrorString.AppendLine(FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(target,
-                                    ref badContainerInfo, ref badFunctionInfo));
                             }
 
                             if (badFunctionInfo.badKeys != null)
@@ -223,30 +211,14 @@ namespace HiraBots
                    $"::{f.functionType}[{f.functionIndex}] is null.";
         }
 
-        internal static string FormatErrorStringForFunctionScoreCalculatorWhenItShouldNotBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadContainerInfo c,
-            ref LGOAPContainerValidatorContext.BadFunctionInfo f)
-        {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
-                   $"::{f.functionType}[{f.functionIndex}] should not be a score calculator.";
-        }
-
-        internal static string FormatErrorStringForFunctionNotScoreCalculatorWhenItShouldBe(LGOAPDomain d,
-            ref LGOAPDomainValidatorContext.BadContainerInfo c,
-            ref LGOAPContainerValidatorContext.BadFunctionInfo f)
-        {
-            return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
-                   $"::{f.functionType}[{f.functionIndex}] should be a score calculator.";
-        }
-
         internal static string FormatErrorStringForBadlySelectedKey(LGOAPDomain d,
             ref LGOAPDomainValidatorContext.BadContainerInfo c,
             ref LGOAPContainerValidatorContext.BadFunctionInfo f,
-            ref BlackboardFunctionValidatorContext.BadKeyInfo k)
+            ref HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo k)
         {
             return $"{d.name}::Layer[{c.layerIndex}]::{c.containerType}[{c.containerIndex}]({f.containerName})" +
                    $"::{f.functionType}[{f.functionIndex}]({k.functionName})::{k.variableName} has an invalid value of " +
-                   $"{(k.selectedKey == null ? "null" : k.selectedKey.name)}.";
+                   $"{(k.selectedKey.isValid ? k.selectedKey.name : "null")}.";
         }
 
         internal static string FormatStringForNullExecutable(LGOAPDomain d,
@@ -283,7 +255,7 @@ namespace HiraBots
 
         List<LGOAPContainerValidatorContext.BadExecutableInfo> ILGOAPDomainValidatorContext.badExecutables => m_BadExecutables;
 
-        List<BlackboardFunctionValidatorContext.BadKeyInfo> ILGOAPDomainValidatorContext.badlySelectedKeys => m_BadlySelectedKeys;
+        List<HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo> ILGOAPDomainValidatorContext.badlySelectedKeys => m_BadlySelectedKeys;
 
         List<string> ILGOAPDomainValidatorContext.executablesErrors => m_ExecutablesErrors;
 

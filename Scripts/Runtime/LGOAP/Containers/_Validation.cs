@@ -35,19 +35,9 @@ namespace HiraBots
             internal bool functionIsNull { get; set; }
 
             /// <summary>
-            /// Whether the function is a score calculator when it shouldn't be,
-            /// </summary>
-            internal bool functionIsScoreCalculatorWhenItShouldNotBe { get; set; }
-
-            /// <summary>
-            /// Whether the function is not a score calculator when it should be.
-            /// </summary>
-            internal bool functionIsNotScoreCalculatorWhenItShouldBe { get; set; }
-
-            /// <summary>
             /// The list of bad keys on the function.
             /// </summary>
-            internal BlackboardFunctionValidatorContext.BadKeyInfo[] badKeys { get; set; }
+            internal HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo[] badKeys { get; set; }
         }
 
         /// <summary>
@@ -99,7 +89,7 @@ namespace HiraBots
         /// <summary>
         /// Pre-allocated list for badly selected keys.
         /// </summary>
-        internal List<BlackboardFunctionValidatorContext.BadKeyInfo> badlySelectedKeys { get; set; }
+        internal List<HiraBotsBlackboardFunction.ValidatorContext.BadKeyInfo> badlySelectedKeys { get; set; }
 
         /// <summary>
         /// Pre-allocated list for errors in executables.
@@ -119,10 +109,10 @@ namespace HiraBots
         /// </summary>
         internal void Validate(ref LGOAPContainerValidatorContext context)
         {
-            var functionValidator = new BlackboardFunctionValidatorContext
+            var functionValidator = new HiraBotsBlackboardFunction.ValidatorContext
             {
                 badlySelectedKeys = context.badlySelectedKeys,
-                allowedKeyPool = context.allowedKeyPool
+                allowedKeyPool = new UnityEngine.BlackboardTemplate.KeySet(context.allowedKeyPool)
             };
 
             for (var i = 0; i < m_Insistence.m_Insistence.Length; i++)
@@ -148,12 +138,6 @@ namespace HiraBots
                 }
 
                 var success = true;
-
-                if (!scoreCalculator.isScoreCalculator)
-                {
-                    success = false;
-                    badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe = true;
-                }
 
                 scoreCalculator.Validate(ref functionValidator);
 
@@ -194,12 +178,6 @@ namespace HiraBots
 
                 var success = true;
 
-                if (decorator.isScoreCalculator)
-                {
-                    success = false;
-                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
-                }
-
                 decorator.Validate(ref functionValidator);
 
                 if (!functionValidator.succeeded)
@@ -224,10 +202,10 @@ namespace HiraBots
         /// </summary>
         internal void Validate(ref LGOAPContainerValidatorContext context)
         {
-            var functionValidator = new BlackboardFunctionValidatorContext
+            var functionValidator = new HiraBotsBlackboardFunction.ValidatorContext
             {
                 badlySelectedKeys = context.badlySelectedKeys,
-                allowedKeyPool = context.allowedKeyPool
+                allowedKeyPool = new UnityEngine.BlackboardTemplate.KeySet(context.allowedKeyPool)
             };
 
             for (var i = 0; i < m_Action.m_Precondition.Length; i++)
@@ -253,12 +231,6 @@ namespace HiraBots
                 }
 
                 var success = true;
-
-                if (decorator.isScoreCalculator)
-                {
-                    success = false;
-                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
-                }
 
                 decorator.Validate(ref functionValidator);
 
@@ -298,12 +270,6 @@ namespace HiraBots
                 }
 
                 var success = true;
-
-                if (!scoreCalculator.isScoreCalculator)
-                {
-                    success = false;
-                    badFunctionInfo.functionIsNotScoreCalculatorWhenItShouldBe = true;
-                }
 
                 scoreCalculator.Validate(ref functionValidator);
 
@@ -382,12 +348,6 @@ namespace HiraBots
                 }
 
                 var success = true;
-
-                if (decorator.isScoreCalculator)
-                {
-                    success = false;
-                    badFunctionInfo.functionIsScoreCalculatorWhenItShouldNotBe = true;
-                }
 
                 decorator.Validate(ref functionValidator);
 

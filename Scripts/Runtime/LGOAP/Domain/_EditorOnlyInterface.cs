@@ -280,16 +280,16 @@ namespace HiraBots
                 }
             }
 
-            internal void OnBlackboardUpdate(BlackboardFunction function)
+            internal void OnBlackboardUpdate(HiraBotsBlackboardFunction function)
             {
                 OnBlackboardUpdate(function, keySet);
             }
 
-            private void OnBlackboardUpdate(BlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
+            private void OnBlackboardUpdate(HiraBotsBlackboardFunction function, ReadOnlyHashSetAccessor<BlackboardKey> keys)
             {
                 if (function != null)
                 {
-                    function.OnTargetBlackboardTemplateChanged(target.m_Blackboard, keys);
+                    function.OnTargetBlackboardTemplateChangedWrapped(target.m_Blackboard, keys);
                 }
             }
 

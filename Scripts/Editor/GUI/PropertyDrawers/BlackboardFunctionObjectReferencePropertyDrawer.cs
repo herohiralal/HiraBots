@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HiraBots.Editor
 {
-    [CustomPropertyDrawer(typeof(BlackboardFunction), true)]
+    [CustomPropertyDrawer(typeof(HiraBotsBlackboardFunction), true)]
     internal class BlackboardFunctionObjectReferencePropertyDrawer : PropertyDrawer
     {
         private static HashSet<string> propertiesToSkip { get; } = new HashSet<string> { "m_Subtitle", "m_Description" };
@@ -31,7 +31,7 @@ namespace HiraBots.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             // try find object
-            var value = property.objectReferenceValue as BlackboardFunction;
+            var value = property.objectReferenceValue as HiraBotsBlackboardFunction;
 
             if (value == null)
             {

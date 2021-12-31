@@ -548,34 +548,33 @@ namespace HiraBots.Editor
         /// Format a Type.Name to a more readable version.
         /// </summary>
         internal static ReadOnlyDictionaryAccessor<Type, string> formattedDecoratorNames { get; } = TypeCache
-            .GetTypesDerivedFrom<DecoratorBlackboardFunction>()
+            .GetTypesDerivedFrom<HiraBotsDecoratorBlackboardFunction>()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .ToDictionary(f => f,
                 f => f.Name
-                    .Replace("DecoratorBlackboardFunction", ""))
+                    .Replace("Decorator", ""))
             .ReadOnly();
 
         /// <summary>
         /// Format a Type.Name to a more readable version.
         /// </summary>
         internal static ReadOnlyDictionaryAccessor<Type, string> formattedScoreCalculatorNames { get; } = TypeCache
-            .GetTypesDerivedFrom<DecoratorBlackboardFunction>()
+            .GetTypesDerivedFrom<HiraBotsScoreCalculatorBlackboardFunction>()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .ToDictionary(f => f,
                 f => f.Name
-                    .Replace("DecoratorBlackboardFunction", "")
-                    .Replace("AlwaysSucceed", "BaseScore"))
+                    .Replace("ScoreCalculator", ""))
             .ReadOnly();
 
         /// <summary>
         /// Format a Type.Name to a more readable version.
         /// </summary>
         internal static ReadOnlyDictionaryAccessor<Type, string> formattedEffectorNames { get; } = TypeCache
-            .GetTypesDerivedFrom<EffectorBlackboardFunction>()
+            .GetTypesDerivedFrom<HiraBotsEffectorBlackboardFunction>()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .ToDictionary(f => f,
                 f => f.Name
-                    .Replace("EffectorBlackboardFunction", ""))
+                    .Replace("Effector", ""))
             .ReadOnly();
 
         private const string k_Target = "Target";
@@ -591,7 +590,7 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="value">The function object.</param>
         /// <returns>Its respective theme color.</returns>
-        internal static Color GetBlackboardFunctionColor(BlackboardFunction value)
+        internal static Color GetBlackboardFunctionColor(HiraBotsBlackboardFunction value)
         {
             if (value == null)
             {
@@ -620,7 +619,7 @@ namespace HiraBots.Editor
         /// </summary>
         /// <param name="value">The function object.</param>
         /// <returns>Its respective faded theme color.</returns>
-        internal static Color GetBlackboardFunctionColorFaded(BlackboardFunction value)
+        internal static Color GetBlackboardFunctionColorFaded(HiraBotsBlackboardFunction value)
         {
             Color.RGBToHSV(GetBlackboardFunctionColor(value), out var h, out var s, out var v);
             s *= 0.35f;

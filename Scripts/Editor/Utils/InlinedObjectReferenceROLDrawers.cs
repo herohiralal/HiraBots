@@ -142,7 +142,7 @@ namespace HiraBots.Editor
     }
 
     internal abstract class BlackboardFunctionInlinedObjectReferenceROLDrawer<TTargetSerializedObject>
-        : InlinedObjectReferenceROLDrawer<BlackboardFunction, TTargetSerializedObject>
+        : InlinedObjectReferenceROLDrawer<HiraBotsBlackboardFunction, TTargetSerializedObject>
         where TTargetSerializedObject : Object
     {
         protected BlackboardFunctionInlinedObjectReferenceROLDrawer(string header, ReadOnlyDictionaryAccessor<Type, string> typesWithFormattedNames)
@@ -150,14 +150,14 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<TTargetSerializedObject> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<TTargetSerializedObject> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             InlinedObjectReferencesHelper.Expand(newObject, out _);
 
             newObject.OnValidate();
         }
 
-        protected override Color GetThemeColor(BlackboardFunction value)
+        protected override Color GetThemeColor(HiraBotsBlackboardFunction value)
         {
             return BlackboardFunctionGUIHelpers.GetBlackboardFunctionColor(value);
         }
@@ -169,10 +169,9 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_GoalInsistence;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
@@ -199,10 +198,9 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPGoal> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_GoalTarget;
 
             if (serializedObject is LGOAPGoal.Serialized goal)
@@ -229,10 +227,9 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskPrecondition;
 
             if (serializedObject is LGOAPTask.Serialized task)
@@ -259,10 +256,9 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            ((DecoratorBlackboardFunction) newObject).isScoreCalculator = true;
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskCost;
 
             if (serializedObject is LGOAPTask.Serialized task)
@@ -289,7 +285,7 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskEffect;
@@ -318,10 +314,9 @@ namespace HiraBots.Editor
         {
         }
 
-        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, BlackboardFunction newObject)
+        protected override void ProcessCreatedObject(CustomSerializedObject<LGOAPTask> serializedObject, HiraBotsBlackboardFunction newObject)
         {
             base.ProcessCreatedObject(serializedObject, newObject);
-            ((DecoratorBlackboardFunction) newObject).isScoreCalculator = false;
             newObject.subtitle = BlackboardFunctionGUIHelpers.k_TaskTarget;
 
             if (serializedObject is LGOAPTask.Serialized task)

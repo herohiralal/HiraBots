@@ -8,10 +8,10 @@ namespace HiraBots
     {
         internal static LGOAPInsistence empty => new LGOAPInsistence
         {
-            m_Insistence = new DecoratorBlackboardFunction[0]
+            m_Insistence = new HiraBotsScoreCalculatorBlackboardFunction[0]
         };
 
         [Tooltip("The amount of insistence this goal has.")]
-        [SerializeField, HideInInspector] internal DecoratorBlackboardFunction[] m_Insistence;
+        [SerializeField, HideInInspector] internal HiraBotsScoreCalculatorBlackboardFunction[] m_Insistence;
     }
 }
