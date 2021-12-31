@@ -22,6 +22,7 @@ namespace HiraBots
             internal BlackboardComponent blackboard => target.m_Blackboard;
             internal LGOAPPlannerComponent planner => target.m_Planner;
             internal ExecutorComponent executor => target.m_Executor;
+            internal int currentTaskProvidersQueueLength => target.m_TaskProviders.Count;
         }
     }
 }

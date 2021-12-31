@@ -250,7 +250,50 @@ namespace HiraBots.Editor
                     var containerName = domain.GetContainerName(i, currentContainerIndex);
 
                     var progressBarRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.TempContent(containerName));
-                    EditorGUI.ProgressBar(progressBarRect, j < currentExecutionIndex ? 1 : 0, j == currentExecutionIndex ? ">> Executing <<" : "");
+
+                    float progress;
+                    string progressBarText;
+                    if (j != currentExecutionIndex)
+                    {
+                        progress = j < currentExecutionIndex ? 1 : 0;
+                        progressBarText = "";
+                    }
+                    else
+                    {
+                        if (i == 0 || domain.IsTaskAbstract(i, currentContainerIndex))
+                        {
+                            // if this task is abstract, there's gonna be a next layer
+                            var nextLayerPlan = planSet[i + 1];
+                            progress = (float) nextLayerPlan.currentIndex / nextLayerPlan.length;
+                        }
+                        else
+                        {
+                            domain.GetTaskProviders(i, currentContainerIndex, out var tp);
+                            progress = 1 - ((m_Bot.currentTaskProvidersQueueLength + 1f) / tp.count);
+                        }
+
+                        progressBarText = ">> Executing <<";
+
+                        if (i != 0)
+                        {
+                            domain.GetServiceProviders(i, currentContainerIndex, out var sp);
+
+                            if (sp.count > 0)
+                            {
+                                using (new IndentNullifier(EditorGUI.indentLevel + 1))
+                                {
+                                    EditorGUILayout.LabelField("SERVICES", EditorStyles.miniBoldLabel);
+                                    foreach (var serviceProvider in sp)
+                                    {
+                                        EditorGUILayout.LabelField($"{serviceProvider.name} every {serviceProvider.tickInterval} second(s)",
+                                            EditorStyles.miniLabel);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    EditorGUI.ProgressBar(progressBarRect, progress, progressBarText);
                 }
             }
         }
