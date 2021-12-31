@@ -176,7 +176,10 @@ namespace HiraBots.Editor
             serializedObject.ApplyModifiedProperties();
 
             // destroy
-            Undo.DestroyObjectImmediate(objectToDestroy);
+            if (objectToDestroy != null)
+            {
+                Undo.DestroyObjectImmediate(objectToDestroy);
+            }
 
             // update editor
             EditorUtility.SetDirty(target);

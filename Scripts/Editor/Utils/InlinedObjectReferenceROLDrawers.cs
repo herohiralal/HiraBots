@@ -61,7 +61,12 @@ namespace HiraBots.Editor
 
             rol.onRemoveCallback = l =>
             {
-                InlinedObjectReferencesHelper.Collapse(property.GetArrayElementAtIndex(l.index).objectReferenceValue);
+                var value = property.GetArrayElementAtIndex(l.index).objectReferenceValue;
+
+                if (value != null)
+                {
+                    InlinedObjectReferencesHelper.Collapse(value);
+                }
 
                 AssetDatabaseUtility.RemoveInlinedObject(serializedObject.target, (SerializedObject) serializedObject,
                     property, l.index);
