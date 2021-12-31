@@ -27,6 +27,7 @@ namespace HiraBots
 
         private short?[] m_ExecutionSet = null;
         private short?[] m_PreAllocatedExecutionSet = null;
+        private Queue<HiraBotsTaskProvider> m_TaskProviders = null;
         private List<IHiraBotsService>[] m_ActiveServicesByLayer = null;
 
         private IHiraBotArchetype archetype => (IHiraBotArchetype) (m_ArchetypeOverride == null ? this : m_ArchetypeOverride);
@@ -71,10 +72,21 @@ namespace HiraBots
                 m_Executor.lastTaskEndSucceeded = null;
             }
 
-            // if the executor is done executing, tell the planner
+            // if the executor is done executing
             if (!m_Executor.hasTask && m_Executor.lastTaskEndSucceeded.HasValue)
             {
-                m_Planner.OnTaskExecutionComplete(m_Executor.lastTaskEndSucceeded.Value);
+                if (!m_Executor.lastTaskEndSucceeded.Value)
+                {
+                    m_Planner.OnTaskExecutionComplete(false);
+                }
+                else if (m_TaskProviders.Count > 0)
+                {
+                    ExecuteTaskProvider(m_TaskProviders.Dequeue());
+                }
+                else
+                {
+                    m_Planner.OnTaskExecutionComplete(true);
+                }
 
                 m_Executor.lastTaskEndSucceeded = null;
             }
@@ -124,6 +136,8 @@ namespace HiraBots
             m_ExecutionSet = new short?[layerCount];
             m_PreAllocatedExecutionSet = new short?[layerCount];
 
+            m_TaskProviders = new Queue<HiraBotsTaskProvider>();
+
             m_ActiveServicesByLayer = new List<IHiraBotsService>[layerCount];
 
             for (var i = 0; i < layerCount; i++)
@@ -149,6 +163,9 @@ namespace HiraBots
             }
 
             m_ActiveServicesByLayer = null;
+
+            m_TaskProviders.Clear();
+            m_TaskProviders = null;
 
             m_PreAllocatedExecutionSet = null;
             m_ExecutionSet = null;
@@ -181,9 +198,19 @@ namespace HiraBots
                     continue;
                 }
 
-                domainData.GetTaskProvider(i, containerIndex.Value, out var taskProvider);
-                var task = taskProvider.GetTask(m_Blackboard, archetype);
-                m_Executor.Execute(task, taskProvider.tickInterval);
+                domainData.GetTaskProviders(i, containerIndex.Value, out var taskProviders);
+
+                // clear the current queue because it's not valid anymore
+                m_TaskProviders.Clear();
+
+                // skip the first one because it'll need to be dequeued anyway
+                for (var j = 1; j < taskProviders.count; j++)
+                {
+                    m_TaskProviders.Enqueue(taskProviders[j]);
+                }
+
+                // there's always gonna be at least one task provider (error executable)
+                ExecuteTaskProvider(taskProviders[0]);
                 break;
             }
 
@@ -219,6 +246,13 @@ namespace HiraBots
                     }
                 }
             }
+        }
+
+        // execute a given task provider
+        private void ExecuteTaskProvider(HiraBotsTaskProvider taskProvider)
+        {
+            var task = taskProvider.GetTask(m_Blackboard, archetype);
+            m_Executor.Execute(task, taskProvider.tickInterval);
         }
     }
 }

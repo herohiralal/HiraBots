@@ -16,16 +16,21 @@ namespace HiraBots
         }
 
         internal static ErrorTaskProvider noneTaskProvider { get; private set; }
+        internal static ReadOnlyArrayAccessor<HiraBotsTaskProvider> emptyTaskProviders { get; private set; }
 
         internal static void CreateNoneTaskInstance()
         {
             noneTaskProvider = CreateInstance<ErrorTaskProvider>();
             noneTaskProvider.m_DisablePlayModeEntryOrBuildingPlayer = false;
             noneTaskProvider.m_Text = "Missing task provider.";
+
+            emptyTaskProviders = new HiraBotsTaskProvider[] { noneTaskProvider }.ReadOnly();
         }
 
         internal static void ClearNoneTaskInstance()
         {
+            emptyTaskProviders = new HiraBotsTaskProvider[0].ReadOnly();
+
             Destroy(noneTaskProvider);
             noneTaskProvider = null;
         }

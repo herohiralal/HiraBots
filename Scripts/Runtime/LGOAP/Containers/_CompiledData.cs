@@ -23,7 +23,7 @@ namespace HiraBots
             precondition = ((HiraBotsDecoratorBlackboardFunction[]) task.action.m_Precondition.Clone()).ReadOnly();
             effect = ((HiraBotsEffectorBlackboardFunction[]) task.action.m_Effect.Clone()).ReadOnly();
             target = ((HiraBotsDecoratorBlackboardFunction[]) task.target.m_Target.Clone()).ReadOnly();
-            taskProvider = task.taskProviders.Length > 0 ? task.taskProviders[0] : ErrorTaskProvider.noneTaskProvider;
+            taskProvider = task.taskProviders.Length > 0 ? task.taskProviders.ReadOnly() : ErrorTaskProvider.emptyTaskProviders;
             serviceProviders = ((HiraBotsServiceProvider[]) task.serviceProviders.Clone()).ReadOnly();
         }
 
@@ -32,7 +32,7 @@ namespace HiraBots
         internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> precondition { get; }
         internal ReadOnlyArrayAccessor<HiraBotsEffectorBlackboardFunction> effect { get; }
         internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> target { get; }
-        internal HiraBotsTaskProvider taskProvider { get; }
+        internal ReadOnlyArrayAccessor<HiraBotsTaskProvider> taskProvider { get; }
         internal ReadOnlyArrayAccessor<HiraBotsServiceProvider> serviceProviders { get; }
     }
 }

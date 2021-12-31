@@ -474,7 +474,7 @@ namespace HiraBots.Editor
 
     internal class TaskProviderROLDrawer : InlinedObjectReferenceROLDrawer<HiraBotsTaskProvider, LGOAPTask>
     {
-        private TaskProviderROLDrawer() : base("Task", ExecutablesGUIHelpers.formattedTaskProviderNames)
+        private TaskProviderROLDrawer() : base("Task Providers", ExecutablesGUIHelpers.formattedTaskProviderNames)
         {
         }
 
@@ -503,7 +503,6 @@ namespace HiraBots.Editor
             if (!task.taskTaskProvidersBound)
             {
                 s_Instance.Bind(task.taskTaskProvidersROL, task, task.taskTaskProviders);
-                task.taskTaskProvidersROL.onCanAddCallback = l => l.serializedProperty.arraySize == 0;
                 task.taskTaskProvidersBound = true;
             }
         }

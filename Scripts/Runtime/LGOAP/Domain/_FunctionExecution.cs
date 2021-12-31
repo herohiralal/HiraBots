@@ -54,9 +54,9 @@ namespace HiraBots
             }
         }
 
-        internal void GetTaskProvider(int layerIndex, int containerIndex, out HiraBotsTaskProvider taskProvider)
+        internal void GetTaskProviders(int layerIndex, int containerIndex, out ReadOnlyArrayAccessor<HiraBotsTaskProvider> taskProviders)
         {
-            taskProvider = m_TaskLayers[layerIndex - 1][containerIndex].taskProvider;
+            taskProviders = m_TaskLayers[layerIndex - 1][containerIndex].taskProvider;
         }
 
         internal void GetServiceProviders(int layerIndex, int containerIndex, out ReadOnlyArrayAccessor<HiraBotsServiceProvider> serviceProviders)
