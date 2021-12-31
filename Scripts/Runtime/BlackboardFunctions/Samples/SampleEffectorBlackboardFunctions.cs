@@ -241,6 +241,25 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("106cabdfdcef44ae9638c0799151a03b")]
+        internal static void BooleanInvertEffector(ref bool key)
+        {
+            key = !key;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void BooleanInvertEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"Invert {key.selectedKey.name}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("da5818b29555439cb0a6adc4d0937280")]
         // ReSharper disable once RedundantAssignment
         internal static void ObjectEqualsEffector([HiraBotsObjectKey] ref int key, [HiraBotsObjectValue] int value)

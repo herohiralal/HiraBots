@@ -20,5 +20,6 @@ BlackboardFunctions/EnumOperatorEffector.cs
 BlackboardFunctions/FloatOperatorEffector.cs
 BlackboardFunctions/IntegerOperatorEffector.cs
 BlackboardFunctions/BooleanIsSetEffector.cs
+BlackboardFunctions/BooleanInvertEffector.cs
 BlackboardFunctions/ObjectEqualsEffector.cs
 HiraBots.Generated.asmdef
