@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
@@ -52,19 +53,36 @@ namespace HiraBots.Editor
                 return; // nothing is gonna be compiled unless in play mode
             }
 
-            if (m_Bot.domain != null && m_Bot.domain.blackboard != null && m_Bot.domain.blackboard.isCompiled && m_Bot.blackboard != null)
-            {
-                DrawCurrentBlackboardState();
-            }
-            else
+            if (m_Bot.domain == null || m_Bot.domain.blackboard == null || !m_Bot.domain.blackboard.isCompiled || m_Bot.blackboard == null || m_Bot.planner == null)
             {
                 m_Keys = null;
+                return;
             }
 
-            if (m_Bot.domain != null && m_Bot.domain.isCompiled && m_Bot.planner != null)
+            EditorGUILayout.Space(12f, true);
+            var blackboardHeadingRect = EditorGUILayout.GetControlRect();
+            var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
+            if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit (NO UNDO/REDO)"))
             {
-                DrawCurrentlyRunningTasks();
+                m_EditBlackboard = !m_EditBlackboard;
             }
+
+            var currentEventType = Event.current.type;
+            var currentEventTypeIsLayoutOrRepaint = currentEventType == EventType.Layout || currentEventType == EventType.Repaint;
+
+            if (!m_EditBlackboard && !currentEventTypeIsLayoutOrRepaint)
+            {
+                return;
+            }
+
+            DrawCurrentBlackboardState();
+
+            if (!currentEventTypeIsLayoutOrRepaint)
+            {
+                return;
+            }
+
+            DrawCurrentlyRunningTasks();
         }
 
         private unsafe void DrawCurrentBlackboardState()
@@ -76,14 +94,6 @@ namespace HiraBots.Editor
             {
                 m_Keys = new HashSet<BlackboardKey>();
                 blackboard.GetKeySet(m_Keys);
-            }
-
-            EditorGUILayout.Space(12f, true);
-            var blackboardHeadingRect = EditorGUILayout.GetControlRect();
-            var editableButtonRect = EditorGUI.PrefixLabel(blackboardHeadingRect, GUIHelpers.TempContent("Blackboard"), EditorStyles.boldLabel);
-            if (GUI.Button(editableButtonRect, m_EditBlackboard ? "Stop Editing" : "Edit (NO UNDO/REDO)"))
-            {
-                m_EditBlackboard = !m_EditBlackboard;
             }
 
             using (new GUIEnabledChanger(m_EditBlackboard))
