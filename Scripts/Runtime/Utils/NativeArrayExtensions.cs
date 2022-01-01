@@ -1,13 +1,11 @@
 ﻿using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Mathematics;
 
 namespace HiraBots
 {
     /// <summary>
     /// A container for utility methods for NativeArrays.
     /// </summary>
-    internal static unsafe class NativeArrayExtensions
+    internal static class NativeArrayExtensions
     {
         /// <summary>
         /// Reallocate a native array to a larger (or smaller size).
@@ -17,13 +15,11 @@ namespace HiraBots
             int newSize,
             Allocator allocator,
             NativeArrayOptions options = NativeArrayOptions.ClearMemory)
-            where T : unmanaged
+            where T : struct
         {
             var newArray = new NativeArray<T>(newSize, allocator, options);
 
-            var copySize = math.min(array.Length * sizeof(T), newSize * sizeof(T));
-
-            UnsafeUtility.MemCpy(newArray.GetUnsafePtr(), array.GetUnsafeReadOnlyPtr(), copySize);
+            NativeArray<T>.Copy(array, newArray, array.Length);
 
             array.Dispose();
             array = newArray;
