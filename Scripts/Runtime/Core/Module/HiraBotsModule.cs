@@ -7,7 +7,7 @@ namespace HiraBots
 {
     [DefaultExecutionOrder(1000)]
     [AddComponentMenu("")]
-    internal partial class HiraBotsModule : MonoBehaviour
+    internal partial class HiraBotsModule : MonoBehaviour, TaskRunner.IInterface, ServiceRunner.IInterface
     {
         private UpdateSystem<IHiraBotsService> m_ServiceUpdates;
         private UpdateSystem<ExecutorComponent> m_TaskUpdates;
@@ -27,6 +27,8 @@ namespace HiraBots
 
             s_Instance = this;
             CoroutineRunner.instance = this;
+            TaskRunner.instance = this;
+            ServiceRunner.instance = this;
 
             InitializeCommandBuffer();
 
@@ -65,6 +67,8 @@ namespace HiraBots
 
             m_ServiceUpdates.Dispose();
 
+            ServiceRunner.instance = this;
+            TaskRunner.instance = this;
             CoroutineRunner.instance = null;
             s_Instance = null;
         }
@@ -142,7 +146,7 @@ namespace HiraBots
             }
         }
 
-        internal void AddService(IHiraBotsService service, float tickInterval, float timeDilation)
+        void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval, float timeDilation)
         {
             if (m_UpdateJob.HasValue)
             {
@@ -154,7 +158,7 @@ namespace HiraBots
             }
         }
 
-        internal void RemoveService(IHiraBotsService service)
+        void ServiceRunner.IInterface.Remove(IHiraBotsService service)
         {
             if (m_UpdateJob.HasValue)
             {
@@ -166,7 +170,7 @@ namespace HiraBots
             }
         }
 
-        internal void ChangeServiceTimeDilation(IHiraBotsService service, float timeDilation)
+        void ServiceRunner.IInterface.ChangeServiceTimeDilation(IHiraBotsService service, float timeDilation)
         {
             if (m_UpdateJob.HasValue)
             {
@@ -178,7 +182,7 @@ namespace HiraBots
             }
         }
 
-        internal void AddTask(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float timeDilation)
+        void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float timeDilation)
         {
             if (m_UpdateJob.HasValue)
             {
@@ -190,7 +194,7 @@ namespace HiraBots
             }
         }
 
-        internal void RemoveTask(ExecutorComponent executor)
+        void TaskRunner.IInterface.Remove(ExecutorComponent executor)
         {
             if (m_UpdateJob.HasValue)
             {
@@ -202,7 +206,7 @@ namespace HiraBots
             }
         }
 
-        internal void ChangeTaskTimeDilation(ExecutorComponent executor, float timeDilation)
+        void TaskRunner.IInterface.ChangeTimeDilation(ExecutorComponent executor, float timeDilation)
         {
             if (m_UpdateJob.HasValue)
             {

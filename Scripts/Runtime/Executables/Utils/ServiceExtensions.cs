@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal static class HiraBotsServiceExtensions
+    internal static class ServiceExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void WrappedStart(this IHiraBotsService service)

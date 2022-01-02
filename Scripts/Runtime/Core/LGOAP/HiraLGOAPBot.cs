@@ -160,6 +160,11 @@ namespace HiraBots
 
             foreach (var servicesInLayer in m_ActiveServicesByLayer)
             {
+                foreach (var service in servicesInLayer)
+                {
+                    ServiceRunner.instance.Remove(service);
+                }
+
                 servicesInLayer.Clear();
             }
 
@@ -171,7 +176,7 @@ namespace HiraBots
             m_PreAllocatedExecutionSet = null;
             m_ExecutionSet = null;
 
-            HiraBotsTaskRunner.Remove(m_Executor);
+            TaskRunner.instance.Remove(m_Executor);
             m_Executor.Dispose();
             m_Executor = null;
 
@@ -230,7 +235,7 @@ namespace HiraBots
                 {
                     foreach (var service in m_ActiveServicesByLayer[i])
                     {
-                        HiraBotsServiceRunner.Remove(service);
+                        ServiceRunner.instance.Remove(service);
                     }
 
                     m_ActiveServicesByLayer[i].Clear();
@@ -244,7 +249,7 @@ namespace HiraBots
                     {
                         var service = serviceProvider.GetService(m_Blackboard, archetype);
                         m_ActiveServicesByLayer[i].Add(service);
-                        HiraBotsServiceRunner.Add(service, serviceProvider.tickInterval);
+                        ServiceRunner.instance.Add(service, serviceProvider.tickInterval, 1f);
                     }
                 }
             }
@@ -253,10 +258,11 @@ namespace HiraBots
         // execute a given task provider
         private void ExecuteTaskProvider(HiraBotsTaskProvider taskProvider)
         {
-            var task = taskProvider.GetTask(m_Blackboard, archetype);
-            var tickInterval = taskProvider.tickInterval;
-            HiraBotsTaskRunner.Remove(m_Executor);
-            HiraBotsTaskRunner.Add(m_Executor, tickInterval, task);
+            TaskRunner.instance.Remove(m_Executor);
+            TaskRunner.instance.Add(m_Executor,
+                taskProvider.GetTask(m_Blackboard, archetype),
+                taskProvider.tickInterval,
+                1f);
         }
     }
 }
