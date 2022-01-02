@@ -66,7 +66,7 @@
         {
             if (m_PlannerCoroutine != null)
             {
-                HiraBotsModule.StopCoroutine(m_PlannerCoroutine);
+                CoroutineRunner.Stop(m_PlannerCoroutine);
                 m_PlannerCoroutine = null;
             }
 

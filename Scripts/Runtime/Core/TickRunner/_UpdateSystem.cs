@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace HiraBots
 {
-    internal partial class HiraBotsTickRunner
+    internal partial class HiraBotsModule
     {
         internal struct UpdateSystem<T>
         {

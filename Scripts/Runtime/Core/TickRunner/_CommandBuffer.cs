@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal partial class HiraBotsTickRunner
+    internal partial class HiraBotsModule
     {
         private struct AddServiceCommand
         {

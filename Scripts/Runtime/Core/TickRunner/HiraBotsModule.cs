@@ -7,14 +7,14 @@ namespace HiraBots
 {
     [DefaultExecutionOrder(1000)]
     [AddComponentMenu("")]
-    internal partial class HiraBotsTickRunner : MonoBehaviour
+    internal partial class HiraBotsModule : MonoBehaviour
     {
         private UpdateSystem<IHiraBotsService> m_ServiceUpdates;
         private UpdateSystem<ExecutorComponent> m_TaskUpdates;
 
         private JobHandle? m_UpdateJob;
 
-        private static HiraBotsTickRunner s_Instance;
+        private static HiraBotsModule s_Instance;
 
         private void Awake()
         {
@@ -26,6 +26,7 @@ namespace HiraBots
             }
 
             s_Instance = this;
+            CoroutineRunner.instance = this;
 
             InitializeCommandBuffer();
 
@@ -64,6 +65,7 @@ namespace HiraBots
 
             m_ServiceUpdates.Dispose();
 
+            CoroutineRunner.instance = null;
             s_Instance = null;
         }
 

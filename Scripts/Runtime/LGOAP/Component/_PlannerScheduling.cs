@@ -41,7 +41,7 @@ namespace HiraBots
                     break;
                 case Status.Normal:
                     m_LayerToSchedulePlannerAt = index;
-                    m_PlannerCoroutine = HiraBotsModule.StartCoroutine(SchedulePlannerCoroutine());
+                    m_PlannerCoroutine = CoroutineRunner.Start(SchedulePlannerCoroutine());
                     break;
                 default:
                     throw new System.ArgumentOutOfRangeException();
@@ -89,7 +89,7 @@ namespace HiraBots
             // if a re-plan has been requested, ignore the results and just schedule a new planner job
             if (m_LayerToSchedulePlannerAt.HasValue)
             {
-                m_PlannerCoroutine = HiraBotsModule.StartCoroutine(SchedulePlannerCoroutine());
+                m_PlannerCoroutine = CoroutineRunner.Start(SchedulePlannerCoroutine());
             }
             else // otherwise use the generated results
             {

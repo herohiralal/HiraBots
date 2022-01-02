@@ -40,24 +40,6 @@ namespace HiraBots
                 {
                     Debug.LogException(e);
                 }
-
-                try
-                {
-                    go.AddComponent<HiraBotsTaskRunner>();
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogException(e);
-                }
-
-                try
-                {
-                    go.AddComponent<HiraBotsServiceRunner>();
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogException(e);
-                }
             }
 
             BlackboardComponent.ResetStaticIDAssigner();
@@ -116,22 +98,6 @@ namespace HiraBots
 
         private void OnApplicationQuit()
         {
-            try
-            {
-                Destroy(GetComponent<HiraBotsServiceRunner>());
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
-            try
-            {
-                Destroy(GetComponent<HiraBotsTaskRunner>());
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
             try
             {
                 Destroy(GetComponent<HiraBotsModule>());
