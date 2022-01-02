@@ -6,6 +6,8 @@ namespace HiraBots
     [DefaultExecutionOrder(950)]
     internal sealed partial class HiraLGOAPBot : MonoBehaviour, IHiraBotArchetype
     {
+        internal static readonly List<HiraLGOAPBot> s_ActiveBots = new List<HiraLGOAPBot>();
+
         [Tooltip("The component to use as an archetype. If not provided, will use self.")]
         [SerializeField] private Component m_ArchetypeOverride;
 
@@ -35,12 +37,14 @@ namespace HiraBots
 
         private void Awake()
         {
+            s_ActiveBots.Add(this);
             StartUsingNewDomain();
         }
 
         private void OnDestroy()
         {
             StopUsingOldDomain();
+            s_ActiveBots.Remove(this);
         }
 
         private void Update()

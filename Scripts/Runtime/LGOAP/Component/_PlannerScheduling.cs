@@ -73,7 +73,6 @@ namespace HiraBots
             {
                 // this job handle will be forcefully completed when this component is destroyed
                 m_JobHandleToWaitOn = lastJobHandle;
-                m_Domain.AddDependentJob(m_Id, lastJobHandle);
 
                 while (!lastJobHandle.IsCompleted)
                 {
@@ -82,7 +81,6 @@ namespace HiraBots
 
                 lastJobHandle.Complete();
 
-                m_Domain.RemoveDependentJob(m_Id);
                 m_JobHandleToWaitOn = null;
             }
 

@@ -93,6 +93,8 @@ namespace HiraBots
 
             CompilationRegistry.Build();
 
+            HiraLGOAPBot.s_ActiveBots.Clear();
+
             Profiler.EndSample();
         }
 
@@ -106,6 +108,7 @@ namespace HiraBots
             {
                 Debug.LogException(e);
             }
+
             try
             {
                 Destroy(this);
@@ -123,6 +126,20 @@ namespace HiraBots
         private static void Unload()
         {
             Profiler.BeginSample("HiraBots Cleanup");
+
+            foreach (var bot in HiraLGOAPBot.s_ActiveBots)
+            {
+                try
+                {
+                    Destroy(bot);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+
+            HiraLGOAPBot.s_ActiveBots.Clear();
 
             var ldc = LGOAPDomainCollection.instance;
             var ldcCount = ldc.count;

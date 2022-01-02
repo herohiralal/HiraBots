@@ -73,7 +73,6 @@
             if (m_JobHandleToWaitOn.HasValue)
             {
                 m_JobHandleToWaitOn.Value.Complete();
-                m_Domain.RemoveDependentJob(m_Id);
                 m_JobHandleToWaitOn = null;
             }
 
