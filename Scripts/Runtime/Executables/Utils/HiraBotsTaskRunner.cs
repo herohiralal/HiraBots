@@ -62,7 +62,7 @@ namespace HiraBots
         /// <summary>
         /// Add an executor to the task runner.
         /// </summary>
-        internal static void Add(ExecutorComponent executor, float timer)
+        internal static void Add(ExecutorComponent executor, float timer, IHiraBotsTask task)
         {
             var instance = s_Instance;
 
@@ -89,7 +89,7 @@ namespace HiraBots
             instance.m_Timers[activeExecutorsCount - 1] = timer;
 
             // start the actual task
-            executor.BeginTask();
+            executor.BeginTask(task);
         }
 
         /// <summary>

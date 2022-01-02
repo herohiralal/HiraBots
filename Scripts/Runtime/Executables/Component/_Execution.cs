@@ -10,20 +10,10 @@ namespace HiraBots
 
         internal bool? lastTaskEndSucceeded { get; set; }
 
-        internal void Execute(IHiraBotsTask task, float tickInterval)
+        internal void BeginTask(IHiraBotsTask task)
         {
-            if (hasTask)
-            {
-                HiraBotsTaskRunner.Remove(this);
-            }
-
             m_CurrentTask = task;
 
-            HiraBotsTaskRunner.Add(this, tickInterval);
-        }
-
-        internal void BeginTask()
-        {
             try
             {
                 m_CurrentTask.Begin();

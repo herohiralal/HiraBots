@@ -170,6 +170,7 @@ namespace HiraBots
             m_PreAllocatedExecutionSet = null;
             m_ExecutionSet = null;
 
+            HiraBotsTaskRunner.Remove(m_Executor);
             m_Executor.Dispose();
             m_Executor = null;
 
@@ -252,7 +253,9 @@ namespace HiraBots
         private void ExecuteTaskProvider(HiraBotsTaskProvider taskProvider)
         {
             var task = taskProvider.GetTask(m_Blackboard, archetype);
-            m_Executor.Execute(task, taskProvider.tickInterval);
+            var tickInterval = taskProvider.tickInterval;
+            HiraBotsTaskRunner.Remove(m_Executor);
+            HiraBotsTaskRunner.Add(m_Executor, tickInterval, task);
         }
     }
 }
