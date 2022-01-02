@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace HiraBots
 {
+    [DefaultExecutionOrder(950)]
     internal sealed partial class HiraLGOAPBot : MonoBehaviour, IHiraBotArchetype
     {
         [Tooltip("The component to use as an archetype. If not provided, will use self.")]

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace HiraBots
 {
@@ -10,76 +11,36 @@ namespace HiraBots
 
         internal bool? lastTaskEndSucceeded { get; set; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void BeginTask(IHiraBotsTask task)
         {
             m_CurrentTask = task;
-
-            try
-            {
-                m_CurrentTask.Begin();
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
+            m_CurrentTask.WrappedBegin();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void AbortTask()
         {
-            try
-            {
-                m_CurrentTask.Abort();
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
-
+            m_CurrentTask.WrappedAbort();
             m_CurrentTask = null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool Tick(float deltaTime)
         {
-            var result = HiraBotsTaskResult.InProgress;
-
-            try
-            {
-                result = m_CurrentTask.Execute(deltaTime);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-            switch (result)
+            switch (m_CurrentTask.WrappedExecute(deltaTime))
             {
                 case HiraBotsTaskResult.InProgress:
                     return true;
 
                 case HiraBotsTaskResult.Succeeded:
-                    try
-                    {
-                        m_CurrentTask.End(true);
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-
+                    m_CurrentTask.WrappedEnd(true);
                     m_CurrentTask = null;
                     lastTaskEndSucceeded = true;
                     return false;
 
                 case HiraBotsTaskResult.Failed:
-                    try
-                    {
-                        m_CurrentTask.End(false);
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-
+                    m_CurrentTask.WrappedEnd(false);
                     m_CurrentTask = null;
                     lastTaskEndSucceeded = false;
                     return false;
