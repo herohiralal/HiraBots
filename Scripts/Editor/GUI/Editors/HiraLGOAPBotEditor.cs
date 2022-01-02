@@ -46,7 +46,6 @@ namespace HiraBots.Editor
             m_Bot.Update();
             EditorGUILayout.PropertyField(m_Bot.archetypeProperty, true);
             EditorGUILayout.PropertyField(m_Bot.domainProperty, true);
-            EditorGUILayout.PropertyField(m_Bot.timeDilationProperty, true);
             m_Bot.ApplyModifiedProperties();
 
             if (!EditorApplication.isPlayingOrWillChangePlaymode)

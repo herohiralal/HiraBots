@@ -146,15 +146,15 @@ namespace HiraBots
             }
         }
 
-        void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval, float timeDilation)
+        void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval)
         {
             if (m_UpdateJob.HasValue)
             {
-                BufferAddServiceCommand(service, tickInterval, timeDilation);
+                BufferAddServiceCommand(service, tickInterval);
             }
             else
             {
-                AddServiceInternal(service, tickInterval, timeDilation);
+                AddServiceInternal(service, tickInterval);
             }
         }
 
@@ -170,27 +170,15 @@ namespace HiraBots
             }
         }
 
-        void ServiceRunner.IInterface.ChangeServiceTimeDilation(IHiraBotsService service, float timeDilation)
+        void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
         {
             if (m_UpdateJob.HasValue)
             {
-                BufferChangeServiceTimeDilationCommand(service, timeDilation);
+                BufferAddTaskCommand(executor, task, tickInterval);
             }
             else
             {
-                ChangeServiceTimeDilationInternal(service, timeDilation);
-            }
-        }
-
-        void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float timeDilation)
-        {
-            if (m_UpdateJob.HasValue)
-            {
-                BufferAddTaskCommand(executor, task, tickInterval, timeDilation);
-            }
-            else
-            {
-                AddTaskInternal(executor, task, tickInterval, timeDilation);
+                AddTaskInternal(executor, task, tickInterval);
             }
         }
 
@@ -206,22 +194,10 @@ namespace HiraBots
             }
         }
 
-        void TaskRunner.IInterface.ChangeTimeDilation(ExecutorComponent executor, float timeDilation)
-        {
-            if (m_UpdateJob.HasValue)
-            {
-                BufferChangeTaskTimeDilationCommand(executor, timeDilation);
-            }
-            else
-            {
-                ChangeTaskTimeDilationInternal(executor, timeDilation);
-            }
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddServiceInternal(IHiraBotsService service, float tickInterval, float timeDilation)
+        private void AddServiceInternal(IHiraBotsService service, float tickInterval)
         {
-            if (m_ServiceUpdates.Add(service, tickInterval, timeDilation))
+            if (m_ServiceUpdates.Add(service, tickInterval))
             {
                 service.WrappedStart();
             }
@@ -237,29 +213,9 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ChangeServiceTimeDilationInternal(IHiraBotsService service, float timeDilation)
+        private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
         {
-            if (!m_ServiceUpdates.m_IndexLookUp.TryGetValue(service, out var index))
-            {
-                // not registered
-                return;
-            }
-
-            var currentValue = m_ServiceUpdates.m_TimeDilationValues[index];
-
-            if (Mathf.Abs(timeDilation - currentValue) < 0.001f)
-            {
-                // practically the same value
-                return;
-            }
-
-            m_ServiceUpdates.m_TimeDilationValues[index] = timeDilation;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float timeDilation)
-        {
-            if (m_TaskUpdates.Add(executor, tickInterval, timeDilation))
+            if (m_TaskUpdates.Add(executor, tickInterval))
             {
                 executor.BeginTask(task);
             }
@@ -272,26 +228,6 @@ namespace HiraBots
             {
                 executor.AbortTask();
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ChangeTaskTimeDilationInternal(ExecutorComponent executor, float timeDilation)
-        {
-            if (!m_TaskUpdates.m_IndexLookUp.TryGetValue(executor, out var index))
-            {
-                // not registered
-                return;
-            }
-
-            var currentValue = m_TaskUpdates.m_TimeDilationValues[index];
-
-            if (Mathf.Abs(timeDilation - currentValue) < 0.001f)
-            {
-                // practically the same value
-                return;
-            }
-
-            m_TaskUpdates.m_TimeDilationValues[index] = timeDilation;
         }
     }
 }

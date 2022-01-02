@@ -6,9 +6,8 @@ namespace HiraBots
     {
         internal interface IInterface
         {
-            void Add(IHiraBotsService service, float tickInterval, float timeDilation);
+            void Add(IHiraBotsService service, float tickInterval);
             void Remove(IHiraBotsService service);
-            void ChangeServiceTimeDilation(IHiraBotsService service, float timeDilation);
         }
 
         internal static IInterface instance { get; set; }

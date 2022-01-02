@@ -8,16 +8,14 @@ namespace HiraBots
     {
         private struct AddServiceCommand
         {
-            internal AddServiceCommand(IHiraBotsService obj, float tickInterval, float timeDilation)
+            internal AddServiceCommand(IHiraBotsService obj, float tickInterval)
             {
                 this.obj = obj;
                 this.tickInterval = tickInterval;
-                this.timeDilation = timeDilation;
             }
 
             internal IHiraBotsService obj { get; }
             internal float tickInterval { get; }
-            internal float timeDilation { get; }
         }
 
         private struct RemoveServiceCommand
@@ -30,32 +28,18 @@ namespace HiraBots
             internal IHiraBotsService obj { get; }
         }
 
-        private struct ChangeServiceTimeDilationCommand
-        {
-            internal ChangeServiceTimeDilationCommand(IHiraBotsService obj, float timeDilation)
-            {
-                this.obj = obj;
-                this.timeDilation = timeDilation;
-            }
-
-            internal IHiraBotsService obj { get; }
-            internal float timeDilation { get; }
-        }
-
         private struct AddTaskCommand
         {
-            internal AddTaskCommand(ExecutorComponent obj, IHiraBotsTask task, float tickInterval, float timeDilation)
+            internal AddTaskCommand(ExecutorComponent obj, IHiraBotsTask task, float tickInterval)
             {
                 this.obj = obj;
                 this.task = task;
                 this.tickInterval = tickInterval;
-                this.timeDilation = timeDilation;
             }
 
             internal ExecutorComponent obj { get; }
             internal IHiraBotsTask task { get; }
             internal float tickInterval { get; }
-            internal float timeDilation { get; }
         }
 
         private struct RemoveTaskCommand
@@ -68,63 +52,43 @@ namespace HiraBots
             internal ExecutorComponent obj { get; }
         }
 
-        private struct ChangeTaskTimeDilationCommand
-        {
-            internal ChangeTaskTimeDilationCommand(ExecutorComponent obj, float timeDilation)
-            {
-                this.obj = obj;
-                this.timeDilation = timeDilation;
-            }
-
-            internal ExecutorComponent obj { get; }
-            internal float timeDilation { get; }
-        }
-
         private enum CommandType : byte
         {
             AddService,
             RemoveService,
-            ChangeServiceTimeDilation,
             AddTask,
             RemoveTask,
-            ChangeTaskTimeDilation
         }
 
         private Queue<CommandType> m_CommandTypes;
         private Queue<AddServiceCommand> m_AddServiceCommands;
         private Queue<RemoveServiceCommand> m_RemoveServiceCommands;
-        private Queue<ChangeServiceTimeDilationCommand> m_ChangeServiceTimeDilationCommands;
         private Queue<AddTaskCommand> m_AddTaskCommands;
         private Queue<RemoveTaskCommand> m_RemoveTaskCommands;
-        private Queue<ChangeTaskTimeDilationCommand> m_ChangeTaskTimeDilationCommands;
 
         private void InitializeCommandBuffer()
         {
             m_CommandTypes = new Queue<CommandType>();
             m_AddServiceCommands = new Queue<AddServiceCommand>();
             m_RemoveServiceCommands = new Queue<RemoveServiceCommand>();
-            m_ChangeServiceTimeDilationCommands = new Queue<ChangeServiceTimeDilationCommand>();
             m_AddTaskCommands = new Queue<AddTaskCommand>();
             m_RemoveTaskCommands = new Queue<RemoveTaskCommand>();
-            m_ChangeTaskTimeDilationCommands = new Queue<ChangeTaskTimeDilationCommand>();
         }
 
         private void ShutdownCommandBuffer()
         {
-            m_ChangeTaskTimeDilationCommands = null;
             m_RemoveTaskCommands = null;
             m_AddTaskCommands = null;
-            m_ChangeServiceTimeDilationCommands = null;
             m_RemoveServiceCommands = null;
             m_AddServiceCommands = null;
             m_CommandTypes = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferAddServiceCommand(IHiraBotsService service, float tickInterval, float timeDilation)
+        private void BufferAddServiceCommand(IHiraBotsService service, float tickInterval)
         {
             m_CommandTypes.Enqueue(CommandType.AddService);
-            m_AddServiceCommands.Enqueue(new AddServiceCommand(service, tickInterval, timeDilation));
+            m_AddServiceCommands.Enqueue(new AddServiceCommand(service, tickInterval));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -135,17 +99,10 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferChangeServiceTimeDilationCommand(IHiraBotsService service, float timeDilation)
-        {
-            m_CommandTypes.Enqueue(CommandType.ChangeServiceTimeDilation);
-            m_ChangeServiceTimeDilationCommands.Enqueue(new ChangeServiceTimeDilationCommand(service, timeDilation));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferAddTaskCommand(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float timeDilation)
+        private void BufferAddTaskCommand(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
         {
             m_CommandTypes.Enqueue(CommandType.AddTask);
-            m_AddTaskCommands.Enqueue(new AddTaskCommand(executor, task, tickInterval, timeDilation));
+            m_AddTaskCommands.Enqueue(new AddTaskCommand(executor, task, tickInterval));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -153,13 +110,6 @@ namespace HiraBots
         {
             m_CommandTypes.Enqueue(CommandType.RemoveTask);
             m_RemoveTaskCommands.Enqueue(new RemoveTaskCommand(executor));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferChangeTaskTimeDilationCommand(ExecutorComponent executor, float timeDilation)
-        {
-            m_CommandTypes.Enqueue(CommandType.ChangeTaskTimeDilation);
-            m_ChangeTaskTimeDilationCommands.Enqueue(new ChangeTaskTimeDilationCommand(executor, timeDilation));
         }
 
         private void ApplyCommandBuffer()
@@ -173,7 +123,7 @@ namespace HiraBots
                     case CommandType.AddService:
                     {
                         var cmd = m_AddServiceCommands.Dequeue();
-                        AddServiceInternal(cmd.obj, cmd.tickInterval, cmd.timeDilation);
+                        AddServiceInternal(cmd.obj, cmd.tickInterval);
                         break;
                     }
                     case CommandType.RemoveService:
@@ -182,28 +132,16 @@ namespace HiraBots
                         RemoveServiceInternal(cmd.obj);
                         break;
                     }
-                    case CommandType.ChangeServiceTimeDilation:
-                    {
-                        var cmd = m_ChangeServiceTimeDilationCommands.Dequeue();
-                        ChangeServiceTimeDilationInternal(cmd.obj, cmd.timeDilation);
-                        break;
-                    }
                     case CommandType.AddTask:
                     {
                         var cmd = m_AddTaskCommands.Dequeue();
-                        AddTaskInternal(cmd.obj, cmd.task, cmd.tickInterval, cmd.timeDilation);
+                        AddTaskInternal(cmd.obj, cmd.task, cmd.tickInterval);
                         break;
                     }
                     case CommandType.RemoveTask:
                     {
                         var cmd = m_RemoveTaskCommands.Dequeue();
                         RemoveTaskInternal(cmd.obj);
-                        break;
-                    }
-                    case CommandType.ChangeTaskTimeDilation:
-                    {
-                        var cmd = m_ChangeTaskTimeDilationCommands.Dequeue();
-                        ChangeTaskTimeDilationInternal(cmd.obj, cmd.timeDilation);
                         break;
                     }
                     default:
@@ -213,10 +151,8 @@ namespace HiraBots
                 if (m_CommandTypes.Count == 0
                     && m_CommandTypes.Count == m_AddServiceCommands.Count
                     && m_AddServiceCommands.Count == m_RemoveServiceCommands.Count
-                    && m_RemoveServiceCommands.Count == m_ChangeServiceTimeDilationCommands.Count
-                    && m_ChangeServiceTimeDilationCommands.Count == m_AddTaskCommands.Count
-                    && m_AddTaskCommands.Count == m_RemoveTaskCommands.Count
-                    && m_RemoveTaskCommands.Count == m_ChangeTaskTimeDilationCommands.Count)
+                    && m_RemoveServiceCommands.Count == m_AddTaskCommands.Count
+                    && m_AddTaskCommands.Count == m_RemoveTaskCommands.Count)
                 {
                     return;
                 }

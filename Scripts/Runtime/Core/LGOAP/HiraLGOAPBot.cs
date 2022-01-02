@@ -14,19 +14,11 @@ namespace HiraBots
         [Tooltip("The domain to use for this HiraBot.")]
         [SerializeField] private LGOAPDomain m_Domain = null;
 
-        [Tooltip("The time dilation to apply.")]
-        [SerializeField] private float m_TimeDilation = 1f;
-
         private void OnValidate()
         {
             if (!(m_ArchetypeOverride is IHiraBotArchetype))
             {
                 m_ArchetypeOverride = null;
-            }
-
-            if (!ReferenceEquals(m_DomainCurrentlyInUse, null))
-            {
-                UpdateTimeDilation(m_TimeDilation);
             }
         }
 
@@ -47,22 +39,6 @@ namespace HiraBots
         {
             s_ActiveBots.Add(this);
             StartUsingNewDomain();
-        }
-
-        private void OnEnable()
-        {
-            if (!ReferenceEquals(m_DomainCurrentlyInUse, null))
-            {
-                UpdateTimeDilation(m_TimeDilation);
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (!ReferenceEquals(m_DomainCurrentlyInUse, null))
-            {
-                UpdateTimeDilation(0f);
-            }
         }
 
         private void OnDestroy()
@@ -278,8 +254,7 @@ namespace HiraBots
                         var service = serviceProvider.GetService(m_Blackboard, archetype);
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
-                            serviceProvider.tickInterval,
-                            isActiveAndEnabled ? m_TimeDilation : 0f);
+                            serviceProvider.tickInterval);
                     }
                 }
             }
@@ -291,21 +266,7 @@ namespace HiraBots
             TaskRunner.instance.Remove(m_Executor);
             TaskRunner.instance.Add(m_Executor,
                 taskProvider.GetTask(m_Blackboard, archetype),
-                taskProvider.tickInterval,
-                isActiveAndEnabled ? m_TimeDilation : 0f);
-        }
-
-        private void UpdateTimeDilation(float timeDilation)
-        {
-            TaskRunner.instance.ChangeTimeDilation(m_Executor, timeDilation);
-
-            foreach (var currentServiceSet in m_ActiveServicesByLayer)
-            {
-                foreach (var service in currentServiceSet)
-                {
-                    ServiceRunner.instance.ChangeServiceTimeDilation(service, timeDilation);
-                }
-            }
+                taskProvider.tickInterval);
         }
     }
 }
