@@ -12,7 +12,7 @@ namespace HiraBots
             internal NativeArray<float> m_TickIntervals;
             internal NativeArray<float> m_ElapsedTimes;
             internal NativeArray<float> m_TimeDilationValues;
-            private readonly Dictionary<T, int> m_IndexLookUp;
+            internal readonly Dictionary<T, int> m_IndexLookUp;
             internal T[] m_ObjectsBuffer;
             internal int m_ObjectsCount;
 
@@ -87,16 +87,6 @@ namespace HiraBots
                 m_ObjectsBuffer[index] = m_ObjectsBuffer[lastObjectIndex];
                 m_ObjectsBuffer[lastObjectIndex] = default;
                 m_ObjectsCount--;
-            }
-
-            internal void SetTimeDilation(T obj, float timeDilation)
-            {
-                if (!m_IndexLookUp.TryGetValue(obj, out var index))
-                {
-                    return;
-                }
-
-                m_TimeDilationValues[index] = timeDilation;
             }
 
             internal ElapsedTimeUpdateJob CreateUpdateJob(float deltaTime)

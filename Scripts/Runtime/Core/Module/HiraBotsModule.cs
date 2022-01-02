@@ -239,7 +239,21 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ChangeServiceTimeDilationInternal(IHiraBotsService service, float timeDilation)
         {
-            m_ServiceUpdates.SetTimeDilation(service, timeDilation);
+            if (!m_ServiceUpdates.m_IndexLookUp.TryGetValue(service, out var index))
+            {
+                // not registered
+                return;
+            }
+
+            var currentValue = m_ServiceUpdates.m_TimeDilationValues[index];
+
+            if (Mathf.Abs(timeDilation - currentValue) < 0.001f)
+            {
+                // practically the same value
+                return;
+            }
+
+            m_ServiceUpdates.m_TimeDilationValues[index] = timeDilation;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -263,7 +277,21 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ChangeTaskTimeDilationInternal(ExecutorComponent executor, float timeDilation)
         {
-            m_TaskUpdates.SetTimeDilation(executor, timeDilation);
+            if (!m_TaskUpdates.m_IndexLookUp.TryGetValue(executor, out var index))
+            {
+                // not registered
+                return;
+            }
+
+            var currentValue = m_TaskUpdates.m_TimeDilationValues[index];
+
+            if (Mathf.Abs(timeDilation - currentValue) < 0.001f)
+            {
+                // practically the same value
+                return;
+            }
+
+            m_TaskUpdates.m_TimeDilationValues[index] = timeDilation;
         }
     }
 }

@@ -13,10 +13,13 @@ namespace HiraBots
                 archetypeProperty = GetProperty<Component>(nameof(m_ArchetypeOverride), false, true);
 
                 domainProperty = GetProperty<LGOAPDomain>(nameof(m_Domain), false, true);
+
+                timeDilationProperty = GetProperty(nameof(m_TimeDilation), SerializedPropertyType.Float, false, true);
             }
 
             internal SerializedProperty archetypeProperty { get; }
             internal SerializedProperty domainProperty { get; }
+            internal SerializedProperty timeDilationProperty { get; }
 
             internal LGOAPDomain domain => target.m_Domain;
             internal BlackboardComponent blackboard => target.m_Blackboard;
