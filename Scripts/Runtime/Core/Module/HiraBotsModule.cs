@@ -174,6 +174,18 @@ namespace HiraBots
             }
         }
 
+        void ServiceRunner.IInterface.ChangeTickPaused(IHiraBotsService service, bool value)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeServiceTickPausedCommand(service, value);
+            }
+            else
+            {
+                ChangeServiceTickPausedInternal(service, value);
+            }
+        }
+
         void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_UpdateJob.HasValue)
@@ -210,6 +222,18 @@ namespace HiraBots
             }
         }
 
+        void TaskRunner.IInterface.ChangeTickPaused(ExecutorComponent executor, bool value)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeTaskTickPausedCommand(executor, value);
+            }
+            else
+            {
+                ChangeTaskTickPausedInternal(executor, value);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddServiceInternal(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
@@ -238,6 +262,15 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeServiceTickPausedInternal(IHiraBotsService service, bool newValue)
+        {
+            if (m_ServiceUpdates.m_IndexLookUp.TryGetValue(service, out var index))
+            {
+                m_ServiceUpdates.m_TickPaused[index] = newValue;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_TaskUpdates.Add(executor, tickInterval, tickIntervalMultiplier))
@@ -261,6 +294,15 @@ namespace HiraBots
             if (m_TaskUpdates.m_IndexLookUp.TryGetValue(executor, out var index))
             {
                 m_TaskUpdates.m_TickIntervalMultipliers[index] = tickIntervalMultiplier;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeTaskTickPausedInternal(ExecutorComponent executor, bool newValue)
+        {
+            if (m_TaskUpdates.m_IndexLookUp.TryGetValue(executor, out var index))
+            {
+                m_TaskUpdates.m_TickPaused[index] = newValue;
             }
         }
     }

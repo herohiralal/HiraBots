@@ -83,6 +83,16 @@ namespace HiraBots
             StartUsingNewDomain();
         }
 
+        private void OnEnable()
+        {
+            SetTickPaused(false);
+        }
+
+        private void OnDisable()
+        {
+            SetTickPaused(true);
+        }
+
         private void OnDestroy()
         {
             StopUsingOldDomain();
@@ -335,6 +345,22 @@ namespace HiraBots
                     foreach (var service in layer)
                     {
                         ServiceRunner.instance.ChangeTickIntervalMultiplier(service, value);
+                    }
+                }
+            }
+        }
+
+        private void SetTickPaused(bool value)
+        {
+            if (!ReferenceEquals(m_DomainCurrentlyInUse, null))
+            {
+                TaskRunner.instance.ChangeTickPaused(m_Executor, value);
+
+                foreach (var layer in m_ActiveServicesByLayer)
+                {
+                    foreach (var service in layer)
+                    {
+                        ServiceRunner.instance.ChangeTickPaused(service, value);
                     }
                 }
             }
