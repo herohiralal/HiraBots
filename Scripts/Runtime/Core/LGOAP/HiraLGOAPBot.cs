@@ -60,6 +60,18 @@ namespace HiraBots
             }
         }
 
+        internal LGOAPDomain domain
+        {
+            get => m_Domain;
+            set
+            {
+                if (value != null)
+                {
+                    m_Domain = value;
+                }
+            }
+        }
+
         private void Awake()
         {
             m_EffectiveArchetype = m_ArchetypeOverride is IHiraBotArchetype arch ? arch : this;
@@ -134,8 +146,15 @@ namespace HiraBots
 
         private void StartUsingNewDomain()
         {
-            if (ReferenceEquals(m_Domain, null) || !m_Domain.isCompiled)
+            if (ReferenceEquals(m_Domain, null))
             {
+                return;
+            }
+
+            if (!m_Domain.isCompiled)
+            {
+                Debug.LogError($"Cannot use un-compiled domain: {m_Domain}. Resetting.", this);
+                m_Domain = null;
                 return;
             }
 
