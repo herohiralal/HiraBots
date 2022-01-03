@@ -8,14 +8,16 @@ namespace HiraBots
     {
         private struct AddServiceCommand
         {
-            internal AddServiceCommand(IHiraBotsService obj, float tickInterval)
+            internal AddServiceCommand(IHiraBotsService obj, float tickInterval, float tickIntervalMultiplier)
             {
                 this.obj = obj;
                 this.tickInterval = tickInterval;
+                this.tickIntervalMultiplier = tickIntervalMultiplier;
             }
 
             internal IHiraBotsService obj { get; }
             internal float tickInterval { get; }
+            internal float tickIntervalMultiplier { get; }
         }
 
         private struct RemoveServiceCommand
@@ -30,16 +32,18 @@ namespace HiraBots
 
         private struct AddTaskCommand
         {
-            internal AddTaskCommand(ExecutorComponent obj, IHiraBotsTask task, float tickInterval)
+            internal AddTaskCommand(ExecutorComponent obj, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
             {
                 this.obj = obj;
                 this.task = task;
                 this.tickInterval = tickInterval;
+                this.tickIntervalMultiplier = tickIntervalMultiplier;
             }
 
             internal ExecutorComponent obj { get; }
             internal IHiraBotsTask task { get; }
             internal float tickInterval { get; }
+            internal float tickIntervalMultiplier { get; }
         }
 
         private struct RemoveTaskCommand
@@ -85,10 +89,10 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferAddServiceCommand(IHiraBotsService service, float tickInterval)
+        private void BufferAddServiceCommand(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
             m_CommandTypes.Enqueue(CommandType.AddService);
-            m_AddServiceCommands.Enqueue(new AddServiceCommand(service, tickInterval));
+            m_AddServiceCommands.Enqueue(new AddServiceCommand(service, tickInterval, tickIntervalMultiplier));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -99,10 +103,10 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void BufferAddTaskCommand(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
+        private void BufferAddTaskCommand(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             m_CommandTypes.Enqueue(CommandType.AddTask);
-            m_AddTaskCommands.Enqueue(new AddTaskCommand(executor, task, tickInterval));
+            m_AddTaskCommands.Enqueue(new AddTaskCommand(executor, task, tickInterval, tickIntervalMultiplier));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,7 +127,7 @@ namespace HiraBots
                     case CommandType.AddService:
                     {
                         var cmd = m_AddServiceCommands.Dequeue();
-                        AddServiceInternal(cmd.obj, cmd.tickInterval);
+                        AddServiceInternal(cmd.obj, cmd.tickInterval, cmd.tickIntervalMultiplier);
                         break;
                     }
                     case CommandType.RemoveService:
@@ -135,7 +139,7 @@ namespace HiraBots
                     case CommandType.AddTask:
                     {
                         var cmd = m_AddTaskCommands.Dequeue();
-                        AddTaskInternal(cmd.obj, cmd.task, cmd.tickInterval);
+                        AddTaskInternal(cmd.obj, cmd.task, cmd.tickInterval, cmd.tickIntervalMultiplier);
                         break;
                     }
                     case CommandType.RemoveTask:

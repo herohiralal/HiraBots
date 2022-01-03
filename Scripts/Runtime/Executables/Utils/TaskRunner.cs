@@ -6,7 +6,7 @@ namespace HiraBots
     {
         internal interface IInterface
         {
-            void Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval);
+            void Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier);
             void Remove(ExecutorComponent executor);
         }
 

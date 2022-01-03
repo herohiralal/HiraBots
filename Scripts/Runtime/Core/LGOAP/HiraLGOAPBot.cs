@@ -254,7 +254,8 @@ namespace HiraBots
                         var service = serviceProvider.GetService(m_Blackboard, archetype);
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
-                            serviceProvider.tickInterval);
+                            serviceProvider.tickInterval,
+                            1f);
                     }
                 }
             }
@@ -266,7 +267,8 @@ namespace HiraBots
             TaskRunner.instance.Remove(m_Executor);
             TaskRunner.instance.Add(m_Executor,
                 taskProvider.GetTask(m_Blackboard, archetype),
-                taskProvider.tickInterval);
+                taskProvider.tickInterval,
+                1f);
         }
     }
 }

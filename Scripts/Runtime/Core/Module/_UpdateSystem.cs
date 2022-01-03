@@ -10,7 +10,9 @@ namespace HiraBots
         internal struct UpdateSystem<T>
         {
             internal NativeArray<float> m_TickIntervals;
+            internal NativeArray<float> m_TickIntervalMultipliers;
             internal NativeArray<float> m_ElapsedTimes;
+            internal NativeArray<float> m_ShouldTick;
             internal readonly Dictionary<T, int> m_IndexLookUp;
             internal T[] m_ObjectsBuffer;
             internal int m_ObjectsCount;
@@ -18,7 +20,9 @@ namespace HiraBots
             internal UpdateSystem(int batchCount)
             {
                 m_TickIntervals = new NativeArray<float>(batchCount * 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                m_TickIntervalMultipliers = new NativeArray<float>(batchCount * 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                 m_ElapsedTimes = new NativeArray<float>(batchCount * 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                m_ShouldTick = new NativeArray<float>(batchCount * 16, Allocator.Persistent, NativeArrayOptions.ClearMemory);
                 m_IndexLookUp = new Dictionary<T, int>(batchCount * 16);
                 m_ObjectsBuffer = new T[batchCount * 16];
                 m_ObjectsCount = 0;
@@ -29,11 +33,13 @@ namespace HiraBots
                 m_ObjectsCount = 0;
                 m_ObjectsBuffer = new T[0];
                 m_IndexLookUp.Clear();
+                m_ShouldTick.Dispose();
                 m_ElapsedTimes.Dispose();
+                m_TickIntervalMultipliers.Dispose();
                 m_TickIntervals.Dispose();
             }
 
-            internal bool Add(T obj, float tickInterval)
+            internal bool Add(T obj, float tickInterval, float tickIntervalMultiplier)
             {
                 if (m_IndexLookUp.ContainsKey(obj))
                 {
@@ -44,12 +50,16 @@ namespace HiraBots
                 {
                     // reallocation time
                     m_TickIntervals.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_TickIntervalMultipliers.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                     m_ElapsedTimes.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_ShouldTick.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.ClearMemory);
                     System.Array.Resize(ref m_ObjectsBuffer, m_ObjectsCount * 2);
                 }
 
                 m_TickIntervals[m_ObjectsCount] = tickInterval;
+                m_TickIntervalMultipliers[m_ObjectsCount] = tickIntervalMultiplier;
                 m_ElapsedTimes[m_ObjectsCount] = 0f;
+                m_ShouldTick[m_ObjectsCount] = -1f;
                 m_IndexLookUp.Add(obj, m_ObjectsCount);
                 m_ObjectsBuffer[m_ObjectsCount] = obj;
                 m_ObjectsCount++;
@@ -75,7 +85,9 @@ namespace HiraBots
 
                 // remove / swap back
                 m_TickIntervals[index] = m_TickIntervals[lastObjectIndex];
+                m_TickIntervalMultipliers[index] = m_TickIntervalMultipliers[lastObjectIndex];
                 m_ElapsedTimes[index] = m_ElapsedTimes[lastObjectIndex];
+                m_ShouldTick[index] = m_ShouldTick[lastObjectIndex];
                 m_IndexLookUp[m_ObjectsBuffer[lastObjectIndex]] = index;
                 m_IndexLookUp.Remove(m_ObjectsBuffer[index]);
                 m_ObjectsBuffer[index] = m_ObjectsBuffer[lastObjectIndex];
@@ -83,32 +95,63 @@ namespace HiraBots
                 m_ObjectsCount--;
             }
 
-            internal ElapsedTimeUpdateJob CreateUpdateJob(float deltaTime)
+            internal JobHandle ScheduleTickJob(float deltaTime)
             {
-                return new ElapsedTimeUpdateJob(
-                    m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float)),
-                    deltaTime);
+                return new TickJob(
+                        m_TickIntervals.Reinterpret<float4x4>(sizeof(float)),
+                        m_TickIntervalMultipliers.Reinterpret<float4x4>(sizeof(float)),
+                        m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float)),
+                        m_ShouldTick.Reinterpret<float4x4>(sizeof(float)),
+                        deltaTime)
+                    .Schedule();
             }
         }
 
         [Unity.Burst.BurstCompile]
-        internal struct ElapsedTimeUpdateJob : IJob
+        private struct TickJob : IJob
         {
-            internal ElapsedTimeUpdateJob(NativeArray<float4x4> elapsedTimes, float deltaTime)
+            internal TickJob(
+                NativeArray<float4x4> tickIntervals,
+                NativeArray<float4x4> tickIntervalMultipliers,
+                NativeArray<float4x4> elapsedTimes,
+                NativeArray<float4x4> shouldTick,
+                float deltaTime)
             {
+                m_TickIntervals = tickIntervals;
+                m_TickIntervalMultipliers = tickIntervalMultipliers;
                 m_ElapsedTimes = elapsedTimes;
+                m_ShouldTick = shouldTick;
                 m_DeltaTime = deltaTime;
             }
 
+            [ReadOnly] private readonly NativeArray<float4x4> m_TickIntervals;
+            [ReadOnly] private readonly NativeArray<float4x4> m_TickIntervalMultipliers;
             private NativeArray<float4x4> m_ElapsedTimes;
+            private NativeArray<float4x4> m_ShouldTick;
             [ReadOnly] private readonly float m_DeltaTime;
 
             public void Execute()
             {
-                for (var i = 0; i < m_ElapsedTimes.Length; i++)
+                var length = m_TickIntervals.Length;
+
+                for (var i = 0; i < length; i++)
                 {
-                    m_ElapsedTimes[i] += m_DeltaTime;
+                    var elapsedTime = m_ElapsedTimes[i];
+                    var effectiveTickInterval = (m_TickIntervals[i] * m_TickIntervalMultipliers[i]);
+                    var shouldTick = elapsedTime > effectiveTickInterval;
+
+                    m_ShouldTick[i] = Select(-1f, elapsedTime, shouldTick);
+                    m_ElapsedTimes[i] = m_DeltaTime + Select(elapsedTime, 0f, shouldTick);
                 }
+            }
+
+            private static float4x4 Select(float4x4 a, float4x4 b, bool4x4 c)
+            {
+                return new float4x4(
+                    math.select(a.c0, b.c0, c.c0),
+                    math.select(a.c1, b.c1, c.c1),
+                    math.select(a.c2, b.c2, c.c2),
+                    math.select(a.c3, b.c3, c.c3));
             }
         }
     }

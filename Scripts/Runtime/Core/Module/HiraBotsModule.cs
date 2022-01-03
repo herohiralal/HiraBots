@@ -82,8 +82,8 @@ namespace HiraBots
 
             m_UpdateJob = JobHandle.CombineDependencies
             (
-                m_TaskUpdates.CreateUpdateJob(deltaTime).Schedule(),
-                m_ServiceUpdates.CreateUpdateJob(deltaTime).Schedule()
+                m_TaskUpdates.ScheduleTickJob(deltaTime),
+                m_ServiceUpdates.ScheduleTickJob(deltaTime)
             );
         }
 
@@ -97,21 +97,17 @@ namespace HiraBots
 
         private unsafe void TickTasksUpdateSystem()
         {
-            var tickIntervals = (float*) m_TaskUpdates.m_TickIntervals.GetUnsafeReadOnlyPtr();
-            var elapsedTimes = (float*) m_TaskUpdates.m_ElapsedTimes.GetUnsafePtr();
+            var shouldTicks = (float*) m_TaskUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
 
             // iterate backwards so we can remove executors as we go, if not needed
             for (var i = m_TaskUpdates.m_ObjectsCount - 1; i >= 0; i--)
             {
-                var deltaTime = elapsedTimes[i];
+                var deltaTime = shouldTicks[i];
 
-                if (deltaTime < tickIntervals[i])
+                if (deltaTime < 0f)
                 {
                     continue;
                 }
-
-                // reset timer since it ran out
-                elapsedTimes[i] = 0f;
 
                 // execute
                 var currentExecutor = m_TaskUpdates.m_ObjectsBuffer[i];
@@ -127,34 +123,30 @@ namespace HiraBots
 
         private unsafe void TickServicesUpdateSystem()
         {
-            var tickIntervals = (float*) m_ServiceUpdates.m_TickIntervals.GetUnsafeReadOnlyPtr();
-            var elapsedTimes = (float*) m_ServiceUpdates.m_ElapsedTimes.GetUnsafePtr();
+            var shouldTicks = (float*) m_ServiceUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
 
             for (var i = m_ServiceUpdates.m_ObjectsCount - 1; i >= 0; i--)
             {
-                var deltaTime = elapsedTimes[i];
+                var deltaTime = shouldTicks[i];
 
-                if (deltaTime < tickIntervals[i])
+                if (deltaTime <= 0f)
                 {
                     continue;
                 }
-
-                // reset timer since it ran out
-                elapsedTimes[i] = 0f;
 
                 m_ServiceUpdates.m_ObjectsBuffer[i].WrappedTick(deltaTime);
             }
         }
 
-        void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval)
+        void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_UpdateJob.HasValue)
             {
-                BufferAddServiceCommand(service, tickInterval);
+                BufferAddServiceCommand(service, tickInterval, tickIntervalMultiplier);
             }
             else
             {
-                AddServiceInternal(service, tickInterval);
+                AddServiceInternal(service, tickInterval, tickIntervalMultiplier);
             }
         }
 
@@ -170,15 +162,15 @@ namespace HiraBots
             }
         }
 
-        void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
+        void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_UpdateJob.HasValue)
             {
-                BufferAddTaskCommand(executor, task, tickInterval);
+                BufferAddTaskCommand(executor, task, tickInterval, tickIntervalMultiplier);
             }
             else
             {
-                AddTaskInternal(executor, task, tickInterval);
+                AddTaskInternal(executor, task, tickInterval, tickIntervalMultiplier);
             }
         }
 
@@ -195,9 +187,9 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddServiceInternal(IHiraBotsService service, float tickInterval)
+        private void AddServiceInternal(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
-            if (m_ServiceUpdates.Add(service, tickInterval))
+            if (m_ServiceUpdates.Add(service, tickInterval, tickIntervalMultiplier))
             {
                 service.WrappedStart();
             }
@@ -213,9 +205,9 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval)
+        private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
-            if (m_TaskUpdates.Add(executor, tickInterval))
+            if (m_TaskUpdates.Add(executor, tickInterval, tickIntervalMultiplier))
             {
                 executor.BeginTask(task);
             }
