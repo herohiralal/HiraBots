@@ -30,6 +30,18 @@ namespace HiraBots
             internal IHiraBotsService obj { get; }
         }
 
+        private struct ChangeServiceTickIntervalMultiplierCommand
+        {
+            internal ChangeServiceTickIntervalMultiplierCommand(IHiraBotsService obj, float multiplier)
+            {
+                this.obj = obj;
+                this.multiplier = multiplier;
+            }
+
+            internal IHiraBotsService obj { get; }
+            internal float multiplier { get; }
+        }
+
         private struct AddTaskCommand
         {
             internal AddTaskCommand(ExecutorComponent obj, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
@@ -56,33 +68,53 @@ namespace HiraBots
             internal ExecutorComponent obj { get; }
         }
 
+        private struct ChangeTaskTickIntervalMultiplierCommand
+        {
+            internal ChangeTaskTickIntervalMultiplierCommand(ExecutorComponent obj, float multiplier)
+            {
+                this.obj = obj;
+                this.multiplier = multiplier;
+            }
+
+            internal ExecutorComponent obj { get; }
+            internal float multiplier { get; }
+        }
+
         private enum CommandType : byte
         {
             AddService,
             RemoveService,
+            ChangeServiceTickIntervalMultiplier,
             AddTask,
             RemoveTask,
+            ChangeTaskTickIntervalMultiplier
         }
 
         private Queue<CommandType> m_CommandTypes;
         private Queue<AddServiceCommand> m_AddServiceCommands;
         private Queue<RemoveServiceCommand> m_RemoveServiceCommands;
+        private Queue<ChangeServiceTickIntervalMultiplierCommand> m_ChangeServiceTickIntervalMultiplierCommands;
         private Queue<AddTaskCommand> m_AddTaskCommands;
         private Queue<RemoveTaskCommand> m_RemoveTaskCommands;
+        private Queue<ChangeTaskTickIntervalMultiplierCommand> m_ChangeTaskTickIntervalMultiplierCommands;
 
         private void InitializeCommandBuffer()
         {
             m_CommandTypes = new Queue<CommandType>();
             m_AddServiceCommands = new Queue<AddServiceCommand>();
             m_RemoveServiceCommands = new Queue<RemoveServiceCommand>();
+            m_ChangeServiceTickIntervalMultiplierCommands = new Queue<ChangeServiceTickIntervalMultiplierCommand>();
             m_AddTaskCommands = new Queue<AddTaskCommand>();
             m_RemoveTaskCommands = new Queue<RemoveTaskCommand>();
+            m_ChangeTaskTickIntervalMultiplierCommands = new Queue<ChangeTaskTickIntervalMultiplierCommand>();
         }
 
         private void ShutdownCommandBuffer()
         {
+            m_ChangeTaskTickIntervalMultiplierCommands = null;
             m_RemoveTaskCommands = null;
             m_AddTaskCommands = null;
+            m_ChangeServiceTickIntervalMultiplierCommands = null;
             m_RemoveServiceCommands = null;
             m_AddServiceCommands = null;
             m_CommandTypes = null;
@@ -103,6 +135,13 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferChangeServiceTickIntervalMultiplierCommand(IHiraBotsService service, float tickIntervalMultiplier)
+        {
+            m_CommandTypes.Enqueue(CommandType.ChangeServiceTickIntervalMultiplier);
+            m_ChangeServiceTickIntervalMultiplierCommands.Enqueue(new ChangeServiceTickIntervalMultiplierCommand(service, tickIntervalMultiplier));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BufferAddTaskCommand(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             m_CommandTypes.Enqueue(CommandType.AddTask);
@@ -114,6 +153,13 @@ namespace HiraBots
         {
             m_CommandTypes.Enqueue(CommandType.RemoveTask);
             m_RemoveTaskCommands.Enqueue(new RemoveTaskCommand(executor));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferChangeTaskTickIntervalMultiplierCommand(ExecutorComponent executor, float tickIntervalMultiplier)
+        {
+            m_CommandTypes.Enqueue(CommandType.ChangeTaskTickIntervalMultiplier);
+            m_ChangeTaskTickIntervalMultiplierCommands.Enqueue(new ChangeTaskTickIntervalMultiplierCommand(executor, tickIntervalMultiplier));
         }
 
         private void ApplyCommandBuffer()
@@ -136,6 +182,12 @@ namespace HiraBots
                         RemoveServiceInternal(cmd.obj);
                         break;
                     }
+                    case CommandType.ChangeTaskTickIntervalMultiplier:
+                    {
+                        var cmd = m_ChangeTaskTickIntervalMultiplierCommands.Dequeue();
+                        ChangeTaskTickIntervalMultiplierInternal(cmd.obj, cmd.multiplier);
+                        break;
+                    }
                     case CommandType.AddTask:
                     {
                         var cmd = m_AddTaskCommands.Dequeue();
@@ -146,6 +198,12 @@ namespace HiraBots
                     {
                         var cmd = m_RemoveTaskCommands.Dequeue();
                         RemoveTaskInternal(cmd.obj);
+                        break;
+                    }
+                    case CommandType.ChangeServiceTickIntervalMultiplier:
+                    {
+                        var cmd = m_ChangeServiceTickIntervalMultiplierCommands.Dequeue();
+                        ChangeServiceTickIntervalMultiplierInternal(cmd.obj, cmd.multiplier);
                         break;
                     }
                     default:

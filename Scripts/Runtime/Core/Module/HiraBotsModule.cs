@@ -162,6 +162,18 @@ namespace HiraBots
             }
         }
 
+        void ServiceRunner.IInterface.ChangeTickIntervalMultiplier(IHiraBotsService service, float tickIntervalMultiplier)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeServiceTickIntervalMultiplierCommand(service, tickIntervalMultiplier);
+            }
+            else
+            {
+                ChangeServiceTickIntervalMultiplierInternal(service, tickIntervalMultiplier);
+            }
+        }
+
         void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_UpdateJob.HasValue)
@@ -186,6 +198,18 @@ namespace HiraBots
             }
         }
 
+        void TaskRunner.IInterface.ChangeTickIntervalMultiplier(ExecutorComponent executor, float tickIntervalMultiplier)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeTaskTickIntervalMultiplierCommand(executor, tickIntervalMultiplier);
+            }
+            else
+            {
+                ChangeTaskTickIntervalMultiplierInternal(executor, tickIntervalMultiplier);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddServiceInternal(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
@@ -205,6 +229,15 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeServiceTickIntervalMultiplierInternal(IHiraBotsService service, float tickIntervalMultiplier)
+        {
+            if (m_ServiceUpdates.m_IndexLookUp.TryGetValue(service, out var index))
+            {
+                m_ServiceUpdates.m_TickIntervalMultipliers[index] = tickIntervalMultiplier;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddTaskInternal(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
             if (m_TaskUpdates.Add(executor, tickInterval, tickIntervalMultiplier))
@@ -219,6 +252,15 @@ namespace HiraBots
             if (m_TaskUpdates.Remove(executor))
             {
                 executor.AbortTask();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeTaskTickIntervalMultiplierInternal(ExecutorComponent executor, float tickIntervalMultiplier)
+        {
+            if (m_TaskUpdates.m_IndexLookUp.TryGetValue(executor, out var index))
+            {
+                m_TaskUpdates.m_TickIntervalMultipliers[index] = tickIntervalMultiplier;
             }
         }
     }
