@@ -14,18 +14,14 @@ namespace HiraBots
         [Tooltip("The domain to use for this HiraBot.")]
         [SerializeField] private LGOAPDomain m_Domain = null;
 
+        [Tooltip("The multiplier to use on tick interval. Local to this bot. Can be used for LOD purposes.")]
+        [SerializeField] private float m_TickIntervalMultiplier = 1f;
+
         private void OnValidate()
         {
-            if (m_ArchetypeOverride is IHiraBotArchetype arch)
-            {
-                m_EffectiveArchetype = arch;
-            }
-            else
-            {
-                Debug.LogWarning($"Unsupported archetype: \"{m_ArchetypeOverride}\". Using self as fallback.", this);
-                m_ArchetypeOverride = null;
-                m_EffectiveArchetype = this;
-            }
+            archetype = m_ArchetypeOverride as IHiraBotArchetype;
+            domain = m_Domain;
+            tickIntervalMultiplier = m_TickIntervalMultiplier;
         }
 
         private IHiraBotArchetype m_EffectiveArchetype = null;
@@ -53,7 +49,11 @@ namespace HiraBots
                 }
                 else
                 {
-                    Debug.LogWarning($"Unsupported archetype: \"{value}\". Using self as fallback.", this);
+                    if (value != null)
+                    {
+                        Debug.LogWarning($"Unsupported archetype: \"{value}\". Using self as fallback.", this);
+                    }
+
                     m_ArchetypeOverride = null;
                     m_EffectiveArchetype = this;
                 }
@@ -63,12 +63,16 @@ namespace HiraBots
         internal LGOAPDomain domain
         {
             get => m_Domain;
+            set => m_Domain = value;
+        }
+
+        internal float tickIntervalMultiplier
+        {
+            get => m_TickIntervalMultiplier;
             set
             {
-                if (value != null)
-                {
-                    m_Domain = value;
-                }
+                UpdateTickIntervalMultiplier(value);
+                m_TickIntervalMultiplier = value;
             }
         }
 
@@ -119,17 +123,20 @@ namespace HiraBots
             // if the executor is done executing
             if (!m_Executor.hasTask && m_Executor.lastTaskEndSucceeded.HasValue)
             {
+                // fail
                 if (!m_Executor.lastTaskEndSucceeded.Value)
                 {
                     m_Planner.OnTaskExecutionComplete(false);
                 }
-                else if (m_TaskProviders.Count > 0)
-                {
-                    ExecuteTaskProvider(m_TaskProviders.Dequeue());
-                }
-                else
+                // full success (all task providers done)
+                else if (m_TaskProviders.Count == 0)
                 {
                     m_Planner.OnTaskExecutionComplete(true);
+                }
+                // partial success (there are more task providers)
+                else
+                {
+                    ExecuteTaskProvider(m_TaskProviders.Dequeue());
                 }
 
                 m_Executor.lastTaskEndSucceeded = null;
@@ -301,7 +308,7 @@ namespace HiraBots
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
                             serviceProvider.tickInterval,
-                            1f);
+                            m_TickIntervalMultiplier);
                     }
                 }
             }
@@ -314,7 +321,23 @@ namespace HiraBots
             TaskRunner.instance.Add(m_Executor,
                 taskProvider.GetTask(m_Blackboard, m_EffectiveArchetype),
                 taskProvider.tickInterval,
-                1f);
+                m_TickIntervalMultiplier);
+        }
+
+        private void UpdateTickIntervalMultiplier(float value)
+        {
+            if (!ReferenceEquals(m_DomainCurrentlyInUse, null))
+            {
+                TaskRunner.instance.ChangeTickIntervalMultiplier(m_Executor, value);
+
+                foreach (var layer in m_ActiveServicesByLayer)
+                {
+                    foreach (var service in layer)
+                    {
+                        ServiceRunner.instance.ChangeTickIntervalMultiplier(service, value);
+                    }
+                }
+            }
         }
     }
 }
