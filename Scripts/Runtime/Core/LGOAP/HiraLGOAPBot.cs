@@ -16,11 +16,19 @@ namespace HiraBots
 
         private void OnValidate()
         {
-            if (!(m_ArchetypeOverride is IHiraBotArchetype))
+            if (m_ArchetypeOverride is IHiraBotArchetype arch)
             {
+                m_EffectiveArchetype = arch;
+            }
+            else
+            {
+                Debug.LogWarning($"Unsupported archetype: \"{m_ArchetypeOverride}\". Using self as fallback.", this);
                 m_ArchetypeOverride = null;
+                m_EffectiveArchetype = this;
             }
         }
+
+        private IHiraBotArchetype m_EffectiveArchetype = null;
 
         private LGOAPDomain m_DomainCurrentlyInUse = null;
 
@@ -33,10 +41,28 @@ namespace HiraBots
         private Queue<HiraBotsTaskProvider> m_TaskProviders = null;
         private List<IHiraBotsService>[] m_ActiveServicesByLayer = null;
 
-        private IHiraBotArchetype archetype => (IHiraBotArchetype) (m_ArchetypeOverride == null ? this : m_ArchetypeOverride);
+        internal IHiraBotArchetype archetype
+        {
+            get => m_EffectiveArchetype;
+            set
+            {
+                if (value is Component c)
+                {
+                    m_ArchetypeOverride = c;
+                    m_EffectiveArchetype = value;
+                }
+                else
+                {
+                    Debug.LogWarning($"Unsupported archetype: \"{value}\". Using self as fallback.", this);
+                    m_ArchetypeOverride = null;
+                    m_EffectiveArchetype = this;
+                }
+            }
+        }
 
         private void Awake()
         {
+            m_EffectiveArchetype = m_ArchetypeOverride is IHiraBotArchetype arch ? arch : this;
             s_ActiveBots.Add(this);
             StartUsingNewDomain();
         }
@@ -45,6 +71,7 @@ namespace HiraBots
         {
             StopUsingOldDomain();
             s_ActiveBots.Remove(this);
+            m_EffectiveArchetype = null;
         }
 
         private void Update()
@@ -251,7 +278,7 @@ namespace HiraBots
 
                     foreach (var serviceProvider in serviceProviders)
                     {
-                        var service = serviceProvider.GetService(m_Blackboard, archetype);
+                        var service = serviceProvider.GetService(m_Blackboard, m_EffectiveArchetype);
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
                             serviceProvider.tickInterval,
@@ -266,7 +293,7 @@ namespace HiraBots
         {
             TaskRunner.instance.Remove(m_Executor);
             TaskRunner.instance.Add(m_Executor,
-                taskProvider.GetTask(m_Blackboard, archetype),
+                taskProvider.GetTask(m_Blackboard, m_EffectiveArchetype),
                 taskProvider.tickInterval,
                 1f);
         }
