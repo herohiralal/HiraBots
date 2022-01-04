@@ -19,6 +19,8 @@ namespace HiraBots
         private int? m_LayerToSchedulePlannerAt;
         private JobHandle? m_JobHandleToWaitOn;
 
+        internal bool planSynchronously { get; set; }
+
         internal void StartPlannerAtLayer(int index, bool discardIfAlreadyPlanning)
         {
             var layerCount = m_Domain.layerCount;
@@ -55,33 +57,46 @@ namespace HiraBots
                 yield break;
             }
 
-            // mark the status as about to start planning
-            m_Status = Status.WillSchedulePlanner;
-
-            yield return null;
-
-            // get the index to schedule the planner job at and mark it as consumed
-            var index = m_LayerToSchedulePlannerAt.Value;
-            m_LayerToSchedulePlannerAt = null;
-
-            // mark the status as planning
-            m_Status = Status.Planning;
-
-            // RunPlannerJobSynchronously(index);
-            var lastJobHandle = SchedulePlannerJob(index);
-
+            int index;
+            if (planSynchronously)
             {
-                // this job handle will be forcefully completed when this component is destroyed
-                m_JobHandleToWaitOn = lastJobHandle;
+                // get the index to schedule the planner job at and mark it as consumed
+                index = m_LayerToSchedulePlannerAt.Value;
+                m_LayerToSchedulePlannerAt = null;
 
-                while (!lastJobHandle.IsCompleted)
+                // run on main thread
+                RunPlannerJobSynchronously(index);
+            }
+            else
+            {
+                // mark the status as about to start planning
+                m_Status = Status.WillSchedulePlanner;
+
+                yield return null;
+
+                // get the index to schedule the planner job at and mark it as consumed
+                index = m_LayerToSchedulePlannerAt.Value;
+                m_LayerToSchedulePlannerAt = null;
+
+                // mark the status as planning
+                m_Status = Status.Planning;
+
+                // RunPlannerJobSynchronously(index);
+                var lastJobHandle = SchedulePlannerJob(index);
+
                 {
-                    yield return null;
+                    // this job handle will be forcefully completed when this component is destroyed
+                    m_JobHandleToWaitOn = lastJobHandle;
+
+                    while (!lastJobHandle.IsCompleted)
+                    {
+                        yield return null;
+                    }
+
+                    lastJobHandle.Complete();
+
+                    m_JobHandleToWaitOn = null;
                 }
-
-                lastJobHandle.Complete();
-
-                m_JobHandleToWaitOn = null;
             }
 
             // if a re-plan has been requested, ignore the results and just schedule a new planner job

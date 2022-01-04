@@ -14,13 +14,17 @@ namespace HiraBots
 
                 domainProperty = GetProperty<LGOAPDomain>(nameof(m_Domain), false, true);
 
-                tickIntervalMultiplierProperty = GetProperty(nameof(m_TickIntervalMultiplier), SerializedPropertyType.Float,
+                executableTickIntervalMultiplierProperty = GetProperty(nameof(m_ExecutableTickIntervalMultiplier), SerializedPropertyType.Float,
+                    false, true);
+
+                runPlannerSynchronouslyProperty = GetProperty(nameof(m_RunPlannerSynchronously), SerializedPropertyType.Boolean,
                     false, true);
             }
 
             internal SerializedProperty archetypeProperty { get; }
             internal SerializedProperty domainProperty { get; }
-            internal SerializedProperty tickIntervalMultiplierProperty { get; }
+            internal SerializedProperty executableTickIntervalMultiplierProperty { get; }
+            internal SerializedProperty runPlannerSynchronouslyProperty { get; }
 
             internal LGOAPDomain domain => target.m_Domain;
             internal BlackboardComponent blackboard => target.m_Blackboard;

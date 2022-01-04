@@ -14,14 +14,17 @@ namespace HiraBots
         [Tooltip("The domain to use for this HiraBot.")]
         [SerializeField] private LGOAPDomain m_Domain = null;
 
-        [Tooltip("The multiplier to use on tick interval. Local to this bot. Can be used for LOD purposes.")]
-        [SerializeField] private float m_TickIntervalMultiplier = 1f;
+        [Tooltip("The multiplier to use on tick interval of a task/service. Local to this bot. Can be used for LOD purposes.")]
+        [SerializeField] private float m_ExecutableTickIntervalMultiplier = 1f;
+
+        [Tooltip("Whether to run the planner synchronously on the main thread.")]
+        [SerializeField] private bool m_RunPlannerSynchronously = false;
 
         private void OnValidate()
         {
-            archetype = m_ArchetypeOverride as IHiraBotArchetype;
+            archetypeOverride = m_ArchetypeOverride;
             domain = m_Domain;
-            tickIntervalMultiplier = m_TickIntervalMultiplier;
+            executableTickIntervalMultiplier = m_ExecutableTickIntervalMultiplier;
         }
 
         private IHiraBotArchetype m_EffectiveArchetype = null;
@@ -37,15 +40,15 @@ namespace HiraBots
         private Queue<HiraBotsTaskProvider> m_TaskProviders = null;
         private List<IHiraBotsService>[] m_ActiveServicesByLayer = null;
 
-        internal IHiraBotArchetype archetype
+        internal Component archetypeOverride
         {
-            get => m_EffectiveArchetype;
+            get => m_ArchetypeOverride;
             set
             {
-                if (value is Component c)
+                if (value is IHiraBotArchetype a)
                 {
-                    m_ArchetypeOverride = c;
-                    m_EffectiveArchetype = value;
+                    m_ArchetypeOverride = value;
+                    m_EffectiveArchetype = a;
                 }
                 else
                 {
@@ -66,14 +69,33 @@ namespace HiraBots
             set => m_Domain = value;
         }
 
-        internal float tickIntervalMultiplier
+        internal float executableTickIntervalMultiplier
         {
-            get => m_TickIntervalMultiplier;
+            get => m_ExecutableTickIntervalMultiplier;
             set
             {
                 UpdateTickIntervalMultiplier(value);
-                m_TickIntervalMultiplier = value;
+                m_ExecutableTickIntervalMultiplier = value;
             }
+        }
+
+        internal bool runPlannerSynchronously
+        {
+            get => m_RunPlannerSynchronously;
+            set
+            {
+                if (m_Planner != null)
+                {
+                    m_Planner.planSynchronously = value;
+                }
+
+                m_RunPlannerSynchronously = value;
+            }
+        }
+
+        internal void UpdateStatus()
+        {
+            Update();
         }
 
         private void Awake()
@@ -318,7 +340,7 @@ namespace HiraBots
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
                             serviceProvider.tickInterval,
-                            m_TickIntervalMultiplier);
+                            m_ExecutableTickIntervalMultiplier);
                     }
                 }
             }
@@ -331,7 +353,7 @@ namespace HiraBots
             TaskRunner.instance.Add(m_Executor,
                 taskProvider.GetTask(m_Blackboard, m_EffectiveArchetype),
                 taskProvider.tickInterval,
-                m_TickIntervalMultiplier);
+                m_ExecutableTickIntervalMultiplier);
         }
 
         private void UpdateTickIntervalMultiplier(float value)
