@@ -9,7 +9,7 @@ namespace HiraBots.Editor
     /// Custom editor for Blackboard Template.
     /// todo: implement this in UIElements (the current issue is that ListView has a predefined length for each element)
     /// </summary>
-    [CustomEditor(typeof(HiraLGOAPBot))]
+    [CustomEditor(typeof(HiraLGOAPRealtimeBot))]
     internal class HiraLGOAPBotEditor : UnityEditor.Editor
     {
         [System.Serializable]
@@ -22,12 +22,12 @@ namespace HiraBots.Editor
         private bool m_EditBlackboard;
         private EditType m_EditType = EditType.Unexpected;
 
-        private HiraLGOAPBot.Serialized m_Bot;
+        private HiraLGOAPRealtimeBot.Serialized m_Bot;
         private HashSet<BlackboardKey> m_Keys;
 
         private void OnEnable()
         {
-            m_Bot = new HiraLGOAPBot.Serialized((HiraLGOAPBot) target);
+            m_Bot = new HiraLGOAPRealtimeBot.Serialized((HiraLGOAPRealtimeBot) target);
         }
 
         private void OnDisable()
