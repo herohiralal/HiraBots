@@ -203,18 +203,13 @@ namespace HiraBots
                 {
                     case LGOAPPlan.Type.NotRequired:
                         m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
-                        Debug.Log($"No plan required at layer {i} on component {m_Id}. This can happen if one of the " +
-                                  " previous layers contain a fake target.");
                         break;
                     case LGOAPPlan.Type.Unchanged:
                         // ignore the result and keep executing the current copy
-                        Debug.Log($"Reused previous plan at layer {i} on component {m_Id}. This can happen if there " +
-                                  "was an unexpected change in the blackboard but the original plan was still valid.");
                         break;
                     case LGOAPPlan.Type.NewPlan:
                         m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
                         canProvidePlan = true;
-                        Debug.Log($"New plan discovered at layer {i} on component {m_Id}.");
                         break;
                     default:
                         throw new System.ArgumentOutOfRangeException();
