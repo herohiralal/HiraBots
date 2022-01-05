@@ -100,9 +100,11 @@ namespace HiraBots
 
         private void OnApplicationQuit()
         {
+            Profiler.BeginSample("HiraBots Cleanup");
+
             try
             {
-                Destroy(GetComponent<HiraBotsModule>());
+                GetComponent<HiraBotsModule>().Dispose();
             }
             catch (System.Exception e)
             {
@@ -111,7 +113,7 @@ namespace HiraBots
 
             try
             {
-                Destroy(this);
+                Unload();
             }
             catch (System.Exception e)
             {
@@ -119,19 +121,18 @@ namespace HiraBots
             }
 
             Destroy(gameObject);
-            Unload();
+
+            Profiler.EndSample();
         }
 
         // Free all the compiled HiraBots components in a reverse order
         private static void Unload()
         {
-            Profiler.BeginSample("HiraBots Cleanup");
-
             for (var i = HiraLGOAPRealtimeBot.s_ActiveBots.Count - 1; i >= 0; i--)
             {
                 try
                 {
-                    Destroy(HiraLGOAPRealtimeBot.s_ActiveBots[i]);
+                    HiraLGOAPRealtimeBot.s_ActiveBots[i].Dispose();
                 }
                 catch (System.Exception e)
                 {
@@ -182,8 +183,6 @@ namespace HiraBots
             BlackboardUnsafeHelpers.ClearObjectCache();
 
             CompilationRegistry.Clear();
-
-            Profiler.EndSample();
         }
     }
 }

@@ -38,7 +38,7 @@ namespace HiraBots
             m_UpdateJob = null;
         }
 
-        private void OnDestroy()
+        internal void Dispose()
         {
             // singleton stuff
             if (s_Instance != this)
@@ -71,6 +71,11 @@ namespace HiraBots
             TaskRunner.instance = this;
             CoroutineRunner.instance = null;
             s_Instance = null;
+        }
+
+        private void OnDestroy()
+        {
+            Dispose();
         }
 
         private void Update()

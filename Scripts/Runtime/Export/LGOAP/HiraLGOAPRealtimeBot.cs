@@ -96,10 +96,15 @@ namespace UnityEngine
             StartUsingNewDomain();
         }
 
-        private void OnDestroy()
+        internal void Dispose()
         {
             StopUsingOldDomain();
             s_ActiveBots.Remove(this);
+        }
+
+        private void OnDestroy()
+        {
+            Dispose();
         }
 
         private void OnEnable()
