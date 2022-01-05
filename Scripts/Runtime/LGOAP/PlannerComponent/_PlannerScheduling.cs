@@ -160,13 +160,18 @@ namespace HiraBots
         {
             var layerCount = m_Domain.layerCount;
 
+            // copy currently executing plan to the results set used for planning
+            // we do this for synchronous runs also, to avoid writing the active plan
+            // with possibly temporary values
+            m_PlansForExecution.CopyTo(m_PlansForPlanning);
+
             var domain = m_Domain.data;
             var blackboard = m_Blackboard.Copy(Allocator.TempJob);
 
             // goal calculator job
             if (index == 0)
             {
-                new LGOAPGoalCalculatorJob(domain, blackboard, m_Domain.fallbackPlans[0], m_PlansForExecution[0])
+                new LGOAPGoalCalculatorJob(domain, blackboard, m_Domain.fallbackPlans[0], m_PlansForPlanning[0])
                     .Run();
                 ++index;
             }
@@ -179,8 +184,8 @@ namespace HiraBots
                     m_Domain.fallbackPlans[i],
                     100f,
                     i,
-                    m_PlansForExecution[i - 1],
-                    m_PlansForExecution[i])
+                    m_PlansForPlanning[i - 1],
+                    m_PlansForPlanning[i])
                     .Run();
             }
 
