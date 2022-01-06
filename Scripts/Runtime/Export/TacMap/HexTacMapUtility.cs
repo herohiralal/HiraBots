@@ -24,6 +24,24 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (float4 x, float4 y, float4 z) OffsetWToPositionW(int4 column, int4 height, int4 row, float innerRadius)
+        {
+            var heightParity = (math.abs(height * 3) + height) % 3;
+            var rowParity = row & 1;
+
+            var y = height * new float4(1.6329933162f);
+
+            var z = ((row * new float4(1.732050807f))
+                     + (heightParity * new float4(0.577350269f)));
+
+            var x = ((column * new float4(2f))
+                     + (heightParity * new float4(1f))
+                     + (rowParity * new float4(1f)));
+
+            return (x * innerRadius, y * innerRadius, z * innerRadius);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int column, int height, int row) PositionWToOffsetW(float x, float y, float z, float innerRadius)
         {
             var heightF = (y / innerRadius) / 1.632993162f;
@@ -36,6 +54,23 @@ namespace UnityEngine
 
             var columnF = ((x / innerRadius) - (heightParity * 1f) - (rowParity * 1f)) / 2;
             var column = math.select((int) columnF, (int) (columnF + 1f), math.frac(columnF) >= 0.5f);
+
+            return (column, height, row);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static (int4 column, int4 height, int4 row) PositionWToOffsetW(float4 x, float4 y, float4 z, float innerRadius)
+        {
+            var heightF = (y / innerRadius) / 1.632993162f;
+            var height = math.select((int4) heightF, (int4) (heightF + 1f), math.frac(heightF) > 0.5f);
+            var heightParity = (math.abs(height * 3) + height) % 3;
+
+            var rowF = ((z / innerRadius) - (heightParity * new float4(0.577350269f))) / 1.732050807f;
+            var row = math.select((int4) rowF, (int4) (rowF + 1f), math.frac(rowF) > 0.5f);
+            var rowParity = row & 1;
+
+            var columnF = ((x / innerRadius) - (heightParity * new float4(1f)) - (rowParity * new float4(1f))) / 2;
+            var column = math.select((int4) columnF, (int4) (columnF + 1f), math.frac(columnF) > 0.5f);
 
             return (column, height, row);
         }
