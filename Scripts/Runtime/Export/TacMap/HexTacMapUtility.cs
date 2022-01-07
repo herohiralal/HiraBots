@@ -6,8 +6,12 @@ namespace UnityEngine
     public static class HexTacMapUtility
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static (float x, float y, float z) OffsetWToPositionW(int column, int height, int row, float innerRadius)
+        public static float3 OffsetWToPositionW(int3 offsetCoordinates, float innerRadius)
         {
+            var column = offsetCoordinates.x;
+            var height = offsetCoordinates.y;
+            var row = offsetCoordinates.z;
+
             var heightParity = (math.abs(height * 3) + height) % 3;
             var rowParity = row & 1;
 
@@ -20,7 +24,7 @@ namespace UnityEngine
                      + (heightParity * 1f) // 1 - for odd heights, shift x to +ve
                      + (rowParity * 1f)); // 1 - for odd rows, shift x to +ve
 
-            return ((x * innerRadius), (y * innerRadius), z * innerRadius);
+            return new float3(x, y, z) * innerRadius;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,8 +70,12 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static (int column, int height, int row) PositionWToOffsetW(float x, float y, float z, float innerRadius)
+        public static int3 PositionWToOffsetW(float3 vectorCoordinates, float innerRadius)
         {
+            var x = vectorCoordinates.x;
+            var y = vectorCoordinates.y;
+            var z = vectorCoordinates.z;
+
             var heightF = (y / innerRadius) / 1.632993162f;
             var height = math.select((int) heightF, (int) (heightF + 1f), math.frac(heightF) >= 0.5f);
             var heightParity = (math.abs(height * 3) + height) % 3;
@@ -79,7 +87,7 @@ namespace UnityEngine
             var columnF = ((x / innerRadius) - (heightParity * 1f) - (rowParity * 1f)) / 2;
             var column = math.select((int) columnF, (int) (columnF + 1f), math.frac(columnF) >= 0.5f);
 
-            return (column, height, row);
+            return new int3(column, height, row);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,8 +132,12 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static (int q, int t, int r) OffsetWToAxialW(int column, int height, int row)
+        public static int3 OffsetWToAxialW(int3 offsetCoordinates)
         {
+            var column = offsetCoordinates.x;
+            var height = offsetCoordinates.y;
+            var row = offsetCoordinates.z;
+
             var t = height;
             var heightParity = (math.abs(height * 3) + height) % 3;
 
@@ -134,12 +146,16 @@ namespace UnityEngine
 
             var q = column - ((height - heightParity) / 3) - ((row - rowParity) / 2);
 
-            return (q, t, r);
+            return new int3(q, t, r);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static (int column, int height, int row) AxialWToOffsetW(int q, int t, int r)
+        public static int3 AxialWToOffsetW(int3 axialCoordinates)
         {
+            var q = axialCoordinates.x;
+            var t = axialCoordinates.y;
+            var r = axialCoordinates.z;
+
             var height = t;
             var heightParity = (math.abs(height * 3) + height) % 3;
 
@@ -148,13 +164,14 @@ namespace UnityEngine
 
             var column = q + ((height - heightParity) / 3) + ((row - rowParity) / 2);
 
-            return (column, height, row);
+            return new int3(column, height, row);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ManhattanLength(int q, int t, int r)
+        public static int ManhattanLength(int3 axialCoordinates)
         {
-            return (math.abs(q) + math.abs(t) + math.abs(r) + math.abs(q + t + r)) / 2;
+            return (math.abs(axialCoordinates.x) + math.abs(axialCoordinates.y) + math.abs(axialCoordinates.z)
+                    + math.abs(axialCoordinates.x + axialCoordinates.y + axialCoordinates.z)) / 2;
         }
     }
 }
