@@ -1,12 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
-namespace UnityEngine
+namespace HiraBots
 {
-    public static class HexTacMapUtility
+    internal static class TacMapUtility
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 OffsetWToPositionW(int3 offsetCoordinates, float innerRadius)
+        internal static float3 OffsetWToPositionW(int3 offsetCoordinates, float innerRadius)
         {
             var column = offsetCoordinates.x;
             var height = offsetCoordinates.y;
@@ -28,7 +28,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4x3 IndividualOffsetsWToLinearPositionsW(int4x3 individualOffsets, float innerRadius)
+        internal static float4x3 IndividualOffsetsWToLinearPositionsW(int4x3 individualOffsets, float innerRadius)
         {
             var columns = individualOffsets.c0;
             var heights = individualOffsets.c1;
@@ -50,19 +50,19 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4x3 OffsetWToLinearPositionsW(int3x4 offsetCoordinates, float innerRadius)
+        internal static float4x3 OffsetWToLinearPositionsW(int3x4 offsetCoordinates, float innerRadius)
         {
             return IndividualOffsetsWToLinearPositionsW(math.transpose(offsetCoordinates), innerRadius);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3x4 IndividualOffsetsWToPositionW(int4x3 individualOffsets, float innerRadius)
+        internal static float3x4 IndividualOffsetsWToPositionW(int4x3 individualOffsets, float innerRadius)
         {
             return math.transpose(IndividualOffsetsWToLinearPositionsW(individualOffsets, innerRadius));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3x4 OffsetWToPositionW(int3x4 offsetCoordinates, float innerRadius)
+        internal static float3x4 OffsetWToPositionW(int3x4 offsetCoordinates, float innerRadius)
         {
             var linearPositions = IndividualOffsetsWToLinearPositionsW(math.transpose(offsetCoordinates), innerRadius);
 
@@ -70,7 +70,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int3 PositionWToOffsetW(float3 vectorCoordinates, float innerRadius)
+        internal static int3 PositionWToOffsetW(float3 vectorCoordinates, float innerRadius)
         {
             var x = vectorCoordinates.x;
             var y = vectorCoordinates.y;
@@ -91,7 +91,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int4x3 LinearPositionsWToIndividualOffsetsW(float4x3 linearPositions, float innerRadius)
+        internal static int4x3 LinearPositionsWToIndividualOffsetsW(float4x3 linearPositions, float innerRadius)
         {
             var x = linearPositions.c0;
             var y = linearPositions.c1;
@@ -112,19 +112,19 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int4x3 PositionWToIndividualOffsetsW(float3x4 vectorCoordinates, float innerRadius)
+        internal static int4x3 PositionWToIndividualOffsetsW(float3x4 vectorCoordinates, float innerRadius)
         {
             return LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int3x4 LinearPositionsWToOffsetW(float4x3 linearPositions, float innerRadius)
+        internal static int3x4 LinearPositionsWToOffsetW(float4x3 linearPositions, float innerRadius)
         {
             return math.transpose(LinearPositionsWToIndividualOffsetsW(linearPositions, innerRadius));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int3x4 PositionWToOffsetW(float3x4 vectorCoordinates, float innerRadius)
+        internal static int3x4 PositionWToOffsetW(float3x4 vectorCoordinates, float innerRadius)
         {
             var individualOffsets = LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
 
@@ -132,7 +132,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int3 OffsetWToAxialW(int3 offsetCoordinates)
+        internal static int3 OffsetWToAxialW(int3 offsetCoordinates)
         {
             var column = offsetCoordinates.x;
             var height = offsetCoordinates.y;
@@ -150,7 +150,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int3 AxialWToOffsetW(int3 axialCoordinates)
+        internal static int3 AxialWToOffsetW(int3 axialCoordinates)
         {
             var q = axialCoordinates.x;
             var t = axialCoordinates.y;
@@ -168,7 +168,7 @@ namespace UnityEngine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ManhattanLength(int3 axialCoordinates)
+        internal static int ManhattanLength(int3 axialCoordinates)
         {
             return (math.abs(axialCoordinates.x) + math.abs(axialCoordinates.y) + math.abs(axialCoordinates.z)
                     + math.abs(axialCoordinates.x + axialCoordinates.y + axialCoordinates.z)) / 2;
