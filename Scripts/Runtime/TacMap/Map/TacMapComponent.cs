@@ -13,8 +13,11 @@ namespace HiraBots
 
         private NativeArray<float> m_Internal;
 
-        private JobHandle m_LastReadJob;
-        private JobHandle? m_LastWriteJob;
+        private JobHandle? m_ActiveReadJob;
+        private JobHandle? m_ActiveWriteJob;
+
+        private Coroutine m_ReadJobTrackerCoroutine;
+        private Coroutine m_WriteJobTrackerCoroutine;
 
         private int3 m_Pivot;
         private int3 m_Dimensions;
@@ -60,22 +63,40 @@ namespace HiraBots
 
             m_Internal = new NativeArray<float>(dimensions.x * dimensions.y * dimensions.z, Allocator.Persistent);
 
-            m_LastWriteJob = null;
-            m_LastReadJob = default;
+            m_ActiveWriteJob = null;
+            m_ActiveReadJob = default;
+
+            m_WriteJobTrackerCoroutine = null;
+            m_ReadJobTrackerCoroutine = null;
 
             m_Id = ++s_Id;
         }
 
         internal void Dispose()
         {
-            m_LastReadJob.Complete();
-            m_LastWriteJob?.Complete();
+            if (m_ReadJobTrackerCoroutine != null)
+            {
+                CoroutineRunner.Stop(m_ReadJobTrackerCoroutine);
+                m_ReadJobTrackerCoroutine = null;
+            }
 
-            m_LastWriteJob = null;
-            m_LastReadJob = default;
+            if (m_WriteJobTrackerCoroutine != null)
+            {
+                CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
+                m_WriteJobTrackerCoroutine = null;
+            }
+
+            m_ActiveReadJob?.Complete();
+            m_ActiveWriteJob?.Complete();
+
+            m_ActiveReadJob = null;
+            m_ActiveWriteJob = null;
 
             m_Internal.Dispose();
             m_Internal = default;
+
+            m_Dimensions = int3.zero;
+            m_Pivot = int3.zero;
         }
     }
 }

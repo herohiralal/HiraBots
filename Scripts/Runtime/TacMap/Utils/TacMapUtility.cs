@@ -36,7 +36,7 @@ namespace HiraBots
                 output[1] = math.max(output[1], math.max(math.max(cornersW[0], cornersW[1]), math.max(cornersW[2], cornersW[3])));
             }
 
-            return (output[0], output[1] - output[0]);
+            return (output[0], output[1] + 1 - output[0]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
