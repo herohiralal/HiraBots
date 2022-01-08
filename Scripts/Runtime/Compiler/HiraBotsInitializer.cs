@@ -44,6 +44,7 @@ namespace HiraBots
 
             BlackboardComponent.ResetStaticIDAssigner();
             LGOAPPlannerComponent.ResetStaticIDAssigner();
+            TacMapComponent.ResetStaticIDAssigner();
             ExecutorComponent.ResetStaticIDAssigner();
 
             CompilationRegistry.Initialize();

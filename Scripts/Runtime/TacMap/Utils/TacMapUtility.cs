@@ -5,6 +5,40 @@ namespace HiraBots
 {
     internal static class TacMapUtility
     {
+        private static readonly float4x4[] s_CornersLooney =
+        {
+            new float4x4(
+                new float4(-0.5f, -0.5f, -0.5f, 1),
+                new float4(-0.5f, -0.5f, 0.5f, 1),
+                new float4(-0.5f, 0.5f, -0.5f, 1),
+                new float4(-0.5f, 0.5f, 0.5f, 1)),
+            new float4x4(
+                new float4(0.5f, -0.5f, -0.5f, 1),
+                new float4(0.5f, -0.5f, 0.5f, 1),
+                new float4(0.5f, 0.5f, -0.5f, 1),
+                new float4(0.5f, 0.5f, 0.5f, 1))
+        };
+
+        internal static (int3 pivot, int3 dimensions) TransformToOffsetWBounds(float4x4 l2W, float cellSize)
+        {
+            int3 defaultMin = new int3(int.MaxValue), defaultMax = new int3(int.MinValue);
+            var output = new int3x2(defaultMin, defaultMax);
+
+            for (var i = 0; i < s_CornersLooney.Length; i++)
+            {
+                // get world space corners
+                var cornersWPosLooney = math.mul(l2W, s_CornersLooney[i]);
+                var cornersWPos = new float3x4(cornersWPosLooney.c0.xyz, cornersWPosLooney.c1.xyz, cornersWPosLooney.c2.xyz, cornersWPosLooney.c3.xyz);
+
+                var cornersW = PositionWToOffsetW(cornersWPos, cellSize * 0.5f);
+
+                output[0] = math.min(output[0], math.min(math.min(cornersW[0], cornersW[1]), math.min(cornersW[2], cornersW[3])));
+                output[1] = math.max(output[1], math.max(math.max(cornersW[0], cornersW[1]), math.max(cornersW[2], cornersW[3])));
+            }
+
+            return (output[0], output[1] - output[0]);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static float3 OffsetWToPositionW(int3 offsetCoordinates, float innerRadius)
         {
