@@ -39,7 +39,7 @@ namespace HiraBots
                 return false;
             }
 
-            if (cellSize == 0f)
+            if (cellSize <= 0f)
             {
                 component = null;
                 return false;
