@@ -181,9 +181,9 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int3x4 PositionWToOffsetW(float3x4 vectorCoordinates, float innerRadius)
         {
-            var individualOffsets = LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
+            var linearPositions = LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
 
-            return math.transpose(individualOffsets);
+            return math.transpose(linearPositions);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -205,6 +205,44 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int4x3 IndividualOffsetsWToIndividualAxesW(int4x3 individualOffsets)
+        {
+            var column = individualOffsets.c0;
+            var height = individualOffsets.c1;
+            var row = individualOffsets.c2;
+
+            var t = height;
+            var heightParity = (math.abs(height * 3) + height) % 3;
+
+            var r = row - ((height - heightParity) / 3);
+            var rowParity = row & 1;
+
+            var q = column - ((height - heightParity) / 3) - ((row - rowParity) / 2);
+
+            return new int4x3(q, t, r);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int4x3 OffsetWToIndividualAxesW(int3x4 offsetCoordinates)
+        {
+            return IndividualOffsetsWToIndividualAxesW(math.transpose(offsetCoordinates));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int3x4 IndividualOffsetsWToAxialW(int4x3 individualOffsets)
+        {
+            return math.transpose(IndividualOffsetsWToIndividualAxesW(individualOffsets));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int3x4 OffsetWToAxialW(int3x4 offsetCoordinates)
+        {
+            var individualAxes = IndividualOffsetsWToIndividualAxesW(math.transpose(offsetCoordinates));
+
+            return math.transpose(individualAxes);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int3 AxialWToOffsetW(int3 axialCoordinates)
         {
             var q = axialCoordinates.x;
@@ -223,10 +261,55 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int4x3 IndividualAxesWToIndividualOffsetsW(int4x3 individualAxes)
+        {
+            var q = individualAxes.c0;
+            var t = individualAxes.c1;
+            var r = individualAxes.c2;
+
+            var height = t;
+            var heightParity = (math.abs(height * 3) + height) % 3;
+
+            var row = r + ((height - heightParity) / 3);
+            var rowParity = row & 1;
+
+            var column = q + ((height - heightParity) / 3) + ((row - rowParity) / 2);
+
+            return new int4x3(column, height, row);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int4x3 AxialWToIndividualOffsetsW(int3x4 axialCoordinates)
+        {
+            return IndividualAxesWToIndividualOffsetsW(math.transpose(axialCoordinates));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int3x4 IndividualAxesWToOffsetW(int4x3 individualAxes)
+        {
+            return math.transpose(IndividualAxesWToIndividualOffsetsW(individualAxes));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int3x4 AxialWToOffsetW(int3x4 axialCoordinates)
+        {
+            var individualOffsets = IndividualAxesWToIndividualOffsetsW(math.transpose(axialCoordinates));
+
+            return math.transpose(individualOffsets);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int ManhattanLength(int3 axialCoordinates)
         {
             return (math.abs(axialCoordinates.x) + math.abs(axialCoordinates.y) + math.abs(axialCoordinates.z)
                     + math.abs(axialCoordinates.x + axialCoordinates.y + axialCoordinates.z)) / 2;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int4 ManhattanLength(int4x3 individualAxes)
+        {
+            return (math.abs(individualAxes.c0) + math.abs(individualAxes.c1) + math.abs(individualAxes.c2)
+                    + math.abs(individualAxes.c0 + individualAxes.c1 + individualAxes.c2)) / 2;
         }
     }
 }
