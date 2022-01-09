@@ -48,7 +48,7 @@ namespace HiraBots
                 m_AreaMask = areaMask;
             }
 
-            private NavMeshQuery m_NavMeshQuery;
+            [ReadOnly] private NavMeshQuery m_NavMeshQuery;
             private NativeArray<float4> m_Map;
             [ReadOnly] private readonly int3 m_Pivot;
             [ReadOnly] private readonly int3 m_Dimensions;
@@ -58,9 +58,9 @@ namespace HiraBots
 
             public void Execute(int index)
             {
-                var height = index / (m_Dimensions.x * m_Dimensions.z);
-                var row = index / m_Dimensions.x;
-                var column = index % m_Dimensions.x;
+                var height = (index * 4) / (m_Dimensions.x * m_Dimensions.z);
+                var row = (index * 4) / m_Dimensions.x;
+                var column = (index * 4) % m_Dimensions.x;
 
                 var offsetCoordinatesL = new int3x4(
                     new int3(column + 0, height, row),
