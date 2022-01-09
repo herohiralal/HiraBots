@@ -8,7 +8,7 @@ namespace HiraBots
 {
     internal static class TacMapNavMeshSynchronizer
     {
-        internal static JobHandle SynchronizeAsync(TacMapComponent map, NavMeshQuery q,
+        internal static JobHandle Schedule(TacMapComponent map, NavMeshQuery q,
             int batchCount = 32, int agentType = 0, int areaMask = UnityEngine.AI.NavMesh.AllAreas)
         {
             if (map == null)
@@ -18,16 +18,16 @@ namespace HiraBots
 
             return map.RequestDataForWriteJob(((m, p, d, s, dependencies) =>
                 new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
-                    .ScheduleParallel(m.Length, batchCount, dependencies)));
+                    .ScheduleParallel(m.Length / 4, batchCount, dependencies)));
         }
 
-        internal static void Synchronize(TacMapComponent map, int agentType = 0, int areaMask = UnityEngine.AI.NavMesh.AllAreas)
+        internal static void Run(TacMapComponent map, int agentType = 0, int areaMask = UnityEngine.AI.NavMesh.AllAreas)
         {
             map?.RequestDataForWriteJob((m, p, d, s) =>
             {
                 var q = new NavMeshQuery(NavMeshWorld.GetDefaultWorld(), Allocator.TempJob);
                 new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
-                    .Run(m.Length);
+                    .Run(m.Length / 4);
                 q.Dispose();
             });
         }
