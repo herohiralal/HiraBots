@@ -7,8 +7,9 @@ namespace HiraBots
 {
     [DefaultExecutionOrder(1000)]
     [AddComponentMenu("")]
-    internal partial class HiraBotsModule : MonoBehaviour, TaskRunner.IInterface, ServiceRunner.IInterface
+    internal partial class HiraBotsModule : MonoBehaviour, TaskRunner.IInterface, ServiceRunner.IInterface, BehaviourUpdater.IInterface
     {
+        private UpdateSystem<IUpdatableBehaviour> m_BehaviourUpdates;
         private UpdateSystem<IHiraBotsService> m_ServiceUpdates;
         private UpdateSystem<ExecutorComponent> m_TaskUpdates;
 
@@ -27,11 +28,13 @@ namespace HiraBots
 
             s_Instance = this;
             CoroutineRunner.instance = this;
+            BehaviourUpdater.instance = this;
             TaskRunner.instance = this;
             ServiceRunner.instance = this;
 
             InitializeCommandBuffer();
 
+            m_BehaviourUpdates = new UpdateSystem<IUpdatableBehaviour>(2);
             m_ServiceUpdates = new UpdateSystem<IHiraBotsService>(1);
             m_TaskUpdates = new UpdateSystem<ExecutorComponent>(1);
 
@@ -67,8 +70,12 @@ namespace HiraBots
 
             m_ServiceUpdates.Dispose();
 
+            // no need to abort/stop anything inside behaviours
+            m_BehaviourUpdates.Dispose();
+
             ServiceRunner.instance = this;
             TaskRunner.instance = this;
+            BehaviourUpdater.instance = this;
             CoroutineRunner.instance = null;
             s_Instance = null;
         }
@@ -80,6 +87,7 @@ namespace HiraBots
 
         private void Update()
         {
+            TickBehavioursUpdateSystem();
             TickTasksUpdateSystem();
             TickServicesUpdateSystem();
 
@@ -87,6 +95,7 @@ namespace HiraBots
 
             m_UpdateJob = JobHandle.CombineDependencies
             (
+                m_BehaviourUpdates.ScheduleTickJob(deltaTime),
                 m_TaskUpdates.ScheduleTickJob(deltaTime),
                 m_ServiceUpdates.ScheduleTickJob(deltaTime)
             );
@@ -98,6 +107,24 @@ namespace HiraBots
             m_UpdateJob = null;
 
             ApplyCommandBuffer();
+        }
+
+        private unsafe void TickBehavioursUpdateSystem()
+        {
+            var shouldTicks = (float*) m_BehaviourUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
+
+            // tick them in the order they were registered
+            for (var i = 0; i < m_BehaviourUpdates.m_ObjectsCount; i++)
+            {
+                var deltaTime = shouldTicks[i];
+
+                if (deltaTime <= 0f)
+                {
+                    continue;
+                }
+
+                m_BehaviourUpdates.m_ObjectsBuffer[i].Tick(deltaTime);
+            }
         }
 
         private unsafe void TickTasksUpdateSystem()
@@ -140,6 +167,54 @@ namespace HiraBots
                 }
 
                 m_ServiceUpdates.m_ObjectsBuffer[i].WrappedTick(deltaTime);
+            }
+        }
+
+        void BehaviourUpdater.IInterface.Add(IUpdatableBehaviour behaviour, float tickInterval, float tickIntervalMultiplier)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferAddBehaviourCommand(behaviour, tickInterval, tickIntervalMultiplier);
+            }
+            else
+            {
+                AddBehaviourInternal(behaviour, tickInterval, tickIntervalMultiplier);
+            }
+        }
+
+        void BehaviourUpdater.IInterface.Remove(IUpdatableBehaviour behaviour)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferRemoveBehaviourCommand(behaviour);
+            }
+            else
+            {
+                RemoveBehaviourInternal(behaviour);
+            }
+        }
+
+        void BehaviourUpdater.IInterface.ChangeTickInterval(IUpdatableBehaviour behaviour, float tickInterval)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeBehaviourTickIntervalCommand(behaviour, tickInterval);
+            }
+            else
+            {
+                ChangeBehaviourTickIntervalInternal(behaviour, tickInterval);
+            }
+        }
+
+        void BehaviourUpdater.IInterface.ChangeTickPaused(IUpdatableBehaviour behaviour, bool value)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeBehaviourTickPausedCommand(behaviour, value);
+            }
+            else
+            {
+                ChangeBehaviourTickPausedInternal(behaviour, value);
             }
         }
 
@@ -236,6 +311,36 @@ namespace HiraBots
             else
             {
                 ChangeTaskTickPausedInternal(executor, value);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddBehaviourInternal(IUpdatableBehaviour behaviour, float tickInterval, float tickIntervalMultiplier)
+        {
+            m_BehaviourUpdates.Add(behaviour, tickInterval, tickIntervalMultiplier);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void RemoveBehaviourInternal(IUpdatableBehaviour behaviour)
+        {
+            m_BehaviourUpdates.Remove(behaviour);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeBehaviourTickIntervalInternal(IUpdatableBehaviour behaviour, float tickInterval)
+        {
+            if (m_BehaviourUpdates.m_IndexLookUp.TryGetValue(behaviour, out var index))
+            {
+                m_BehaviourUpdates.m_TickIntervals[index] = tickInterval;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeBehaviourTickPausedInternal(IUpdatableBehaviour behaviour, bool newValue)
+        {
+            if (m_BehaviourUpdates.m_IndexLookUp.TryGetValue(behaviour, out var index))
+            {
+                m_BehaviourUpdates.m_TickPaused[index] = newValue;
             }
         }
 

@@ -6,6 +6,20 @@ namespace HiraBots
 {
     internal partial class HiraBotsModule
     {
+        private struct AddBehaviourCommand
+        {
+            internal AddBehaviourCommand(IUpdatableBehaviour obj, float tickInterval, float tickIntervalMultiplier)
+            {
+                this.obj = obj;
+                this.tickInterval = tickInterval;
+                this.tickIntervalMultiplier = tickIntervalMultiplier;
+            }
+
+            internal IUpdatableBehaviour obj { get; }
+            internal float tickInterval { get; }
+            internal float tickIntervalMultiplier { get; }
+        }
+
         private struct AddServiceCommand
         {
             internal AddServiceCommand(IHiraBotsService obj, float tickInterval, float tickIntervalMultiplier)
@@ -46,6 +60,18 @@ namespace HiraBots
             internal T obj { get; }
         }
 
+        private struct ChangeTickIntervalCommand<T>
+        {
+            internal ChangeTickIntervalCommand(T obj, float interval)
+            {
+                this.obj = obj;
+                this.interval = interval;
+            }
+
+            internal T obj { get; }
+            internal float interval { get; }
+        }
+
         private struct ChangeTickIntervalMultiplierCommand<T>
         {
             internal ChangeTickIntervalMultiplierCommand(T obj, float multiplier)
@@ -76,17 +102,30 @@ namespace HiraBots
             RemoveService,
             ChangeServiceTickIntervalMultiplier,
             ChangeServiceTickPaused,
+
             AddTask,
             RemoveTask,
             ChangeTaskTickIntervalMultiplier,
-            ChangeTaskTickPaused
+            ChangeTaskTickPaused,
+
+            AddBehaviour,
+            RemoveBehaviour,
+            ChangeBehaviourTickInterval,
+            ChangeBehaviourTickPaused,
         }
 
         private Queue<CommandType> m_CommandTypes;
+
+        private Queue<AddBehaviourCommand> m_AddBehaviourCommands;
+        private Queue<RemoveCommand<IUpdatableBehaviour>> m_RemoveBehaviourCommands;
+        private Queue<ChangeTickIntervalCommand<IUpdatableBehaviour>> m_ChangeBehaviourTickIntervalCommands;
+        private Queue<ChangeTickPausedCommand<IUpdatableBehaviour>> m_ChangeBehaviourTickPausedCommands;
+
         private Queue<AddServiceCommand> m_AddServiceCommands;
         private Queue<RemoveCommand<IHiraBotsService>> m_RemoveServiceCommands;
         private Queue<ChangeTickIntervalMultiplierCommand<IHiraBotsService>> m_ChangeServiceTickIntervalMultiplierCommands;
         private Queue<ChangeTickPausedCommand<IHiraBotsService>> m_ChangeServiceTickPausedCommands;
+
         private Queue<AddTaskCommand> m_AddTaskCommands;
         private Queue<RemoveCommand<ExecutorComponent>> m_RemoveTaskCommands;
         private Queue<ChangeTickIntervalMultiplierCommand<ExecutorComponent>> m_ChangeTaskTickIntervalMultiplierCommands;
@@ -95,10 +134,17 @@ namespace HiraBots
         private void InitializeCommandBuffer()
         {
             m_CommandTypes = new Queue<CommandType>();
+
+            m_AddBehaviourCommands = new Queue<AddBehaviourCommand>();
+            m_RemoveBehaviourCommands = new Queue<RemoveCommand<IUpdatableBehaviour>>();
+            m_ChangeBehaviourTickIntervalCommands = new Queue<ChangeTickIntervalCommand<IUpdatableBehaviour>>();
+            m_ChangeBehaviourTickPausedCommands = new Queue<ChangeTickPausedCommand<IUpdatableBehaviour>>();
+
             m_AddServiceCommands = new Queue<AddServiceCommand>();
             m_RemoveServiceCommands = new Queue<RemoveCommand<IHiraBotsService>>();
             m_ChangeServiceTickIntervalMultiplierCommands = new Queue<ChangeTickIntervalMultiplierCommand<IHiraBotsService>>();
             m_ChangeServiceTickPausedCommands = new Queue<ChangeTickPausedCommand<IHiraBotsService>>();
+
             m_AddTaskCommands = new Queue<AddTaskCommand>();
             m_RemoveTaskCommands = new Queue<RemoveCommand<ExecutorComponent>>();
             m_ChangeTaskTickIntervalMultiplierCommands = new Queue<ChangeTickIntervalMultiplierCommand<ExecutorComponent>>();
@@ -111,10 +157,17 @@ namespace HiraBots
             m_ChangeTaskTickIntervalMultiplierCommands = null;
             m_RemoveTaskCommands = null;
             m_AddTaskCommands = null;
+
             m_ChangeServiceTickPausedCommands = null;
             m_ChangeServiceTickIntervalMultiplierCommands = null;
             m_RemoveServiceCommands = null;
             m_AddServiceCommands = null;
+
+            m_ChangeBehaviourTickPausedCommands = null;
+            m_ChangeBehaviourTickIntervalCommands = null;
+            m_RemoveBehaviourCommands = null;
+            m_AddBehaviourCommands = null;
+
             m_CommandTypes = null;
         }
 
@@ -174,6 +227,34 @@ namespace HiraBots
             m_ChangeTaskTickPausedCommands.Enqueue(new ChangeTickPausedCommand<ExecutorComponent>(executor, value));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferAddBehaviourCommand(IUpdatableBehaviour behaviour, float tickInterval, float tickIntervalMultiplier)
+        {
+            m_CommandTypes.Enqueue(CommandType.AddBehaviour);
+            m_AddBehaviourCommands.Enqueue(new AddBehaviourCommand(behaviour, tickInterval, tickIntervalMultiplier));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferRemoveBehaviourCommand(IUpdatableBehaviour behaviour)
+        {
+            m_CommandTypes.Enqueue(CommandType.RemoveBehaviour);
+            m_RemoveBehaviourCommands.Enqueue(new RemoveCommand<IUpdatableBehaviour>(behaviour));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferChangeBehaviourTickIntervalCommand(IUpdatableBehaviour behaviour, float tickInterval)
+        {
+            m_CommandTypes.Enqueue(CommandType.ChangeBehaviourTickInterval);
+            m_ChangeBehaviourTickIntervalCommands.Enqueue(new ChangeTickIntervalCommand<IUpdatableBehaviour>(behaviour, tickInterval));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferChangeBehaviourTickPausedCommand(IUpdatableBehaviour behaviour, bool value)
+        {
+            m_CommandTypes.Enqueue(CommandType.ChangeBehaviourTickPaused);
+            m_ChangeBehaviourTickPausedCommands.Enqueue(new ChangeTickPausedCommand<IUpdatableBehaviour>(behaviour, value));
+        }
+
         private void ApplyCommandBuffer()
         {
             while (m_CommandTypes.Count > 0)
@@ -230,6 +311,30 @@ namespace HiraBots
                         ChangeTaskTickPausedInternal(cmd.obj, cmd.value);
                         break;
                     }
+                    case CommandType.AddBehaviour:
+                    {
+                        var cmd = m_AddBehaviourCommands.Dequeue();
+                        AddBehaviourInternal(cmd.obj, cmd.tickInterval, cmd.tickIntervalMultiplier);
+                        break;
+                    }
+                    case CommandType.RemoveBehaviour:
+                    {
+                        var cmd = m_RemoveBehaviourCommands.Dequeue();
+                        RemoveBehaviourInternal(cmd.obj);
+                        break;
+                    }
+                    case CommandType.ChangeBehaviourTickInterval:
+                    {
+                        var cmd = m_ChangeBehaviourTickIntervalCommands.Dequeue();
+                        ChangeBehaviourTickIntervalInternal(cmd.obj, cmd.interval);
+                        break;
+                    }
+                    case CommandType.ChangeBehaviourTickPaused:
+                    {
+                        var cmd = m_ChangeBehaviourTickPausedCommands.Dequeue();
+                        ChangeBehaviourTickPausedInternal(cmd.obj, cmd.value);
+                        break;
+                    }
                     default:
                         throw new System.ArgumentOutOfRangeException();
                 }
@@ -238,7 +343,11 @@ namespace HiraBots
                     && m_CommandTypes.Count == m_AddServiceCommands.Count
                     && m_AddServiceCommands.Count == m_RemoveServiceCommands.Count
                     && m_RemoveServiceCommands.Count == m_AddTaskCommands.Count
-                    && m_AddTaskCommands.Count == m_RemoveTaskCommands.Count)
+                    && m_AddTaskCommands.Count == m_RemoveTaskCommands.Count
+                    && m_RemoveTaskCommands.Count == m_AddBehaviourCommands.Count
+                    && m_AddBehaviourCommands.Count == m_RemoveBehaviourCommands.Count
+                    && m_RemoveBehaviourCommands.Count == m_ChangeBehaviourTickIntervalCommands.Count
+                    && m_ChangeBehaviourTickIntervalCommands.Count == m_ChangeBehaviourTickPausedCommands.Count)
                 {
                     return;
                 }
