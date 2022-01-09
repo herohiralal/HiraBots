@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal delegate JobHandle ScheduleTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions, float cellSize, JobHandle dependencies);
+    internal delegate JobHandle ScheduleTacMapJobDelegate(NativeArray<float> map, int3 pivot, int3 dimensions, float cellSize, JobHandle dependencies);
 
-    internal delegate void RunTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions, float cellSize);
+    internal delegate void RunTacMapJobDelegate(NativeArray<float> map, int3 pivot, int3 dimensions, float cellSize);
 
     internal partial class TacMapComponent
     {
@@ -21,7 +21,7 @@ namespace HiraBots
             try
             {
                 m_ActiveWriteJob = scheduleJobDelegate.Invoke(
-                    m_Internal.Reinterpret<float4>(sizeof(float)),
+                    m_Internal,
                     m_Pivot,
                     m_Dimensions,
                     m_CellSize,
@@ -48,7 +48,7 @@ namespace HiraBots
             try
             {
                 m_ActiveReadJob = scheduleJobDelegate.Invoke(
-                    m_Internal.Reinterpret<float4>(sizeof(float)),
+                    m_Internal,
                     m_Pivot,
                     m_Dimensions,
                     m_CellSize,
@@ -78,7 +78,7 @@ namespace HiraBots
             m_ActiveReadJob = null;
 
             runJobDelegate.Invoke(
-                m_Internal.Reinterpret<float4>(sizeof(float)),
+                m_Internal,
                 m_Pivot,
                 m_Dimensions,
                 m_CellSize);
@@ -91,7 +91,7 @@ namespace HiraBots
             m_ActiveWriteJob = null;
 
             runJobDelegate.Invoke(
-                m_Internal.Reinterpret<float4>(sizeof(float)),
+                m_Internal,
                 m_Pivot,
                 m_Dimensions,
                 m_CellSize);

@@ -17,7 +17,7 @@ namespace HiraBots
             }
 
             return map.RequestDataForWriteJob(((m, p, d, s, dependencies) =>
-                new Job(q, m, p, d, s, agentType, areaMask)
+                new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
                     .ScheduleParallel(m.Length, batchCount, dependencies)));
         }
 
@@ -26,7 +26,7 @@ namespace HiraBots
             map?.RequestDataForWriteJob((m, p, d, s) =>
             {
                 var q = new NavMeshQuery(NavMeshWorld.GetDefaultWorld(), Allocator.TempJob);
-                new Job(q, m, p, d, s, agentType, areaMask)
+                new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
                     .Run(m.Length);
                 q.Dispose();
             });
