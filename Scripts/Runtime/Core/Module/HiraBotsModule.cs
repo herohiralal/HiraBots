@@ -194,6 +194,18 @@ namespace HiraBots
             }
         }
 
+        void BehaviourUpdater.IInterface.ChangeTimeElapsedSinceLastTick(IUpdatableBehaviour behaviour, float timeElapsed)
+        {
+            if (m_UpdateJob.HasValue)
+            {
+                BufferChangeBehaviourTimeElapsedCommand(behaviour, timeElapsed);
+            }
+            else
+            {
+                ChangeBehaviourTimeElapsedInternal(behaviour, timeElapsed);
+            }
+        }
+
         void BehaviourUpdater.IInterface.ChangeTickInterval(IUpdatableBehaviour behaviour, float tickInterval)
         {
             if (m_UpdateJob.HasValue)
@@ -324,6 +336,15 @@ namespace HiraBots
         private void RemoveBehaviourInternal(IUpdatableBehaviour behaviour)
         {
             m_BehaviourUpdates.Remove(behaviour);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ChangeBehaviourTimeElapsedInternal(IUpdatableBehaviour behaviour, float timeElapsed)
+        {
+            if (m_BehaviourUpdates.m_IndexLookUp.TryGetValue(behaviour, out var index))
+            {
+                m_BehaviourUpdates.m_ElapsedTimes[index] = timeElapsed;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

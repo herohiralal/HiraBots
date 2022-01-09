@@ -60,6 +60,18 @@ namespace HiraBots
             internal T obj { get; }
         }
 
+        private struct ChangeTimeElapsedCommand<T>
+        {
+            internal ChangeTimeElapsedCommand(T obj, float timeElapsed)
+            {
+                this.obj = obj;
+                this.timeElapsed = timeElapsed;
+            }
+
+            internal T obj { get; }
+            internal float timeElapsed { get; }
+        }
+
         private struct ChangeTickIntervalCommand<T>
         {
             internal ChangeTickIntervalCommand(T obj, float interval)
@@ -110,6 +122,7 @@ namespace HiraBots
 
             AddBehaviour,
             RemoveBehaviour,
+            ChangeBehaviourTimeElapsedSinceLastTick,
             ChangeBehaviourTickInterval,
             ChangeBehaviourTickPaused,
         }
@@ -118,6 +131,7 @@ namespace HiraBots
 
         private Queue<AddBehaviourCommand> m_AddBehaviourCommands;
         private Queue<RemoveCommand<IUpdatableBehaviour>> m_RemoveBehaviourCommands;
+        private Queue<ChangeTimeElapsedCommand<IUpdatableBehaviour>> m_ChangeBehaviourTimeElapsedCommands;
         private Queue<ChangeTickIntervalCommand<IUpdatableBehaviour>> m_ChangeBehaviourTickIntervalCommands;
         private Queue<ChangeTickPausedCommand<IUpdatableBehaviour>> m_ChangeBehaviourTickPausedCommands;
 
@@ -137,6 +151,7 @@ namespace HiraBots
 
             m_AddBehaviourCommands = new Queue<AddBehaviourCommand>();
             m_RemoveBehaviourCommands = new Queue<RemoveCommand<IUpdatableBehaviour>>();
+            m_ChangeBehaviourTimeElapsedCommands = new Queue<ChangeTimeElapsedCommand<IUpdatableBehaviour>>();
             m_ChangeBehaviourTickIntervalCommands = new Queue<ChangeTickIntervalCommand<IUpdatableBehaviour>>();
             m_ChangeBehaviourTickPausedCommands = new Queue<ChangeTickPausedCommand<IUpdatableBehaviour>>();
 
@@ -165,6 +180,7 @@ namespace HiraBots
 
             m_ChangeBehaviourTickPausedCommands = null;
             m_ChangeBehaviourTickIntervalCommands = null;
+            m_ChangeBehaviourTimeElapsedCommands = null;
             m_RemoveBehaviourCommands = null;
             m_AddBehaviourCommands = null;
 
@@ -239,6 +255,13 @@ namespace HiraBots
         {
             m_CommandTypes.Enqueue(CommandType.RemoveBehaviour);
             m_RemoveBehaviourCommands.Enqueue(new RemoveCommand<IUpdatableBehaviour>(behaviour));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void BufferChangeBehaviourTimeElapsedCommand(IUpdatableBehaviour behaviour, float timeElapsed)
+        {
+            m_CommandTypes.Enqueue(CommandType.ChangeBehaviourTimeElapsedSinceLastTick);
+            m_ChangeBehaviourTimeElapsedCommands.Enqueue(new ChangeTimeElapsedCommand<IUpdatableBehaviour>(behaviour, timeElapsed));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -323,6 +346,12 @@ namespace HiraBots
                         RemoveBehaviourInternal(cmd.obj);
                         break;
                     }
+                    case CommandType.ChangeBehaviourTimeElapsedSinceLastTick:
+                    {
+                        var cmd = m_ChangeBehaviourTimeElapsedCommands.Dequeue();
+                        ChangeBehaviourTimeElapsedInternal(cmd.obj, cmd.timeElapsed);
+                        break;
+                    }
                     case CommandType.ChangeBehaviourTickInterval:
                     {
                         var cmd = m_ChangeBehaviourTickIntervalCommands.Dequeue();
@@ -346,7 +375,8 @@ namespace HiraBots
                     && m_AddTaskCommands.Count == m_RemoveTaskCommands.Count
                     && m_RemoveTaskCommands.Count == m_AddBehaviourCommands.Count
                     && m_AddBehaviourCommands.Count == m_RemoveBehaviourCommands.Count
-                    && m_RemoveBehaviourCommands.Count == m_ChangeBehaviourTickIntervalCommands.Count
+                    && m_RemoveBehaviourCommands.Count == m_ChangeBehaviourTimeElapsedCommands.Count
+                    && m_ChangeBehaviourTimeElapsedCommands.Count == m_ChangeBehaviourTickIntervalCommands.Count
                     && m_ChangeBehaviourTickIntervalCommands.Count == m_ChangeBehaviourTickPausedCommands.Count)
                 {
                     return;
