@@ -35,7 +35,8 @@ namespace UnityEngine
         {
             if (m_PositionInUse.HasValue)
             {
-                var equality3 = TacMapUtility.PositionWToOffsetW(transform.position, map.cellSize * 0.5f) == m_PositionInUse.Value;
+                var offsetW = TacMapUtility.PositionWToOffsetW(transform.position, map.cellSize * 0.5f);
+                var equality3 = TacMapUtility.OffsetWToAxialW(offsetW) == m_PositionInUse.Value;
                 var equality = equality3.x && equality3.y && equality3.z;
                 if (!equality)
                 {
@@ -101,7 +102,7 @@ namespace UnityEngine
 
         protected override void AddInfluenceToMap()
         {
-            var position = TacMapUtility.PositionWToOffsetW(transform.position, map.cellSize * 0.5f);
+            var position = TacMapUtility.OffsetWToAxialW(TacMapUtility.PositionWToOffsetW(transform.position, map.cellSize * 0.5f));
             var md2Ic = CreateManhattanDistanceToInfluenceCurveArray(
                 m_Range, map.cellSize, m_InfluenceCurve, Allocator.TempJob);
 

@@ -7,7 +7,7 @@ namespace HiraBots
 {
     internal static class TacMapDefaultInfluencePropagator
     {
-        internal static JobHandle Schedule(TacMapComponent map, int3 locationOffsetW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f,
+        internal static JobHandle Schedule(TacMapComponent map, int3 locationAxialW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f,
             int batchCount = 64)
         {
             if (map == null)
@@ -18,16 +18,16 @@ namespace HiraBots
             return map.RequestDataForWriteJob(((m, p, d, s, dependencies) =>
                 new Job(m.Reinterpret<float4>(sizeof(float)),
                         p, d,
-                        locationOffsetW, magnitude, manhattanDistanceToInfluence)
+                        locationAxialW, magnitude, manhattanDistanceToInfluence)
                     .ScheduleParallel(m.Length / 4, batchCount, dependencies)));
         }
 
-        internal static void Run(TacMapComponent map, int3 locationOffsetW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f)
+        internal static void Run(TacMapComponent map, int3 locationAxialW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f)
         {
             map?.RequestDataForWriteJob(((m, p, d, s) =>
                 new Job(m.Reinterpret<float4>(sizeof(float)),
                         p, d,
-                        locationOffsetW, magnitude, manhattanDistanceToInfluence)
+                        locationAxialW, magnitude, manhattanDistanceToInfluence)
                     .Run(m.Length / 4)));
         }
 
@@ -36,12 +36,12 @@ namespace HiraBots
         {
             internal Job(NativeArray<float4> map,
                 int3 pivot, int3 dimensions,
-                int3 influencerLocationOffsetW, float influenceMagnitude, NativeArray<float> manhattanDistanceToInfluence)
+                int3 influencerLocationAxialW, float influenceMagnitude, NativeArray<float> manhattanDistanceToInfluence)
             {
                 m_Map = map;
                 m_Pivot = pivot;
                 m_Dimensions = dimensions;
-                m_InfluencerLocationOffsetW = influencerLocationOffsetW;
+                m_InfluencerLocationAxialW = influencerLocationAxialW;
                 m_InfluenceMagnitude = influenceMagnitude;
                 m_ManhattanDistanceToInfluence = manhattanDistanceToInfluence;
             }
@@ -53,7 +53,7 @@ namespace HiraBots
             [ReadOnly] private readonly int3 m_Dimensions;
 
             // influencer data
-            [ReadOnly] private readonly int3 m_InfluencerLocationOffsetW;
+            [ReadOnly] private readonly int3 m_InfluencerLocationAxialW;
             [ReadOnly] private readonly float m_InfluenceMagnitude;
             [ReadOnly] private readonly NativeArray<float> m_ManhattanDistanceToInfluence;
 
@@ -72,8 +72,8 @@ namespace HiraBots
 
                 var individualAxesW = TacMapUtility.IndividualOffsetsWToIndividualAxesW(individualOffsetsW);
 
-                var axialDifferences = individualAxesW - new int4x3(m_InfluencerLocationOffsetW.x,
-                    m_InfluencerLocationOffsetW.y, m_InfluencerLocationOffsetW.z);
+                var axialDifferences = individualAxesW - new int4x3(m_InfluencerLocationAxialW.x,
+                    m_InfluencerLocationAxialW.y, m_InfluencerLocationAxialW.z);
 
                 var manhattanLengths = TacMapUtility.ManhattanLength(axialDifferences);
                 manhattanLengths = math.clamp(manhattanLengths, 0, m_ManhattanDistanceToInfluence.Length - 1);
