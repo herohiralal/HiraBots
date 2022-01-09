@@ -16,12 +16,7 @@ namespace UnityEngine
         [System.NonSerialized] private Vector3 m_CurrentScale;
         [System.NonSerialized] private float m_CurrentCellSize;
 
-        internal HashSet<TacMapInfluencer> m_Influencers = null;
-
-        private void Awake()
-        {
-            m_Influencers = new HashSet<TacMapInfluencer>();
-        }
+        internal HashSet<TacMapInfluencer> influencers { get; } = new HashSet<TacMapInfluencer>();
 
         private void OnEnable()
         {
@@ -35,13 +30,13 @@ namespace UnityEngine
 
         private void OnDestroy()
         {
-            foreach (var influencer in m_Influencers)
+            foreach (var influencer in influencers)
             {
                 influencer.OnMapDestroy();
             }
-
-            m_Influencers = null;
         }
+
+        internal TacMapComponent component => m_TacMapComponent;
 
         [ContextMenu("Synchronize to Transform")]
         public void SynchronizeToTransform()
@@ -89,18 +84,18 @@ namespace UnityEngine
 
             var t = transform;
 
-            if (!TacMapComponent.TryCreate(t, m_CellSize, out var component))
+            if (!TacMapComponent.TryCreate(t, m_CellSize, out var createdComponent))
             {
                 return;
             }
 
-            m_TacMapComponent = component;
+            m_TacMapComponent = createdComponent;
             m_CurrentPosition = t.position;
             m_CurrentRotation = t.rotation;
             m_CurrentScale = t.localScale;
             m_CurrentCellSize = m_CellSize;
 
-            foreach (var influencer in m_Influencers)
+            foreach (var influencer in influencers)
             {
                 influencer.OnNewMapCreated();
             }

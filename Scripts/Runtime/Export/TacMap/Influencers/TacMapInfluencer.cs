@@ -10,6 +10,9 @@ namespace UnityEngine
         [Tooltip("The ticking interval to check whether the influence needs to be re-evaluated. Negative value means no auto-update.")]
         [SerializeField] private float m_TickInterval = 0f;
 
+        [Tooltip("Whether to update the tac map synchronously.")]
+        [SerializeField] private bool m_UpdateSynchronously = false;
+
         [System.NonSerialized] private TacMap m_CurrentlyUsedMap = null;
         [System.NonSerialized] private bool m_Dirty = false;
 
@@ -79,11 +82,26 @@ namespace UnityEngine
             }
         }
 
+        public bool updateSynchronously
+        {
+            get => m_UpdateSynchronously;
+            set => m_UpdateSynchronously = value;
+        }
+
         public void Tick(float deltaTime)
         {
             if (ReferenceEquals(m_Map, null))
             {
                 return;
+            }
+
+            try
+            {
+                TickCallback(deltaTime);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
             }
 
             if (m_Dirty)
@@ -124,8 +142,13 @@ namespace UnityEngine
                 return;
             }
 
+            if (m_Map == null)
+            {
+                return;
+            }
+
             m_CurrentlyUsedMap = m_Map;
-            m_CurrentlyUsedMap.m_Influencers.Add(this);
+            m_CurrentlyUsedMap.influencers.Add(this);
             BehaviourUpdater.instance.Add(this, m_TickInterval);
 
             try
@@ -157,19 +180,23 @@ namespace UnityEngine
             }
 
             BehaviourUpdater.instance.Remove(this);
-            m_CurrentlyUsedMap.m_Influencers.Remove(this);
+            m_CurrentlyUsedMap.influencers.Remove(this);
             m_CurrentlyUsedMap = null;
-        }
-
-        protected virtual void OnEnableCallback()
-        {
         }
 
         protected virtual void OnValidateCallback()
         {
         }
 
+        protected virtual void OnEnableCallback()
+        {
+        }
+
         protected virtual void OnDisableCallback()
+        {
+        }
+
+        protected virtual void TickCallback(float deltaTime)
         {
         }
 
