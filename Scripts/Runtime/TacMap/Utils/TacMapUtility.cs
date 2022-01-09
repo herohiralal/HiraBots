@@ -132,17 +132,17 @@ namespace HiraBots
             var z = vectorCoordinates.z;
 
             var heightF = (y / innerRadius) / 1.632993162f;
-            var height = math.select((int) heightF, (int) (heightF + 1f), math.frac(heightF) >= 0.5f);
+            var height = Round(heightF);
             var heightParity = (math.abs(height * 3) + height) % 3;
 
             var rowF = ((z / innerRadius) - (heightParity * 0.577350269f)) / 1.732050807f;
-            var row = math.select((int) rowF, (int) (rowF + 1f), math.frac(rowF) >= 0.5f);
-            var rowParity = row & 1;
+            var row = Round(rowF);
+            var rowParity = (math.abs(row * 2) + row) % 2;
 
             var columnF = ((x / innerRadius) - (heightParity * 1f) - (rowParity * 1f)) / 2;
-            var column = math.select((int) columnF, (int) (columnF + 1f), math.frac(columnF) >= 0.5f);
+            var column = Round(columnF);
 
-            return new int3(column < 0 ? column - 1 : column, height, row < 0 ? row - 1 : row);
+            return new int3(column, height, row);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -153,15 +153,15 @@ namespace HiraBots
             var z = linearPositions.c2;
 
             var heightF = (y / innerRadius) / 1.632993162f;
-            var heights = math.select((int4) heightF, (int4) (heightF + 1f), math.frac(heightF) > 0.5f);
+            var heights = Round(heightF);
             var heightParities = (math.abs(heights * 3) + heights) % 3;
 
             var rowF = ((z / innerRadius) - (heightParities * new float4(0.577350269f))) / 1.732050807f;
-            var rows = math.select((int4) rowF, (int4) (rowF + 1f), math.frac(rowF) > 0.5f);
-            var rowParity = rows & 1;
+            var rows = Round(rowF);
+            var rowParities = (math.abs(rows * 2) + rows) % 2;
 
-            var columnF = ((x / innerRadius) - (heightParities * new float4(1f)) - (rowParity * new float4(1f))) / 2;
-            var columns = math.select((int4) columnF, (int4) (columnF + 1f), math.frac(columnF) > 0.5f);
+            var columnF = ((x / innerRadius) - (heightParities * new float4(1f)) - (rowParities * new float4(1f))) / 2;
+            var columns = Round(columnF);
 
             return new int4x3(columns, heights, rows);
         }
@@ -310,6 +310,28 @@ namespace HiraBots
         {
             return (math.abs(individualAxes.c0) + math.abs(individualAxes.c1) + math.abs(individualAxes.c2)
                     + math.abs(individualAxes.c0 + individualAxes.c1 + individualAxes.c2)) / 2;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Round(float v)
+        {
+            var fraction = math.frac(v);
+
+            return math.select(
+                math.select((int) v, (int) (v + 1), fraction >= 0.5f),
+                math.select((int) (v - 1), (int) v, fraction >= 0.5f),
+                v < 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int4 Round(float4 v)
+        {
+            var fraction = math.frac(v);
+
+            return math.select(
+                math.select((int4) v, (int4) (v + 1), fraction >= 0.5f),
+                math.select((int4) (v - 1), (int4) v, fraction >= 0.5f),
+                v < 0f);
         }
     }
 }
