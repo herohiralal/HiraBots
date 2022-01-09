@@ -3,6 +3,7 @@ using HiraBots;
 
 namespace UnityEngine
 {
+    [AddComponentMenu("AI/TacMap")]
     public sealed partial class TacMap : MonoBehaviour
     {
         [Tooltip("The size of a hexagonal cell.")]

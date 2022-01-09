@@ -3,7 +3,6 @@ using HiraBots;
 
 namespace UnityEngine
 {
-    [DefaultExecutionOrder(950)]
     [AddComponentMenu("AI/HiraBot (LGOAP realtime)")]
     public sealed partial class HiraLGOAPRealtimeBot : MonoBehaviour, IHiraBotArchetype, IUpdatableBehaviour
     {

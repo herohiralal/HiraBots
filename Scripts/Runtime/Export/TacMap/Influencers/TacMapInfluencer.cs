@@ -1,11 +1,28 @@
-﻿namespace UnityEngine
+﻿using HiraBots;
+
+namespace UnityEngine
 {
-    public abstract class TacMapInfluencer : MonoBehaviour
+    public abstract class TacMapInfluencer : MonoBehaviour, IUpdatableBehaviour
     {
+        [Tooltip("The map to apply the influence on.")]
         [SerializeField] private TacMap m_Map = null;
+
+        [Tooltip("The ticking interval to check whether the influence needs to be re-evaluated. Negative value means no auto-update.")]
+        [SerializeField] private float m_TickInterval = 0f;
 
         [System.NonSerialized] private TacMap m_CurrentlyUsedMap = null;
         [System.NonSerialized] private bool m_Dirty = false;
+
+        private void OnValidate()
+        {
+            if (Application.isPlaying)
+            {
+                map = m_Map;
+                tickInterval = m_TickInterval;
+            }
+
+            OnValidateCallback();
+        }
 
         protected void OnEnable()
         {
@@ -31,8 +48,50 @@
                     return;
                 }
 
-                StopUsingOldMap();
-                StartUsingNewMap();
+                if (!ReferenceEquals(m_Map, m_CurrentlyUsedMap))
+                {
+                    StopUsingOldMap();
+                    StartUsingNewMap();
+                }
+            }
+        }
+
+        public float tickInterval
+        {
+            get => m_TickInterval;
+            set
+            {
+                m_TickInterval = value;
+
+                if (!isActiveAndEnabled)
+                {
+                    return;
+                }
+
+                if (value < 0f)
+                {
+                    BehaviourUpdater.instance.Remove(this);
+                }
+                else
+                {
+                    BehaviourUpdater.instance.Add(this, m_TickInterval);
+                }
+            }
+        }
+
+        public void Tick(float deltaTime)
+        {
+            if (ReferenceEquals(m_Map, null))
+            {
+                return;
+            }
+
+            if (m_Dirty)
+            {
+                RemoveInfluenceFromMap();
+                AddInfluenceToMap();
+
+                m_Dirty = false;
             }
         }
 
@@ -67,6 +126,7 @@
 
             m_CurrentlyUsedMap = m_Map;
             m_CurrentlyUsedMap.m_Influencers.Add(this);
+            BehaviourUpdater.instance.Add(this, m_TickInterval);
 
             try
             {
@@ -96,11 +156,16 @@
                 Debug.LogError(e, this);
             }
 
+            BehaviourUpdater.instance.Remove(this);
             m_CurrentlyUsedMap.m_Influencers.Remove(this);
             m_CurrentlyUsedMap = null;
         }
 
         protected virtual void OnEnableCallback()
+        {
+        }
+
+        protected virtual void OnValidateCallback()
         {
         }
 
