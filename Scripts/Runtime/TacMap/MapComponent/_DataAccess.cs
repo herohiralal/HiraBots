@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace HiraBots
 {
-    internal delegate JobHandle ScheduleTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions, JobHandle dependencies);
+    internal delegate JobHandle ScheduleTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions, float cellSize, JobHandle dependencies);
 
-    internal delegate void RunTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions);
+    internal delegate void RunTacMapJobDelegate(NativeArray<float4> map, int3 pivot, int3 dimensions, float cellSize);
 
     internal partial class TacMapComponent
     {
@@ -20,7 +20,12 @@ namespace HiraBots
 
             try
             {
-                m_ActiveWriteJob = scheduleJobDelegate.Invoke(m_Internal.Reinterpret<float4>(sizeof(float)), m_Pivot, m_Dimensions, dependencies);
+                m_ActiveWriteJob = scheduleJobDelegate.Invoke(
+                    m_Internal.Reinterpret<float4>(sizeof(float)),
+                    m_Pivot,
+                    m_Dimensions,
+                    m_CellSize,
+                    dependencies);
             }
             catch (System.Exception e)
             {
@@ -42,7 +47,12 @@ namespace HiraBots
 
             try
             {
-                m_ActiveReadJob = scheduleJobDelegate.Invoke(m_Internal.Reinterpret<float4>(sizeof(float)), m_Pivot, m_Dimensions, dependencies);
+                m_ActiveReadJob = scheduleJobDelegate.Invoke(
+                    m_Internal.Reinterpret<float4>(sizeof(float)),
+                    m_Pivot,
+                    m_Dimensions,
+                    m_CellSize,
+                    dependencies);
             }
             catch (System.Exception e)
             {
@@ -67,7 +77,11 @@ namespace HiraBots
             m_ActiveReadJob?.Complete();
             m_ActiveReadJob = null;
 
-            runJobDelegate.Invoke(m_Internal.Reinterpret<float4>(sizeof(float)), m_Pivot, m_Dimensions);
+            runJobDelegate.Invoke(
+                m_Internal.Reinterpret<float4>(sizeof(float)),
+                m_Pivot,
+                m_Dimensions,
+                m_CellSize);
         }
 
         internal void RequestDataForReadJob(RunTacMapJobDelegate runJobDelegate)
@@ -76,7 +90,11 @@ namespace HiraBots
             m_ActiveWriteJob?.Complete();
             m_ActiveWriteJob = null;
 
-            runJobDelegate.Invoke(m_Internal.Reinterpret<float4>(sizeof(float)), m_Pivot, m_Dimensions);
+            runJobDelegate.Invoke(
+                m_Internal.Reinterpret<float4>(sizeof(float)),
+                m_Pivot,
+                m_Dimensions,
+                m_CellSize);
         }
 
         private IEnumerator WaitForWriteJobToCompleteCoroutine()

@@ -19,6 +19,7 @@ namespace HiraBots
         private Coroutine m_ReadJobTrackerCoroutine;
         private Coroutine m_WriteJobTrackerCoroutine;
 
+        private float m_CellSize;
         private int3 m_Pivot;
         private int3 m_Dimensions;
 
@@ -53,12 +54,13 @@ namespace HiraBots
                 return false;
             }
 
-            component = new TacMapComponent(pivot, dimensions);
+            component = new TacMapComponent(pivot, dimensions, cellSize);
             return true;
         }
 
-        private TacMapComponent(int3 pivot, int3 dimensions)
+        private TacMapComponent(int3 pivot, int3 dimensions, float cellSize)
         {
+            m_CellSize = cellSize;
             m_Pivot = pivot;
             m_Dimensions = dimensions;
 
@@ -98,6 +100,7 @@ namespace HiraBots
 
             m_Dimensions = int3.zero;
             m_Pivot = int3.zero;
+            m_CellSize = 0f;
         }
     }
 }
