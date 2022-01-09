@@ -43,9 +43,16 @@ namespace HiraBots.Editor
                 return;
             }
 
+            if (m_Bot.hasError)
+            {
+                EditorGUILayout.HelpBox(m_Bot.error, MessageType.Error);
+                return;
+            }
+
             m_Bot.Update();
             EditorGUILayout.PropertyField(m_Bot.archetypeProperty, true);
             EditorGUILayout.PropertyField(m_Bot.domainProperty, true);
+            EditorGUILayout.PropertyField(m_Bot.tickIntervalProperty, true);
             EditorGUILayout.PropertyField(m_Bot.executableTickIntervalMultiplierProperty, true);
             EditorGUILayout.PropertyField(m_Bot.runPlannerSynchronouslyProperty, true);
             m_Bot.ApplyModifiedProperties();

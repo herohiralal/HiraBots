@@ -8,9 +8,13 @@ namespace UnityEngine
     {
         private void OnValidate()
         {
-            archetypeOverride = m_ArchetypeOverride;
-            domain = m_Domain;
-            m_Internal.executableTickIntervalMultiplier = m_Internal.m_ExecutableTickIntervalMultiplier;
+            if (Application.isPlaying)
+            {
+                archetypeOverride = m_ArchetypeOverride;
+                domain = m_Domain;
+                tickInterval = m_TickInterval;
+                m_Internal.executableTickIntervalMultiplier = m_Internal.m_ExecutableTickIntervalMultiplier;
+            }
         }
 
         internal class Serialized : CustomSerializedObject<HiraLGOAPRealtimeBot>
@@ -21,6 +25,9 @@ namespace UnityEngine
 
                 domainProperty = GetProperty<LGOAPDomain>(nameof(m_Domain), false, true);
 
+                tickIntervalProperty = GetProperty(nameof(m_TickInterval), SerializedPropertyType.Float,
+                    false, true);
+
                 executableTickIntervalMultiplierProperty = GetProperty($"{nameof(m_Internal)}.{nameof(LGOAPRealtimeBotComponent.m_ExecutableTickIntervalMultiplier)}",
                     SerializedPropertyType.Float, false, true);
 
@@ -30,6 +37,7 @@ namespace UnityEngine
 
             internal SerializedProperty archetypeProperty { get; }
             internal SerializedProperty domainProperty { get; }
+            internal SerializedProperty tickIntervalProperty { get; }
             internal SerializedProperty executableTickIntervalMultiplierProperty { get; }
             internal SerializedProperty runPlannerSynchronouslyProperty { get; }
 
