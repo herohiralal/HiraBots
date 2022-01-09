@@ -44,8 +44,10 @@ namespace HiraBots
 
             internal bool Add(T obj, float tickInterval, float tickIntervalMultiplier)
             {
-                if (m_IndexLookUp.ContainsKey(obj))
+                if (m_IndexLookUp.TryGetValue(obj, out var index))
                 {
+                    m_TickIntervals[index] = tickInterval;
+                    m_TickIntervalMultipliers[index] = tickIntervalMultiplier;
                     return false;
                 }
 
