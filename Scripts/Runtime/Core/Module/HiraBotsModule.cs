@@ -123,7 +123,7 @@ namespace HiraBots
                     continue;
                 }
 
-                m_BehaviourUpdates.m_ObjectsBuffer[i].Tick(deltaTime);
+                m_BehaviourUpdates.m_ObjectsBuffer[i].WrappedTick(deltaTime);
             }
         }
 

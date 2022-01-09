@@ -1,4 +1,7 @@
-﻿namespace HiraBots
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
+
+namespace HiraBots
 {
     internal interface IUpdatableBehaviour
     {
@@ -17,5 +20,18 @@
         }
 
         internal static IInterface instance { get; set; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void WrappedTick(this IUpdatableBehaviour behaviour, float deltaTime)
+        {
+            try
+            {
+                behaviour.Tick(deltaTime);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
     }
 }
