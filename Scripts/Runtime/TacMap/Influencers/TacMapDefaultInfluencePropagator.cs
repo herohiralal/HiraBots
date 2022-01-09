@@ -8,7 +8,7 @@ namespace HiraBots
     internal static class TacMapDefaultInfluencePropagator
     {
         internal static JobHandle Schedule(TacMapComponent map, int3 locationAxialW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f,
-            int batchCount = 64)
+            int batchCount = 1024)
         {
             if (map == null)
             {
