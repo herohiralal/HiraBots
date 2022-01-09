@@ -142,7 +142,7 @@ namespace HiraBots
             var columnF = ((x / innerRadius) - (heightParity * 1f) - (rowParity * 1f)) / 2;
             var column = math.select((int) columnF, (int) (columnF + 1f), math.frac(columnF) >= 0.5f);
 
-            return new int3(column, height, row);
+            return new int3(column < 0 ? column - 1 : column, height, row < 0 ? row - 1 : row);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -161,9 +161,9 @@ namespace HiraBots
             var rowParity = rows & 1;
 
             var columnF = ((x / innerRadius) - (heightParities * new float4(1f)) - (rowParity * new float4(1f))) / 2;
-            var columnParities = math.select((int4) columnF, (int4) (columnF + 1f), math.frac(columnF) > 0.5f);
+            var columns = math.select((int4) columnF, (int4) (columnF + 1f), math.frac(columnF) > 0.5f);
 
-            return new int4x3(columnParities, heights, rows);
+            return new int4x3(columns, heights, rows);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
