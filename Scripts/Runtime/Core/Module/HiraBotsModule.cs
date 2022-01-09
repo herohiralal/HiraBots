@@ -329,7 +329,11 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddBehaviourInternal(IUpdatableBehaviour behaviour, float tickInterval, float tickIntervalMultiplier)
         {
-            m_BehaviourUpdates.Add(behaviour, tickInterval, tickIntervalMultiplier);
+            if (m_BehaviourUpdates.Add(behaviour, tickInterval, tickIntervalMultiplier))
+            {
+                // set the elapsed time to a random number, to add some randomization to ticking
+                m_BehaviourUpdates.m_ElapsedTimes[m_BehaviourUpdates.m_ObjectsCount - 1] = Random.Range(0f, tickInterval);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
