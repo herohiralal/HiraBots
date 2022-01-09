@@ -46,7 +46,8 @@ namespace HiraBots
 
             var (pivot, dimensions) = TacMapUtility.TransformToOffsetWBounds(t.localToWorldMatrix, cellSize);
 
-            if (dimensions.x * dimensions.y * dimensions.z == 0)
+            // none should be negative or zero
+            if (dimensions.x * dimensions.y <= 0 || dimensions.y * dimensions.z <= 0)
             {
                 component = null;
                 return false;

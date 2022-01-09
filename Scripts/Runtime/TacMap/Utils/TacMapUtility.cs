@@ -36,7 +36,28 @@ namespace HiraBots
                 output[1] = math.max(output[1], math.max(math.max(cornersW[0], cornersW[1]), math.max(cornersW[2], cornersW[3])));
             }
 
-            return (output[0], output[1] + 1 - output[0]);
+            var pivot = output[0];
+
+            var dimensions = output[1] + 1 - output[0];
+
+            // make dimensions divisible by 4
+            switch (dimensions.x % 4)
+            {
+                case 1:
+                    pivot.x -= 2;
+                    dimensions.x += 3;
+                    break;
+                case 2:
+                    pivot.x -= 1;
+                    dimensions.x += 2;
+                    break;
+                case 3:
+                    pivot.x -= 1;
+                    dimensions.x += 1;
+                    break;
+            }
+
+            return (pivot, dimensions);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
