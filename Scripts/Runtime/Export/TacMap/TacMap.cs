@@ -1,18 +1,19 @@
 ﻿using HiraBots;
+using Unity.Collections;
 
 namespace UnityEngine
 {
-    public class TacMap : MonoBehaviour
+    public partial class TacMap : MonoBehaviour
     {
         [Tooltip("The size of a hexagonal cell.")]
-        [SerializeField] private float m_CellSize = 0.1f;
+        [SerializeField] private float m_CellSize = 1f;
 
-        private TacMapComponent m_TacMapComponent = null;
+        [System.NonSerialized] private TacMapComponent m_TacMapComponent = null;
 
-        private Vector3 m_CurrentPosition;
-        private Quaternion m_CurrentRotation;
-        private Vector3 m_CurrentScale;
-        private float m_CurrentCellSize;
+        [System.NonSerialized] private Vector3 m_CurrentPosition;
+        [System.NonSerialized] private Quaternion m_CurrentRotation;
+        [System.NonSerialized] private Vector3 m_CurrentScale;
+        [System.NonSerialized] private float m_CurrentCellSize;
 
         private void OnEnable()
         {
