@@ -89,10 +89,10 @@ namespace UnityEngine
 
         private static NativeArray<float> CreateManhattanDistanceToInfluenceCurveArray(float range, float cellSize, AnimationCurve influenceCurve, Allocator allocator)
         {
-            var divisions = (int) (range / cellSize) + 1;
-            var output = new NativeArray<float>(divisions, allocator, NativeArrayOptions.UninitializedMemory);
+            var divisions = (int) (range / cellSize);
+            var output = new NativeArray<float>(divisions + 1, allocator, NativeArrayOptions.UninitializedMemory);
 
-            for (var i = 0; i < divisions; i++)
+            for (var i = 0; i <= divisions; i++)
             {
                 output[i] = influenceCurve.Evaluate((float) i / divisions);
             }
