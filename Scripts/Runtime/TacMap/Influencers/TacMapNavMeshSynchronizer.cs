@@ -59,7 +59,7 @@ namespace HiraBots
             public void Execute(int index)
             {
                 var height = (index * 4) / (m_Dimensions.x * m_Dimensions.z);
-                var row = (index * 4) / m_Dimensions.x;
+                var row = ((index * 4) / m_Dimensions.x) % m_Dimensions.z;
                 var column = (index * 4) % m_Dimensions.x;
 
                 var offsetCoordinatesL = new int3x4(
