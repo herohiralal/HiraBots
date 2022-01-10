@@ -137,7 +137,7 @@ namespace HiraBots
 
             var rowF = ((z / innerRadius) - (heightParity * 0.577350269f)) / 1.732050807f;
             var row = Round(rowF);
-            var rowParity = (math.abs(row * 2) + row) % 2;
+            var rowParity = row & 1;
 
             var columnF = ((x / innerRadius) - (heightParity * 1f) - (rowParity * 1f)) / 2;
             var column = Round(columnF);
@@ -158,7 +158,7 @@ namespace HiraBots
 
             var rowF = ((z / innerRadius) - (heightParities * new float4(0.577350269f))) / 1.732050807f;
             var rows = Round(rowF);
-            var rowParities = (math.abs(rows * 2) + rows) % 2;
+            var rowParities = rows & 1;
 
             var columnF = ((x / innerRadius) - (heightParities * new float4(1f)) - (rowParities * new float4(1f))) / 2;
             var columns = Round(columnF);
