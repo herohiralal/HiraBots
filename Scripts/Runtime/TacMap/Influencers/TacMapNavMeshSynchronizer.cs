@@ -62,27 +62,26 @@ namespace HiraBots
                 var row = ((index * 4) / m_Dimensions.x) % m_Dimensions.z;
                 var column = (index * 4) % m_Dimensions.x;
 
-                var offsetCoordinatesL = new int3x4(
-                    new int3(column + 0, height, row),
-                    new int3(column + 1, height, row),
-                    new int3(column + 2, height, row),
-                    new int3(column + 3, height, row));
+                var individualOffsetCoordinatesL = new int4x3(
+                    new int4(column + 0, column + 1, column + 2, column + 3),
+                    height,
+                    row);
 
-                var offsetCoordinatesW = new int3x4(m_Pivot, m_Pivot, m_Pivot, m_Pivot) + offsetCoordinatesL;
+                var individualOffsetCoordinatesW = new int4x3(m_Pivot.x, m_Pivot.y, m_Pivot.z) + individualOffsetCoordinatesL;
 
-                var positionsW = TacMapUtility.OffsetWToPositionW(offsetCoordinatesW, m_CellSize * 0.5f);
+                var linearPositionsW = TacMapUtility.IndividualOffsetsWToLinearPositionsW(individualOffsetCoordinatesW, m_CellSize * 0.5f);
 
-                float4 mask = default;
+                var positionsW = math.transpose(linearPositionsW);
+
+                bool4 mask = default;
 
                 for (var i = 0; i < 4; i++)
                 {
-                    var loc = m_NavMeshQuery.MapLocation(
-                        positionsW[i], new float3(m_CellSize * 0.5f), m_AgentType, m_AreaMask);
-
-                    mask[i] = m_NavMeshQuery.IsValid(loc) ? 1f : 0f;
+                    mask[i] = m_NavMeshQuery.IsValid(m_NavMeshQuery.MapLocation(
+                        positionsW[i], new float3(m_CellSize * 0.5f), m_AgentType, m_AreaMask));
                 }
 
-                m_Map[index] *= mask;
+                m_Map[index] *= math.select(0f, 1f, mask);
             }
         }
     }

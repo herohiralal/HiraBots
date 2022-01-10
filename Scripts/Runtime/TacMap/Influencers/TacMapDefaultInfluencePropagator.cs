@@ -65,8 +65,8 @@ namespace HiraBots
 
                 var individualOffsetsL = new int4x3(
                     new int4(column + 0, column + 1, column + 2, column + 3),
-                    new int4(height, height, height, height),
-                    new int4(row, row, row, row));
+                    height,
+                    row);
 
                 var individualOffsetsW = new int4x3(m_Pivot.x, m_Pivot.y, m_Pivot.z) + individualOffsetsL;
 
