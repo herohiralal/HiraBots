@@ -30,7 +30,7 @@ namespace HiraBots
                 var cornersWPosLooney = math.mul(l2W, s_CornersLooney[i]);
                 var cornersWPos = new float3x4(cornersWPosLooney.c0.xyz, cornersWPosLooney.c1.xyz, cornersWPosLooney.c2.xyz, cornersWPosLooney.c3.xyz);
 
-                var cornersW = PositionWToOffsetW(cornersWPos, cellSize * 0.5f);
+                var cornersW = math.transpose(LinearPositionsWToIndividualOffsetsW(math.transpose(cornersWPos), cellSize * 0.5f));
 
                 output[0] = math.min(output[0], math.min(math.min(cornersW[0], cornersW[1]), math.min(cornersW[2], cornersW[3])));
                 output[1] = math.max(output[1], math.max(math.max(cornersW[0], cornersW[1]), math.max(cornersW[2], cornersW[3])));
@@ -105,26 +105,6 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static float4x3 OffsetWToLinearPositionsW(int3x4 offsetCoordinates, float innerRadius)
-        {
-            return IndividualOffsetsWToLinearPositionsW(math.transpose(offsetCoordinates), innerRadius);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static float3x4 IndividualOffsetsWToPositionW(int4x3 individualOffsets, float innerRadius)
-        {
-            return math.transpose(IndividualOffsetsWToLinearPositionsW(individualOffsets, innerRadius));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static float3x4 OffsetWToPositionW(int3x4 offsetCoordinates, float innerRadius)
-        {
-            var linearPositions = IndividualOffsetsWToLinearPositionsW(math.transpose(offsetCoordinates), innerRadius);
-
-            return math.transpose(linearPositions);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int3 PositionWToOffsetW(float3 vectorCoordinates, float innerRadius)
         {
             var x = vectorCoordinates.x;
@@ -167,26 +147,6 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int4x3 PositionWToIndividualOffsetsW(float3x4 vectorCoordinates, float innerRadius)
-        {
-            return LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 LinearPositionsWToOffsetW(float4x3 linearPositions, float innerRadius)
-        {
-            return math.transpose(LinearPositionsWToIndividualOffsetsW(linearPositions, innerRadius));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 PositionWToOffsetW(float3x4 vectorCoordinates, float innerRadius)
-        {
-            var linearPositions = LinearPositionsWToIndividualOffsetsW(math.transpose(vectorCoordinates), innerRadius);
-
-            return math.transpose(linearPositions);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int3 OffsetWToAxialW(int3 offsetCoordinates)
         {
             var column = offsetCoordinates.x;
@@ -223,26 +183,6 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int4x3 OffsetWToIndividualAxesW(int3x4 offsetCoordinates)
-        {
-            return IndividualOffsetsWToIndividualAxesW(math.transpose(offsetCoordinates));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 IndividualOffsetsWToAxialW(int4x3 individualOffsets)
-        {
-            return math.transpose(IndividualOffsetsWToIndividualAxesW(individualOffsets));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 OffsetWToAxialW(int3x4 offsetCoordinates)
-        {
-            var individualAxes = IndividualOffsetsWToIndividualAxesW(math.transpose(offsetCoordinates));
-
-            return math.transpose(individualAxes);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int3 AxialWToOffsetW(int3 axialCoordinates)
         {
             var q = axialCoordinates.x;
@@ -276,26 +216,6 @@ namespace HiraBots
             var column = q + ((height - heightParity) / 3) + ((row - rowParity) / 2);
 
             return new int4x3(column, height, row);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int4x3 AxialWToIndividualOffsetsW(int3x4 axialCoordinates)
-        {
-            return IndividualAxesWToIndividualOffsetsW(math.transpose(axialCoordinates));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 IndividualAxesWToOffsetW(int4x3 individualAxes)
-        {
-            return math.transpose(IndividualAxesWToIndividualOffsetsW(individualAxes));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int3x4 AxialWToOffsetW(int3x4 axialCoordinates)
-        {
-            var individualOffsets = IndividualAxesWToIndividualOffsetsW(math.transpose(axialCoordinates));
-
-            return math.transpose(individualOffsets);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
