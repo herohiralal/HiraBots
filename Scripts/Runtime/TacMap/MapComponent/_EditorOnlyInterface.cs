@@ -115,6 +115,11 @@ namespace HiraBots
 
                         for (var i = 0; i < m.Length; i++)
                         {
+                            if (Mathf.Approximately(m[i], 0f))
+                            {
+                                continue;
+                            }
+
                             Gizmos.color = col[i];
                             Gizmos.DrawWireSphere(pos[i], m_CellSize * 0.05f);
                         }
