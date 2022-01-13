@@ -6,6 +6,8 @@ namespace UnityEngine
     [AddComponentMenu("AI/TacMap")]
     public sealed partial class TacMap : MonoBehaviour
     {
+        internal static readonly List<TacMap> s_ActiveMaps = new List<TacMap>();
+
         [Tooltip("The size of a hexagonal cell.")]
         [SerializeField] private float m_CellSize = 1f;
 
@@ -18,6 +20,11 @@ namespace UnityEngine
 
         internal HashSet<TacMapInfluencer> influencers { get; } = new HashSet<TacMapInfluencer>();
 
+        private void Awake()
+        {
+            s_ActiveMaps.Add(this);
+        }
+
         private void OnEnable()
         {
             StartUsingNewTacMapComponent();
@@ -28,12 +35,21 @@ namespace UnityEngine
             StopUsingOldTacMapComponent();
         }
 
-        private void OnDestroy()
+        internal void Dispose()
         {
             foreach (var influencer in influencers)
             {
                 influencer.OnMapDestroy();
             }
+
+            influencers.Clear();
+
+            s_ActiveMaps.Remove(this);
+        }
+
+        private void OnDestroy()
+        {
+            Dispose();
         }
 
         internal TacMapComponent component => m_TacMapComponent;

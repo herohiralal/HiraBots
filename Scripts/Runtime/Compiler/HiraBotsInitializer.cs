@@ -94,6 +94,7 @@ namespace HiraBots
 
             CompilationRegistry.Build();
 
+            TacMap.s_ActiveMaps.Clear();
             HiraLGOAPRealtimeBot.s_ActiveBots.Clear();
 
             Profiler.EndSample();
@@ -142,6 +143,20 @@ namespace HiraBots
             }
 
             HiraLGOAPRealtimeBot.s_ActiveBots.Clear();
+
+            for (var i = TacMap.s_ActiveMaps.Count - 1; i >= 0; i--)
+            {
+                try
+                {
+                    TacMap.s_ActiveMaps[i].Dispose();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+
+            TacMap.s_ActiveMaps.Clear();
 
             var ldc = LGOAPDomainCollection.instance;
             var ldcCount = ldc.count;
