@@ -4,6 +4,7 @@ using Unity.Mathematics;
 
 namespace UnityEngine
 {
+    [AddComponentMenu("AI/TacMap Influencer (Default)")]
     public class TacMapDefaultInfluencer : TacMapInfluencer
     {
         [Tooltip("The type of normalized distance-to-influence propagation curve to follow.")]

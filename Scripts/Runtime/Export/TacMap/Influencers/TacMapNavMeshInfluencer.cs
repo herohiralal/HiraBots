@@ -1,5 +1,6 @@
 ﻿namespace UnityEngine
 {
+    [AddComponentMenu("AI/TacMap Influencer (NavMesh)")]
     public class TacMapNavMeshInfluencer : MonoBehaviour
     {
         [ContextMenu("Synchronize To NavMesh")]
