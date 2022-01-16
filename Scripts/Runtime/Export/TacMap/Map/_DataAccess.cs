@@ -10,7 +10,7 @@ namespace UnityEngine
 
         public delegate void RunJobDelegate(NativeArray<float> map, int3 pivot, int3 dimensions, float cellSize);
 
-        private bool ValidateInput<T>(T del)
+        private bool Validate()
         {
             if (m_TacMapComponent == null)
             {
@@ -18,33 +18,55 @@ namespace UnityEngine
                 return false;
             }
 
-            if (del == null)
-            {
-                Debug.LogException(new System.NullReferenceException("Parameter null: 'del'"), this);
-                return false;
-            }
-
             return true;
         }
 
-        public JobHandle RequestDataForWriteJob(ScheduleJobDelegate del)
+        public JobHandle writeJobDependencies => Validate()
+            ? m_TacMapComponent.writeJobDependencies
+            : default;
+
+        public void UpdateLatestWriteJob(JobHandle jh)
         {
-            return ValidateInput(del) ? m_TacMapComponent.RequestDataForWriteJob(del.Invoke) : default;
+            if (!Validate())
+            {
+                return;
+            }
+
+            m_TacMapComponent.UpdateLatestWriteJob(jh);
         }
 
-        public JobHandle RequestDataForReadJob(ScheduleJobDelegate del)
+        public void CompleteAllWriteJobDependencies()
         {
-            return ValidateInput(del) ? m_TacMapComponent.RequestDataForReadJob(del.Invoke) : default;
+            if (!Validate())
+            {
+                return;
+            }
+
+            m_TacMapComponent.CompleteAllWriteJobDependencies();
         }
 
-        public void RequestDataForWriteJob(RunJobDelegate del)
+        public JobHandle readJobDependencies => Validate()
+            ? m_TacMapComponent.readJobDependencies
+            : default;
+
+        public void UpdateLatestReadJob(JobHandle jh)
         {
-            if (ValidateInput(del)) m_TacMapComponent.RequestDataForWriteJob(del.Invoke);
+            if (!Validate())
+            {
+                return;
+            }
+
+            m_TacMapComponent.UpdateLatestReadJob(jh);
         }
 
-        public void RequestDataForReadJob(RunJobDelegate del)
+        public void CompleteAllReadJobDependencies()
         {
-            if (ValidateInput(del)) m_TacMapComponent.RequestDataForReadJob(del.Invoke);
+            if (!Validate())
+            {
+                return;
+            }
+
+            m_TacMapComponent.CompleteAllReadJobDependencies();
         }
     }
 }

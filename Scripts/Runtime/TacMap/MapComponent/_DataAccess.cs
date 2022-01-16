@@ -2,7 +2,6 @@
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace HiraBots
 {
@@ -12,63 +11,43 @@ namespace HiraBots
 
     internal partial class TacMapComponent
     {
-        internal JobHandle RequestDataForWriteJob(ScheduleTacMapJobDelegate scheduleJobDelegate)
-        {
-            var dependencies = m_ActiveWriteJob.HasValue && m_ActiveReadJob.HasValue
+        internal NativeArray<float> map => m_Internal;
+
+        internal int3 pivot => m_Pivot;
+
+        internal int3 dimensions => m_Dimensions;
+
+        internal float cellSize => m_CellSize;
+
+        internal JobHandle writeJobDependencies =>
+            m_ActiveWriteJob.HasValue && m_ActiveReadJob.HasValue
                 ? JobHandle.CombineDependencies(m_ActiveWriteJob.Value, m_ActiveReadJob.Value)
                 : m_ActiveReadJob ?? (m_ActiveWriteJob ?? default); // run after all active jobs
 
-            try
-            {
-                m_ActiveWriteJob = scheduleJobDelegate.Invoke(
-                    m_Internal,
-                    m_Pivot,
-                    m_Dimensions,
-                    m_CellSize,
-                    dependencies);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-                return default;
-            }
+        internal void UpdateLatestWriteJob(JobHandle jh)
+        {
+            m_ActiveWriteJob = jh;
 
-            if (m_WriteJobTrackerCoroutine == null)
+            if (m_WriteJobTrackerCoroutine == null && !jh.IsCompleted)
             {
                 m_WriteJobTrackerCoroutine = CoroutineRunner.Start(WaitForWriteJobToCompleteCoroutine());
             }
-
-            return m_ActiveWriteJob ?? default;
         }
 
-        internal JobHandle RequestDataForReadJob(ScheduleTacMapJobDelegate scheduleJobDelegate)
+        internal JobHandle readJobDependencies =>
+            m_ActiveWriteJob ?? default; // run after a write job, if any
+
+        internal void UpdateLatestReadJob(JobHandle jh)
         {
-            var dependencies = m_ActiveWriteJob ?? default; // run after a write job, if any
+            m_ActiveReadJob = jh;
 
-            try
-            {
-                m_ActiveReadJob = scheduleJobDelegate.Invoke(
-                    m_Internal,
-                    m_Pivot,
-                    m_Dimensions,
-                    m_CellSize,
-                    dependencies);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-                return default;
-            }
-
-            if (m_ReadJobTrackerCoroutine == null)
+            if (m_ReadJobTrackerCoroutine == null && !jh.IsCompleted)
             {
                 m_ReadJobTrackerCoroutine = CoroutineRunner.Start(WaitForReadJobToCompleteCoroutine());
             }
-
-            return m_ActiveReadJob ?? default;
         }
 
-        internal void RequestDataForWriteJob(RunTacMapJobDelegate runJobDelegate)
+        internal void CompleteAllWriteJobDependencies()
         {
             // run after all jobs
             m_ActiveWriteJob?.Complete();
@@ -77,29 +56,25 @@ namespace HiraBots
             m_ActiveReadJob?.Complete();
             m_ActiveReadJob = null;
 
-            runJobDelegate.Invoke(
-                m_Internal,
-                m_Pivot,
-                m_Dimensions,
-                m_CellSize);
+            CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
+            m_WriteJobTrackerCoroutine = null;
+
+            CoroutineRunner.Stop(m_ReadJobTrackerCoroutine);
+            m_ReadJobTrackerCoroutine = null;
         }
 
-        internal void RequestDataForReadJob(RunTacMapJobDelegate runJobDelegate)
+        internal void CompleteAllReadJobDependencies()
         {
             // run after write job
             m_ActiveWriteJob?.Complete();
             m_ActiveWriteJob = null;
 
-            runJobDelegate.Invoke(
-                m_Internal,
-                m_Pivot,
-                m_Dimensions,
-                m_CellSize);
+            CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
+            m_WriteJobTrackerCoroutine = null;
         }
 
         private IEnumerator WaitForWriteJobToCompleteCoroutine()
         {
-
             yield return null;
             while (m_ActiveWriteJob.HasValue && !m_ActiveWriteJob.Value.IsCompleted)
             {
@@ -114,7 +89,6 @@ namespace HiraBots
 
         private IEnumerator WaitForReadJobToCompleteCoroutine()
         {
-
             yield return null;
             while (m_ActiveReadJob.HasValue && !m_ActiveReadJob.Value.IsCompleted)
             {

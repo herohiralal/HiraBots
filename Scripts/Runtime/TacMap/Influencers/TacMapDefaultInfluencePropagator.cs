@@ -15,20 +15,29 @@ namespace HiraBots
                 return default;
             }
 
-            return map.RequestDataForWriteJob(((m, p, d, s, dependencies) =>
-                new Job(m.Reinterpret<float4>(sizeof(float)),
-                        p, d,
-                        locationAxialW, magnitude, manhattanDistanceToInfluence)
-                    .ScheduleParallel(m.Length / 4, batchCount, dependencies)));
+            var jh = new Job(map.map.Reinterpret<float4>(sizeof(float)),
+                    map.pivot, map.dimensions,
+                    locationAxialW, magnitude, manhattanDistanceToInfluence)
+                .ScheduleParallel(map.map.Length / 4, batchCount, map.writeJobDependencies);
+
+            map.UpdateLatestWriteJob(jh);
+
+            return jh;
         }
 
         internal static void Run(TacMapComponent map, int3 locationAxialW, NativeArray<float> manhattanDistanceToInfluence, float magnitude = 1f)
         {
-            map?.RequestDataForWriteJob(((m, p, d, s) =>
-                new Job(m.Reinterpret<float4>(sizeof(float)),
-                        p, d,
-                        locationAxialW, magnitude, manhattanDistanceToInfluence)
-                    .Run(m.Length / 4)));
+            if (map == null)
+            {
+                return;
+            }
+
+            map.CompleteAllWriteJobDependencies();
+
+            new Job(map.map.Reinterpret<float4>(sizeof(float)),
+                    map.pivot, map.dimensions,
+                    locationAxialW, magnitude, manhattanDistanceToInfluence)
+                .Run(map.map.Length / 4);
         }
 
         [BurstCompile]

@@ -98,34 +98,34 @@ namespace HiraBots
                 return;
             }
 
+            CompleteAllReadJobDependencies();
+
             var c = Gizmos.color;
 
-            RequestDataForReadJob((m, p, d, s) =>
+            using (var pos = new NativeArray<Vector3>(m_Internal.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
             {
-                using (var pos = new NativeArray<Vector3>(m.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                new PositionCalculatorJob(m_Pivot, m_Dimensions, m_CellSize, pos.Reinterpret<float3x4>(UnsafeUtility.SizeOf<Vector3>()))
+                    .Run();
+
+                using (var col = new NativeArray<Color>(m_Internal.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
                 {
-                    new PositionCalculatorJob(p, d, s, pos.Reinterpret<float3x4>(UnsafeUtility.SizeOf<Vector3>())).Run();
+                    new ColorCalculatorJob(m_Internal.Reinterpret<float4>(sizeof(float)),
+                            valueA, valueB, (Vector4) colorA, (Vector4) colorB,
+                            col.Reinterpret<float4x4>(UnsafeUtility.SizeOf<Color>()))
+                        .Run();
 
-                    using (var col = new NativeArray<Color>(m.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory))
+                    for (var i = 0; i < m_Internal.Length; i++)
                     {
-                        new ColorCalculatorJob(m.Reinterpret<float4>(sizeof(float)),
-                                valueA, valueB, (Vector4) colorA, (Vector4) colorB,
-                                col.Reinterpret<float4x4>(UnsafeUtility.SizeOf<Color>()))
-                            .Run();
-
-                        for (var i = 0; i < m.Length; i++)
+                        if (Mathf.Approximately(m_Internal[i], 0f))
                         {
-                            if (Mathf.Approximately(m[i], 0f))
-                            {
-                                continue;
-                            }
-
-                            Gizmos.color = col[i];
-                            Gizmos.DrawWireSphere(pos[i], m_CellSize * 0.05f);
+                            continue;
                         }
+
+                        Gizmos.color = col[i];
+                        Gizmos.DrawWireSphere(pos[i], m_CellSize * 0.05f);
                     }
                 }
-            });
+            }
 
             Gizmos.color = c;
         }

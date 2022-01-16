@@ -16,20 +16,33 @@ namespace HiraBots
                 return default;
             }
 
-            return map.RequestDataForWriteJob(((m, p, d, s, dependencies) =>
-                new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
-                    .ScheduleParallel(m.Length / 4, batchCount, dependencies)));
+            var jh = new Job(q, map.map.Reinterpret<float4>(sizeof(float)),
+                    map.pivot, map.dimensions, map.cellSize,
+                    agentType, areaMask)
+                .ScheduleParallel(map.map.Length / 4, batchCount, map.writeJobDependencies);
+
+            map.UpdateLatestWriteJob(jh);
+
+            return jh;
         }
 
         internal static void Run(TacMapComponent map, int agentType = 0, int areaMask = UnityEngine.AI.NavMesh.AllAreas)
         {
-            map?.RequestDataForWriteJob((m, p, d, s) =>
+            if (map == null)
             {
-                var q = new NavMeshQuery(NavMeshWorld.GetDefaultWorld(), Allocator.TempJob);
-                new Job(q, m.Reinterpret<float4>(sizeof(float)), p, d, s, agentType, areaMask)
-                    .Run(m.Length / 4);
-                q.Dispose();
-            });
+                return;
+            }
+
+            map.CompleteAllWriteJobDependencies();
+
+            var q = new NavMeshQuery(NavMeshWorld.GetDefaultWorld(), Allocator.TempJob);
+
+            new Job(q, map.map.Reinterpret<float4>(sizeof(float)),
+                    map.pivot, map.dimensions, map.cellSize,
+                    agentType, areaMask)
+                .Run(map.map.Length / 4);
+
+            q.Dispose();
         }
 
         [BurstCompile]
