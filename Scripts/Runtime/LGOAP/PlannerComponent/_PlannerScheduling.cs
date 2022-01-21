@@ -199,20 +199,46 @@ namespace HiraBots
 
             for (var i = index; i < layerCount; i++)
             {
-                switch (m_PlansForPlanning[i].resultType)
+                var planOnCurrentLayerIsInvalid = false;
+
+                var currentLayersPlanForPlanning = m_PlansForPlanning[i];
+                var currentLayersPlanForExecution = m_PlansForExecution[i];
+
+                switch (currentLayersPlanForPlanning.resultType)
                 {
                     case LGOAPPlan.Type.NotRequired:
-                        m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
+                        currentLayersPlanForPlanning.CopyTo(currentLayersPlanForExecution);
                         break;
                     case LGOAPPlan.Type.Unchanged:
                         // ignore the result and keep executing the current copy
                         break;
                     case LGOAPPlan.Type.NewPlan:
-                        m_PlansForPlanning[i].CopyTo(m_PlansForExecution[i]);
-                        canProvidePlan = true;
+                        var firstContainerIndex = currentLayersPlanForPlanning[currentLayersPlanForPlanning.currentIndex];
+
+                        if (m_Domain.CheckPreconditionOnBlackboard(i, firstContainerIndex, m_Blackboard))
+                        {
+                            currentLayersPlanForPlanning.CopyTo(currentLayersPlanForExecution);
+                            canProvidePlan = true;
+                        }
+                        else
+                        {
+                            planOnCurrentLayerIsInvalid = true;
+                        }
+
                         break;
                     default:
                         throw new System.ArgumentOutOfRangeException();
+                }
+
+                if (planOnCurrentLayerIsInvalid)
+                {
+                    for (var j = i; j < layerCount; j++)
+                    {
+                        m_Domain.fallbackPlans[j].CopyTo(m_PlansForExecution[j]);
+                    }
+
+                    canProvidePlan = true;
+                    break;
                 }
             }
         }
