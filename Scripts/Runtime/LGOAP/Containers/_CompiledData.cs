@@ -7,12 +7,10 @@ namespace HiraBots
         internal LGOAPGoalCompiledData(LGOAPGoal goal)
         {
             name = goal.name;
-            precondition = ((HiraBotsDecoratorBlackboardFunction[]) goal.target.m_Target.Clone()).ReadOnly();
             target = ((HiraBotsDecoratorBlackboardFunction[]) goal.target.m_Target.Clone()).ReadOnly();
         }
 
         internal string name { get; }
-        internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> precondition { get; }
         internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> target { get; }
     }
 

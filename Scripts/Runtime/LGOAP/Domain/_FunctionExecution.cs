@@ -32,12 +32,13 @@ namespace HiraBots
         internal bool CheckPreconditionOnBlackboard(int layerIndex, int containerIndex, BlackboardComponent blackboard)
         {
             var precondition = layerIndex == 0
-                ? m_Goals[containerIndex].precondition
+                ? m_Goals[containerIndex].target
                 : m_TaskLayers[layerIndex - 1][containerIndex].precondition;
 
             for (var i = 0; i < precondition.count; i++)
             {
-                if (!precondition[i].Execute(blackboard, true))
+                var decoratorSucceeded = precondition[i].Execute(blackboard, true);
+                if ((layerIndex == 0 && decoratorSucceeded) || (layerIndex != 0 && !decoratorSucceeded))
                 {
                     return false;
                 }
