@@ -10,7 +10,7 @@ namespace HiraBots.Editor
     /// todo: implement this in UIElements (the current issue is that ListView has a predefined length for each element)
     /// </summary>
     [CustomEditor(typeof(HiraLGOAPRealtimeBot))]
-    internal class HiraLGOAPBotEditor : UnityEditor.Editor
+    internal class HiraLGOAPRealtimeBotEditor : UnityEditor.Editor
     {
         [System.Serializable]
         private enum EditType
