@@ -12,7 +12,10 @@ namespace HiraBots
         private short?[] m_ExecutionSet;
         private short?[] m_PreAllocatedExecutionSet;
 
-        internal Queue<HiraBotsTaskProvider> m_TaskProviders;
+        // internal Queue<HiraBotsTaskProvider> m_TaskProviders;
+        internal int m_CurrentTaskLayerIndex;
+        internal int m_CurrentTaskContainerIndex;
+        internal int m_CurrentTaskTaskProviderIndex;
         internal List<IHiraBotsService>[] m_ActiveServicesByLayer;
 
         internal bool runPlannerSynchronously
@@ -42,19 +45,16 @@ namespace HiraBots
                     continue;
                 }
 
-                domainData.GetTaskProviders(i, containerIndex.Value, out var taskProviders);
-
-                // clear the current queue because it's not valid anymore
-                m_TaskProviders.Clear();
-
-                // skip the first one because it'll need to be dequeued anyway
-                for (var j = 1; j < taskProviders.count; j++)
-                {
-                    m_TaskProviders.Enqueue(taskProviders[j]);
-                }
-
+                m_CurrentTaskLayerIndex = i;
+                m_CurrentTaskContainerIndex = containerIndex.Value;
                 // there's always gonna be at least one task provider (error executable)
-                ExecuteTaskProvider(taskProviders[0]);
+                m_CurrentTaskTaskProviderIndex = 0;
+
+                if (!ExecuteCurrentTaskProvider())
+                {
+                    Debug.LogError($"Could not execute the container {domainData.GetContainerName(i, containerIndex.Value)} " +
+                                   $"at layer {i} in domain {m_Domain.name}.");
+                }
                 break;
             }
 
@@ -84,7 +84,10 @@ namespace HiraBots
 
                     foreach (var serviceProvider in serviceProviders)
                     {
-                        var service = serviceProvider.GetService(m_Blackboard, m_EffectiveArchetype);
+                        var service = serviceProvider.WrappedGetService(m_Blackboard, m_EffectiveArchetype)
+                                      ?? ErrorExecutable.Get($"Service provider {serviceProvider.name} in container " +
+                                                             $"{domainData.GetContainerName(i, newContainerIndex.Value)} at " +
+                                                             $"layer index {i} in domain {m_Domain.name}.");
                         m_ActiveServicesByLayer[i].Add(service);
                         ServiceRunner.instance.Add(service,
                             serviceProvider.tickInterval,
@@ -94,14 +97,33 @@ namespace HiraBots
             }
         }
 
-        // execute a given task provider
-        private void ExecuteTaskProvider(HiraBotsTaskProvider taskProvider)
+        // execute the current task provider
+        private bool ExecuteCurrentTaskProvider()
         {
+            var domainData = m_Domain.compiledData;
+
+            domainData.GetTaskProviders(m_CurrentTaskLayerIndex,
+                m_CurrentTaskContainerIndex, out var providers);
+
+            if (m_CurrentTaskTaskProviderIndex >= providers.count)
+            {
+                return false;
+            }
+
+            var taskProvider = providers[m_CurrentTaskTaskProviderIndex];
+
+            var task = taskProvider.WrappedGetTask(m_Blackboard, m_EffectiveArchetype)
+                       ?? ErrorExecutable.Get($"Task provider {taskProvider.name} in container " +
+                                              $"{domainData.GetContainerName(m_CurrentTaskLayerIndex, m_CurrentTaskContainerIndex)}" +
+                                              $" at layer index {m_CurrentTaskLayerIndex} in domain {m_Domain.name}.");
+
             TaskRunner.instance.Remove(m_Executor);
             TaskRunner.instance.Add(m_Executor,
-                taskProvider.GetTask(m_Blackboard, m_EffectiveArchetype),
+                task,
                 taskProvider.tickInterval,
                 m_ExecutableTickIntervalMultiplier);
+
+            return true;
         }
     }
 }

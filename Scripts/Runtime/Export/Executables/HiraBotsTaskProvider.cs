@@ -26,6 +26,19 @@
             set => m_TickInterval = Mathf.Max(0, value);
         }
 
+        internal IHiraBotsTask WrappedGetTask(HiraBots.BlackboardComponent blackboard, IHiraBotArchetype archetype)
+        {
+            try
+            {
+                return GetTask(blackboard, archetype);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+                return null;
+            }
+        }
+
         public abstract IHiraBotsTask GetTask(BlackboardComponent blackboard, IHiraBotArchetype archetype);
     }
 }

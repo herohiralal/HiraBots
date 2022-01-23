@@ -45,7 +45,7 @@ namespace UnityEngine
             internal HiraBots.BlackboardComponent blackboard => target.m_Internal.m_Blackboard;
             internal LGOAPPlannerComponent planner => target.m_Internal.m_Planner;
             internal ExecutorComponent executor => target.m_Internal.m_Executor;
-            internal int currentTaskProvidersQueueLength => target.m_Internal.m_TaskProviders.Count;
+            internal int currentTaskTaskProviderIndex => target.m_Internal.m_CurrentTaskTaskProviderIndex;
         }
     }
 }

@@ -288,7 +288,7 @@ namespace HiraBots.Editor
                         else
                         {
                             domain.GetTaskProviders(i, currentContainerIndex, out var tp);
-                            progress = 1 - ((m_Bot.currentTaskProvidersQueueLength + 1f) / tp.count);
+                            progress = (m_Bot.currentTaskTaskProviderIndex * 1f) / tp.count;
                         }
 
                         progressBarText = ">> Executing <<";

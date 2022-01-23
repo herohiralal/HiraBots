@@ -35,14 +35,14 @@
                     m_Planner.OnTaskExecutionComplete(false);
                 }
                 // full success (all task providers done)
-                else if (m_TaskProviders.Count == 0)
-                {
-                    m_Planner.OnTaskExecutionComplete(true);
-                }
-                // partial success (there are more task providers)
                 else
                 {
-                    ExecuteTaskProvider(m_TaskProviders.Dequeue());
+                    m_CurrentTaskTaskProviderIndex++;
+
+                    if (!ExecuteCurrentTaskProvider())
+                    {
+                        m_Planner.OnTaskExecutionComplete(true);
+                    }
                 }
 
                 m_Executor.lastTaskEndSucceeded = null;

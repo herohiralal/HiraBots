@@ -25,7 +25,7 @@ namespace HiraBots
                 m_Executor = null;
                 m_ExecutionSet = null;
                 m_PreAllocatedExecutionSet = null;
-                m_TaskProviders = null;
+                m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
                 m_ActiveServicesByLayer = null;
                 return;
             }
@@ -41,7 +41,7 @@ namespace HiraBots
                 m_Executor = null;
                 m_ExecutionSet = null;
                 m_PreAllocatedExecutionSet = null;
-                m_TaskProviders = null;
+                m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
                 m_ActiveServicesByLayer = null;
                 return;
             }
@@ -56,7 +56,7 @@ namespace HiraBots
                 m_Executor = null;
                 m_ExecutionSet = null;
                 m_PreAllocatedExecutionSet = null;
-                m_TaskProviders = null;
+                m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
                 m_ActiveServicesByLayer = null;
                 return;
             }
@@ -73,7 +73,7 @@ namespace HiraBots
                 m_Executor = null;
                 m_ExecutionSet = null;
                 m_PreAllocatedExecutionSet = null;
-                m_TaskProviders = null;
+                m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
                 m_ActiveServicesByLayer = null;
                 return;
             }
@@ -91,7 +91,7 @@ namespace HiraBots
                 m_Executor = null;
                 m_ExecutionSet = null;
                 m_PreAllocatedExecutionSet = null;
-                m_TaskProviders = null;
+                m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
                 m_ActiveServicesByLayer = null;
                 return;
             }
@@ -101,7 +101,7 @@ namespace HiraBots
             m_ExecutionSet = new short?[layerCount];
             m_PreAllocatedExecutionSet = new short?[layerCount];
 
-            m_TaskProviders = new Queue<HiraBotsTaskProvider>();
+            m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = 0;
 
             m_ActiveServicesByLayer = new List<IHiraBotsService>[layerCount];
 
@@ -136,8 +136,7 @@ namespace HiraBots
 
             m_ActiveServicesByLayer = null;
 
-            m_TaskProviders.Clear();
-            m_TaskProviders = null;
+            m_CurrentTaskLayerIndex = m_CurrentTaskContainerIndex = m_CurrentTaskTaskProviderIndex = -1;
 
             m_PreAllocatedExecutionSet = null;
             m_ExecutionSet = null;
