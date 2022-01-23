@@ -39,6 +39,6 @@
             }
         }
 
-        public abstract IHiraBotsTask GetTask(BlackboardComponent blackboard, IHiraBotArchetype archetype);
+        protected abstract IHiraBotsTask GetTask(BlackboardComponent blackboard, IHiraBotArchetype archetype);
     }
 }

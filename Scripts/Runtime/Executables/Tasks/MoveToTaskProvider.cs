@@ -14,7 +14,7 @@ namespace HiraBots
         [Tooltip("The speed at which to move the agent.")]
         [SerializeField] private float m_Speed = 3f;
 
-        public override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard, IHiraBotArchetype archetype)
+        protected override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard, IHiraBotArchetype archetype)
         {
             var key = m_Target.selectedKey;
 
