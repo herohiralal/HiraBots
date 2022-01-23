@@ -2,6 +2,7 @@
 {
     public abstract class HiraBotsDecoratorBlackboardFunction : HiraBotsBlackboardFunction
     {
+        [System.Runtime.InteropServices.UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
         public unsafe delegate bool Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory);
 
         #region Execution

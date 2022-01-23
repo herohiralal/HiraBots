@@ -2,6 +2,7 @@
 {
     public abstract class HiraBotsScoreCalculatorBlackboardFunction : HiraBotsBlackboardFunction
     {
+        [System.Runtime.InteropServices.UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
         public unsafe delegate float Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory, float currentScore);
 
         #region Execution
