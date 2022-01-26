@@ -22,6 +22,8 @@ namespace UnityEngine
         [Tooltip("Whether to run the planner synchronously and on the main thread.")]
         [SerializeField] private bool m_RunPlannerSynchronously = false;
 
+        [System.NonSerialized] private bool m_Disposed;
+
         /// <summary>
         /// "The component to use as an archetype. If not provided, will use self."
         /// </summary>
@@ -123,6 +125,8 @@ namespace UnityEngine
 
         private void Awake()
         {
+            m_Disposed = false;
+
             s_ActiveBots.Add(this);
             StartUsingNewDomain();
         }
@@ -130,12 +134,17 @@ namespace UnityEngine
         internal void Dispose()
         {
             StopUsingOldDomain();
-            s_ActiveBots.Remove(this);
+            m_Disposed = true;
         }
 
         private void OnDestroy()
         {
-            Dispose();
+            if (!m_Disposed)
+            {
+                Dispose();
+            }
+
+            s_ActiveBots.Remove(this);
         }
 
         private void OnEnable()
@@ -150,9 +159,12 @@ namespace UnityEngine
 
         private void OnDisable()
         {
-            m_Internal.executableTickPaused = true;
+            if (!m_Disposed)
+            {
+                m_Internal.executableTickPaused = true;
 
-            BehaviourUpdater.instance.Remove(this);
+                BehaviourUpdater.instance.Remove(this);
+            }
         }
 
         private void StartUsingNewDomain()

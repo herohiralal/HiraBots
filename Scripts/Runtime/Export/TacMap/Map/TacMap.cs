@@ -43,13 +43,13 @@ namespace UnityEngine
             }
 
             influencers.Clear();
-
-            s_ActiveMaps.Remove(this);
         }
 
         private void OnDestroy()
         {
             Dispose();
+
+            s_ActiveMaps.Remove(this);
         }
 
         internal TacMapComponent component => m_TacMapComponent;

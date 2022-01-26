@@ -73,9 +73,9 @@ namespace HiraBots
             // no need to abort/stop anything inside behaviours
             m_BehaviourUpdates.Dispose();
 
-            ServiceRunner.instance = this;
-            TaskRunner.instance = this;
-            BehaviourUpdater.instance = this;
+            ServiceRunner.instance = null;
+            TaskRunner.instance = null;
+            BehaviourUpdater.instance = null;
             CoroutineRunner.instance = null;
             s_Instance = null;
         }

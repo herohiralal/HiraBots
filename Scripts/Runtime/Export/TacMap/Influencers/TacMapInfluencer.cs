@@ -73,11 +73,11 @@ namespace UnityEngine
 
                 if (value < 0f)
                 {
-                    BehaviourUpdater.instance.Remove(this);
+                    BehaviourUpdater.instance?.Remove(this);
                 }
                 else
                 {
-                    BehaviourUpdater.instance.Add(this, m_TickInterval);
+                    BehaviourUpdater.instance?.ChangeTickInterval(this, m_TickInterval);
                 }
             }
         }
@@ -133,6 +133,7 @@ namespace UnityEngine
         {
             m_CurrentlyUsedMap = null;
             m_Map = null;
+            BehaviourUpdater.instance?.Remove(this);
         }
 
         private void StartUsingNewMap()
@@ -149,7 +150,7 @@ namespace UnityEngine
 
             m_CurrentlyUsedMap = m_Map;
             m_CurrentlyUsedMap.influencers.Add(this);
-            BehaviourUpdater.instance.Add(this, m_TickInterval);
+            BehaviourUpdater.instance?.Add(this, m_TickInterval);
 
             try
             {
@@ -179,7 +180,7 @@ namespace UnityEngine
                 Debug.LogError(e, this);
             }
 
-            BehaviourUpdater.instance.Remove(this);
+            BehaviourUpdater.instance?.Remove(this);
             m_CurrentlyUsedMap.influencers.Remove(this);
             m_CurrentlyUsedMap = null;
         }

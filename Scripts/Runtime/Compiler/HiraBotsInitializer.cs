@@ -106,29 +106,18 @@ namespace HiraBots
 
             try
             {
-                GetComponent<HiraBotsModule>().Dispose();
+                Unload(gameObject);
             }
             catch (System.Exception e)
             {
                 Debug.LogException(e);
             }
-
-            try
-            {
-                Unload();
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-            Destroy(gameObject);
 
             Profiler.EndSample();
         }
 
         // Free all the compiled HiraBots components in a reverse order
-        private static void Unload()
+        private static void Unload(GameObject gameObject)
         {
             for (var i = HiraLGOAPRealtimeBot.s_ActiveBots.Count - 1; i >= 0; i--)
             {
@@ -157,6 +146,15 @@ namespace HiraBots
             }
 
             TacMap.s_ActiveMaps.Clear();
+
+            try
+            {
+                gameObject.GetComponent<HiraBotsModule>().Dispose();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
 
             var ldc = LGOAPDomainCollection.instance;
             var ldcCount = ldc.count;
@@ -199,6 +197,8 @@ namespace HiraBots
             BlackboardUnsafeHelpers.ClearObjectCache();
 
             CompilationRegistry.Clear();
+
+            Destroy(gameObject);
         }
     }
 }
