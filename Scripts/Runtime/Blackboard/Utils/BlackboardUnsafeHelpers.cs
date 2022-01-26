@@ -205,39 +205,6 @@ namespace HiraBots
 
         #region Object
 
-#if UNITY_2020_3_OR_NEWER // 2020.3 or newer can use Resources.InstanceIDToObject directly.
-
-        /// <summary>
-        /// Get Object from InstanceID.
-        /// </summary>
-        internal static Object InstanceIDToObject(int input)
-        {
-            return UnityEngine.Resources.InstanceIDToObject(input);
-        }
-
-        /// <summary>
-        /// Get InstanceID from Object.
-        /// </summary>
-        internal static int ObjectToInstanceID(Object input)
-        {
-            return input.GetInstanceID();
-        }
-
-        /// <summary>
-        /// Remove existing handle from object cache.
-        /// </summary>
-        internal static void RemoveInstanceFromObjectCache(int _)
-        {
-        }
-
-        /// <summary>
-        /// No-op replacement for a 2019.4 function.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void ClearObjectCache()
-        {
-        }
-
         /// <summary>
         /// Read Object value from a memory stream.
         /// </summary>
@@ -245,7 +212,7 @@ namespace HiraBots
         internal static Object ReadObjectValue(byte* stream, ushort offset)
         {
             var instanceID = ReadIntegerValue(stream, offset);
-            return (instanceID) == 0 ? null : UnityEngine.Resources.InstanceIDToObject(instanceID);
+            return (instanceID) == 0 ? null : ObjectUtils.InstanceIDToObject(instanceID);
         }
 
         /// <summary>
@@ -258,15 +225,6 @@ namespace HiraBots
         }
 
         /// <summary>
-        /// Write Object value to a memory stream without caching it and determine whether it has changed from before.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value)
-        {
-            return WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
-        }
-
-        /// <summary>
         /// Write Object value to a memory stream.
         /// </summary>
         [MethodImpl(k_Inline)]
@@ -274,93 +232,6 @@ namespace HiraBots
         {
             WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
         }
-
-        /// <summary>
-        /// Write Object value to a memory stream without caching it.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value)
-        {
-            WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
-        }
-#else
-        // the object cache utility
-        private static readonly UnityObjectCache s_ObjectCache = new UnityObjectCache(200);
-
-        /// <summary>
-        /// Get Object from InstanceID.
-        /// </summary>
-        internal static Object InstanceIDToObject(int input)
-        {
-            return s_ObjectCache.Read(input);
-        }
-
-        /// <summary>
-        /// Get InstanceID from Object.
-        /// </summary>
-        internal static int ObjectToInstanceID(Object input)
-        {
-            return s_ObjectCache.Process(input);
-        }
-
-        /// <summary>
-        /// Remove existing handle from object cache.
-        /// </summary>
-        internal static void RemoveInstanceFromObjectCache(int instanceID)
-        {
-            s_ObjectCache.Remove(instanceID);
-        }
-
-        /// <summary>
-        /// Clear the Unity object cache.
-        /// </summary>
-        internal static void ClearObjectCache() => s_ObjectCache.Clear();
-
-        /// <summary>
-        /// Read Object value from a memory stream.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static Object ReadObjectValue(byte* stream, ushort offset) =>
-            s_ObjectCache.Read(ReadIntegerValue(stream, offset));
-
-        /// <summary>
-        /// Write Object value to a memory stream and determine whether it has changed from before.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueAndGetChange(byte* stream, ushort offset, Object value)
-        {
-            s_ObjectCache.Remove(ReadIntegerValue(stream, offset));
-            return WriteIntegerValueAndGetChange(stream, offset, s_ObjectCache.Process(value));
-        }
-
-        /// <summary>
-        /// Write Object value to a memory stream without caching it and determine whether it has changed from before.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static bool WriteObjectValueNoProcessAndGetChange(byte* stream, ushort offset, Object value)
-        {
-            return WriteIntegerValueAndGetChange(stream, offset, value == null ? 0 : value.GetInstanceID());
-        }
-
-        /// <summary>
-        /// Write Object value to a memory stream.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void WriteObjectValue(byte* stream, ushort offset, Object value)
-        {
-            s_ObjectCache.Remove(ReadIntegerValue(stream, offset));
-            WriteIntegerValue(stream, offset, s_ObjectCache.Process(value));
-        }
-
-        /// <summary>
-        /// Write Object value to a memory stream without caching it.
-        /// </summary>
-        [MethodImpl(k_Inline)]
-        internal static void WriteObjectValueNoProcess(byte* stream, ushort offset, Object value)
-        {
-            WriteIntegerValue(stream, offset, value == null ? 0 : value.GetInstanceID());
-        }
-#endif
 
         #endregion
 

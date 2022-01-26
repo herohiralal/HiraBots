@@ -15,7 +15,6 @@
                 return;
             }
 
-            <BLACKBOARD-EXISTING-VALUE-CLEANER>(s_<BLACKBOARD-KEY-NAME>);
             s_<BLACKBOARD-KEY-NAME> = actualValue;
 
             foreach (var component in s_ActiveComponents)

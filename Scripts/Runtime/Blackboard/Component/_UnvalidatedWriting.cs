@@ -261,9 +261,7 @@ namespace HiraBots
                     m_Template.AddInstanceSyncListener(this);
                 }
 
-                // since this is an instance-synced value, it is undesirable to add to the reference counter
-                // so a NoProcess variant is used, which skips over the caching
-                BlackboardUnsafeHelpers.WriteObjectValueNoProcess(dataPtr, memoryOffset, value);
+                BlackboardUnsafeHelpers.WriteObjectValue(dataPtr, memoryOffset, value);
             }
             else
             {

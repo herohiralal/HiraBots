@@ -32,8 +32,7 @@
                     ("<BLACKBOARD-ACTUAL-KEY-TYPE>", actualTypeNameGeneratedCode),
                     ("<BLACKBOARD-KEY-ACTUAL-TO-UNMANAGED>", actualToUnmanagedGeneratedCode),
                     ("<BLACKBOARD-KEY-UNMANAGED-TO-ACTUAL>", unmanagedToActualGeneratedCode),
-                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", GetEqualityComparerGeneratedCode(m_KeyType)),
-                    ("<BLACKBOARD-EXISTING-VALUE-CLEANER>", existingValueCleanerGeneratedCode));
+                    ("<BLACKBOARD-KEY-EQUALITY-COMPARER>", GetEqualityComparerGeneratedCode(m_KeyType)));
             }
         }
 
@@ -216,27 +215,6 @@
                     return " == ";
             }
         }
-
-        /// <summary>
-        /// Get the method to clean existing value. Primarily used to dispose an Object value cached in a dictionary.
-        /// </summary>
-        private static string GetExistingValueCleaner(BlackboardKeyType type)
-        {
-            const string s = "GeneratedBlackboardHelpers.DisposeResourcesRelatedToExistingValue";
-
-            switch (type)
-            {
-                case BlackboardKeyType.Object:
-                    return s + "Actual";
-                default:
-                    return s;
-            }
-        }
-
-        /// <summary>
-        /// Accessor to override the default function.
-        /// </summary>
-        protected virtual string existingValueCleanerGeneratedCode => GetExistingValueCleaner(m_KeyType);
 #endif
     }
 

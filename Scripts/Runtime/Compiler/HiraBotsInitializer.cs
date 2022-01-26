@@ -49,7 +49,6 @@ namespace HiraBots
             ExecutorComponent.ResetStaticIDAssigner();
 
             CompilationRegistry.Initialize();
-            BlackboardUnsafeHelpers.ClearObjectCache();
 
             Profiler.BeginSample("Blackboard Template Compilation");
 
@@ -194,8 +193,6 @@ namespace HiraBots
             // needed to work correctly when domain reload on play mode state change is disabled
             LGOAPDomainCollection.ClearInstance();
             BlackboardTemplateCollection.ClearInstance();
-
-            BlackboardUnsafeHelpers.ClearObjectCache();
 
             CompilationRegistry.Clear();
 
