@@ -17,6 +17,16 @@ namespace HiraBots
 
         private static HiraBotsModule s_Instance;
 
+        private enum UpdateSystem : byte
+        {
+            None,
+            Behaviours,
+            Services,
+            Tasks
+        }
+
+        private UpdateSystem m_UpdateSystemLockedForModifications = UpdateSystem.None;
+
         private void Awake()
         {
             // singleton stuff
@@ -39,6 +49,8 @@ namespace HiraBots
             m_TaskUpdates = new UpdateSystem<ExecutorComponent>(1);
 
             m_UpdateJob = null;
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
         }
 
         internal void Dispose()
@@ -51,6 +63,8 @@ namespace HiraBots
 
             m_UpdateJob?.Complete();
             m_UpdateJob = null;
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
 
             ApplyCommandBuffer();
 
@@ -111,6 +125,8 @@ namespace HiraBots
 
         private unsafe void TickBehavioursUpdateSystem()
         {
+            m_UpdateSystemLockedForModifications = UpdateSystem.Behaviours;
+
             var shouldTicks = (float*) m_BehaviourUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
 
             // tick them in the order they were registered
@@ -125,10 +141,15 @@ namespace HiraBots
 
                 m_BehaviourUpdates.m_ObjectsBuffer[i].WrappedTick(deltaTime);
             }
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
+            ApplyCommandBuffer();
         }
 
         private unsafe void TickTasksUpdateSystem()
         {
+            m_UpdateSystemLockedForModifications = UpdateSystem.Tasks;
+
             var shouldTicks = (float*) m_TaskUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
 
             // iterate backwards so we can remove executors as we go, if not needed
@@ -151,10 +172,15 @@ namespace HiraBots
                     m_TaskUpdates.Remove(i);
                 }
             }
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
+            ApplyCommandBuffer();
         }
 
         private unsafe void TickServicesUpdateSystem()
         {
+            m_UpdateSystemLockedForModifications = UpdateSystem.Services;
+
             var shouldTicks = (float*) m_ServiceUpdates.m_ShouldTick.GetUnsafeReadOnlyPtr();
 
             for (var i = m_ServiceUpdates.m_ObjectsCount - 1; i >= 0; i--)
@@ -168,11 +194,14 @@ namespace HiraBots
 
                 m_ServiceUpdates.m_ObjectsBuffer[i].WrappedTick(deltaTime);
             }
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
+            ApplyCommandBuffer();
         }
 
         void BehaviourUpdater.IInterface.Add(IUpdatableBehaviour behaviour, float tickInterval, float tickIntervalMultiplier)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Behaviours)
             {
                 BufferAddBehaviourCommand(behaviour, tickInterval, tickIntervalMultiplier);
             }
@@ -184,7 +213,7 @@ namespace HiraBots
 
         void BehaviourUpdater.IInterface.Remove(IUpdatableBehaviour behaviour)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Behaviours)
             {
                 BufferRemoveBehaviourCommand(behaviour);
             }
@@ -232,7 +261,7 @@ namespace HiraBots
 
         void ServiceRunner.IInterface.Add(IHiraBotsService service, float tickInterval, float tickIntervalMultiplier)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Services)
             {
                 BufferAddServiceCommand(service, tickInterval, tickIntervalMultiplier);
             }
@@ -244,7 +273,7 @@ namespace HiraBots
 
         void ServiceRunner.IInterface.Remove(IHiraBotsService service)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Services)
             {
                 BufferRemoveServiceCommand(service);
             }
@@ -280,7 +309,7 @@ namespace HiraBots
 
         void TaskRunner.IInterface.Add(ExecutorComponent executor, IHiraBotsTask task, float tickInterval, float tickIntervalMultiplier)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Tasks)
             {
                 BufferAddTaskCommand(executor, task, tickInterval, tickIntervalMultiplier);
             }
@@ -292,7 +321,7 @@ namespace HiraBots
 
         void TaskRunner.IInterface.Remove(ExecutorComponent executor)
         {
-            if (m_UpdateJob.HasValue)
+            if (m_UpdateJob.HasValue || m_UpdateSystemLockedForModifications == UpdateSystem.Tasks)
             {
                 BufferRemoveTaskCommand(executor);
             }
