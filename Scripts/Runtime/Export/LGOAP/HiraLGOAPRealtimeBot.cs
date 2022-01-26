@@ -75,7 +75,7 @@ namespace UnityEngine
                 }
                 else
                 {
-                    BehaviourUpdater.instance.Add(this, value);
+                    BehaviourUpdater.instance.ChangeTickInterval(this, value);
                 }
             }
         }
@@ -140,7 +140,10 @@ namespace UnityEngine
 
         private void OnEnable()
         {
-            BehaviourUpdater.instance.Add(this, m_TickInterval);
+            if (m_TickInterval >= 0f)
+            {
+                BehaviourUpdater.instance.Add(this, m_TickInterval);
+            }
 
             m_Internal.executableTickPaused = false;
         }
