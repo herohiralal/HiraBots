@@ -229,7 +229,7 @@ namespace HiraBots.Editor
                     nameof(DynamicEnumPopupInternal),
                     BindingFlags.NonPublic | BindingFlags.Static,
                     null,
-                    new[] { typeof(Rect), typeof(GUIContent), typeof(IntPtr) },
+                    new[] { typeof(Rect), typeof(GUIContent), typeof(IntPtr), typeof(bool) },
                     null);
 
             s_EmptyStringHashSet = new HashSet<string>();
@@ -284,6 +284,19 @@ namespace HiraBots.Editor
         /// <param name="enumType">The type of enum.</param>
         internal static void DynamicEnumPopup(Rect position, GUIContent label, IntPtr value, Type enumType)
         {
+            DynamicEnumPopup(position, label, value, enumType, enumType.GetCustomAttribute<FlagsAttribute>() != null);
+        }
+
+        /// <summary>
+        /// Draw a dynamic enum popup using a reflected enum type.
+        /// </summary>
+        /// <param name="position">The position and size of the property.</param>
+        /// <param name="label">The label to use.</param>
+        /// <param name="value">The value as a reference.</param>
+        /// <param name="enumType">The type of enum.</param>
+        /// <param name="asFlags">Whether to draw as flags.</param>
+        internal static void DynamicEnumPopup(Rect position, GUIContent label, IntPtr value, Type enumType, bool asFlags)
+        {
             // ignore if type is not enum.
             if (!enumType.IsEnum)
             {
@@ -301,7 +314,7 @@ namespace HiraBots.Editor
             // resolve the generic type using reflection and invoke it.
             s_DynamicPopupMethodInfo
                 .MakeGenericMethod(enumType)
-                .Invoke(null, new object[] { position, label, value });
+                .Invoke(null, new object[] { position, label, value, asFlags });
         }
 
         /// <summary>
@@ -310,14 +323,15 @@ namespace HiraBots.Editor
         /// <param name="position">The position and size of the property.</param>
         /// <param name="label">The label to use.</param>
         /// <param name="value">The value as a reference.</param>
+        /// <param name="asFlags">Whether to draw as flags.</param>
         /// <typeparam name="T">The type of enum.</typeparam>
-        private static unsafe void DynamicEnumPopupInternal<T>(Rect position, GUIContent label, IntPtr value) where T : unmanaged, Enum
+        private static unsafe void DynamicEnumPopupInternal<T>(Rect position, GUIContent label, IntPtr value, bool asFlags) where T : unmanaged, Enum
         {
             // reinterpret the value
             var enumValue = *(T*) value;
 
             // check if the type is flags and draw the appropriate popup
-            var enumOutput = typeof(T).GetCustomAttribute<FlagsAttribute>() == null
+            var enumOutput = !asFlags
                 ? (T) EditorGUI.EnumPopup(position, label, enumValue)
                 : (T) EditorGUI.EnumFlagsField(position, label, enumValue);
 
