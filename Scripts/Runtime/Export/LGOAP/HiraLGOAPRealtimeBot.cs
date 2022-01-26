@@ -17,10 +17,13 @@ namespace UnityEngine.AI
         [Tooltip("The ticking interval to check for blackboard updates or task updates. Negative value means no auto-update.")]
         [SerializeField, HideInInspector] private float m_TickInterval = 0f;
 
-        [SerializeField, HideInInspector] private LGOAPRealtimeBotComponent m_Internal = new LGOAPRealtimeBotComponent(null);
+        [Tooltip("The multiplier to use on tick interval of a task/service. Local to this bot. Can be used for LOD purposes.")]
+        [SerializeField] private float m_ExecutableTickIntervalMultiplier = 1f;
 
         [Tooltip("Whether to run the planner synchronously and on the main thread.")]
         [SerializeField] private bool m_RunPlannerSynchronously = false;
+
+        [SerializeField, HideInInspector] private LGOAPRealtimeBotComponent m_Internal = new LGOAPRealtimeBotComponent(null);
 
         [System.NonSerialized] private bool m_Disposed;
 
@@ -87,11 +90,11 @@ namespace UnityEngine.AI
         /// </summary>
         public float executableTickIntervalMultiplier
         {
-            get => m_Internal.m_ExecutableTickIntervalMultiplier;
+            get => m_ExecutableTickIntervalMultiplier;
             set
             {
+                m_ExecutableTickIntervalMultiplier = value;
                 m_Internal.executableTickIntervalMultiplier = value;
-                m_Internal.m_ExecutableTickIntervalMultiplier = value;
             }
         }
 
@@ -172,6 +175,7 @@ namespace UnityEngine.AI
             m_Internal = new LGOAPRealtimeBotComponent(m_Domain)
             {
                 m_EffectiveArchetype = m_ArchetypeOverride is IHiraBotArchetype arch ? arch : this,
+                executableTickIntervalMultiplier = m_ExecutableTickIntervalMultiplier,
                 runPlannerSynchronously = m_RunPlannerSynchronously
             };
         }

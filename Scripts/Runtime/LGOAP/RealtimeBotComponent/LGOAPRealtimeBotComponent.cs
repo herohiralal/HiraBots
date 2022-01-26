@@ -11,8 +11,7 @@ namespace HiraBots
         internal IHiraBotArchetype m_EffectiveArchetype;
         internal readonly LGOAPDomain m_Domain;
 
-        [Tooltip("The multiplier to use on tick interval of a task/service. Local to this bot. Can be used for LOD purposes.")]
-        [SerializeField, HideInInspector] internal float m_ExecutableTickIntervalMultiplier;
+        private float m_ExecutableTickIntervalMultiplier;
 
         internal LGOAPRealtimeBotComponent(LGOAPDomain domain)
         {

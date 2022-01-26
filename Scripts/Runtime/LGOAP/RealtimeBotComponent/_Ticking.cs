@@ -61,6 +61,8 @@
         {
             set
             {
+                m_ExecutableTickIntervalMultiplier = value;
+
                 if (ReferenceEquals(m_Domain, null))
                 {
                     return;

@@ -13,7 +13,7 @@ namespace UnityEngine.AI
                 archetypeOverride = m_ArchetypeOverride;
                 domain = m_Domain;
                 tickInterval = m_TickInterval;
-                m_Internal.executableTickIntervalMultiplier = m_Internal.m_ExecutableTickIntervalMultiplier;
+                m_Internal.executableTickIntervalMultiplier = m_ExecutableTickIntervalMultiplier;
             }
         }
 
@@ -28,7 +28,7 @@ namespace UnityEngine.AI
                 tickIntervalProperty = GetProperty(nameof(m_TickInterval), SerializedPropertyType.Float,
                     false, true);
 
-                executableTickIntervalMultiplierProperty = GetProperty($"{nameof(m_Internal)}.{nameof(LGOAPRealtimeBotComponent.m_ExecutableTickIntervalMultiplier)}",
+                executableTickIntervalMultiplierProperty = GetProperty($"{nameof(m_ExecutableTickIntervalMultiplier)}",
                     SerializedPropertyType.Float, false, true);
 
                 runPlannerSynchronouslyProperty = GetProperty(nameof(m_RunPlannerSynchronously), SerializedPropertyType.Boolean,
