@@ -56,11 +56,17 @@ namespace HiraBots
             m_ActiveReadJob?.Complete();
             m_ActiveReadJob = null;
 
-            CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
-            m_WriteJobTrackerCoroutine = null;
+            if (m_WriteJobTrackerCoroutine != null)
+            {
+                CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
+                m_WriteJobTrackerCoroutine = null;
+            }
 
-            CoroutineRunner.Stop(m_ReadJobTrackerCoroutine);
-            m_ReadJobTrackerCoroutine = null;
+            if (m_ReadJobTrackerCoroutine != null)
+            {
+                CoroutineRunner.Stop(m_ReadJobTrackerCoroutine);
+                m_ReadJobTrackerCoroutine = null;
+            }
         }
 
         internal void CompleteAllReadJobDependencies()
@@ -69,8 +75,11 @@ namespace HiraBots
             m_ActiveWriteJob?.Complete();
             m_ActiveWriteJob = null;
 
-            CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
-            m_WriteJobTrackerCoroutine = null;
+            if (m_WriteJobTrackerCoroutine != null)
+            {
+                CoroutineRunner.Stop(m_WriteJobTrackerCoroutine);
+                m_WriteJobTrackerCoroutine = null;
+            }
         }
 
         private IEnumerator WaitForWriteJobToCompleteCoroutine()
