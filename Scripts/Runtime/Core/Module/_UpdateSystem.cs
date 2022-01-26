@@ -54,12 +54,12 @@ namespace HiraBots
                 if (m_ObjectsCount == m_ObjectsBuffer.Length)
                 {
                     // reallocation time
-                    m_TickIntervals.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    m_TickIntervalMultipliers.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    m_TickPaused.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    m_ElapsedTimes.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                    m_ShouldTick.Reallocate(m_ObjectsCount * 2, Allocator.Persistent, NativeArrayOptions.ClearMemory);
-                    System.Array.Resize(ref m_ObjectsBuffer, m_ObjectsCount * 2);
+                    m_TickIntervals.Reallocate(m_ObjectsCount + 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_TickIntervalMultipliers.Reallocate(m_ObjectsCount + 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_TickPaused.Reallocate(m_ObjectsCount + 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_ElapsedTimes.Reallocate(m_ObjectsCount + 16, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                    m_ShouldTick.Reallocate(m_ObjectsCount + 16, Allocator.Persistent, NativeArrayOptions.ClearMemory);
+                    System.Array.Resize(ref m_ObjectsBuffer, m_ObjectsCount + 16);
                 }
 
                 m_TickIntervals[m_ObjectsCount] = tickInterval;
