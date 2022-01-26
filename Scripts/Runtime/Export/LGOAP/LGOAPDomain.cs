@@ -1,4 +1,4 @@
-﻿namespace UnityEngine
+﻿namespace UnityEngine.AI
 {
     /// <summary>
     /// A reference to an LGOAP domain.

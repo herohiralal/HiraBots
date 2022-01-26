@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Unity.Burst;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots.Editor.Tests
 {

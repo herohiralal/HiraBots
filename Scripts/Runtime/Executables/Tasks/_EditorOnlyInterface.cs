@@ -19,10 +19,10 @@ namespace HiraBots
         {
             m_Tolerance = Mathf.Max(0, m_Tolerance);
             m_Speed = Mathf.Max(0, m_Speed);
-            m_Target.keyTypesFilter = UnityEngine.BlackboardKeyType.Vector;
+            m_Target.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Vector;
         }
 
-        protected override void OnTargetBlackboardTemplateChanged(UnityEngine.BlackboardTemplate template, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        protected override void OnTargetBlackboardTemplateChanged(UnityEngine.AI.BlackboardTemplate template, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
             m_Target.OnTargetBlackboardTemplateChanged(template, in keySet);
         }
@@ -41,10 +41,10 @@ namespace HiraBots
     {
         protected override void OnValidateCallback()
         {
-            m_Timer.keyTypesFilter = UnityEngine.BlackboardKeyType.Numeric;
+            m_Timer.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Numeric;
         }
 
-        protected override void OnTargetBlackboardTemplateChanged(UnityEngine.BlackboardTemplate template, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        protected override void OnTargetBlackboardTemplateChanged(UnityEngine.AI.BlackboardTemplate template, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
             m_Timer.OnTargetBlackboardTemplateChanged(template, in keySet);
         }

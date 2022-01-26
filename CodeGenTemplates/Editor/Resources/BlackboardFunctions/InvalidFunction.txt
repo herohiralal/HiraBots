@@ -10,7 +10,7 @@
 // </auto-generated>
 // ---------------------------------------------------------------------
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public partial class <BLACKBOARD-FUNCTION-METHOD-NAME> : <BLACKBOARD-FUNCTION-BASE-CLASS>
     {

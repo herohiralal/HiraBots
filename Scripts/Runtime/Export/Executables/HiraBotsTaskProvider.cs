@@ -1,4 +1,4 @@
-﻿namespace UnityEngine
+﻿namespace UnityEngine.AI
 {
     public enum HiraBotsTaskResult : byte
     {

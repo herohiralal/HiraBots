@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -28,7 +29,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnumEqualsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
+        internal static void EnumEqualsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -48,7 +49,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnumHasFlagsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
+        internal static void EnumHasFlagsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -68,7 +69,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void BooleanIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        internal static void BooleanIsSetDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -89,7 +90,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void QuaternionIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        internal static void QuaternionIsSetDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -110,7 +111,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void VectorIsSetDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        internal static void VectorIsSetDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -152,7 +153,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void IntegerComparisonDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, int secondValue, SampleBlackboardFunctionsIntegerComparisonType comparisonType, out string staticDescription)
+        internal static void IntegerComparisonDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, int secondValue, SampleBlackboardFunctionsIntegerComparisonType comparisonType, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -217,7 +218,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void FloatComparisonDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, SampleBlackboardFunctionsFloatComparisonType comparisonType, out string staticDescription)
+        internal static void FloatComparisonDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, SampleBlackboardFunctionsFloatComparisonType comparisonType, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -266,7 +267,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ObjectEqualsDecoratorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
+        internal static void ObjectEqualsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {

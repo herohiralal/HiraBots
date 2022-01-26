@@ -2,7 +2,7 @@
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public partial class TacMap
     {

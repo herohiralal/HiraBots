@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots.Editor.Tests
 {

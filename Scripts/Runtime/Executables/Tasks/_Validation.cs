@@ -5,7 +5,7 @@ namespace HiraBots
 {
     internal partial class ErrorTaskProvider
     {
-        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        protected override void Validate(Action<string> reportError, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
             if (m_DisablePlayModeEntryOrBuildingPlayer)
             {
@@ -16,9 +16,9 @@ namespace HiraBots
 
     internal partial class MoveToTaskProvider
     {
-        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        protected override void Validate(Action<string> reportError, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
-            if (!m_Target.Validate(in keySet, UnityEngine.BlackboardKeyType.Vector))
+            if (!m_Target.Validate(in keySet, UnityEngine.AI.BlackboardKeyType.Vector))
             {
                 reportError($"{name} does not have a valid target key.");
             }
@@ -27,9 +27,9 @@ namespace HiraBots
 
     internal partial class WaitBlackboardTimeTaskProvider
     {
-        protected override void Validate(Action<string> reportError, in UnityEngine.BlackboardTemplate.KeySet keySet)
+        protected override void Validate(Action<string> reportError, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
-            if (!m_Timer.Validate(in keySet, UnityEngine.BlackboardKeyType.Numeric))
+            if (!m_Timer.Validate(in keySet, UnityEngine.AI.BlackboardKeyType.Numeric))
             {
                 reportError($"{name} does not have a valid timer key.");
             }

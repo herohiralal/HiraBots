@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     internal struct <BLACKBOARD-NAME>_GeneratedBlackboard
     {

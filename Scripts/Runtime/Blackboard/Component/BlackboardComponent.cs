@@ -82,9 +82,9 @@ namespace HiraBots
         /// <summary>
         /// Implicitly convert a BlackboardComponent to its public interface.
         /// </summary>
-        public static implicit operator UnityEngine.BlackboardComponent(BlackboardComponent actualComponent)
+        public static implicit operator UnityEngine.AI.BlackboardComponent(BlackboardComponent actualComponent)
         {
-            return new UnityEngine.BlackboardComponent(actualComponent);
+            return new UnityEngine.AI.BlackboardComponent(actualComponent);
         }
     }
 }

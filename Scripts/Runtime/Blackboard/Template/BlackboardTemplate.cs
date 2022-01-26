@@ -44,9 +44,9 @@ namespace HiraBots
         /// <summary>
         /// Implicitly convert a BlackboardTemplate to its public interface.
         /// </summary>
-        public static implicit operator UnityEngine.BlackboardTemplate(BlackboardTemplate actualTemplate)
+        public static implicit operator UnityEngine.AI.BlackboardTemplate(BlackboardTemplate actualTemplate)
         {
-            return new UnityEngine.BlackboardTemplate(actualTemplate);
+            return new UnityEngine.AI.BlackboardTemplate(actualTemplate);
         }
 
         /// <summary>

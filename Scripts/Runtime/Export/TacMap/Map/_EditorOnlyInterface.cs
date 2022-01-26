@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR
 using HiraBots;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public partial class TacMap
     {

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -10,7 +11,7 @@ namespace HiraBots
         [Tooltip("Optional random deviation over the time to wait for.")]
         [SerializeField] private float m_RandomDeviation;
 
-        protected override IHiraBotsTask GetTask(UnityEngine.BlackboardComponent blackboard, IHiraBotArchetype archetype)
+        protected override IHiraBotsTask GetTask(UnityEngine.AI.BlackboardComponent blackboard, IHiraBotArchetype archetype)
         {
             return m_RandomDeviation != 0
                 ? WaitTask.Get(m_Timer + Random.Range(-m_RandomDeviation, m_RandomDeviation))

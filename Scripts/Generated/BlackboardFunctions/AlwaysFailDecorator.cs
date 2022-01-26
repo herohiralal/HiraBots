@@ -10,7 +10,7 @@
 // </auto-generated>
 // ---------------------------------------------------------------------
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [Unity.Burst.BurstCompile]
     public unsafe partial class AlwaysFailDecorator : HiraBotsDecoratorBlackboardFunction

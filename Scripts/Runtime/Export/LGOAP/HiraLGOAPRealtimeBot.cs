@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using HiraBots;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/HiraBot (LGOAP realtime)")]
     public sealed partial class HiraLGOAPRealtimeBot : MonoBehaviour, IHiraBotArchetype, IUpdatableBehaviour

@@ -1,4 +1,4 @@
-﻿namespace UnityEngine
+﻿namespace UnityEngine.AI
 {
     /// <summary>
     /// The type of a blackboard key.

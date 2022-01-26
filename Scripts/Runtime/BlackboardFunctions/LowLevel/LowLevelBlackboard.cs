@@ -40,9 +40,9 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UnityEngine.BlackboardComponent.LowLevel(LowLevelBlackboard lbb)
+        public static implicit operator UnityEngine.AI.BlackboardComponent.LowLevel(LowLevelBlackboard lbb)
         {
-            return new UnityEngine.BlackboardComponent.LowLevel(lbb);
+            return new UnityEngine.AI.BlackboardComponent.LowLevel(lbb);
         }
     }
 }

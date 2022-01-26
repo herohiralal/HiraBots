@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using HiraBots;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/TacMap")]
     public sealed partial class TacMap : MonoBehaviour

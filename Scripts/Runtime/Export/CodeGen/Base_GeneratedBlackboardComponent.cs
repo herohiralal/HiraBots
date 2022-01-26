@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     // ReSharper disable once InconsistentNaming
     public abstract class Base_GeneratedBlackboardComponent : IDisposable

@@ -10,9 +10,9 @@ namespace HiraBots.Editor
     /// Optionally, can disable editing when in Play Mode.
     /// </summary>
     [CustomPropertyDrawer(typeof(DisallowPlayModeEdit))]
-    [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate))]
-    [CustomPropertyDrawer(typeof(UnityEngine.BlackboardTemplate.KeySelector))]
-    [CustomPropertyDrawer(typeof(UnityEngine.BlackboardKey))]
+    [CustomPropertyDrawer(typeof(UnityEngine.AI.BlackboardTemplate))]
+    [CustomPropertyDrawer(typeof(UnityEngine.AI.BlackboardTemplate.KeySelector))]
+    [CustomPropertyDrawer(typeof(UnityEngine.AI.BlackboardKey))]
     internal class ExportedReferenceAPIPropertyDrawer : PropertyDrawer
     {
         private const string k_InternalPropertyName = "m_Value";

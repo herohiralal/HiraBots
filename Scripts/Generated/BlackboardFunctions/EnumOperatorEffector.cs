@@ -10,7 +10,7 @@
 // </auto-generated>
 // ---------------------------------------------------------------------
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [Unity.Burst.BurstCompile]
     public unsafe partial class EnumOperatorEffector : HiraBotsEffectorBlackboardFunction
@@ -96,7 +96,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum;
+            key.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Invalid | UnityEngine.AI.BlackboardKeyType.Enum;
             value.typeIdentifier = key.selectedKey.enumTypeIdentifier;
             // no external validator
         }
@@ -115,7 +115,7 @@ namespace UnityEngine
         public override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Enum, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.AI.BlackboardKeyType.Invalid | UnityEngine.AI.BlackboardKeyType.Enum, ref context, nameof(key));
         }
 
         #endregion

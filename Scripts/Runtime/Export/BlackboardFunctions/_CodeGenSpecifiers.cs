@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class GenerateHiraBotsDecoratorAttribute : Attribute

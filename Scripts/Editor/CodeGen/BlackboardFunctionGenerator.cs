@@ -5,6 +5,7 @@ using System.Reflection;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots.Editor
 {
@@ -25,7 +26,7 @@ namespace HiraBots.Editor
                 DynamicEnum
             }
 
-            internal BlackboardFunctionParameterInfo(string name, UnityEngine.BlackboardKeyType keyType)
+            internal BlackboardFunctionParameterInfo(string name, UnityEngine.AI.BlackboardKeyType keyType)
             {
                 m_Name = name;
                 m_Type = Type.BlackboardKey;
@@ -38,7 +39,7 @@ namespace HiraBots.Editor
             {
                 m_Name = name;
                 m_Type = Type.DynamicEnum;
-                m_KeyType = UnityEngine.BlackboardKeyType.Invalid;
+                m_KeyType = UnityEngine.AI.BlackboardKeyType.Invalid;
                 m_DynamicEnumKeyDependency = dynamicEnumKeyDependency;
                 m_ObjectType = null;
             }
@@ -47,14 +48,14 @@ namespace HiraBots.Editor
             {
                 m_Name = name;
                 m_Type = UnsafeUtility.IsUnmanaged(objectType) ? Type.UnmanagedValue : Type.Object;
-                m_KeyType = UnityEngine.BlackboardKeyType.Invalid;
+                m_KeyType = UnityEngine.AI.BlackboardKeyType.Invalid;
                 m_DynamicEnumKeyDependency = null;
                 m_ObjectType = objectType;
             }
 
             internal readonly string m_Name;
             internal readonly Type m_Type;
-            internal readonly UnityEngine.BlackboardKeyType m_KeyType;
+            internal readonly UnityEngine.AI.BlackboardKeyType m_KeyType;
             internal readonly string m_DynamicEnumKeyDependency;
             internal readonly System.Type m_ObjectType;
         }
@@ -331,7 +332,7 @@ namespace HiraBots.Editor
                     var correctArgumentFound = false;
                     for (var j = 0; j < i; j++)
                     {
-                        if (paramInfos[j].m_Name != matchTypeToEnumKey.argumentName || !paramInfos[j].m_KeyType.HasFlag(UnityEngine.BlackboardKeyType.Enum))
+                        if (paramInfos[j].m_Name != matchTypeToEnumKey.argumentName || !paramInfos[j].m_KeyType.HasFlag(UnityEngine.AI.BlackboardKeyType.Enum))
                         {
                             continue;
                         }
@@ -354,32 +355,32 @@ namespace HiraBots.Editor
                 // blackboard key
                 else if (paramType.IsByRef)
                 {
-                    UnityEngine.BlackboardKeyType keyType;
+                    UnityEngine.AI.BlackboardKeyType keyType;
                     if (paramType == typeof(bool).MakeByRefType())
                     {
-                        keyType = UnityEngine.BlackboardKeyType.Boolean;
+                        keyType = UnityEngine.AI.BlackboardKeyType.Boolean;
                     }
                     else if (paramType == typeof(byte).MakeByRefType())
                     {
-                        keyType = UnityEngine.BlackboardKeyType.Enum;
+                        keyType = UnityEngine.AI.BlackboardKeyType.Enum;
                     }
                     else if (paramType == typeof(float).MakeByRefType())
                     {
-                        keyType = UnityEngine.BlackboardKeyType.Float;
+                        keyType = UnityEngine.AI.BlackboardKeyType.Float;
                     }
                     else if (paramType == typeof(int).MakeByRefType())
                     {
                         keyType = param.GetCustomAttribute<HiraBotsObjectKey>() == null
-                            ? UnityEngine.BlackboardKeyType.Integer
-                            : UnityEngine.BlackboardKeyType.Object;
+                            ? UnityEngine.AI.BlackboardKeyType.Integer
+                            : UnityEngine.AI.BlackboardKeyType.Object;
                     }
                     else if (paramType == typeof(Unity.Mathematics.quaternion).MakeByRefType())
                     {
-                        keyType = UnityEngine.BlackboardKeyType.Quaternion;
+                        keyType = UnityEngine.AI.BlackboardKeyType.Quaternion;
                     }
                     else if (paramType == typeof(Unity.Mathematics.float3).MakeByRefType())
                     {
-                        keyType = UnityEngine.BlackboardKeyType.Vector;
+                        keyType = UnityEngine.AI.BlackboardKeyType.Vector;
                     }
                     else
                     {
@@ -467,7 +468,7 @@ namespace HiraBots.Editor
 
                             break;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            if (updateDescParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector))
+                            if (updateDescParam.ParameterType != typeof(UnityEngine.AI.BlackboardTemplate.KeySelector))
                             {
                                 Debug.LogError($"Argument {updateDescParam} in {declaringType}.{updateDescriptionMethod.Name} does not match the type it should.");
                                 return false;
@@ -530,7 +531,7 @@ namespace HiraBots.Editor
 
                             break;
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                            if (validateParam.ParameterType != typeof(UnityEngine.BlackboardTemplate.KeySelector).MakeByRefType())
+                            if (validateParam.ParameterType != typeof(UnityEngine.AI.BlackboardTemplate.KeySelector).MakeByRefType())
                             {
                                 Debug.LogError($"Argument {validateParam} in {declaringType}.{validateMethod.Name} does not match the type it should.");
                                 return false;
@@ -646,18 +647,18 @@ namespace HiraBots.Editor
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
                             switch (i.m_KeyType)
                             {
-                                case UnityEngine.BlackboardKeyType.Boolean:
+                                case UnityEngine.AI.BlackboardKeyType.Boolean:
                                     return $"ref blackboard.Access<bool>(memory->_{i.m_Name})";
-                                case UnityEngine.BlackboardKeyType.Enum:
+                                case UnityEngine.AI.BlackboardKeyType.Enum:
                                     return $"ref blackboard.Access<byte>(memory->_{i.m_Name})";
-                                case UnityEngine.BlackboardKeyType.Float:
+                                case UnityEngine.AI.BlackboardKeyType.Float:
                                     return $"ref blackboard.Access<float>(memory->_{i.m_Name})";
-                                case UnityEngine.BlackboardKeyType.Integer:
-                                case UnityEngine.BlackboardKeyType.Object:
+                                case UnityEngine.AI.BlackboardKeyType.Integer:
+                                case UnityEngine.AI.BlackboardKeyType.Object:
                                     return $"ref blackboard.Access<int>(memory->_{i.m_Name})";
-                                case UnityEngine.BlackboardKeyType.Quaternion:
+                                case UnityEngine.AI.BlackboardKeyType.Quaternion:
                                     return $"ref blackboard.Access<Unity.Mathematics.quaternion>(memory->_{i.m_Name})";
-                                case UnityEngine.BlackboardKeyType.Vector:
+                                case UnityEngine.AI.BlackboardKeyType.Vector:
                                     return $"ref blackboard.Access<Unity.Mathematics.float3>(memory->_{i.m_Name})";
                                 default:
                                     throw new ArgumentOutOfRangeException();
@@ -700,19 +701,19 @@ namespace HiraBots.Editor
             {
                 switch (i.m_KeyType)
                 {
-                    case UnityEngine.BlackboardKeyType.Boolean:
+                    case UnityEngine.AI.BlackboardKeyType.Boolean:
                         return $"var _{i.m_Name} = blackboard.GetBooleanValue({i.m_Name}.selectedKey.name); ";
-                    case UnityEngine.BlackboardKeyType.Enum:
+                    case UnityEngine.AI.BlackboardKeyType.Enum:
                         return $"var _{i.m_Name} = blackboard.GetEnumValue({i.m_Name}.selectedKey.name); ";
-                    case UnityEngine.BlackboardKeyType.Float:
+                    case UnityEngine.AI.BlackboardKeyType.Float:
                         return $"var _{i.m_Name} = blackboard.GetFloatValue({i.m_Name}.selectedKey.name); ";
-                    case UnityEngine.BlackboardKeyType.Integer:
+                    case UnityEngine.AI.BlackboardKeyType.Integer:
                         return $"var _{i.m_Name} = blackboard.GetIntegerValue({i.m_Name}.selectedKey.name); ";
-                    case UnityEngine.BlackboardKeyType.Object:
+                    case UnityEngine.AI.BlackboardKeyType.Object:
                         return $"var _{i.m_Name} = blackboard.GetObjectValue({i.m_Name}.selectedKey.name).GetInstanceID(); ";
-                    case UnityEngine.BlackboardKeyType.Quaternion:
+                    case UnityEngine.AI.BlackboardKeyType.Quaternion:
                         return $"var _{i.m_Name} = blackboard.GetQuaternionValue({i.m_Name}.selectedKey.name); ";
-                    case UnityEngine.BlackboardKeyType.Vector:
+                    case UnityEngine.AI.BlackboardKeyType.Vector:
                         return $"var _{i.m_Name} = blackboard.GetVectorValue({i.m_Name}.selectedKey.name); ";
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -723,19 +724,19 @@ namespace HiraBots.Editor
             {
                 switch (i.m_KeyType)
                 {
-                    case UnityEngine.BlackboardKeyType.Boolean:
+                    case UnityEngine.AI.BlackboardKeyType.Boolean:
                         return $" blackboard.SetBooleanValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
-                    case UnityEngine.BlackboardKeyType.Enum:
+                    case UnityEngine.AI.BlackboardKeyType.Enum:
                         return $" blackboard.SetEnumValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
-                    case UnityEngine.BlackboardKeyType.Float:
+                    case UnityEngine.AI.BlackboardKeyType.Float:
                         return $" blackboard.SetFloatValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
-                    case UnityEngine.BlackboardKeyType.Integer:
+                    case UnityEngine.AI.BlackboardKeyType.Integer:
                         return $" blackboard.SetIntegerValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
-                    case UnityEngine.BlackboardKeyType.Object:
+                    case UnityEngine.AI.BlackboardKeyType.Object:
                         return $" blackboard.SetObjectValue({i.m_Name}.selectedKey.name, GeneratedBlackboardHelpers.InstanceIDToObject(_{i.m_Name}), expected);";
-                    case UnityEngine.BlackboardKeyType.Quaternion:
+                    case UnityEngine.AI.BlackboardKeyType.Quaternion:
                         return $" blackboard.SetQuaternionValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
-                    case UnityEngine.BlackboardKeyType.Vector:
+                    case UnityEngine.AI.BlackboardKeyType.Vector:
                         return $" blackboard.SetVectorValue({i.m_Name}.selectedKey.name, _{i.m_Name}, expected);";
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -849,7 +850,7 @@ namespace HiraBots.Editor
                 case BlackboardFunctionParameterInfo.Type.Object:
                     return info.m_ObjectType.FullName;
                 case BlackboardFunctionParameterInfo.Type.BlackboardKey:
-                    return $"{nameof(UnityEngine.BlackboardTemplate)}.{nameof(UnityEngine.BlackboardTemplate.KeySelector)}";
+                    return $"{nameof(UnityEngine.AI.BlackboardTemplate)}.{nameof(UnityEngine.AI.BlackboardTemplate.KeySelector)}";
                 case BlackboardFunctionParameterInfo.Type.DynamicEnum:
                     return nameof(UnityEngine.DynamicEnum);
                 default:
@@ -857,25 +858,25 @@ namespace HiraBots.Editor
             }
         }
 
-        private static string ToCode(this UnityEngine.BlackboardKeyType keyType)
+        private static string ToCode(this UnityEngine.AI.BlackboardKeyType keyType)
         {
-            var output = $"{typeof(UnityEngine.BlackboardKeyType)}.{UnityEngine.BlackboardKeyType.Invalid}";
+            var output = $"{typeof(UnityEngine.AI.BlackboardKeyType)}.{UnityEngine.AI.BlackboardKeyType.Invalid}";
 
-            string Check(UnityEngine.BlackboardKeyType flag)
+            string Check(UnityEngine.AI.BlackboardKeyType flag)
             {
                 // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-                return (keyType & flag) != UnityEngine.BlackboardKeyType.Invalid
-                    ? $" | {typeof(UnityEngine.BlackboardKeyType)}.{flag}"
+                return (keyType & flag) != UnityEngine.AI.BlackboardKeyType.Invalid
+                    ? $" | {typeof(UnityEngine.AI.BlackboardKeyType)}.{flag}"
                     : "";
             }
 
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 0));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 1));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 2));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 3));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 4));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 5));
-            output += Check((UnityEngine.BlackboardKeyType) (1 << 6));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 0));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 1));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 2));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 3));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 4));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 5));
+            output += Check((UnityEngine.AI.BlackboardKeyType) (1 << 6));
 
             return output;
         }

@@ -51,7 +51,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal float Execute(LowLevelBlackboard blackboard, float currentScore)
         {
-            var fnPtr = new FunctionPointer<UnityEngine.HiraBotsScoreCalculatorBlackboardFunction.Delegate>(m_Function.functionPtr);
+            var fnPtr = new FunctionPointer<UnityEngine.AI.HiraBotsScoreCalculatorBlackboardFunction.Delegate>(m_Function.functionPtr);
             return fnPtr.Invoke(blackboard, m_Function.memory, currentScore);
         }
     }

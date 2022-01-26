@@ -32,9 +32,9 @@ namespace HiraBots
         /// <summary>
         /// Implicitly convert an LGOAPDomain to its public interface.
         /// </summary>
-        public static implicit operator UnityEngine.LGOAPDomain(LGOAPDomain actualTemplate)
+        public static implicit operator UnityEngine.AI.LGOAPDomain(LGOAPDomain actualTemplate)
         {
-            return new UnityEngine.LGOAPDomain(actualTemplate);
+            return new UnityEngine.AI.LGOAPDomain(actualTemplate);
         }
     }
 }

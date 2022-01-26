@@ -1,6 +1,6 @@
 ﻿using HiraBots;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public abstract class TacMapInfluencer : MonoBehaviour, IUpdatableBehaviour
     {

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -23,7 +24,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnumOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsEnumOperationType operationType, UnityEngine.DynamicEnum value, out string staticDescription)
+        internal static void EnumOperatorEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsEnumOperationType operationType, UnityEngine.DynamicEnum value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -75,7 +76,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void FloatOperatorEffectorOnValidate(ref UnityEngine.BlackboardTemplate.KeySelector key, ref SampleBlackboardFunctionsFloatOperationType operationType, ref float value)
+        internal static void FloatOperatorEffectorOnValidate(ref UnityEngine.AI.BlackboardTemplate.KeySelector key, ref SampleBlackboardFunctionsFloatOperationType operationType, ref float value)
         {
             if (operationType == SampleBlackboardFunctionsFloatOperationType.Divide && value == 0f)
             {
@@ -84,7 +85,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void FloatOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsFloatOperationType operationType, float value, out string staticDescription)
+        internal static void FloatOperatorEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsFloatOperationType operationType, float value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -151,7 +152,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void IntegerOperatorEffectorOnValidate(ref UnityEngine.BlackboardTemplate.KeySelector key, ref SampleBlackboardFunctionsIntegerOperationType operationType, ref int value)
+        internal static void IntegerOperatorEffectorOnValidate(ref UnityEngine.AI.BlackboardTemplate.KeySelector key, ref SampleBlackboardFunctionsIntegerOperationType operationType, ref int value)
         {
             if (operationType == SampleBlackboardFunctionsIntegerOperationType.Divide && value == 0)
             {
@@ -160,7 +161,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void IntegerOperatorEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsIntegerOperationType operationType, int value, out string staticDescription)
+        internal static void IntegerOperatorEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsIntegerOperationType operationType, int value, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -218,7 +219,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void BooleanIsSetEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsSetOperationType operationType, out string staticDescription)
+        internal static void BooleanIsSetEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, SampleBlackboardFunctionsSetOperationType operationType, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -248,7 +249,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void BooleanInvertEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, out string staticDescription)
+        internal static void BooleanInvertEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -268,7 +269,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ObjectEqualsEffectorUpdateDescription(UnityEngine.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
+        internal static void ObjectEqualsEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
         {
             staticDescription = $"Set {key.selectedKey.name} to {(value == null ? "null" : value.name)}.";
         }

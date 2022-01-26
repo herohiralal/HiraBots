@@ -1,4 +1,4 @@
-﻿namespace UnityEngine
+﻿namespace UnityEngine.AI
 {
     /// <summary>
     /// An archetype contains components in a way to avoid GetComponent calls.

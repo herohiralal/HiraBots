@@ -26,9 +26,9 @@ namespace HiraBots
         /// <summary>
         /// Implicitly convert a KeySelector to its public interface.
         /// </summary>
-        public static implicit operator UnityEngine.BlackboardKey(BlackboardKey key)
+        public static implicit operator UnityEngine.AI.BlackboardKey(BlackboardKey key)
         {
-            return new UnityEngine.BlackboardKey(key);
+            return new UnityEngine.AI.BlackboardKey(key);
         }
     }
 }

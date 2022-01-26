@@ -10,7 +10,7 @@
 // </auto-generated>
 // ---------------------------------------------------------------------
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [Unity.Burst.BurstCompile]
     public unsafe partial class QuaternionIsSetDecorator : HiraBotsDecoratorBlackboardFunction
@@ -94,7 +94,7 @@ namespace UnityEngine
 
         protected override void OnValidateCallback()
         {
-            key.keyTypesFilter = UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion;
+            key.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Invalid | UnityEngine.AI.BlackboardKeyType.Quaternion;
             // no external validator
         }
 
@@ -112,7 +112,7 @@ namespace UnityEngine
         public override void Validate(ref ValidatorContext context)
         {
             base.Validate(ref context);
-            ValidateKeySelector(ref key, UnityEngine.BlackboardKeyType.Invalid | UnityEngine.BlackboardKeyType.Quaternion, ref context, nameof(key));
+            ValidateKeySelector(ref key, UnityEngine.AI.BlackboardKeyType.Invalid | UnityEngine.AI.BlackboardKeyType.Quaternion, ref context, nameof(key));
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿namespace UnityEngine
+﻿namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/TacMap Influencer (NavMesh)")]
     public class TacMapNavMeshInfluencer : MonoBehaviour

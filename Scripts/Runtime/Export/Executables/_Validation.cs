@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public abstract partial class HiraBotsServiceProvider
     {

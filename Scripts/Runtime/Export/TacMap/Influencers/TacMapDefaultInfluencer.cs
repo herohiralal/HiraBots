@@ -2,7 +2,7 @@
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/TacMap Influencer (Default)")]
     public class TacMapDefaultInfluencer : TacMapInfluencer

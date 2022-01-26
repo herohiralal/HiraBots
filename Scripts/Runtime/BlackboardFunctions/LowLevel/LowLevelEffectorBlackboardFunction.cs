@@ -51,7 +51,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Execute(LowLevelBlackboard blackboard)
         {
-            var fnPtr = new FunctionPointer<UnityEngine.HiraBotsEffectorBlackboardFunction.Delegate>(m_Function.functionPtr);
+            var fnPtr = new FunctionPointer<UnityEngine.AI.HiraBotsEffectorBlackboardFunction.Delegate>(m_Function.functionPtr);
             fnPtr.Invoke(blackboard, m_Function.memory);
         }
     }

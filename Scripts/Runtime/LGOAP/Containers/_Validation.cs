@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR || HIRA_BOTS_TESTS || ENABLE_HIRA_BOTS_RUNTIME_BUILDER
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -112,7 +113,7 @@ namespace HiraBots
             var functionValidator = new HiraBotsBlackboardFunction.ValidatorContext
             {
                 badlySelectedKeys = context.badlySelectedKeys,
-                allowedKeyPool = new UnityEngine.BlackboardTemplate.KeySet(context.allowedKeyPool)
+                allowedKeyPool = new UnityEngine.AI.BlackboardTemplate.KeySet(context.allowedKeyPool)
             };
 
             for (var i = 0; i < m_Insistence.m_Insistence.Length; i++)
@@ -205,7 +206,7 @@ namespace HiraBots
             var functionValidator = new HiraBotsBlackboardFunction.ValidatorContext
             {
                 badlySelectedKeys = context.badlySelectedKeys,
-                allowedKeyPool = new UnityEngine.BlackboardTemplate.KeySet(context.allowedKeyPool)
+                allowedKeyPool = new UnityEngine.AI.BlackboardTemplate.KeySet(context.allowedKeyPool)
             };
 
             for (var i = 0; i < m_Action.m_Precondition.Length; i++)

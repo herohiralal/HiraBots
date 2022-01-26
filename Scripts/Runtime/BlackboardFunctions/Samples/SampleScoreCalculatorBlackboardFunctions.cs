@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -33,7 +34,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnumEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
+        internal static void EnumEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -52,7 +53,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnumHasFlagsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
+        internal static void EnumHasFlagsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, UnityEngine.DynamicEnum value, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -71,7 +72,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void BooleanIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        internal static void BooleanIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -90,7 +91,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void QuaternionIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        internal static void QuaternionIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -109,7 +110,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void VectorIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
+        internal static void VectorIsSetScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -128,7 +129,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void IntegerComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, int secondValue, SampleBlackboardFunctionsIntegerComparisonType comparisonType, float score, out string staticDescription)
+        internal static void IntegerComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, int secondValue, SampleBlackboardFunctionsIntegerComparisonType comparisonType, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -170,7 +171,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void FloatComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, SampleBlackboardFunctionsFloatComparisonType comparisonType, float score, out string staticDescription)
+        internal static void FloatComparisonScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, float secondValue, float equalityTolerance, SampleBlackboardFunctionsFloatComparisonType comparisonType, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {
@@ -218,7 +219,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ObjectEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.BlackboardTemplate.KeySelector key, Object value, float score, out string staticDescription)
+        internal static void ObjectEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector key, Object value, float score, out string staticDescription)
         {
             if (!key.selectedKey.isValid)
             {

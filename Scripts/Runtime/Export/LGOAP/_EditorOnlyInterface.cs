@@ -2,7 +2,7 @@
 using HiraBots;
 using UnityEditor;
 
-namespace UnityEngine
+namespace UnityEngine.AI
 {
     public sealed partial class HiraLGOAPRealtimeBot
     {
