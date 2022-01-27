@@ -140,6 +140,10 @@ namespace HiraBots
             try
             {
                 PerceptionSystem.UpdateDatabase();
+                if (PerceptionSystem.shouldTick)
+                {
+                    var boundsCheckJobs = PerceptionSystem.ScheduleBoundsCheckJob();
+                }
             }
             catch (System.Exception e)
             {

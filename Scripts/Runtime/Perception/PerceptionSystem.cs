@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine.AI;
 
@@ -83,17 +84,41 @@ namespace HiraBots
             ApplyStimuliDatabaseCommandBuffer();
         }
 
-        internal static void Tick(float deltaTime)
-        {
-            // if the time is frozen, ignore perception system stuff
-            if (deltaTime == 0f)
-            {
-                return;
-            }
+        internal static bool shouldTick => s_SensorsCount == 0 || s_StimuliLookUpTable.Count == 0;
 
-            if (s_SensorsCount == 0 && s_StimuliLookUpTable.Count == 0)
+        internal static unsafe NativeArray<JobHandle> ScheduleBoundsCheckJob()
+        {
+            var na = new NativeArray<JobHandle>(32, Allocator.Temp, NativeArrayOptions.ClearMemory);
+
+            for (var stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
             {
-                return;
+                // ignore if no stimuli of the current type
+                if (s_StimuliCounts[stimulusTypeIndex] == 0)
+                {
+                    continue;
+                }
+
+                var type = (1 << stimulusTypeIndex);
+                var stimuliPositionsForCurrentType = s_StimuliPositions[stimulusTypeIndex];
+
+                JobHandle currentTypeJobHandle = default;
+
+                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+                {
+                    var stimulusMask = s_SensorsStimulusMasks[sensorIndex];
+                    if ((stimulusMask & type) == 0)
+                    {
+                        // skip this sensor if not supposed to detect
+                        continue;
+                    }
+
+                    currentTypeJobHandle = JobHandle.CombineDependencies(currentTypeJobHandle,
+                        s_Sensors[sensorIndex].ScheduleBoundsCheckJob(
+                            stimuliPositionsForCurrentType.Reinterpret<float4x4>(sizeof(float4)),
+                            default));
+                }
+
+                na[stimulusTypeIndex] = currentTypeJobHandle;
             }
 
             // for all the stimuli
@@ -110,6 +135,8 @@ namespace HiraBots
             // perceived game object sets
 
             // do the same with the other one
+
+            return na;
         }
     }
 }
