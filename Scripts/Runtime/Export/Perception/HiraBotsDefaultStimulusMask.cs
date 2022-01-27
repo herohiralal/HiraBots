@@ -1,6 +1,6 @@
 ﻿namespace UnityEngine.AI
 {
-    [System.Flags]
+    [System.Serializable, System.Flags]
     public enum HiraBotsDefaultStimulusMask : int
     {
         None = 0,

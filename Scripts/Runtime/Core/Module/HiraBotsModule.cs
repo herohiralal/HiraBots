@@ -52,6 +52,15 @@ namespace HiraBots
             m_UpdateJob = null;
 
             m_UpdateSystemLockedForModifications = UpdateSystem.None;
+
+            try
+            {
+                PerceptionSystem.Initialize();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         internal void Dispose()
@@ -60,6 +69,15 @@ namespace HiraBots
             if (s_Instance != this)
             {
                 return;
+            }
+
+            try
+            {
+                PerceptionSystem.Shutdown();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
             }
 
             m_UpdateJob?.Complete();
@@ -71,19 +89,27 @@ namespace HiraBots
 
             ShutdownCommandBuffer();
 
+            m_UpdateSystemLockedForModifications = UpdateSystem.Tasks;
             for (var i = 0; i < m_TaskUpdates.m_ObjectsCount; i++)
             {
                 m_TaskUpdates.m_ObjectsBuffer[i].AbortTask();
             }
 
             m_TaskUpdates.Dispose();
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
 
+            ApplyCommandBuffer();
+
+            m_UpdateSystemLockedForModifications = UpdateSystem.Services;
             for (var i = 0; i < m_ServiceUpdates.m_ObjectsCount; i++)
             {
                 m_ServiceUpdates.m_ObjectsBuffer[i].WrappedStop();
             }
 
             m_ServiceUpdates.Dispose();
+            m_UpdateSystemLockedForModifications = UpdateSystem.None;
+
+            ApplyCommandBuffer();
 
             // no need to abort/stop anything inside behaviours
             m_BehaviourUpdates.Dispose();
@@ -102,10 +128,6 @@ namespace HiraBots
 
         private void Update()
         {
-            TickBehavioursUpdateSystem();
-            TickTasksUpdateSystem();
-            TickServicesUpdateSystem();
-
             var deltaTime = Time.deltaTime;
 
             m_UpdateJob = JobHandle.CombineDependencies
@@ -114,14 +136,22 @@ namespace HiraBots
                 m_TaskUpdates.ScheduleTickJob(deltaTime),
                 m_ServiceUpdates.ScheduleTickJob(deltaTime)
             );
-        }
 
-        private void LateUpdate()
-        {
+            try
+            {
+                PerceptionSystem.UpdateDatabase();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+
             m_UpdateJob?.Complete();
             m_UpdateJob = null;
 
-            ApplyCommandBuffer();
+            TickBehavioursUpdateSystem();
+            TickTasksUpdateSystem();
+            TickServicesUpdateSystem();
         }
 
         private unsafe void TickBehavioursUpdateSystem()
