@@ -64,8 +64,16 @@ namespace HiraBots
                         if (s_SensorsCount == s_Sensors.Length)
                         {
                             // reallocation time
-                            s_SensorsStimulusMasks.Reallocate(s_SensorsCount + 8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                            s_SensorsStimulusMasks.Reallocate(s_SensorsCount + 8, Allocator.Persistent,
+                                NativeArrayOptions.UninitializedMemory);
+
                             System.Array.Resize(ref s_Sensors, s_SensorsCount + 8);
+
+                            System.Array.Resize(ref s_SensorsSuccessCheckArrays, s_SensorsCount + 8);
+                            for (var i = 0; i < 8; i++)
+                            {
+                                s_SensorsSuccessCheckArrays[s_SensorsCount + i] = new NativeArray<bool>[32];
+                            }
                         }
 
                         s_SensorsStimulusMasks[s_SensorsCount] = relatedSensor.stimulusMask;

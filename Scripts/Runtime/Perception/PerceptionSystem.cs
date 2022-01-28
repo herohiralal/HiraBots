@@ -13,6 +13,8 @@ namespace HiraBots
         private static Dictionary<HiraBotSensor, int> s_SensorsLookUpTable;
         private static int s_SensorsCount;
 
+        private static NativeArray<bool>[][] s_SensorsSuccessCheckArrays;
+
         private static NativeArray<float4>[] s_StimuliPositions;
         private static NativeArray<int>[] s_StimuliAssociatedObjects;
         private static NativeArray<int>[] s_Stimuli;
@@ -29,6 +31,12 @@ namespace HiraBots
             s_Sensors = new HiraBotSensor[8];
             s_SensorsLookUpTable = new Dictionary<HiraBotSensor, int>(8);
             s_SensorsCount = 0;
+
+            s_SensorsSuccessCheckArrays = new NativeArray<bool>[8][];
+            for (var i = 0; i < 8; i++)
+            {
+                s_SensorsSuccessCheckArrays[i] = new NativeArray<bool>[32];
+            }
 
             s_StimuliPositions = new NativeArray<float4>[32];
             s_StimuliAssociatedObjects = new NativeArray<int>[32];
@@ -69,6 +77,8 @@ namespace HiraBots
             s_Stimuli = null;
             s_StimuliAssociatedObjects = null;
             s_StimuliPositions = null;
+
+            s_SensorsSuccessCheckArrays = new NativeArray<bool>[0][];
 
             s_SensorsCount = 0;
             s_SensorsLookUpTable.Clear();
@@ -112,10 +122,16 @@ namespace HiraBots
                         continue;
                     }
 
-                    currentTypeJobHandle = JobHandle.CombineDependencies(currentTypeJobHandle,
-                        s_Sensors[sensorIndex].ScheduleBoundsCheckJob(
-                            stimuliPositionsForCurrentType.Reinterpret<float4x4>(sizeof(float4)),
-                            default));
+                    var sensorsSuccessCheck = new NativeArray<bool>(stimuliPositionsForCurrentType.Length,
+                        Allocator.TempJob, NativeArrayOptions.ClearMemory);
+
+                    var boundsCheckJob = s_Sensors[sensorIndex].ScheduleBoundsCheckJob(
+                        stimuliPositionsForCurrentType.Reinterpret<float4x4>(sizeof(float4)),
+                        sensorsSuccessCheck.Reinterpret<bool4>(sizeof(bool)));
+
+                    currentTypeJobHandle = JobHandle.CombineDependencies(currentTypeJobHandle, boundsCheckJob);
+
+                    s_SensorsSuccessCheckArrays[sensorIndex][stimulusTypeIndex] = sensorsSuccessCheck;
                 }
 
                 na[stimulusTypeIndex] = currentTypeJobHandle;
