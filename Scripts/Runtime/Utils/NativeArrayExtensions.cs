@@ -22,7 +22,7 @@ namespace HiraBots
         {
             var newArray = new NativeArray<T>(newSize, allocator, options);
 
-            NativeArray<T>.Copy(array, newArray, array.Length);
+            NativeArray<T>.Copy(array, newArray, math.min(array.Length, newSize));
 
             array.Dispose();
             array = newArray;
@@ -219,30 +219,25 @@ namespace HiraBots
         private static void OrderByHashcodeInternal<T>(this ref NativeArray<T> array, int low, int high)
             where T : struct
         {
-            var pivotHashCode = array[high].GetHashCode();
-
-            var i = low - 1;
-
-            for (var j = low; j < high; j++)
+            if (low < high)
             {
-                var b = array[j].GetHashCode() < pivotHashCode;
+                var pivotHashCode = array[high].GetHashCode();
 
-                i += b ? 1 : 0;
+                var i = low - 1;
 
-                (array[i], array[j]) = b ? (array[j], array[i]) : (array[i], array[j]);
-            }
+                for (var j = low; j < high; j++)
+                {
+                    if (array[j].GetHashCode() < pivotHashCode)
+                    {
+                        i++;
+                        (array[i], array[j]) = (array[j], array[i]);
+                    }
+                }
 
-            (array[high], array[i + 1]) = (array[i + 1], array[high]);
+                (array[high], array[i + 1]) = (array[i + 1], array[high]);
 
-            var pivot = i + 1;
-
-            if (low < pivot - 1)
-            {
+                var pivot = i + 1;
                 array.OrderByHashcodeInternal(low, pivot - 1);
-            }
-
-            if (pivot + 1 < high)
-            {
                 array.OrderByHashcodeInternal(pivot + 1, high);
             }
         }
@@ -251,30 +246,25 @@ namespace HiraBots
         private static void SortInternal<T>(this ref NativeArray<T> array, int low, int high)
             where T : struct, IComparable<T>
         {
-            var pivotObj = array[high];
-
-            var i = low - 1;
-
-            for (var j = low; j < high; j++)
+            if (low < high)
             {
-                var b = array[j].CompareTo(pivotObj) < 0;
+                var pivotObj = array[high];
 
-                i += b ? 1 : 0;
+                var i = low - 1;
 
-                (array[i], array[j]) = b ? (array[j], array[i]) : (array[i], array[j]);
-            }
+                for (var j = low; j < high; j++)
+                {
+                    if (array[j].CompareTo(pivotObj) < 0)
+                    {
+                        i++;
+                        (array[i], array[j]) = (array[j], array[i]);
+                    }
+                }
 
-            (array[high], array[i + 1]) = (array[i + 1], array[high]);
+                (array[high], array[i + 1]) = (array[i + 1], array[high]);
 
-            var pivot = i + 1;
-
-            if (low < pivot - 1)
-            {
+                var pivot = i + 1;
                 array.SortInternal(low, pivot - 1);
-            }
-
-            if (pivot + 1 < high)
-            {
                 array.SortInternal(pivot + 1, high);
             }
         }
