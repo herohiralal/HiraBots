@@ -87,8 +87,6 @@ namespace HiraBots
 
             ApplyCommandBuffer();
 
-            ShutdownCommandBuffer();
-
             m_UpdateSystemLockedForModifications = UpdateSystem.Tasks;
             for (var i = 0; i < m_TaskUpdates.m_ObjectsCount; i++)
             {
@@ -113,6 +111,8 @@ namespace HiraBots
 
             // no need to abort/stop anything inside behaviours
             m_BehaviourUpdates.Dispose();
+
+            ShutdownCommandBuffer();
 
             ServiceRunner.instance = null;
             TaskRunner.instance = null;
