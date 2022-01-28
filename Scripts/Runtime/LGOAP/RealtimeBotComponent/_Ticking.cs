@@ -68,13 +68,13 @@
                     return;
                 }
 
-                TaskRunner.instance.ChangeTickIntervalMultiplier(m_Executor, value);
+                TaskRunner.ChangeTickIntervalMultiplier(m_Executor, value);
 
                 foreach (var layer in m_ActiveServicesByLayer)
                 {
                     foreach (var service in layer)
                     {
-                        ServiceRunner.instance.ChangeTickIntervalMultiplier(service, value);
+                        ServiceRunner.ChangeTickIntervalMultiplier(service, value);
                     }
                 }
             }
@@ -89,13 +89,13 @@
                     return;
                 }
 
-                TaskRunner.instance.ChangeTickPaused(m_Executor, value);
+                TaskRunner.ChangeTickPaused(m_Executor, value);
 
                 foreach (var layer in m_ActiveServicesByLayer)
                 {
                     foreach (var service in layer)
                     {
-                        ServiceRunner.instance.ChangeTickPaused(service, value);
+                        ServiceRunner.ChangeTickPaused(service, value);
                     }
                 }
             }

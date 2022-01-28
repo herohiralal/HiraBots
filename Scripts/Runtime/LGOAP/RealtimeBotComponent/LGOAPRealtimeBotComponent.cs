@@ -128,7 +128,7 @@ namespace HiraBots
             {
                 foreach (var service in servicesInLayer)
                 {
-                    ServiceRunner.instance.Remove(service);
+                    ServiceRunner.Remove(service);
                 }
 
                 servicesInLayer.Clear();
@@ -141,7 +141,7 @@ namespace HiraBots
             m_PreAllocatedExecutionSet = null;
             m_ExecutionSet = null;
 
-            TaskRunner.instance.Remove(m_Executor);
+            TaskRunner.Remove(m_Executor);
             m_Executor.Dispose();
             m_Executor = null;
 

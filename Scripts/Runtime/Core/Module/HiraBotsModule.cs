@@ -96,8 +96,6 @@ namespace HiraBots
             m_TaskUpdates.Dispose();
             m_UpdateSystemLockedForModifications = UpdateSystem.None;
 
-            ApplyCommandBuffer();
-
             m_UpdateSystemLockedForModifications = UpdateSystem.Services;
             for (var i = 0; i < m_ServiceUpdates.m_ObjectsCount; i++)
             {
@@ -106,8 +104,6 @@ namespace HiraBots
 
             m_ServiceUpdates.Dispose();
             m_UpdateSystemLockedForModifications = UpdateSystem.None;
-
-            ApplyCommandBuffer();
 
             // no need to abort/stop anything inside behaviours
             m_BehaviourUpdates.Dispose();

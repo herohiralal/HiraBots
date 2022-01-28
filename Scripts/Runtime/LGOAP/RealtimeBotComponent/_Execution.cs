@@ -73,7 +73,7 @@ namespace HiraBots
                 {
                     foreach (var service in m_ActiveServicesByLayer[i])
                     {
-                        ServiceRunner.instance.Remove(service);
+                        ServiceRunner.Remove(service);
                     }
 
                     m_ActiveServicesByLayer[i].Clear();
@@ -90,7 +90,7 @@ namespace HiraBots
                                                              $"{domainData.GetContainerName(i, newContainerIndex.Value)} at " +
                                                              $"layer index {i} in domain {m_Domain.name}.");
                         m_ActiveServicesByLayer[i].Add(service);
-                        ServiceRunner.instance.Add(service,
+                        ServiceRunner.Add(service,
                             serviceProvider.tickInterval,
                             m_ExecutableTickIntervalMultiplier);
                     }
@@ -118,8 +118,8 @@ namespace HiraBots
                                               $"{domainData.GetContainerName(m_CurrentTaskLayerIndex, m_CurrentTaskContainerIndex)}" +
                                               $" at layer index {m_CurrentTaskLayerIndex} in domain {m_Domain.name}.");
 
-            TaskRunner.instance.Remove(m_Executor);
-            TaskRunner.instance.Add(m_Executor,
+            TaskRunner.Remove(m_Executor);
+            TaskRunner.Add(m_Executor,
                 task,
                 taskProvider.tickInterval,
                 m_ExecutableTickIntervalMultiplier);

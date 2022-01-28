@@ -76,11 +76,11 @@ namespace UnityEngine.AI
 
                 if (value < 0f)
                 {
-                    BehaviourUpdater.instance.Remove(this);
+                    BehaviourUpdater.Remove(this);
                 }
                 else
                 {
-                    BehaviourUpdater.instance.ChangeTickInterval(this, value);
+                    BehaviourUpdater.ChangeTickInterval(this, value);
                 }
             }
         }
@@ -154,7 +154,7 @@ namespace UnityEngine.AI
         {
             if (m_TickInterval >= 0f)
             {
-                BehaviourUpdater.instance.Add(this, m_TickInterval);
+                BehaviourUpdater.Add(this, m_TickInterval);
             }
 
             m_Internal.executableTickPaused = false;
@@ -166,7 +166,7 @@ namespace UnityEngine.AI
             {
                 m_Internal.executableTickPaused = true;
 
-                BehaviourUpdater.instance.Remove(this);
+                BehaviourUpdater.Remove(this);
             }
         }
 
