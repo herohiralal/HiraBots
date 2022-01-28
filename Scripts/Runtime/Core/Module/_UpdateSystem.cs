@@ -103,16 +103,25 @@ namespace HiraBots
                 m_ObjectsCount--;
             }
 
-            internal JobHandle ScheduleTickJob(float deltaTime)
+            private TickJob CreateTickJob(float deltaTime)
             {
                 return new TickJob(
-                        m_TickIntervals.Reinterpret<float4x4>(sizeof(float)),
-                        m_TickIntervalMultipliers.Reinterpret<float4x4>(sizeof(float)),
-                        m_TickPaused.Reinterpret<bool4x4>(sizeof(bool)),
-                        m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float)),
-                        m_ShouldTick.Reinterpret<float4x4>(sizeof(float)),
-                        deltaTime)
-                    .Schedule();
+                    m_TickIntervals.Reinterpret<float4x4>(sizeof(float)),
+                    m_TickIntervalMultipliers.Reinterpret<float4x4>(sizeof(float)),
+                    m_TickPaused.Reinterpret<bool4x4>(sizeof(bool)),
+                    m_ElapsedTimes.Reinterpret<float4x4>(sizeof(float)),
+                    m_ShouldTick.Reinterpret<float4x4>(sizeof(float)),
+                    deltaTime);
+            }
+
+            internal void RunTickJob(float deltaTime)
+            {
+                CreateTickJob(deltaTime).Run();
+            }
+
+            internal JobHandle ScheduleTickJob(float deltaTime)
+            {
+                return CreateTickJob(deltaTime).Schedule();
             }
         }
 

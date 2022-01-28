@@ -9,11 +9,14 @@ namespace UnityEngine.AI
     {
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
-        [SerializeField] private int m_StimulusMask;
+        [SerializeField] private int m_StimulusMask = ~0;
+
+        [Tooltip("The maximum number of GameObjects this sensor can detect at any given time.")]
+        [SerializeField] private byte m_MaxPerceivedGameObjects = 32;
 
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
-        [SerializeField] private float m_Range;
+        [SerializeField] private float m_Range = 8f;
 
         public int stimulusMask
         {
@@ -35,6 +38,12 @@ namespace UnityEngine.AI
         {
             get => m_Range;
             set => m_Range = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+
+        public byte maxPerceivedGameObjects
+        {
+            get => m_MaxPerceivedGameObjects;
+            set => m_MaxPerceivedGameObjects = value;
         }
 
         public abstract JobHandle ScheduleBoundsCheckJob(NativeArray<float4x4> stimuliPositions, NativeArray<bool4> results);

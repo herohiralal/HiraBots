@@ -110,12 +110,12 @@ namespace HiraBots
         /// <summary>
         /// Perform a binary search through a sorted native buffer to figure out the potential index to add an element at.
         /// </summary>
-        internal static int FindIndexToAddAtInSortedSet<T>(this NativeArray<T> array, T obj)
+        private static int FindIndexToAddAtInSortedSet<T>(this NativeArray<T> array, T obj)
             where T : struct, IComparable<T>
         {
             if (array.Length <= 0)
             {
-                return -1;
+                return math.max(array.Length, -1);
             }
 
             int low = 0, high = array.Length - 1;

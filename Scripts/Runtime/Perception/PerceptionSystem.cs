@@ -137,22 +137,40 @@ namespace HiraBots
                 na[stimulusTypeIndex] = currentTypeJobHandle;
             }
 
-            // for all the stimuli
-            // for all the sensors
-            // check if the masks match and schedule a bounds check job
-            // can probably run main module ticking job here
-
-            // synchronize and make sure all bounds check jobs are done
-            // once the bounds have been figured out, start LOS check and nav-distance check jobs
-            // for the ones that require them
-            // for the ones that don't, update their 'perceived game objects' sets
-
-            // complete all LOS (or nav-distance but not both) check jobs and update their
-            // perceived game object sets
-
-            // do the same with the other one
-
+            JobHandle.ScheduleBatchedJobs();
             return na;
+        }
+
+        internal static void Tick(NativeArray<JobHandle> jh)
+        {
+            for (var stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
+            {
+                jh[stimulusTypeIndex].Complete();
+
+                // ignore if no stimuli of the current type
+                if (s_StimuliCounts[stimulusTypeIndex] == 0)
+                {
+                    continue;
+                }
+
+                var type = (1 << stimulusTypeIndex);
+
+                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+                {
+                    var stimulusMask = s_SensorsStimulusMasks[sensorIndex];
+                    if ((stimulusMask & type) == 0)
+                    {
+                        // skip this sensor if not supposed to detect
+                        continue;
+                    }
+                }
+            }
+
+            JobHandle.ScheduleBatchedJobs();
+
+            // deallocate just in case some day i hear the voices of the old ones
+            // and they tell me to allocate this container using a TempJob allocation
+            jh.Dispose();
         }
     }
 }

@@ -126,8 +126,28 @@ namespace HiraBots
             Dispose();
         }
 
+        private void FixedUpdate()
+        {
+            PerceptionSystem.UpdateDatabase();
+
+            var tickPerceptionSystem = PerceptionSystem.shouldTick;
+
+            if (tickPerceptionSystem)
+            {
+                var boundsCheckJobs = PerceptionSystem.ScheduleBoundsCheckJob();
+
+                // do something here on the main thread if needed
+
+                PerceptionSystem.Tick(boundsCheckJobs);
+            }
+        }
+
         private void Update()
         {
+            TickBehavioursUpdateSystem();
+            TickTasksUpdateSystem();
+            TickServicesUpdateSystem();
+
             var deltaTime = Time.deltaTime;
 
             m_UpdateJob = JobHandle.CombineDependencies
@@ -136,26 +156,14 @@ namespace HiraBots
                 m_TaskUpdates.ScheduleTickJob(deltaTime),
                 m_ServiceUpdates.ScheduleTickJob(deltaTime)
             );
+        }
 
-            try
-            {
-                PerceptionSystem.UpdateDatabase();
-                if (PerceptionSystem.shouldTick)
-                {
-                    var boundsCheckJobs = PerceptionSystem.ScheduleBoundsCheckJob();
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogException(e);
-            }
-
+        private void LateUpdate()
+        {
             m_UpdateJob?.Complete();
             m_UpdateJob = null;
 
-            TickBehavioursUpdateSystem();
-            TickTasksUpdateSystem();
-            TickServicesUpdateSystem();
+            ApplyCommandBuffer();
         }
 
         private unsafe void TickBehavioursUpdateSystem()
