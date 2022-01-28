@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using Unity.Collections;
 using Random = UnityEngine.Random;
@@ -229,6 +230,20 @@ namespace HiraBots.Editor.Tests
             }
         }
 
+        [Test]
+        public void UnsortedArraySearchTest()
+        {
+            var size = Random.Range(16, 128);
+            ArraySearchTest(size, false);
+        }
+
+        [Test]
+        public void SortedArraySearchTest()
+        {
+            var size = Random.Range(16, 128);
+            ArraySearchTest(size, true);
+        }
+
         private static void ArrayReallocationCheck(int firstSize, int secondSize, bool useFirstSizeForCheckLength)
         {
             var firstArray = new NativeArray<int>(firstSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
@@ -325,6 +340,57 @@ namespace HiraBots.Editor.Tests
 
                     throw new AssertionException($"Failed at index {i} && {i + 1}.");
                 }
+            }
+        }
+
+        private static void ArraySearchTest(int size, bool sort)
+        {
+            var arr = new int[size];
+            for (var i = 0; i < size; i++)
+            {
+                arr[i] = Random.Range(-1000, 1001);
+            }
+
+            var na = new NativeArray<int>(arr.Distinct().ToArray(), Allocator.Persistent);
+            var naCopy = new NativeArray<int>(na, Allocator.Persistent);
+
+            try
+            {
+                var na2 = na.GetSubArray(0, na.Length - 1);
+
+                if (sort)
+                {
+                    na2.Sort();
+                    na.CopyTo(naCopy);
+                }
+
+                for (var i = 0; i < na2.Length; i++)
+                {
+                    var j = sort ? na2.FindIndexInSortedSet(na[i]) : na2.FindIndex(na[i]);
+                    if (i != j)
+                    {
+                        throw new AssertionException($"Failed at index {i}, algorithm returned {j}.");
+                    }
+                }
+
+                var fake = sort ? na2.FindIndexInSortedSet(na[na.Length - 1]) : na2.FindIndex(na[na.Length - 1]);
+                if (fake != -1)
+                {
+                    throw new AssertionException($"Failed to return -1 for a fake, algorithm returned {fake}.");
+                }
+
+                for (var i = 0; i < na.Length; i++)
+                {
+                    if (na[i] != naCopy[i])
+                    {
+                        throw new AssertionException($"Search algorithm modified the existing array at index {i}.");
+                    }
+                }
+            }
+            finally
+            {
+                na.Dispose();
+                naCopy.Dispose();
             }
         }
     }
