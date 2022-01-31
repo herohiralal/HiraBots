@@ -18,10 +18,11 @@ namespace UnityEngine.AI
         [Tooltip("The maximum range of the sensor.")]
         [SerializeField] private float m_Range = 8f;
 
-        private NativeArray<(byte stimulusType, JobHandle job)> m_JobHandlePerStimulusType;
-        private byte m_JobCountThisFrame;
-        private NativeArray<bool4>[] m_SuccessCheckArraysPerStimulusType;
-        private NativeArray<int> m_PerceivedGameObjects;
+        internal NativeArray<(byte stimulusType, JobHandle job)> m_JobHandlePerStimulusType;
+        internal byte m_JobCountThisFrame;
+        internal NativeArray<bool4>[] m_SuccessCheckArraysPerStimulusType;
+        internal NativeArray<int> m_PerceivedGameObjects;
+        internal NativeArray<int> m_GameObjectsPerceivedThisFrame;
 
         public int stimulusMask
         {
@@ -42,7 +43,11 @@ namespace UnityEngine.AI
         public byte maxPerceivedGameObjects
         {
             get => m_MaxPerceivedGameObjects;
-            set => m_MaxPerceivedGameObjects = value;
+            set
+            {
+                m_MaxPerceivedGameObjects = value;
+                PerceptionSystem.ChangeSensorMaxPerceivedGameObjectsCount(this);
+            }
         }
 
         private void OnEnable()
@@ -53,26 +58,6 @@ namespace UnityEngine.AI
         private void OnDisable()
         {
             PerceptionSystem.RemoveSensor(this);
-        }
-
-        internal void Initialize()
-        {
-            m_JobHandlePerStimulusType = new NativeArray<(byte, JobHandle)>(32,
-                Allocator.Persistent, NativeArrayOptions.ClearMemory);
-            m_SuccessCheckArraysPerStimulusType = new NativeArray<bool4>[32];
-            m_PerceivedGameObjects = new NativeArray<int>(m_MaxPerceivedGameObjects + 1, // 1 extra for count
-                Allocator.Persistent, NativeArrayOptions.ClearMemory);
-            m_JobCountThisFrame = 0;
-        }
-
-        internal void Shutdown()
-        {
-            m_JobCountThisFrame = 0;
-            m_PerceivedGameObjects.Dispose();
-            m_PerceivedGameObjects = default;
-            m_SuccessCheckArraysPerStimulusType = null;
-            m_JobHandlePerStimulusType.Dispose();
-            m_JobHandlePerStimulusType = default;
         }
 
         internal void ScheduleJobs(NativeArray<float4x4> stimuliPositions, byte stimulusTypeIndex)

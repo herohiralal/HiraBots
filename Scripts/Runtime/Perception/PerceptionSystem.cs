@@ -51,8 +51,8 @@ namespace HiraBots
                 s_StimuliCounts[i] = 0;
             }
 
-            InitializeSensorsDatabaseCommandBuffer();
-            InitializeStimuliDatabaseCommandBuffer();
+            ResetSensorsDatabaseCommandBuffer();
+            ResetStimuliDatabaseCommandBuffer();
 
             isActive = true;
         }
@@ -69,8 +69,10 @@ namespace HiraBots
             ApplyStimuliDatabaseCommandBuffer();
             ApplySensorsDatabaseCommandBuffer();
 
-            ShutdownStimuliDatabaseCommandBuffer();
-            ShutdownSensorsDatabaseCommandBuffer();
+            foreach (var s in s_Sensors)
+            {
+                ShutdownSensor(s);
+            }
 
             for (var i = 0; i < 32; i++)
             {

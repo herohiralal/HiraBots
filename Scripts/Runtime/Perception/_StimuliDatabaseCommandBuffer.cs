@@ -79,43 +79,37 @@ namespace HiraBots
             ChangeStimulusAssociatedObject
         }
 
-        private static Queue<StimuliDatabaseCommandType> s_StimuliDatabaseCommandTypes;
+        private static readonly Queue<StimuliDatabaseCommandType> s_StimuliDatabaseCommandTypes
+            = new Queue<StimuliDatabaseCommandType>();
 
-        private static Queue<AddStimulusCommand> s_AddStimulusCommands;
-        private static Queue<RemoveStimulusCommand> s_RemoveStimulusCommands;
-        private static Queue<ChangeStimulusPositionCommand> s_ChangeStimulusPositionCommands;
-        private static Queue<ChangeStimulusTypeCommand> s_ChangeStimulusTypeCommands;
-        private static Queue<ChangeStimulusAssociatedObjectCommand> s_ChangeStimulusAssociatedObjectCommands;
+        private static readonly Queue<AddStimulusCommand> s_AddStimulusCommands
+            = new Queue<AddStimulusCommand>();
 
-        private static void InitializeStimuliDatabaseCommandBuffer()
+        private static readonly Queue<RemoveStimulusCommand> s_RemoveStimulusCommands
+            = new Queue<RemoveStimulusCommand>();
+
+        private static readonly Queue<ChangeStimulusPositionCommand> s_ChangeStimulusPositionCommands
+            = new Queue<ChangeStimulusPositionCommand>();
+
+        private static readonly Queue<ChangeStimulusTypeCommand> s_ChangeStimulusTypeCommands
+            = new Queue<ChangeStimulusTypeCommand>();
+
+        private static readonly Queue<ChangeStimulusAssociatedObjectCommand> s_ChangeStimulusAssociatedObjectCommands
+            = new Queue<ChangeStimulusAssociatedObjectCommand>();
+
+        private static void ResetStimuliDatabaseCommandBuffer()
         {
-            s_StimuliDatabaseCommandTypes = new Queue<StimuliDatabaseCommandType>();
+            s_StimuliDatabaseCommandTypes.Clear();
 
-            s_AddStimulusCommands = new Queue<AddStimulusCommand>();
-            s_RemoveStimulusCommands = new Queue<RemoveStimulusCommand>();
-            s_ChangeStimulusPositionCommands = new Queue<ChangeStimulusPositionCommand>();
-            s_ChangeStimulusTypeCommands = new Queue<ChangeStimulusTypeCommand>();
-            s_ChangeStimulusAssociatedObjectCommands = new Queue<ChangeStimulusAssociatedObjectCommand>();
-        }
-
-        private static void ShutdownStimuliDatabaseCommandBuffer()
-        {
-            s_ChangeStimulusAssociatedObjectCommands = null;
-            s_ChangeStimulusTypeCommands = null;
-            s_ChangeStimulusPositionCommands = null;
-            s_RemoveStimulusCommands = null;
-            s_AddStimulusCommands = null;
-
-            s_StimuliDatabaseCommandTypes = null;
+            s_AddStimulusCommands.Clear();
+            s_RemoveStimulusCommands.Clear();
+            s_ChangeStimulusPositionCommands.Clear();
+            s_ChangeStimulusTypeCommands.Clear();
+            s_ChangeStimulusAssociatedObjectCommands.Clear();
         }
 
         internal static int AddStimulus(byte stimulusType, Vector3 position, int associatedObject)
         {
-            if (!isActive)
-            {
-                return 0;
-            }
-
             s_Id++;
 
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.AddStimulus);
@@ -126,44 +120,24 @@ namespace HiraBots
 
         internal static void RemoveStimulus(int id)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.RemoveStimulus);
             s_RemoveStimulusCommands.Enqueue(new RemoveStimulusCommand(id));
         }
 
         internal static void ChangeStimulusPosition(int id, Vector3 newPos)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusPosition);
             s_ChangeStimulusPositionCommands.Enqueue(new ChangeStimulusPositionCommand(id, newPos));
         }
 
         internal static void ChangeStimulusType(int id, byte newType)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusType);
             s_ChangeStimulusTypeCommands.Enqueue(new ChangeStimulusTypeCommand(id, newType));
         }
 
         internal static void ChangeStimulusAssociatedObject(int id, int newAssociatedObject)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusAssociatedObject);
             s_ChangeStimulusAssociatedObjectCommands.Enqueue(new ChangeStimulusAssociatedObjectCommand(id, newAssociatedObject));
         }

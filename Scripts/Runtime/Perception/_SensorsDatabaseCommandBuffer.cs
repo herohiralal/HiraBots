@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -41,68 +43,63 @@ namespace HiraBots
             internal int newStimulusMask { get; }
         }
 
+        private struct ChangeSensorMaxPerceivedGameObjectsCountCommand
+        {
+            internal ChangeSensorMaxPerceivedGameObjectsCountCommand(HiraBotSensor sensor)
+            {
+                this.sensor = sensor;
+            }
+
+            internal HiraBotSensor sensor { get; }
+        }
+
         private enum SensorsDatabaseCommandType : byte
         {
             Add,
             Remove,
-            ChangeStimulusMask
+            ChangeStimulusMask,
+            ChangeMaxPerceivedGameObjectsCount
         }
 
-        private static Queue<SensorsDatabaseCommandType> s_SensorsDatabaseCommandTypes;
+        private static readonly Queue<SensorsDatabaseCommandType> s_SensorsDatabaseCommandTypes = new Queue<SensorsDatabaseCommandType>();
 
-        private static Queue<AddSensorCommand> s_AddSensorCommands;
-        private static Queue<RemoveSensorCommand> s_RemoveSensorCommands;
-        private static Queue<ChangeSensorStimulusMaskCommand> s_ChangeSensorStimulusMaskCommands;
+        private static readonly Queue<AddSensorCommand> s_AddSensorCommands = new Queue<AddSensorCommand>();
+        private static readonly Queue<RemoveSensorCommand> s_RemoveSensorCommands = new Queue<RemoveSensorCommand>();
+        private static readonly Queue<ChangeSensorStimulusMaskCommand> s_ChangeSensorStimulusMaskCommands = new Queue<ChangeSensorStimulusMaskCommand>();
+        private static readonly Queue<ChangeSensorMaxPerceivedGameObjectsCountCommand> s_ChangeSensorMaxPerceivedGameObjectsCountCommands = new Queue<ChangeSensorMaxPerceivedGameObjectsCountCommand>();
 
-        private static void InitializeSensorsDatabaseCommandBuffer()
+        private static void ResetSensorsDatabaseCommandBuffer()
         {
-            s_SensorsDatabaseCommandTypes = new Queue<SensorsDatabaseCommandType>();
+            s_SensorsDatabaseCommandTypes.Clear();
 
-            s_AddSensorCommands = new Queue<AddSensorCommand>();
-            s_RemoveSensorCommands = new Queue<RemoveSensorCommand>();
-            s_ChangeSensorStimulusMaskCommands = new Queue<ChangeSensorStimulusMaskCommand>();
-        }
-
-        private static void ShutdownSensorsDatabaseCommandBuffer()
-        {
-            s_ChangeSensorStimulusMaskCommands = null;
-            s_RemoveSensorCommands = null;
-            s_AddSensorCommands = null;
-
-            s_SensorsDatabaseCommandTypes = null;
+            s_AddSensorCommands.Clear();
+            s_RemoveSensorCommands.Clear();
+            s_ChangeSensorStimulusMaskCommands.Clear();
+            s_ChangeSensorMaxPerceivedGameObjectsCountCommands.Clear();
         }
 
         internal static void AddSensor(HiraBotSensor sensor, int stimulusMask)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.Add);
             s_AddSensorCommands.Enqueue(new AddSensorCommand(sensor, stimulusMask));
         }
 
         internal static void RemoveSensor(HiraBotSensor sensor)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.Remove);
             s_RemoveSensorCommands.Enqueue(new RemoveSensorCommand(sensor));
         }
 
         internal static void ChangeStimulusMask(HiraBotSensor sensor, int newStimulusMask)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.ChangeStimulusMask);
             s_ChangeSensorStimulusMaskCommands.Enqueue(new ChangeSensorStimulusMaskCommand(sensor, newStimulusMask));
+        }
+
+        internal static void ChangeSensorMaxPerceivedGameObjectsCount(HiraBotSensor sensor)
+        {
+            s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.ChangeMaxPerceivedGameObjectsCount);
+            s_ChangeSensorMaxPerceivedGameObjectsCountCommands.Enqueue(new ChangeSensorMaxPerceivedGameObjectsCountCommand(sensor));
         }
 
         private static void ApplySensorsDatabaseCommandBuffer()
@@ -136,7 +133,7 @@ namespace HiraBots
 
                         s_SensorsCount++;
 
-                        cmd.sensor.Initialize();
+                        InitializeSensor(cmd.sensor);
 
                         break;
                     }
@@ -148,7 +145,7 @@ namespace HiraBots
                             break;
                         }
 
-                        cmd.sensor.Shutdown();
+                        ShutdownSensor(cmd.sensor);
 
                         var lastSensorIndex = s_SensorsCount - 1;
                         var lastSensor = s_Sensors[lastSensorIndex];
@@ -176,6 +173,24 @@ namespace HiraBots
                         s_SensorsStimulusMasks[indexToChange] = cmd.newStimulusMask;
                         break;
                     }
+                    case SensorsDatabaseCommandType.ChangeMaxPerceivedGameObjectsCount:
+                    {
+                        var cmd = s_ChangeSensorMaxPerceivedGameObjectsCountCommands.Dequeue();
+                        if (!s_SensorsLookUpTable.ContainsKey(cmd.sensor))
+                        {
+                            break;
+                        }
+
+                        var sensor = cmd.sensor;
+
+                        sensor.m_PerceivedGameObjects.Reallocate(sensor.maxPerceivedGameObjects + 1,
+                            Allocator.Persistent, NativeArrayOptions.ClearMemory);
+
+                        sensor.m_GameObjectsPerceivedThisFrame.Reallocate(sensor.maxPerceivedGameObjects + 1,
+                            Allocator.Persistent, NativeArrayOptions.ClearMemory);
+
+                        break;
+                    }
                     default:
                         throw new System.ArgumentOutOfRangeException();
                 }
@@ -184,7 +199,8 @@ namespace HiraBots
             if (s_SensorsDatabaseCommandTypes.Count == 0
                 && s_SensorsDatabaseCommandTypes.Count == s_AddSensorCommands.Count
                 && s_AddSensorCommands.Count == s_RemoveSensorCommands.Count
-                && s_RemoveSensorCommands.Count == s_ChangeSensorStimulusMaskCommands.Count)
+                && s_RemoveSensorCommands.Count == s_ChangeSensorStimulusMaskCommands.Count
+                && s_ChangeSensorStimulusMaskCommands.Count == s_ChangeSensorMaxPerceivedGameObjectsCountCommands.Count)
             {
                 return;
             }
@@ -193,6 +209,28 @@ namespace HiraBots
             Debug.Break();
             Debug.LogError("Command buffers not correctly cleared in Perception System sensors database.");
 #endif
+        }
+
+        private static void InitializeSensor(HiraBotSensor sensor)
+        {
+            sensor.m_JobHandlePerStimulusType = new NativeArray<(byte, JobHandle)>(32,
+                Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            sensor.m_SuccessCheckArraysPerStimulusType = new NativeArray<bool4>[32];
+            sensor.m_PerceivedGameObjects = new NativeArray<int>(sensor.maxPerceivedGameObjects + 1, // 1 extra for count
+                Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            sensor.m_GameObjectsPerceivedThisFrame = new NativeArray<int>(sensor.maxPerceivedGameObjects + 1,
+                Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            sensor.m_JobCountThisFrame = 0;
+        }
+
+        private static void ShutdownSensor(HiraBotSensor sensor)
+        {
+            sensor.m_JobCountThisFrame = 0;
+            sensor.m_PerceivedGameObjects.Dispose();
+            sensor.m_PerceivedGameObjects = default;
+            sensor.m_SuccessCheckArraysPerStimulusType = null;
+            sensor.m_JobHandlePerStimulusType.Dispose();
+            sensor.m_JobHandlePerStimulusType = default;
         }
     }
 }
