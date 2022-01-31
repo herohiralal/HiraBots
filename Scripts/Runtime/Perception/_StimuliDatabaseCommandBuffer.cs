@@ -111,6 +111,11 @@ namespace HiraBots
 
         internal static int AddStimulus(byte stimulusType, Vector3 position, int associatedObject)
         {
+            if (!isActive)
+            {
+                return 0;
+            }
+
             s_Id++;
 
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.AddStimulus);
@@ -121,24 +126,44 @@ namespace HiraBots
 
         internal static void RemoveStimulus(int id)
         {
+            if (!isActive)
+            {
+                return;
+            }
+
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.RemoveStimulus);
             s_RemoveStimulusCommands.Enqueue(new RemoveStimulusCommand(id));
         }
 
         internal static void ChangeStimulusPosition(int id, Vector3 newPos)
         {
+            if (!isActive)
+            {
+                return;
+            }
+
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusPosition);
             s_ChangeStimulusPositionCommands.Enqueue(new ChangeStimulusPositionCommand(id, newPos));
         }
 
         internal static void ChangeStimulusType(int id, byte newType)
         {
+            if (!isActive)
+            {
+                return;
+            }
+
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusType);
             s_ChangeStimulusTypeCommands.Enqueue(new ChangeStimulusTypeCommand(id, newType));
         }
 
         internal static void ChangeStimulusAssociatedObject(int id, int newAssociatedObject)
         {
+            if (!isActive)
+            {
+                return;
+            }
+
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusAssociatedObject);
             s_ChangeStimulusAssociatedObjectCommands.Enqueue(new ChangeStimulusAssociatedObjectCommand(id, newAssociatedObject));
         }

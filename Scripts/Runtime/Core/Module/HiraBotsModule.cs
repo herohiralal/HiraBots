@@ -130,11 +130,11 @@ namespace HiraBots
 
             if (tickPerceptionSystem)
             {
-                var boundsCheckJobs = PerceptionSystem.ScheduleBoundsCheckJob();
+                PerceptionSystem.ScheduleJobs();
 
                 // do something here on the main thread if needed
 
-                PerceptionSystem.Tick(boundsCheckJobs);
+                PerceptionSystem.CollectJobResults();
             }
         }
 

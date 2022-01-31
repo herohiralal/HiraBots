@@ -7,7 +7,7 @@ namespace UnityEngine.AI
 {
     public sealed class HiraBotSphericalSensor : HiraBotSensor
     {
-        public override JobHandle ScheduleBoundsCheckJob(NativeArray<float4x4> stimuliPositions, NativeArray<bool4> results)
+        protected override JobHandle ScheduleBoundsCheckJob(NativeArray<float4x4> stimuliPositions, NativeArray<bool4> results)
         {
             var t = transform;
 

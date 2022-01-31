@@ -13,8 +13,6 @@ namespace HiraBots
         private static Dictionary<HiraBotSensor, int> s_SensorsLookUpTable;
         private static int s_SensorsCount;
 
-        private static NativeArray<bool>[][] s_SensorsSuccessCheckArrays;
-
         private static NativeArray<float4>[] s_StimuliPositions;
         private static NativeArray<int>[] s_StimuliAssociatedObjects;
         private static NativeArray<int>[] s_Stimuli;
@@ -23,20 +21,21 @@ namespace HiraBots
 
         private static int s_Id = 0;
 
+        private static bool isActive { get; set; }
+
         internal static void Initialize()
         {
+            if (isActive)
+            {
+                return;
+            }
+
             s_Id = int.MinValue;
 
             s_SensorsStimulusMasks = new NativeArray<int>(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             s_Sensors = new HiraBotSensor[8];
             s_SensorsLookUpTable = new Dictionary<HiraBotSensor, int>(8);
             s_SensorsCount = 0;
-
-            s_SensorsSuccessCheckArrays = new NativeArray<bool>[8][];
-            for (var i = 0; i < 8; i++)
-            {
-                s_SensorsSuccessCheckArrays[i] = new NativeArray<bool>[32];
-            }
 
             s_StimuliPositions = new NativeArray<float4>[32];
             s_StimuliAssociatedObjects = new NativeArray<int>[32];
@@ -54,10 +53,19 @@ namespace HiraBots
 
             InitializeSensorsDatabaseCommandBuffer();
             InitializeStimuliDatabaseCommandBuffer();
+
+            isActive = true;
         }
 
         internal static void Shutdown()
         {
+            if (!isActive)
+            {
+                return;
+            }
+
+            isActive = false;
+
             ApplyStimuliDatabaseCommandBuffer();
             ApplySensorsDatabaseCommandBuffer();
 
@@ -78,8 +86,6 @@ namespace HiraBots
             s_StimuliAssociatedObjects = null;
             s_StimuliPositions = null;
 
-            s_SensorsSuccessCheckArrays = new NativeArray<bool>[0][];
-
             s_SensorsCount = 0;
             s_SensorsLookUpTable.Clear();
             s_Sensors = new HiraBotSensor[0];
@@ -96,11 +102,9 @@ namespace HiraBots
 
         internal static bool shouldTick => s_SensorsCount == 0 || s_StimuliLookUpTable.Count == 0;
 
-        internal static unsafe NativeArray<JobHandle> ScheduleBoundsCheckJob()
+        internal static unsafe void ScheduleJobs()
         {
-            var na = new NativeArray<JobHandle>(32, Allocator.Temp, NativeArrayOptions.ClearMemory);
-
-            for (var stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
+            for (byte stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
             {
                 // ignore if no stimuli of the current type
                 if (s_StimuliCounts[stimulusTypeIndex] == 0)
@@ -111,8 +115,6 @@ namespace HiraBots
                 var type = (1 << stimulusTypeIndex);
                 var stimuliPositionsForCurrentType = s_StimuliPositions[stimulusTypeIndex];
 
-                JobHandle currentTypeJobHandle = default;
-
                 for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
                     var stimulusMask = s_SensorsStimulusMasks[sensorIndex];
@@ -122,55 +124,18 @@ namespace HiraBots
                         continue;
                     }
 
-                    var sensorsSuccessCheck = new NativeArray<bool>(stimuliPositionsForCurrentType.Length,
-                        Allocator.TempJob, NativeArrayOptions.ClearMemory);
-
-                    var boundsCheckJob = s_Sensors[sensorIndex].ScheduleBoundsCheckJob(
+                    s_Sensors[sensorIndex].ScheduleJobs(
                         stimuliPositionsForCurrentType.Reinterpret<float4x4>(sizeof(float4)),
-                        sensorsSuccessCheck.Reinterpret<bool4>(sizeof(bool)));
-
-                    currentTypeJobHandle = JobHandle.CombineDependencies(currentTypeJobHandle, boundsCheckJob);
-
-                    s_SensorsSuccessCheckArrays[sensorIndex][stimulusTypeIndex] = sensorsSuccessCheck;
+                        stimulusTypeIndex);
                 }
-
-                na[stimulusTypeIndex] = currentTypeJobHandle;
             }
 
             JobHandle.ScheduleBatchedJobs();
-            return na;
         }
 
-        internal static void Tick(NativeArray<JobHandle> jh)
+        internal static void CollectJobResults()
         {
-            for (var stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
-            {
-                jh[stimulusTypeIndex].Complete();
-
-                // ignore if no stimuli of the current type
-                if (s_StimuliCounts[stimulusTypeIndex] == 0)
-                {
-                    continue;
-                }
-
-                var type = (1 << stimulusTypeIndex);
-
-                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
-                {
-                    var stimulusMask = s_SensorsStimulusMasks[sensorIndex];
-                    if ((stimulusMask & type) == 0)
-                    {
-                        // skip this sensor if not supposed to detect
-                        continue;
-                    }
-                }
-            }
-
-            JobHandle.ScheduleBatchedJobs();
-
-            // deallocate just in case some day i hear the voices of the old ones
-            // and they tell me to allocate this container using a TempJob allocation
-            jh.Dispose();
+            
         }
     }
 }
