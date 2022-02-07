@@ -69,8 +69,9 @@ namespace HiraBots
             ApplyStimuliDatabaseCommandBuffer();
             ApplySensorsDatabaseCommandBuffer();
 
-            foreach (var s in s_Sensors)
+            for (var i = 0; i < s_SensorsCount; i++)
             {
+                var s = s_Sensors[i];
                 ShutdownSensor(s);
             }
 
@@ -102,14 +103,16 @@ namespace HiraBots
             ApplyStimuliDatabaseCommandBuffer();
         }
 
-        internal static bool shouldTick => s_SensorsCount == 0 || s_StimuliLookUpTable.Count == 0;
+        internal static bool shouldTick => s_SensorsCount != 0 && s_StimuliLookUpTable.Count != 0;
 
         internal static void ScheduleJobs(float deltaTime)
         {
             for (byte stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
             {
                 // ignore if no stimuli of the current type
-                if (s_StimuliCounts[stimulusTypeIndex] == 0)
+                var stimuliCount = s_StimuliCounts[stimulusTypeIndex];
+
+                if (stimuliCount == 0)
                 {
                     continue;
                 }
@@ -127,7 +130,10 @@ namespace HiraBots
                         continue;
                     }
 
-                    s_Sensors[sensorIndex].ScheduleJobsToDetermineObjectsPerceivedThisTick(stimuliPositionsForCurrentType, stimuliAssociatedObjectsForCurrentType);
+                    s_Sensors[sensorIndex].ScheduleJobsToDetermineObjectsPerceivedThisTick(
+                        stimuliPositionsForCurrentType,
+                        stimuliAssociatedObjectsForCurrentType,
+                        stimuliCount);
                 }
             }
 

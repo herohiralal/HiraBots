@@ -13,23 +13,25 @@ namespace HiraBots
             internal UpdateObjectsPerceivedThisFrameJob(
                 NativeArray<bool> successCheckArray,
                 NativeArray<int> associatedObjects,
-                NativeArray<UnmanagedCollections.Data<int>> objectsPerceivedThisFrame)
+                NativeArray<UnmanagedCollections.Data<int>> objectsPerceivedThisFrame,
+                int stimuliCount)
             {
                 m_SuccessCheckArray = successCheckArray;
                 m_AssociatedObjects = associatedObjects;
                 m_ObjectsPerceivedThisFrame = objectsPerceivedThisFrame;
+                m_StimuliCount = stimuliCount;
             }
 
             [ReadOnly] private readonly NativeArray<bool> m_SuccessCheckArray;
             [ReadOnly] private readonly NativeArray<int> m_AssociatedObjects;
+            [ReadOnly] private readonly int m_StimuliCount;
             private NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
 
             public void Execute()
             {
-                var length = m_SuccessCheckArray.Length;
                 var successChecks = (bool*) m_SuccessCheckArray.GetUnsafeReadOnlyPtr();
 
-                for (var i = 0; i < length; i++)
+                for (var i = 0; i < m_StimuliCount; i++)
                 {
                     if (successChecks[i])
                     {

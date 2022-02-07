@@ -54,7 +54,7 @@ namespace UnityEngine.AI
                     float4 distanceSq4 = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        distanceSq4[i] = math.distancesq(m_SensorPosition, stimuliPosition4[i]);
+                        distanceSq4[j] = math.distancesq(m_SensorPosition, stimuliPosition4[j]);
                     }
 
                     m_Results[i] = distanceSq4 < rangeSq4;

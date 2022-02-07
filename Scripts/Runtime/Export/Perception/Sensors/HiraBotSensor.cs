@@ -61,7 +61,9 @@ namespace UnityEngine.AI
             PerceptionSystem.RemoveSensor(this);
         }
 
-        internal unsafe void ScheduleJobsToDetermineObjectsPerceivedThisTick(NativeArray<float4> stimuliPositions, NativeArray<int> stimuliAssociatedObjects)
+        internal unsafe void ScheduleJobsToDetermineObjectsPerceivedThisTick(NativeArray<float4> stimuliPositions,
+            NativeArray<int> stimuliAssociatedObjects,
+            int stimuliCount)
         {
             var successCheckArray = new NativeArray<bool>(stimuliPositions.Length, Allocator.TempJob,
                 NativeArrayOptions.ClearMemory);
@@ -72,7 +74,7 @@ namespace UnityEngine.AI
             {
                 jh = ScheduleBoundsCheckJob(
                     stimuliPositions.Reinterpret<float4x4>(sizeof(float4)),
-                    successCheckArray.Reinterpret<bool4>(sizeof(float4)));
+                    successCheckArray.Reinterpret<bool4>(sizeof(bool)));
                 // schedule the los-check or nav-distance check jobs here
             }
             catch (System.Exception e)
@@ -87,8 +89,11 @@ namespace UnityEngine.AI
             m_UpdateJob = new PerceptionSystem.UpdateObjectsPerceivedThisFrameJob(
                     successCheckArray,
                     stimuliAssociatedObjects,
-                    m_ObjectsPerceivedThisFrame)
+                    m_ObjectsPerceivedThisFrame,
+                    stimuliCount)
                 .Schedule(dependency);
+
+            successCheckArray.Dispose(m_UpdateJob.Value);
         }
 
         protected abstract JobHandle ScheduleBoundsCheckJob(NativeArray<float4x4> stimuliPositions, NativeArray<bool4> results);
