@@ -104,7 +104,7 @@ namespace HiraBots
 
         internal static bool shouldTick => s_SensorsCount == 0 || s_StimuliLookUpTable.Count == 0;
 
-        internal static unsafe void ScheduleJobs()
+        internal static void ScheduleJobs(float deltaTime)
         {
             for (byte stimulusTypeIndex = 0; stimulusTypeIndex < 32; stimulusTypeIndex++)
             {
@@ -116,6 +116,7 @@ namespace HiraBots
 
                 var type = (1 << stimulusTypeIndex);
                 var stimuliPositionsForCurrentType = s_StimuliPositions[stimulusTypeIndex];
+                var stimuliAssociatedObjectsForCurrentType = s_StimuliAssociatedObjects[stimulusTypeIndex];
 
                 for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
@@ -126,10 +127,15 @@ namespace HiraBots
                         continue;
                     }
 
-                    s_Sensors[sensorIndex].ScheduleJobs(
-                        stimuliPositionsForCurrentType.Reinterpret<float4x4>(sizeof(float4)),
-                        stimulusTypeIndex);
+                    s_Sensors[sensorIndex].ScheduleJobsToDetermineObjectsPerceivedThisTick(stimuliPositionsForCurrentType, stimuliAssociatedObjectsForCurrentType);
                 }
+            }
+
+            JobHandle.ScheduleBatchedJobs();
+
+            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+            {
+                s_Sensors[sensorIndex].ScheduleJobsToSortPerceivedObjectsData(deltaTime);
             }
 
             JobHandle.ScheduleBatchedJobs();
@@ -137,7 +143,10 @@ namespace HiraBots
 
         internal static void CollectJobResults()
         {
-            
+            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+            {
+                s_Sensors[sensorIndex].CollectJobResults();
+            }
         }
     }
 }

@@ -130,7 +130,7 @@ namespace HiraBots
 
             if (tickPerceptionSystem)
             {
-                PerceptionSystem.ScheduleJobs();
+                PerceptionSystem.ScheduleJobs(Time.fixedDeltaTime);
 
                 // do something here on the main thread if needed
 
