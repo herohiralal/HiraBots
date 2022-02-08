@@ -17,6 +17,22 @@ namespace UnityEngine.AI
         {
         }
 
+        [System.Serializable]
+        internal struct LineOfSightCheckProperties
+        {
+            internal bool m_Enabled;
+            internal LayerMask m_BlockingObjects;
+        }
+
+        [System.Serializable]
+        internal struct NavDistanceCheckProperties
+        {
+            internal bool m_Enabled;
+            internal float m_StimulusNavmeshDistanceTolerance;
+            internal int m_AgentType;
+            internal int m_AreaMask;
+        }
+
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
         [SerializeField] private int m_StimulusMask = ~0;
@@ -30,6 +46,13 @@ namespace UnityEngine.AI
 
         [Tooltip("Callback for when an object stops being perceived.")]
         [SerializeField] private ObjectStoppedPerceivingEvent m_OnObjectStoppedPerceiving;
+
+        [Space] [Header("Secondary Checks")]
+        [Tooltip("Whether to check for the line of sight to the stimulus.")]
+        [SerializeField] private LineOfSightCheckProperties m_LineOfSightCheck;
+
+        [Tooltip("Whether to check that the navigable distance to the stimulus is within the range.")]
+        [SerializeField] private NavDistanceCheckProperties m_NavDistanceCheck;
 
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
@@ -71,7 +94,8 @@ namespace UnityEngine.AI
             PerceptionSystem.RemoveSensor(this);
         }
 
-        internal unsafe void ScheduleJobsToDetermineObjectsPerceivedThisTick(NativeArray<float4> stimuliPositions,
+        internal void ScheduleJobsToDetermineObjectsPerceivedThisTick(
+            NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             int stimuliCount)
         {
@@ -79,12 +103,12 @@ namespace UnityEngine.AI
             try
             {
                 jh = ScheduleBoundsCheckJob(
-                    stimuliPositions.Reinterpret<float4x4>(sizeof(float4)),
+                    stimuliPositions,
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
+                    new PerceivedObjectsLocationsList(),
                     stimuliCount,
                     m_UpdateJob ?? default);
-                // schedule the los-check or nav-distance check jobs here
             }
             catch (System.Exception e)
             {
@@ -92,13 +116,24 @@ namespace UnityEngine.AI
                 return;
             }
 
+            if (m_LineOfSightCheck.m_Enabled)
+            {
+                
+            }
+
+            if (m_NavDistanceCheck.m_Enabled)
+            {
+                
+            }
+
             m_UpdateJob = jh;
         }
 
         protected abstract JobHandle ScheduleBoundsCheckJob(
-            NativeArray<float4x4> stimuliPositions,
+            NativeArray<float4> nativeArray,
             NativeArray<int> stimuliAssociatedObjects,
             PerceivedObjectsList perceivedObjectsList,
+            PerceivedObjectsLocationsList perceivedObjectsLocationsList,
             int stimuliCount,
             JobHandle dependencies);
 

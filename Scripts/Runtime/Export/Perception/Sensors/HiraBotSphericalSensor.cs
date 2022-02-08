@@ -8,9 +8,10 @@ namespace UnityEngine.AI
     public sealed class HiraBotSphericalSensor : HiraBotSensor
     {
         protected override JobHandle ScheduleBoundsCheckJob(
-            NativeArray<float4x4> stimuliPositions,
+            NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             PerceivedObjectsList perceivedObjectsList,
+            PerceivedObjectsLocationsList perceivedObjectsLocationsList,
             int stimuliCount,
             JobHandle dependencies)
         {
@@ -28,7 +29,8 @@ namespace UnityEngine.AI
                     stimuliCount,
                     stimuliPositions,
                     stimuliAssociatedObjects,
-                    perceivedObjectsList)
+                    perceivedObjectsList,
+                    perceivedObjectsLocationsList)
                 .Schedule(dependencies);
         }
 
@@ -39,9 +41,10 @@ namespace UnityEngine.AI
                 float4 sensorPosition,
                 float range,
                 int stimuliCount,
-                NativeArray<float4x4> stimuliPositions,
+                NativeArray<float4> stimuliPositions,
                 NativeArray<int> stimuliAssociatedObjects,
-                PerceivedObjectsList perceivedObjectsList)
+                PerceivedObjectsList perceivedObjectsList,
+                PerceivedObjectsLocationsList perceivedObjectsLocationsList)
             {
                 m_SensorPosition = sensorPosition;
                 m_Range = range;
@@ -49,14 +52,16 @@ namespace UnityEngine.AI
                 m_StimuliPositions = stimuliPositions;
                 m_StimuliAssociatedObjects = stimuliAssociatedObjects;
                 m_PerceivedObjectsList = perceivedObjectsList;
+                m_PerceivedObjectsLocationsList = perceivedObjectsLocationsList;
             }
 
             [ReadOnly] private readonly float4 m_SensorPosition;
             [ReadOnly] private readonly float m_Range;
             [ReadOnly] private readonly int m_StimuliCount;
-            [ReadOnly] private readonly NativeArray<float4x4> m_StimuliPositions;
+            [ReadOnly] private NativeArray<float4> m_StimuliPositions;
             [ReadOnly] private readonly NativeArray<int> m_StimuliAssociatedObjects;
             private PerceivedObjectsList m_PerceivedObjectsList;
+            private PerceivedObjectsLocationsList m_PerceivedObjectsLocationsList;
 
             public unsafe void Execute()
             {
@@ -65,10 +70,11 @@ namespace UnityEngine.AI
                 var length = m_StimuliPositions.Length;
 
                 var vectorizedResults = stackalloc bool4[length];
+                var vectorizedPositions = m_StimuliPositions.Reinterpret<float4x4>(sizeof(float4));
 
                 for (var i = 0; i < length; i++)
                 {
-                    var stimuliPosition4 = m_StimuliPositions[i];
+                    var stimuliPosition4 = vectorizedPositions[i];
 
                     float4 distanceSq4 = default;
                     for (var j = 0; j < 4; j++)
@@ -80,11 +86,25 @@ namespace UnityEngine.AI
                 }
 
                 var results = (bool*) vectorizedResults;
+
                 for (var i = 0; i < m_StimuliCount; i++)
                 {
                     if (results[i])
                     {
                         m_PerceivedObjectsList.Add(m_StimuliAssociatedObjects[i]);
+                    }
+                }
+
+                if (!m_PerceivedObjectsLocationsList.isValid)
+                {
+                    return;
+                }
+
+                for (var i = 0; i < m_StimuliCount; i++)
+                {
+                    if (results[i])
+                    {
+                        m_PerceivedObjectsLocationsList.Add(m_StimuliPositions[i]);
                     }
                 }
             }
