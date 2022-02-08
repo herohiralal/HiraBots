@@ -67,12 +67,11 @@ namespace UnityEngine.AI
             {
                 var rangeSq4 = new float4(m_Range * m_Range);
 
-                var length = m_StimuliPositions.Length;
-
-                var vectorizedResults = stackalloc bool4[length];
                 var vectorizedPositions = m_StimuliPositions.Reinterpret<float4x4>(sizeof(float4));
+                var vectorizedLength = vectorizedPositions.Length;
+                var vectorizedResults = stackalloc bool4[vectorizedLength];
 
-                for (var i = 0; i < length; i++)
+                for (var i = 0; i < vectorizedLength; i++)
                 {
                     var stimuliPosition4 = vectorizedPositions[i];
 
