@@ -8,7 +8,16 @@ namespace HiraBots
 {
     internal static partial class PerceptionSystem
     {
+        [System.Flags]
+        private enum SensorSecondaryChecksFlags : byte
+        {
+            None = 0,
+            LineOfSight = 1 << 0,
+            NavDistance = 1 << 1,
+        }
+
         private static NativeArray<int> s_SensorsStimulusMasks;
+        private static NativeArray<SensorSecondaryChecksFlags> s_SensorsSecondaryChecks;
         private static HiraBotSensor[] s_Sensors;
         private static Dictionary<HiraBotSensor, int> s_SensorsLookUpTable;
         private static int s_SensorsCount;
@@ -33,6 +42,7 @@ namespace HiraBots
             s_Id = int.MinValue;
 
             s_SensorsStimulusMasks = new NativeArray<int>(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            s_SensorsSecondaryChecks = new NativeArray<SensorSecondaryChecksFlags>(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             s_Sensors = new HiraBotSensor[8];
             s_SensorsLookUpTable = new Dictionary<HiraBotSensor, int>(8);
             s_SensorsCount = 0;
@@ -92,6 +102,7 @@ namespace HiraBots
             s_SensorsCount = 0;
             s_SensorsLookUpTable.Clear();
             s_Sensors = new HiraBotSensor[0];
+            s_SensorsSecondaryChecks.Dispose();
             s_SensorsStimulusMasks.Dispose();
 
             s_Id = int.MinValue;

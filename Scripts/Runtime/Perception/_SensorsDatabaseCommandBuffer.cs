@@ -9,14 +9,16 @@ namespace HiraBots
     {
         private struct AddSensorCommand
         {
-            internal AddSensorCommand(HiraBotSensor sensor, int stimulusMask)
+            internal AddSensorCommand(HiraBotSensor sensor, int stimulusMask, SensorSecondaryChecksFlags secondaryCheckFlags)
             {
                 this.sensor = sensor;
                 this.stimulusMask = stimulusMask;
+                this.secondaryCheckFlags = secondaryCheckFlags;
             }
 
             internal HiraBotSensor sensor { get; }
             internal int stimulusMask { get; }
+            internal SensorSecondaryChecksFlags secondaryCheckFlags { get; }
         }
 
         private struct RemoveSensorCommand
@@ -41,11 +43,24 @@ namespace HiraBots
             internal int newStimulusMask { get; }
         }
 
+        private struct ChangeSensorSecondaryCheckEnabledCommand
+        {
+            internal ChangeSensorSecondaryCheckEnabledCommand(HiraBotSensor sensor, SensorSecondaryChecksFlags secondaryChecksFlags)
+            {
+                this.sensor = sensor;
+                this.secondaryChecksFlags = secondaryChecksFlags;
+            }
+
+            internal HiraBotSensor sensor { get; }
+            internal SensorSecondaryChecksFlags secondaryChecksFlags { get; }
+        }
+
         private enum SensorsDatabaseCommandType : byte
         {
             Add,
             Remove,
-            ChangeStimulusMask
+            ChangeStimulusMask,
+            ChangeSecondaryChecksEnabled
         }
 
         private static readonly Queue<SensorsDatabaseCommandType> s_SensorsDatabaseCommandTypes = new Queue<SensorsDatabaseCommandType>();
@@ -53,6 +68,7 @@ namespace HiraBots
         private static readonly Queue<AddSensorCommand> s_AddSensorCommands = new Queue<AddSensorCommand>();
         private static readonly Queue<RemoveSensorCommand> s_RemoveSensorCommands = new Queue<RemoveSensorCommand>();
         private static readonly Queue<ChangeSensorStimulusMaskCommand> s_ChangeSensorStimulusMaskCommands = new Queue<ChangeSensorStimulusMaskCommand>();
+        private static readonly Queue<ChangeSensorSecondaryCheckEnabledCommand> s_ChangeSensorSecondaryCheckEnabledCommands = new Queue<ChangeSensorSecondaryCheckEnabledCommand>();
 
         private static void ResetSensorsDatabaseCommandBuffer()
         {
@@ -61,12 +77,16 @@ namespace HiraBots
             s_AddSensorCommands.Clear();
             s_RemoveSensorCommands.Clear();
             s_ChangeSensorStimulusMaskCommands.Clear();
+            s_ChangeSensorSecondaryCheckEnabledCommands.Clear();
         }
 
-        internal static void AddSensor(HiraBotSensor sensor, int stimulusMask)
+        internal static void AddSensor(HiraBotSensor sensor, int stimulusMask, bool lineOfSightCheck, bool navDistanceCheck)
         {
             s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.Add);
-            s_AddSensorCommands.Enqueue(new AddSensorCommand(sensor, stimulusMask));
+            var secondaryChecksFlags =
+                (lineOfSightCheck ? SensorSecondaryChecksFlags.LineOfSight : SensorSecondaryChecksFlags.None)
+                | (navDistanceCheck ? SensorSecondaryChecksFlags.NavDistance : SensorSecondaryChecksFlags.None);
+            s_AddSensorCommands.Enqueue(new AddSensorCommand(sensor, stimulusMask, secondaryChecksFlags));
         }
 
         internal static void RemoveSensor(HiraBotSensor sensor)
@@ -79,6 +99,15 @@ namespace HiraBots
         {
             s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.ChangeStimulusMask);
             s_ChangeSensorStimulusMaskCommands.Enqueue(new ChangeSensorStimulusMaskCommand(sensor, newStimulusMask));
+        }
+
+        internal static void ChangeSecondaryChecksEnabled(HiraBotSensor sensor, bool lineOfSightCheck, bool navDistanceCheck)
+        {
+            s_SensorsDatabaseCommandTypes.Enqueue(SensorsDatabaseCommandType.ChangeSecondaryChecksEnabled);
+            var secondaryChecksFlags =
+                (lineOfSightCheck ? SensorSecondaryChecksFlags.LineOfSight : SensorSecondaryChecksFlags.None)
+                | (navDistanceCheck ? SensorSecondaryChecksFlags.NavDistance : SensorSecondaryChecksFlags.None);
+            s_ChangeSensorSecondaryCheckEnabledCommands.Enqueue(new ChangeSensorSecondaryCheckEnabledCommand(sensor, secondaryChecksFlags));
         }
 
         private static void ApplySensorsDatabaseCommandBuffer()
@@ -101,10 +130,15 @@ namespace HiraBots
                             s_SensorsStimulusMasks.Reallocate(s_SensorsCount + 8, Allocator.Persistent,
                                 NativeArrayOptions.UninitializedMemory);
 
+                            s_SensorsSecondaryChecks.Reallocate(s_SensorsCount + 8, Allocator.Persistent,
+                                NativeArrayOptions.UninitializedMemory);
+
                             System.Array.Resize(ref s_Sensors, s_SensorsCount + 8);
                         }
 
                         s_SensorsStimulusMasks[s_SensorsCount] = cmd.stimulusMask;
+
+                        s_SensorsSecondaryChecks[s_SensorsCount] = cmd.secondaryCheckFlags;
 
                         s_SensorsLookUpTable.Add(cmd.sensor, s_SensorsCount);
 
@@ -130,6 +164,7 @@ namespace HiraBots
                         var lastSensor = s_Sensors[lastSensorIndex];
 
                         s_SensorsStimulusMasks[indexToRemove] = s_SensorsStimulusMasks[lastSensorIndex];
+                        s_SensorsSecondaryChecks[indexToRemove] = s_SensorsSecondaryChecks[lastSensorIndex];
 
                         s_SensorsLookUpTable[lastSensor] = indexToRemove;
                         s_SensorsLookUpTable.Remove(cmd.sensor);
@@ -152,6 +187,34 @@ namespace HiraBots
                         s_SensorsStimulusMasks[indexToChange] = cmd.newStimulusMask;
                         break;
                     }
+                    case SensorsDatabaseCommandType.ChangeSecondaryChecksEnabled:
+                    {
+                        var cmd = s_ChangeSensorSecondaryCheckEnabledCommands.Dequeue();
+                        if (!s_SensorsLookUpTable.TryGetValue(cmd.sensor, out var indexToChange))
+                        {
+                            break;
+                        }
+
+                        s_SensorsSecondaryChecks[indexToChange] = cmd.secondaryChecksFlags;
+
+                        if (cmd.secondaryChecksFlags == SensorSecondaryChecksFlags.None)
+                        {
+                            if (!cmd.sensor.m_PerceivedObjectsLocations.IsCreated)
+                            {
+                                cmd.sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
+                            }
+                        }
+                        else
+                        {
+                            if (cmd.sensor.m_PerceivedObjectsLocations.IsCreated)
+                            {
+                                cmd.sensor.m_PerceivedObjectsLocations.Dispose();
+                                cmd.sensor.m_PerceivedObjectsLocations = default;
+                            }
+                        }
+
+                        break;
+                    }
                     default:
                         throw new System.ArgumentOutOfRangeException();
                 }
@@ -160,7 +223,8 @@ namespace HiraBots
             if (s_SensorsDatabaseCommandTypes.Count == 0
                 && s_SensorsDatabaseCommandTypes.Count == s_AddSensorCommands.Count
                 && s_AddSensorCommands.Count == s_RemoveSensorCommands.Count
-                && s_RemoveSensorCommands.Count == s_ChangeSensorStimulusMaskCommands.Count)
+                && s_RemoveSensorCommands.Count == s_ChangeSensorStimulusMaskCommands.Count
+                && s_ChangeSensorStimulusMaskCommands.Count == s_ChangeSensorSecondaryCheckEnabledCommands.Count)
             {
                 return;
             }
@@ -182,10 +246,21 @@ namespace HiraBots
             sensor.m_NewObjectsPerceived = UnmanagedCollections.CreateUnmanagedList<int>(Allocator.Persistent);
 
             sensor.m_ObjectsStoppedPerceiving = UnmanagedCollections.CreateUnmanagedList<int>(Allocator.Persistent);
+
+            if (sensor.lineOfSightCheck.m_Enabled || sensor.navDistanceCheck.m_Enabled)
+            {
+                sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
+            }
         }
 
         private static void ShutdownSensor(HiraBotSensor sensor)
         {
+            if (sensor.m_PerceivedObjectsLocations.IsCreated)
+            {
+                sensor.m_PerceivedObjectsLocations.Dispose();
+                sensor.m_PerceivedObjectsLocations = default;
+            }
+
             sensor.m_ObjectsStoppedPerceiving.DisposeUnmanagedList();
             sensor.m_ObjectsStoppedPerceiving = default;
 

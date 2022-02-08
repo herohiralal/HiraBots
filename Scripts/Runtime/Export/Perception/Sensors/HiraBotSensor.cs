@@ -18,14 +18,14 @@ namespace UnityEngine.AI
         }
 
         [System.Serializable]
-        internal struct LineOfSightCheckProperties
+        public struct LineOfSightCheckProperties
         {
             internal bool m_Enabled;
             internal LayerMask m_BlockingObjects;
         }
 
         [System.Serializable]
-        internal struct NavDistanceCheckProperties
+        public struct NavDistanceCheckProperties
         {
             internal bool m_Enabled;
             internal float m_StimulusNavmeshDistanceTolerance;
@@ -59,6 +59,7 @@ namespace UnityEngine.AI
         [SerializeField] private float m_Range = 8f;
 
         internal (NativeArray<UnmanagedCollections.OrderedData<int>> objects, NativeArray<UnmanagedCollections.Data<float>> timeToStimulusDeath) m_PerceivedObjects;
+        internal NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsLocations;
         internal NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
         internal NativeArray<UnmanagedCollections.Data<int>> m_NewObjectsPerceived;
         internal NativeArray<UnmanagedCollections.Data<int>> m_ObjectsStoppedPerceiving;
@@ -74,6 +75,26 @@ namespace UnityEngine.AI
             }
         }
 
+        public LineOfSightCheckProperties lineOfSightCheck
+        {
+            get => m_LineOfSightCheck;
+            set
+            {
+                m_LineOfSightCheck = value;
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, m_NavDistanceCheck.m_Enabled);
+            }
+        }
+
+        public NavDistanceCheckProperties navDistanceCheck
+        {
+            get => m_NavDistanceCheck;
+            set
+            {
+                m_NavDistanceCheck = value;
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
+            }
+        }
+
         public float range
         {
             get => m_Range;
@@ -86,7 +107,7 @@ namespace UnityEngine.AI
 
         private void OnEnable()
         {
-            PerceptionSystem.AddSensor(this, m_StimulusMask);
+            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, m_NavDistanceCheck.m_Enabled);
         }
 
         private void OnDisable()
@@ -106,7 +127,9 @@ namespace UnityEngine.AI
                     stimuliPositions,
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
-                    new PerceivedObjectsLocationsList(),
+                    m_LineOfSightCheck.m_Enabled || m_NavDistanceCheck.m_Enabled
+                        ? new PerceivedObjectsLocationsList()
+                        : new PerceivedObjectsLocationsList(m_PerceivedObjectsLocations),
                     stimuliCount,
                     m_UpdateJob ?? default);
             }
