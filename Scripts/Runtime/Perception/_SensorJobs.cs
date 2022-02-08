@@ -1,11 +1,80 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace HiraBots
 {
     internal static unsafe partial class PerceptionSystem
     {
+        [BurstCompile]
+        internal struct BuildRaycastCommandsJob : IJob
+        {
+            internal BuildRaycastCommandsJob(
+                float4 sensorPosition,
+                float range,
+                LayerMask blockingMask,
+                NativeArray<UnmanagedCollections.Data<float4>> perceivedObjectsPositions,
+                NativeArray<RaycastCommand> raycastCommands)
+            {
+                m_SensorPosition = sensorPosition;
+                m_Range = range;
+                m_BlockingMask = blockingMask;
+                m_PerceivedObjectsPositions = perceivedObjectsPositions;
+                m_RaycastCommands = raycastCommands;
+            }
+
+            [ReadOnly] private readonly float4 m_SensorPosition;
+            [ReadOnly] private readonly float m_Range;
+            [ReadOnly] private readonly LayerMask m_BlockingMask;
+            [ReadOnly] private NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsPositions;
+            [WriteOnly] private NativeArray<RaycastCommand> m_RaycastCommands;
+
+            public void Execute()
+            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                var capacity = m_PerceivedObjectsPositions.Capacity();
+                if ((capacity % 4) != 0)
+                {
+                    throw new System.ArgumentOutOfRangeException(nameof(capacity), $"Count must be divisible by 4. Current value - {capacity}.");
+                }
+#endif
+
+                var vectorizedCount = ((m_PerceivedObjectsPositions.Count() + 3) & ~3) / 4;
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                if (m_RaycastCommands.Length != (vectorizedCount * 4))
+                {
+                    throw new System.InvalidOperationException($"Raycast command length must be equal to {vectorizedCount * 4}.");
+                }
+#endif
+
+                var vectorizedSensorPosition = new float4x4(m_SensorPosition, m_SensorPosition, m_SensorPosition, m_SensorPosition);
+                var vectorizedPositions = (float4x4*) m_PerceivedObjectsPositions.GetUnsafeUnmanagedListReadOnlyPtr();
+
+                for (var i = 0; i < vectorizedCount; i++)
+                {
+                    var direction = vectorizedPositions[i] - vectorizedSensorPosition;
+
+                    for (var j = 0; j < 4; j++)
+                    {
+                        direction[j].xyz = math.normalize(direction[j].xyz);
+                    }
+
+                    for (var j = 0; j < 4; j++)
+                    {
+                        m_RaycastCommands[(i * 4) + j] = new RaycastCommand(
+                            vectorizedSensorPosition[j].xyz,
+                            direction[j].xyz,
+                            m_Range,
+                            m_BlockingMask,
+                            1);
+                    }
+                }
+            }
+        }
+
         [BurstCompile]
         internal struct SortPerceivedObjectsData : IJob
         {
