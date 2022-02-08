@@ -65,38 +65,32 @@ namespace UnityEngine.AI
             NativeArray<int> stimuliAssociatedObjects,
             int stimuliCount)
         {
-            var successCheckArray = new NativeArray<bool>(stimuliPositions.Length, Allocator.TempJob,
-                NativeArrayOptions.ClearMemory);
-
             JobHandle jh;
-
             try
             {
                 jh = ScheduleBoundsCheckJob(
                     stimuliPositions.Reinterpret<float4x4>(sizeof(float4)),
-                    successCheckArray.Reinterpret<bool4>(sizeof(bool)));
+                    stimuliAssociatedObjects,
+                    new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
+                    stimuliCount,
+                    m_UpdateJob ?? default);
                 // schedule the los-check or nav-distance check jobs here
             }
             catch (System.Exception e)
             {
                 Debug.LogException(e);
-                successCheckArray.Dispose();
                 return;
             }
 
-            var dependency = m_UpdateJob.HasValue ? JobHandle.CombineDependencies(jh, m_UpdateJob.Value) : jh;
-
-            m_UpdateJob = new PerceptionSystem.UpdateObjectsPerceivedThisFrameJob(
-                    successCheckArray,
-                    stimuliAssociatedObjects,
-                    m_ObjectsPerceivedThisFrame,
-                    stimuliCount)
-                .Schedule(dependency);
-
-            successCheckArray.Dispose(m_UpdateJob.Value);
+            m_UpdateJob = jh;
         }
 
-        protected abstract JobHandle ScheduleBoundsCheckJob(NativeArray<float4x4> stimuliPositions, NativeArray<bool4> results);
+        protected abstract JobHandle ScheduleBoundsCheckJob(
+            NativeArray<float4x4> stimuliPositions,
+            NativeArray<int> stimuliAssociatedObjects,
+            PerceivedObjectsList perceivedObjectsList,
+            int stimuliCount,
+            JobHandle dependencies);
 
         internal void ScheduleJobsToSortPerceivedObjectsData(float deltaTime)
         {

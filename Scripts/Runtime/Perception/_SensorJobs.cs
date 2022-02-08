@@ -1,46 +1,11 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 
 namespace HiraBots
 {
     internal static unsafe partial class PerceptionSystem
     {
-        [BurstCompile]
-        internal struct UpdateObjectsPerceivedThisFrameJob : IJob
-        {
-            internal UpdateObjectsPerceivedThisFrameJob(
-                NativeArray<bool> successCheckArray,
-                NativeArray<int> associatedObjects,
-                NativeArray<UnmanagedCollections.Data<int>> objectsPerceivedThisFrame,
-                int stimuliCount)
-            {
-                m_SuccessCheckArray = successCheckArray;
-                m_AssociatedObjects = associatedObjects;
-                m_ObjectsPerceivedThisFrame = objectsPerceivedThisFrame;
-                m_StimuliCount = stimuliCount;
-            }
-
-            [ReadOnly] private readonly NativeArray<bool> m_SuccessCheckArray;
-            [ReadOnly] private readonly NativeArray<int> m_AssociatedObjects;
-            [ReadOnly] private readonly int m_StimuliCount;
-            private NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
-
-            public void Execute()
-            {
-                var successChecks = (bool*) m_SuccessCheckArray.GetUnsafeReadOnlyPtr();
-
-                for (var i = 0; i < m_StimuliCount; i++)
-                {
-                    if (successChecks[i])
-                    {
-                        m_ObjectsPerceivedThisFrame.Push(m_AssociatedObjects[i]);
-                    }
-                }
-            }
-        }
-
         [BurstCompile]
         internal struct SortPerceivedObjectsData : IJob
         {
