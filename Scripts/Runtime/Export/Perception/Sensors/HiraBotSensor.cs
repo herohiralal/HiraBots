@@ -7,6 +7,16 @@ namespace UnityEngine.AI
 {
     public abstract class HiraBotSensor : MonoBehaviour
     {
+        [System.Serializable]
+        public class NewObjectPerceivedEvent : Events.UnityEvent<Object>
+        {
+        }
+
+        [System.Serializable]
+        public class ObjectStoppedPerceivingEvent : Events.UnityEvent<Object>
+        {
+        }
+
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
         [SerializeField] private int m_StimulusMask = ~0;
@@ -16,10 +26,10 @@ namespace UnityEngine.AI
 
         [Space] [Header("Callbacks")]
         [Tooltip("Callback for when a new object gets perceived.")]
-        [SerializeField] private ObjectEvent m_OnNewObjectPerceived;
+        [SerializeField] private NewObjectPerceivedEvent m_OnNewObjectPerceived;
 
         [Tooltip("Callback for when an object stops being perceived.")]
-        [SerializeField] private ObjectEvent m_OnObjectStoppedPerceiving;
+        [SerializeField] private ObjectStoppedPerceivingEvent m_OnObjectStoppedPerceiving;
 
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
@@ -47,9 +57,9 @@ namespace UnityEngine.AI
             set => m_Range = Mathf.Clamp(value, 0f, float.MaxValue);
         }
 
-        public ObjectEvent newObjectPerceived => m_OnNewObjectPerceived;
+        public NewObjectPerceivedEvent newObjectPerceived => m_OnNewObjectPerceived;
 
-        public ObjectEvent objectStoppedPerceiving => m_OnObjectStoppedPerceiving;
+        public ObjectStoppedPerceivingEvent objectStoppedPerceiving => m_OnObjectStoppedPerceiving;
 
         private void OnEnable()
         {
