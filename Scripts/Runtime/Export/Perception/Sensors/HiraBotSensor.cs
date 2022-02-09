@@ -20,9 +20,18 @@ namespace UnityEngine.AI
         [System.Serializable]
         public struct LineOfSightCheckProperties
         {
-            internal bool m_Enabled;
-            internal LayerMask m_BlockingObjects;
+            public bool m_Enabled;
+            public LayerMask m_BlockingObjects;
         }
+
+        // [System.Serializable]
+        // public struct NavDistanceCheckProperties
+        // {
+        //     public bool m_Enabled;
+        //     public float m_StimulusNavmeshDistanceTolerance;
+        //     public int m_AgentType;
+        //     public int m_AreaMask;
+        // }
 
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
@@ -69,7 +78,7 @@ namespace UnityEngine.AI
             set
             {
                 m_LineOfSightCheck = value;
-                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, false);//m_NavDistanceCheck.m_Enabled);
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, false); //m_NavDistanceCheck.m_Enabled);
             }
         }
 
@@ -95,7 +104,7 @@ namespace UnityEngine.AI
 
         private void OnEnable()
         {
-            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, false);// m_NavDistanceCheck.m_Enabled);
+            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, false); // m_NavDistanceCheck.m_Enabled);
         }
 
         private void OnDisable()
@@ -103,7 +112,7 @@ namespace UnityEngine.AI
             PerceptionSystem.RemoveSensor(this);
         }
 
-        internal void ScheduleJobsToDetermineObjectsPerceivedThisTick(
+        internal bool ScheduleJobsToDetermineObjectsPerceivedThisTick(
             NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             int stimuliCount)
@@ -115,7 +124,7 @@ namespace UnityEngine.AI
                     stimuliPositions,
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
-                    m_LineOfSightCheck.m_Enabled// || m_NavDistanceCheck.m_Enabled
+                    m_LineOfSightCheck.m_Enabled // || m_NavDistanceCheck.m_Enabled
                         ? new PerceivedObjectsLocationsList()
                         : new PerceivedObjectsLocationsList(m_PerceivedObjectsLocations),
                     stimuliCount,
@@ -124,20 +133,11 @@ namespace UnityEngine.AI
             catch (System.Exception e)
             {
                 Debug.LogException(e);
-                return;
+                return false;
             }
-
-            if (m_LineOfSightCheck.m_Enabled)
-            {
-                
-            }
-
-            // if (m_NavDistanceCheck.m_Enabled)
-            // {
-            //     
-            // }
 
             m_UpdateJob = jh;
+            return true;
         }
 
         protected abstract JobHandle ScheduleBoundsCheckJob(
@@ -148,19 +148,70 @@ namespace UnityEngine.AI
             int stimuliCount,
             JobHandle dependencies);
 
+        internal void ScheduleSecondaryCheckJobs()
+        {
+            if (!m_UpdateJob.HasValue)
+            {
+                return;
+            }
+
+            m_UpdateJob.Value.Complete();
+            m_UpdateJob = null;
+
+            JobHandle lineOfSightJob = default;
+            if (m_LineOfSightCheck.m_Enabled)
+            {
+                var sensorPos = transform.position;
+                var sensorPosFloat4 = new float4(sensorPos.x, sensorPos.y, sensorPos.z, 1);
+
+                var raycastCount = (m_PerceivedObjectsLocations.Count() + 3) & ~3;
+
+                var raycastCommands = new NativeArray<RaycastCommand>(raycastCount,
+                    Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+
+                var raycastResults = new NativeArray<RaycastHit>(raycastCount,
+                    Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+
+                var buildJob = new PerceptionSystem.BuildRaycastCommandsJob(sensorPosFloat4, m_Range, m_LineOfSightCheck.m_BlockingObjects,
+                        m_PerceivedObjectsLocations, raycastCommands)
+                    .Schedule();
+
+                var raycastJob = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, 1, buildJob);
+
+                raycastCommands.Dispose(raycastJob);
+
+                var readJob = new PerceptionSystem.ReadRaycastHitResultsJob(raycastResults, m_ObjectsPerceivedThisFrame)
+                    .Schedule(raycastJob);
+
+                raycastResults.Dispose(readJob);
+
+                lineOfSightJob = readJob;
+            }
+
+            JobHandle navDistanceJob = default;
+            // if (m_NavDistanceCheck.m_Enabled)
+            // {
+            //     
+            // }
+
+            m_UpdateJob = JobHandle.CombineDependencies(lineOfSightJob, navDistanceJob);
+        }
+
         internal void ScheduleJobsToSortPerceivedObjectsData(float deltaTime)
         {
-            if (m_UpdateJob.HasValue)
+            if (!m_UpdateJob.HasValue)
             {
-                m_UpdateJob = new PerceptionSystem.SortPerceivedObjectsData(
-                        m_PerceivedObjects,
-                        m_ObjectsPerceivedThisFrame,
-                        m_NewObjectsPerceived,
-                        m_ObjectsStoppedPerceiving,
-                        deltaTime,
-                        m_TimeToStimulusDecay)
-                    .Schedule(m_UpdateJob.Value);
+                return;
             }
+
+            m_UpdateJob = new PerceptionSystem.SortPerceivedObjectsData(
+                    m_PerceivedObjects,
+                    m_ObjectsPerceivedThisFrame,
+                    m_NewObjectsPerceived,
+                    m_ObjectsStoppedPerceiving,
+                    deltaTime,
+                    m_TimeToStimulusDecay)
+                .Schedule(m_UpdateJob.Value);
         }
 
         internal unsafe void CollectJobResults()
