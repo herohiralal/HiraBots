@@ -49,7 +49,11 @@ namespace UnityEngine.AI
 
         [Space] [Header("Secondary Checks")]
         [Tooltip("Whether to check for the line of sight to the stimulus.")]
-        [SerializeField] private LineOfSightCheckProperties m_LineOfSightCheck;
+        [SerializeField] private LineOfSightCheckProperties m_LineOfSightCheck = new LineOfSightCheckProperties
+        {
+            m_Enabled = false,
+            m_BlockingObjects = ~0
+        };
 
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]

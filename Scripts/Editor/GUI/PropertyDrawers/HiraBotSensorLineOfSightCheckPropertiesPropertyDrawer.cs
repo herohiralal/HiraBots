@@ -29,6 +29,8 @@ namespace HiraBots.Editor
                 var secondaryRect = position;
                 secondaryRect.height = 19f;
                 secondaryRect.y += 21f;
+                secondaryRect.width -= 15f;
+                secondaryRect.x += 15f;
 
                 EditorGUI.PropertyField(secondaryRect, blockingObjects);
             }
