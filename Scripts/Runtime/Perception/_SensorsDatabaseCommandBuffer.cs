@@ -247,7 +247,7 @@ namespace HiraBots
 
             sensor.m_ObjectsStoppedPerceiving = UnmanagedCollections.CreateUnmanagedList<int>(Allocator.Persistent);
 
-            if (sensor.lineOfSightCheck.m_Enabled || sensor.navDistanceCheck.m_Enabled)
+            if (sensor.lineOfSightCheck.m_Enabled)// || sensor.navDistanceCheck.m_Enabled)
             {
                 sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
             }

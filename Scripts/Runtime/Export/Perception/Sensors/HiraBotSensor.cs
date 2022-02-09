@@ -24,15 +24,6 @@ namespace UnityEngine.AI
             internal LayerMask m_BlockingObjects;
         }
 
-        [System.Serializable]
-        public struct NavDistanceCheckProperties
-        {
-            internal bool m_Enabled;
-            internal float m_StimulusNavmeshDistanceTolerance;
-            internal int m_AgentType;
-            internal int m_AreaMask;
-        }
-
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
         [SerializeField] private int m_StimulusMask = ~0;
@@ -50,9 +41,6 @@ namespace UnityEngine.AI
         [Space] [Header("Secondary Checks")]
         [Tooltip("Whether to check for the line of sight to the stimulus.")]
         [SerializeField] private LineOfSightCheckProperties m_LineOfSightCheck;
-
-        [Tooltip("Whether to check that the navigable distance to the stimulus is within the range.")]
-        [SerializeField] private NavDistanceCheckProperties m_NavDistanceCheck;
 
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
@@ -81,19 +69,19 @@ namespace UnityEngine.AI
             set
             {
                 m_LineOfSightCheck = value;
-                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, m_NavDistanceCheck.m_Enabled);
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, false);//m_NavDistanceCheck.m_Enabled);
             }
         }
 
-        public NavDistanceCheckProperties navDistanceCheck
-        {
-            get => m_NavDistanceCheck;
-            set
-            {
-                m_NavDistanceCheck = value;
-                PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
-            }
-        }
+        // public NavDistanceCheckProperties navDistanceCheck
+        // {
+        //     get => m_NavDistanceCheck;
+        //     set
+        //     {
+        //         m_NavDistanceCheck = value;
+        //         PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
+        //     }
+        // }
 
         public float range
         {
@@ -107,7 +95,7 @@ namespace UnityEngine.AI
 
         private void OnEnable()
         {
-            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, m_NavDistanceCheck.m_Enabled);
+            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, false);// m_NavDistanceCheck.m_Enabled);
         }
 
         private void OnDisable()
@@ -127,7 +115,7 @@ namespace UnityEngine.AI
                     stimuliPositions,
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
-                    m_LineOfSightCheck.m_Enabled || m_NavDistanceCheck.m_Enabled
+                    m_LineOfSightCheck.m_Enabled// || m_NavDistanceCheck.m_Enabled
                         ? new PerceivedObjectsLocationsList()
                         : new PerceivedObjectsLocationsList(m_PerceivedObjectsLocations),
                     stimuliCount,
@@ -144,10 +132,10 @@ namespace UnityEngine.AI
                 
             }
 
-            if (m_NavDistanceCheck.m_Enabled)
-            {
-                
-            }
+            // if (m_NavDistanceCheck.m_Enabled)
+            // {
+            //     
+            // }
 
             m_UpdateJob = jh;
         }

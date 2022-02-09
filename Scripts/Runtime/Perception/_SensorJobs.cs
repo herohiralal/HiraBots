@@ -1,5 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
@@ -76,6 +77,40 @@ namespace HiraBots
         }
 
         [BurstCompile]
+        internal struct ReadRaycastHitResultsJob : IJob
+        {
+            internal ReadRaycastHitResultsJob(
+                NativeArray<RaycastHit> results,
+                NativeArray<UnmanagedCollections.Data<int>> objectsPerceivedThisFrame)
+            {
+                m_Results = results;
+                m_ObjectsPerceivedThisFrame = objectsPerceivedThisFrame;
+            }
+
+            [ReadOnly] private NativeArray<RaycastHit> m_Results;
+            private NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
+
+            public void Execute()
+            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                if (m_Results.Length < m_ObjectsPerceivedThisFrame.Count())
+                {
+                    throw new System.InvalidOperationException("Results length must be more than or equal to the number of objects perceived this frame.");
+                }
+#endif
+
+                var raycastResults = (CustomRaycastHit*) m_Results.Reinterpret<CustomRaycastHit>().GetUnsafeReadOnlyPtr();
+                var objectsPerceivedThisFrame = (int*) m_ObjectsPerceivedThisFrame.GetUnsafeUnmanagedListPtr();
+
+                var count = m_ObjectsPerceivedThisFrame.Count();
+                for (var i = 0; i < count; i++)
+                {
+                    objectsPerceivedThisFrame[i] = raycastResults[i].m_Collider == 0 ? objectsPerceivedThisFrame[i] : 0;
+                }
+            }
+        }
+
+        [BurstCompile]
         internal struct SortPerceivedObjectsData : IJob
         {
             internal SortPerceivedObjectsData(
@@ -138,7 +173,7 @@ namespace HiraBots
                         var objectPerceivedThisFrame = objectsPerceivedThisFrameSet.GetElementAt(i);
 
                         // this will also update the status of the objects that have been perceived this frame
-                        if (!perceivedObjects.Add(objectPerceivedThisFrame, actualTimeToStimulusDeath, true))
+                        if (objectPerceivedThisFrame == 0 || !perceivedObjects.Add(objectPerceivedThisFrame, actualTimeToStimulusDeath, true))
                         {
                             // continue if this object was already perceived
                             continue;
