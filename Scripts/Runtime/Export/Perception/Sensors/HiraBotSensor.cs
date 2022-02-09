@@ -1,5 +1,6 @@
 ﻿using HiraBots;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -129,8 +130,8 @@ namespace UnityEngine.AI
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
                     m_LineOfSightCheck.m_Enabled // || m_NavDistanceCheck.m_Enabled
-                        ? new PerceivedObjectsLocationsList()
-                        : new PerceivedObjectsLocationsList(m_PerceivedObjectsLocations),
+                        ? new PerceivedObjectsLocationsList(true, m_PerceivedObjectsLocations)
+                        : new PerceivedObjectsLocationsList(false, m_PerceivedObjectsLocations),
                     stimuliCount,
                     m_UpdateJob ?? default);
             }
@@ -172,6 +173,17 @@ namespace UnityEngine.AI
 
                 var raycastCommands = new NativeArray<RaycastCommand>(raycastCount,
                     Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+
+                // gotta do this mf thang because when scheduling RaycastCommand batch, they check for
+                // max hits when scheduling, even if there's a job dependency, which is imo stupid
+                unsafe
+                {
+                    var commands = (RaycastCommand*) raycastCommands.GetUnsafePtr();
+                    for (var i = raycastCommands.Length - 1; i >= 0; i--)
+                    {
+                        commands[i].maxHits = 1;
+                    }
+                }
 
                 var raycastResults = new NativeArray<RaycastHit>(raycastCount,
                     Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -227,6 +239,8 @@ namespace UnityEngine.AI
 
             m_UpdateJob.Value.Complete();
             m_UpdateJob = null;
+
+            m_PerceivedObjectsLocations.Clear();
 
             // callback for new objects perceived
             {

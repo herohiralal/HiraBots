@@ -21,9 +21,9 @@ namespace UnityEngine.AI
 
     public struct PerceivedObjectsLocationsList
     {
-        internal PerceivedObjectsLocationsList(NativeArray<UnmanagedCollections.Data<float4>> value)
+        internal PerceivedObjectsLocationsList(bool valid, NativeArray<UnmanagedCollections.Data<float4>> value)
         {
-            isValid = true;
+            isValid = valid;
             m_Internal = value;
         }
 

@@ -197,22 +197,6 @@ namespace HiraBots
 
                         s_SensorsSecondaryChecks[indexToChange] = cmd.secondaryChecksFlags;
 
-                        if (cmd.secondaryChecksFlags == SensorSecondaryChecksFlags.None)
-                        {
-                            if (!cmd.sensor.m_PerceivedObjectsLocations.IsCreated)
-                            {
-                                cmd.sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
-                            }
-                        }
-                        else
-                        {
-                            if (cmd.sensor.m_PerceivedObjectsLocations.IsCreated)
-                            {
-                                cmd.sensor.m_PerceivedObjectsLocations.Dispose();
-                                cmd.sensor.m_PerceivedObjectsLocations = default;
-                            }
-                        }
-
                         break;
                     }
                     default:
@@ -247,19 +231,13 @@ namespace HiraBots
 
             sensor.m_ObjectsStoppedPerceiving = UnmanagedCollections.CreateUnmanagedList<int>(Allocator.Persistent);
 
-            if (sensor.lineOfSightCheck.m_Enabled)// || sensor.navDistanceCheck.m_Enabled)
-            {
-                sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
-            }
+            sensor.m_PerceivedObjectsLocations = UnmanagedCollections.CreateUnmanagedList<Unity.Mathematics.float4>(Allocator.Persistent);
         }
 
         private static void ShutdownSensor(HiraBotSensor sensor)
         {
-            if (sensor.m_PerceivedObjectsLocations.IsCreated)
-            {
-                sensor.m_PerceivedObjectsLocations.Dispose();
-                sensor.m_PerceivedObjectsLocations = default;
-            }
+            sensor.m_PerceivedObjectsLocations.Dispose();
+            sensor.m_PerceivedObjectsLocations = default;
 
             sensor.m_ObjectsStoppedPerceiving.DisposeUnmanagedList();
             sensor.m_ObjectsStoppedPerceiving = default;
