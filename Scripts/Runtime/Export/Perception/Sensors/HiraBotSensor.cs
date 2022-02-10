@@ -58,10 +58,6 @@ namespace UnityEngine.AI
             m_Invert = false
         };
 
-        [Space] [Header("Shape")]
-        [Tooltip("The maximum range of the sensor.")]
-        [SerializeField] private float m_Range = 8f;
-
         internal (NativeArray<UnmanagedCollections.OrderedData<int>> objects, NativeArray<UnmanagedCollections.Data<float>> timeToStimulusDeath) m_PerceivedObjects;
         internal NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsLocations;
         internal NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
@@ -98,12 +94,6 @@ namespace UnityEngine.AI
         //         PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
         //     }
         // }
-
-        public float range
-        {
-            get => m_Range;
-            set => m_Range = Mathf.Clamp(value, 0f, float.MaxValue);
-        }
 
         public NewObjectPerceivedEvent newObjectPerceived => m_OnNewObjectPerceived;
 

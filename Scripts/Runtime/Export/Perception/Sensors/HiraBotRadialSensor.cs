@@ -8,6 +8,10 @@ namespace UnityEngine.AI
 {
     public sealed class HiraBotRadialSensor : HiraBotSensor
     {
+        [Space] [Header("Shape")]
+        [Tooltip("The maximum range of the sensor.")]
+        [SerializeField] private float m_Range = 8f;
+
         [Tooltip("The angle in degrees.")]
         [SerializeField] [Range(0.1f, 360f)] private float m_Angle = 90f;
 
@@ -28,6 +32,12 @@ namespace UnityEngine.AI
 
         [Tooltip("The offset to the height of the sensor.")]
         [SerializeField] private float m_SecondaryHeightOffset = -2f;
+
+        public float range
+        {
+            get => m_Range;
+            set => m_Range = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
 
         public float angle
         {
@@ -85,7 +95,7 @@ namespace UnityEngine.AI
 
             return new BoundsCheckJob(
                     w2L,
-                    range,
+                    m_Range,
                     m_Angle,
                     m_Height,
                     m_HeightOffset,
@@ -165,7 +175,7 @@ namespace UnityEngine.AI
             {
                 GizmoHelper.GetArcPoints(&l2W,
                     m_Angle,
-                    range,
+                    m_Range,
                     m_HeightOffset,
                     m_Height,
                     ptsPtr,

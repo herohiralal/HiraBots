@@ -8,6 +8,16 @@ namespace UnityEngine.AI
 {
     public sealed class HiraBotSphericalSensor : HiraBotSensor
     {
+        [Space] [Header("Shape")]
+        [Tooltip("The maximum range of the sensor.")]
+        [SerializeField] private float m_Radius = 8f;
+
+        public float radius
+        {
+            get => m_Radius;
+            set => m_Radius = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+
         protected override JobHandle ScheduleBoundsCheckJob(
             NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
@@ -18,7 +28,7 @@ namespace UnityEngine.AI
         {
             return new BoundsCheckJob(
                     transform.worldToLocalMatrix,
-                    range,
+                    m_Radius,
                     stimuliCount,
                     stimuliPositions,
                     stimuliAssociatedObjects,
@@ -33,7 +43,7 @@ namespace UnityEngine.AI
             try
             {
                 Gizmos.matrix = transform.localToWorldMatrix;
-                Gizmos.DrawWireSphere(Vector3.zero, range);
+                Gizmos.DrawWireSphere(Vector3.zero, m_Radius);
             }
             finally
             {
