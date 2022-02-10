@@ -10,7 +10,7 @@ namespace HiraBots.Editor
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var enabled = property.FindPropertyRelative(nameof(HiraBotSensor.LineOfSightCheckProperties.m_Enabled));
-            return 21f + (enabled.boolValue ? 21f : 0f);
+            return 21f + (enabled.boolValue ? (21f + 21f) : 0f);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -24,6 +24,7 @@ namespace HiraBots.Editor
 
             if (enabled.boolValue)
             {
+                var invert = property.FindPropertyRelative(nameof(HiraBotSensor.LineOfSightCheckProperties.m_Invert));
                 var blockingObjects = property.FindPropertyRelative(nameof(HiraBotSensor.LineOfSightCheckProperties.m_BlockingObjects));
 
                 var secondaryRect = position;
@@ -31,6 +32,10 @@ namespace HiraBots.Editor
                 secondaryRect.y += 21f;
                 secondaryRect.width -= 15f;
                 secondaryRect.x += 15f;
+
+                EditorGUI.PropertyField(secondaryRect, invert);
+
+                secondaryRect.y += 21f;
 
                 EditorGUI.PropertyField(secondaryRect, blockingObjects);
             }

@@ -79,13 +79,16 @@ namespace HiraBots
         internal struct ReadRaycastHitResultsJob : IJob
         {
             internal ReadRaycastHitResultsJob(
+                bool invert,
                 NativeArray<RaycastHit> results,
                 NativeArray<UnmanagedCollections.Data<int>> objectsPerceivedThisFrame)
             {
+                m_Invert = invert;
                 m_Results = results;
                 m_ObjectsPerceivedThisFrame = objectsPerceivedThisFrame;
             }
 
+            [ReadOnly] private readonly bool m_Invert;
             [ReadOnly] private NativeArray<RaycastHit> m_Results;
             private NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
 
@@ -104,7 +107,7 @@ namespace HiraBots
                 var count = m_ObjectsPerceivedThisFrame.Count();
                 for (var i = 0; i < count; i++)
                 {
-                    objectsPerceivedThisFrame[i] = raycastResults[i].m_Collider == 0 ? objectsPerceivedThisFrame[i] : 0;
+                    objectsPerceivedThisFrame[i] = m_Invert != (raycastResults[i].m_Collider != 0) ? objectsPerceivedThisFrame[i] : 0;
                 }
             }
         }

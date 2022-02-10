@@ -23,6 +23,7 @@ namespace UnityEngine.AI
         {
             public bool m_Enabled;
             public LayerMask m_BlockingObjects;
+            public bool m_Invert;
         }
 
         // [System.Serializable]
@@ -53,7 +54,8 @@ namespace UnityEngine.AI
         [SerializeField] private LineOfSightCheckProperties m_LineOfSightCheck = new LineOfSightCheckProperties
         {
             m_Enabled = false,
-            m_BlockingObjects = ~0
+            m_BlockingObjects = ~0,
+            m_Invert = false
         };
 
         [Space] [Header("Shape")]
@@ -196,7 +198,7 @@ namespace UnityEngine.AI
 
                 raycastCommands.Dispose(raycastJob);
 
-                var readJob = new PerceptionSystem.ReadRaycastHitResultsJob(raycastResults, m_ObjectsPerceivedThisFrame)
+                var readJob = new PerceptionSystem.ReadRaycastHitResultsJob(m_LineOfSightCheck.m_Invert, raycastResults, m_ObjectsPerceivedThisFrame)
                     .Schedule(raycastJob);
 
                 raycastResults.Dispose(readJob);
