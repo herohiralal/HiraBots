@@ -9,7 +9,7 @@ namespace UnityEngine.AI
     public sealed class HiraBotRadialSensor : HiraBotSensor
     {
         [Tooltip("The angle in degrees.")]
-        [SerializeField] [Range(0f, 360f)] private float m_Angle = 90f;
+        [SerializeField] [Range(0.1f, 360f)] private float m_Angle = 90f;
 
         [Tooltip("The height of the sensor.")]
         [SerializeField] private float m_Height = 2f;
@@ -21,7 +21,7 @@ namespace UnityEngine.AI
         [SerializeField] private float m_SecondaryRange = 1f;
 
         [Tooltip("The secondary angle in degrees. Can be used for peripheral vision.")]
-        [SerializeField] [Range(0f, 360f)] private float m_SecondaryAngle = 180f;
+        [SerializeField] [Range(0.1f, 360f)] private float m_SecondaryAngle = 180f;
 
         [Tooltip("The height of the sensor.")]
         [SerializeField] private float m_SecondaryHeight = 2f;
@@ -32,7 +32,7 @@ namespace UnityEngine.AI
         public float angle
         {
             get => m_Angle;
-            set => m_Angle = value % 360f;
+            set => m_Angle = Mathf.Clamp(value % 360f, 0.1f, 360f);
         }
 
         public float height
@@ -56,7 +56,7 @@ namespace UnityEngine.AI
         public float secondaryAngle
         {
             get => m_SecondaryAngle;
-            set => m_SecondaryAngle = value % 360f;
+            set => m_SecondaryAngle = Mathf.Clamp(value % 360f, 0.1f, 360f);
         }
 
         public float secondaryHeight
@@ -100,6 +100,113 @@ namespace UnityEngine.AI
                     perceivedObjectsLocationsList
                 )
                 .Schedule();
+        }
+
+        [BurstCompile]
+        private static unsafe class GizmoHelper
+        {
+            [BurstCompile(DisableDirectCall = false)]
+            internal static void GetArcPoints(float4x4* l2WPtr, float angle, float range, float heightOffset, float height, float3* data, int ptCount)
+            {
+                data[0] = new float3(0, heightOffset + height, 0);
+                data[1] = new float3(0, heightOffset - height, 0);
+
+                var singleArcPtCount = (ptCount - 2) / 2;
+
+                for (var i = 0; i < singleArcPtCount; i++)
+                {
+                    var a = (90 + (angle * 0.5f)) - (((float) i / (singleArcPtCount - 1)) * angle);
+                    var aRad = math.radians(a);
+
+                    var x = math.cos(aRad) * range;
+                    var y = heightOffset + height;
+                    var z = math.sin(aRad) * range;
+
+                    data[2 + i] = new float3(x, y, z);
+                }
+
+                for (var i = 0; i < singleArcPtCount; i++)
+                {
+                    var a = (90 - (angle * 0.5f)) + (((float) i / (singleArcPtCount - 1)) * angle);
+                    var aRad = math.radians(a);
+
+                    var x = math.cos(aRad) * range;
+                    var y = heightOffset - height;
+                    var z = math.sin(aRad) * range;
+
+                    data[2 + singleArcPtCount + i] = new float3(x, y, z);
+                }
+
+                var l2W = *l2WPtr;
+                for (var i = 0; i < ptCount; i++)
+                {
+                    var posLs = data[i];
+                    var posWs = math.mul(l2W, new float4(posLs.x, posLs.y, posLs.z, 1)).xyz;
+                    data[i] = posWs;
+                }
+            }
+        }
+
+        private unsafe void OnDrawGizmosSelected()
+        {
+            float4x4 l2W = transform.localToWorldMatrix;
+
+            int GetArcPtsCount(float a)
+            {
+                return 2 * (Mathf.CeilToInt(a / 30) + 1);
+            }
+
+            var arcPtCount = GetArcPtsCount(m_Angle);
+            var ptCount = arcPtCount + 2; // center
+
+            var pts = new float3[ptCount];
+
+            fixed (float3* ptsPtr = &pts[0])
+            {
+                GizmoHelper.GetArcPoints(&l2W,
+                    m_Angle,
+                    range,
+                    m_HeightOffset,
+                    m_Height,
+                    ptsPtr,
+                    ptCount);
+
+                DrawPoints(ptCount, arcPtCount, pts);
+            }
+
+            var secondaryArcPtCount = GetArcPtsCount(m_SecondaryAngle);
+            var secondaryPtCount = secondaryArcPtCount + 2; // center
+
+            System.Array.Resize(ref pts, secondaryPtCount);
+
+            fixed (float3* ptsPtr = &pts[0])
+            {
+                GizmoHelper.GetArcPoints(&l2W,
+                    m_SecondaryAngle,
+                    m_SecondaryRange,
+                    m_SecondaryHeightOffset,
+                    m_SecondaryHeight,
+                    ptsPtr,
+                    secondaryPtCount);
+
+                DrawPoints(secondaryPtCount, secondaryArcPtCount, pts);
+            }
+        }
+
+        private static void DrawPoints(int ptCount, int arcPtCount, float3[] pts)
+        {
+            for (var i = 3; i < ptCount; i++)
+            {
+                Gizmos.DrawLine(pts[i - 1], pts[i]);
+            }
+
+            Gizmos.DrawLine(pts[2], pts[ptCount - 1]);
+
+            Gizmos.DrawLine(pts[0], pts[1]); // center top to center bottom
+            Gizmos.DrawLine(pts[0], pts[2]); // center top to one of the top arc endpoints
+            Gizmos.DrawLine(pts[1], pts[ptCount - 1]); // center bottom to one of the bottom arc endpoints
+            Gizmos.DrawLine(pts[0], pts[2 + (arcPtCount / 2) - 1]); // center top to the other top arc endpoint
+            Gizmos.DrawLine(pts[1], pts[2 + (arcPtCount / 2)]); // center bottom to the other bottom arc endpoint
         }
 
         [BurstCompile]
