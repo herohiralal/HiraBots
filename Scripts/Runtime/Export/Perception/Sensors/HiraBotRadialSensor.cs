@@ -9,7 +9,7 @@ namespace UnityEngine.AI
     public sealed class HiraBotRadialSensor : HiraBotSensor
     {
         [Tooltip("The angle in degrees.")]
-        [SerializeField] private float m_Angle = 90f;
+        [SerializeField] [Range(0f, 360f)] private float m_Angle = 90f;
 
         [Tooltip("The height of the sensor.")]
         [SerializeField] private float m_Height = 2f;
@@ -21,7 +21,7 @@ namespace UnityEngine.AI
         [SerializeField] private float m_SecondaryRange = 1f;
 
         [Tooltip("The secondary angle in degrees. Can be used for peripheral vision.")]
-        [SerializeField] private float m_SecondaryAngle = 180f;
+        [SerializeField] [Range(0f, 360f)] private float m_SecondaryAngle = 180f;
 
         [Tooltip("The height of the sensor.")]
         [SerializeField] private float m_SecondaryHeight = 2f;
@@ -32,7 +32,7 @@ namespace UnityEngine.AI
         public float angle
         {
             get => m_Angle;
-            set => m_Angle = value;
+            set => m_Angle = value % 360f;
         }
 
         public float height
@@ -56,7 +56,7 @@ namespace UnityEngine.AI
         public float secondaryAngle
         {
             get => m_SecondaryAngle;
-            set => m_SecondaryAngle = value;
+            set => m_SecondaryAngle = value % 360f;
         }
 
         public float secondaryHeight
