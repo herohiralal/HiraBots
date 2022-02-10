@@ -6,7 +6,7 @@ using UnityEngine.AI;
 namespace HiraBots.Editor
 {
     [CustomPropertyDrawer(typeof(StimulusType))]
-    public class StimulusTypePropertyDrawer : PropertyDrawer
+    internal class StimulusTypePropertyDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
