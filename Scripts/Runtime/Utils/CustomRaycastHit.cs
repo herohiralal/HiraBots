@@ -12,6 +12,9 @@ namespace HiraBots
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct CustomRaycastHit
     {
+// only need this for development builds, no need to pollute shipping builds with
+// reflection data that does not get garbage collected
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         static unsafe CustomRaycastHit()
         {
             if (sizeof(CustomRaycastHit) != sizeof(RaycastHit))
@@ -56,6 +59,7 @@ namespace HiraBots
         {
             // this method is only present so that it triggers the type initializer
         }
+#endif
 
         internal unsafe CustomRaycastHit(RaycastHit hit)
         {
