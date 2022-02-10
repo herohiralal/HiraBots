@@ -1,5 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -15,17 +16,9 @@ namespace UnityEngine.AI
             int stimuliCount,
             JobHandle dependencies)
         {
-            var t = transform;
-
-            var pos = (float3) t.position;
-
-            var scale = t.lossyScale;
-            var effectiveScale = Mathf.Min(Mathf.Min(scale.x, scale.y), scale.z);
-            var effectiveRadius = effectiveScale * range;
-
             return new BoundsCheckJob(
-                    new float4(pos.x, pos.y, pos.z, 1),
-                    effectiveRadius,
+                    transform.worldToLocalMatrix,
+                    range,
                     stimuliCount,
                     stimuliPositions,
                     stimuliAssociatedObjects,
@@ -34,16 +27,25 @@ namespace UnityEngine.AI
                 .Schedule(dependencies);
         }
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
-            Gizmos.DrawWireSphere(transform.position, range);
+            var originalMatrix = Gizmos.matrix;
+            try
+            {
+                Gizmos.matrix = transform.localToWorldMatrix;
+                Gizmos.DrawWireSphere(Vector3.zero, range);
+            }
+            finally
+            {
+                Gizmos.matrix = originalMatrix;
+            }
         }
 
         [BurstCompile]
         private struct BoundsCheckJob : IJob
         {
             internal BoundsCheckJob(
-                float4 sensorPosition,
+                float4x4 sensorW2L,
                 float range,
                 int stimuliCount,
                 NativeArray<float4> stimuliPositions,
@@ -51,7 +53,7 @@ namespace UnityEngine.AI
                 PerceivedObjectsList perceivedObjectsList,
                 PerceivedObjectsLocationsList perceivedObjectsLocationsList)
             {
-                m_SensorPosition = sensorPosition;
+                m_SensorW2L = sensorW2L;
                 m_Range = range;
                 m_StimuliCount = stimuliCount;
                 m_StimuliPositions = stimuliPositions;
@@ -60,7 +62,7 @@ namespace UnityEngine.AI
                 m_PerceivedObjectsLocationsList = perceivedObjectsLocationsList;
             }
 
-            [ReadOnly] private readonly float4 m_SensorPosition;
+            [ReadOnly] private readonly float4x4 m_SensorW2L;
             [ReadOnly] private readonly float m_Range;
             [ReadOnly] private readonly int m_StimuliCount;
             [ReadOnly] private NativeArray<float4> m_StimuliPositions;
@@ -76,18 +78,33 @@ namespace UnityEngine.AI
                 var vectorizedLength = vectorizedPositions.Length;
                 var vectorizedResults = stackalloc bool4[vectorizedLength];
 
-                for (var i = 0; i < vectorizedLength; i++)
+                var localizedPositions = (float4x4*) UnsafeUtility.Malloc(UnsafeUtility.SizeOf<float4x4>() * vectorizedLength,
+                    UnsafeUtility.AlignOf<float4x4>(),
+                    Allocator.Persistent);
                 {
-                    var stimuliPosition4 = vectorizedPositions[i];
-
-                    float4 distanceSq4 = default;
-                    for (var j = 0; j < 4; j++)
+                    // calculate localized positions
                     {
-                        distanceSq4[j] = math.distancesq(m_SensorPosition, stimuliPosition4[j]);
+                        for (var i = 0; i < vectorizedLength; i++)
+                        {
+                            localizedPositions[i] = math.mul(m_SensorW2L, vectorizedPositions[i]);
+                        }
                     }
 
-                    vectorizedResults[i] = distanceSq4 < rangeSq4;
+                    for (var i = 0; i < vectorizedLength; i++)
+                    {
+                        var stimuliLocalPosition4 = localizedPositions[i];
+
+                        float4 lengthSq4 = default;
+                        for (var j = 0; j < 4; j++)
+                        {
+                            lengthSq4[j] = math.lengthsq(stimuliLocalPosition4[j].xyz);
+                        }
+
+                        vectorizedResults[i] = (lengthSq4 < rangeSq4);
+                    }
                 }
+
+                UnsafeUtility.Free(localizedPositions, Allocator.Persistent);
 
                 var results = (bool*) vectorizedResults;
 
