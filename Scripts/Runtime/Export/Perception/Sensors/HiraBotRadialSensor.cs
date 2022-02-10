@@ -1,5 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 
@@ -80,22 +81,15 @@ namespace UnityEngine.AI
         {
             var t = transform;
 
-            var pos = (float3) t.position;
-            var forwardVector = t.forward;
-
-            var scale = t.lossyScale;
-            var effectiveScale = Mathf.Min(Mathf.Min(scale.x, scale.y), scale.z);
-            var effectiveRadius = effectiveScale * range;
-            var effectiveSecondaryRadius = effectiveScale * m_SecondaryRange;
+            var w2L = t.worldToLocalMatrix;
 
             return new BoundsCheckJob(
-                    new float4(pos.x, pos.y, pos.z, 1),
-                    forwardVector,
-                    effectiveRadius,
+                    w2L,
+                    range,
                     m_Angle,
                     m_Height,
                     m_HeightOffset,
-                    effectiveSecondaryRadius,
+                    m_SecondaryRange,
                     m_SecondaryAngle,
                     m_SecondaryHeight,
                     m_SecondaryHeightOffset,
@@ -109,11 +103,10 @@ namespace UnityEngine.AI
         }
 
         [BurstCompile]
-        private struct BoundsCheckJob : IJob
+        private unsafe struct BoundsCheckJob : IJob
         {
             internal BoundsCheckJob(
-                float4 sensorPosition,
-                float3 sensorDirection,
+                float4x4 sensorW2L,
                 float range,
                 float angleInDegrees,
                 float height,
@@ -128,8 +121,7 @@ namespace UnityEngine.AI
                 PerceivedObjectsList perceivedObjectsList,
                 PerceivedObjectsLocationsList perceivedObjectsLocationsList)
             {
-                m_SensorPosition = sensorPosition;
-                m_SensorDirection = sensorDirection;
+                m_SensorW2L = sensorW2L;
                 m_Range = range;
                 m_AngleInDegrees = angleInDegrees;
                 m_Height = height;
@@ -145,8 +137,7 @@ namespace UnityEngine.AI
                 m_PerceivedObjectsLocationsList = perceivedObjectsLocationsList;
             }
 
-            [ReadOnly] private readonly float4 m_SensorPosition;
-            [ReadOnly] private readonly float3 m_SensorDirection;
+            [ReadOnly] private readonly float4x4 m_SensorW2L;
             [ReadOnly] private readonly float m_Range;
             [ReadOnly] private readonly float m_AngleInDegrees;
             [ReadOnly] private readonly float m_Height;
@@ -161,14 +152,30 @@ namespace UnityEngine.AI
             private PerceivedObjectsList m_PerceivedObjectsList;
             private PerceivedObjectsLocationsList m_PerceivedObjectsLocationsList;
 
-            public unsafe void Execute()
+            public void Execute()
             {
                 var vectorizedPositions = m_StimuliPositions.Reinterpret<float4x4>(sizeof(float4));
                 var vectorizedLength = vectorizedPositions.Length;
                 var vectorizedResults = stackalloc bool4[vectorizedLength];
 
-                PrimaryCheck(vectorizedLength, vectorizedPositions, vectorizedResults);
-                SecondaryCheck(vectorizedLength, vectorizedPositions, vectorizedResults);
+                var localizedPositions = (float4x4*) UnsafeUtility.Malloc(UnsafeUtility.SizeOf<float4x4>() * vectorizedLength,
+                    UnsafeUtility.AlignOf<float4x4>(),
+                    Allocator.Persistent);
+
+                {
+                    // calculated localized positions
+                    {
+                        for (var i = 0; i < vectorizedLength; i++)
+                        {
+                            localizedPositions[i] = math.mul(m_SensorW2L, vectorizedPositions[i]);
+                        }
+                    }
+
+                    PrimaryCheck(vectorizedLength, localizedPositions, vectorizedResults);
+                    SecondaryCheck(vectorizedLength, localizedPositions, vectorizedResults);
+                }
+
+                UnsafeUtility.Free(localizedPositions, Allocator.Persistent);
 
                 var results = (bool*) vectorizedResults;
 
@@ -194,7 +201,7 @@ namespace UnityEngine.AI
                 }
             }
 
-            private unsafe void PrimaryCheck(int vectorizedLength, NativeArray<float4x4> vectorizedPositions, bool4* results)
+            private void PrimaryCheck(int vectorizedLength, float4x4* vectorizedLocalPositions, bool4* results)
             {
                 // clear
                 {
@@ -204,12 +211,12 @@ namespace UnityEngine.AI
                     }
                 }
 
-                HeightCheck(vectorizedLength, vectorizedPositions, results, m_Height, m_HeightOffset);
-                AngleCheck(vectorizedLength, vectorizedPositions, results, m_AngleInDegrees);
-                RangeCheck(vectorizedLength, vectorizedPositions, results, m_Range);
+                HeightCheck(vectorizedLength, vectorizedLocalPositions, results, m_Height, m_HeightOffset);
+                AngleCheck(vectorizedLength, vectorizedLocalPositions, results, m_AngleInDegrees);
+                RangeCheck(vectorizedLength, vectorizedLocalPositions, results, m_Range);
             }
 
-            private unsafe void SecondaryCheck(int vectorizedLength, NativeArray<float4x4> vectorizedPositions, bool4* originalResults)
+            private void SecondaryCheck(int vectorizedLength, float4x4* vectorizedLocalPositions, bool4* originalResults)
             {
                 var secondaryVectorizedResults = stackalloc bool4[vectorizedLength];
 
@@ -221,9 +228,9 @@ namespace UnityEngine.AI
                     }
                 }
 
-                HeightCheck(vectorizedLength, vectorizedPositions, secondaryVectorizedResults, m_SecondaryHeight, m_SecondaryHeightOffset);
-                AngleCheck(vectorizedLength, vectorizedPositions, secondaryVectorizedResults, m_SecondaryAngleInDegrees);
-                RangeCheck(vectorizedLength, vectorizedPositions, secondaryVectorizedResults, m_SecondaryRange);
+                HeightCheck(vectorizedLength, vectorizedLocalPositions, secondaryVectorizedResults, m_SecondaryHeight, m_SecondaryHeightOffset);
+                AngleCheck(vectorizedLength, vectorizedLocalPositions, secondaryVectorizedResults, m_SecondaryAngleInDegrees);
+                RangeCheck(vectorizedLength, vectorizedLocalPositions, secondaryVectorizedResults, m_SecondaryRange);
 
                 for (var i = 0; i < vectorizedLength; i++)
                 {
@@ -231,75 +238,67 @@ namespace UnityEngine.AI
                 }
             }
 
-            private unsafe void HeightCheck(int vectorizedLength, NativeArray<float4x4> vectorizedPositions, bool4* vectorizedResults, float height, float heightOffset)
+            private static void HeightCheck(int vectorizedLength, float4x4* vectorizedLocalPositions, bool4* vectorizedResults, float height, float heightOffset)
             {
-                float4 heightMin4 = m_SensorPosition.y + heightOffset - (height * 0.5f);
-                float4 heightMax4 = m_SensorPosition.y + heightOffset + (height * 0.5f);
+                float4 localHeightMin4 = heightOffset - (height * 0.5f);
+                float4 localHeightMax4 = heightOffset + (height * 0.5f);
 
                 for (var i = 0; i < vectorizedLength; i++)
                 {
-                    var stimuliPos4 = vectorizedPositions[i];
+                    var stimuliLocalPos4 = vectorizedLocalPositions[i];
 
-                    float4 stimuliHeight4 = default;
+                    float4 stimuliLocalHeight4 = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        stimuliHeight4[j] = stimuliPos4[j].y;
+                        stimuliLocalHeight4[j] = stimuliLocalPos4[j].y;
                     }
 
-                    vectorizedResults[i] &= (stimuliHeight4 < heightMax4) & (stimuliHeight4 > heightMin4);
+                    vectorizedResults[i] &= (stimuliLocalHeight4 < localHeightMax4) & (stimuliLocalHeight4 > localHeightMin4);
                 }
             }
 
-            private unsafe void AngleCheck(int vectorizedLength, NativeArray<float4x4> vectorizedPositions, bool4* vectorizedResults, float angleInDegrees)
+            private static void AngleCheck(int vectorizedLength, float4x4* vectorizedLocalPositions, bool4* vectorizedResults, float angleInDegrees)
             {
                 var angleInRadians = math.radians(angleInDegrees);
                 var halfAngleInRadians = angleInRadians * 0.5f;
                 var cosHalfAngleInRadians = math.cos(halfAngleInRadians);
                 var dotProductThreshold = new float4(cosHalfAngleInRadians);
 
-                var sensorPos4 = new float4x4(m_SensorPosition, m_SensorPosition, m_SensorPosition, m_SensorPosition);
-
-                var sensorDirectionXZ = m_SensorDirection.xz;
-                var normalizedSensorDirectionXZ = math.normalizesafe(sensorDirectionXZ, new float2(0, 1));
-                var normalizedSensorDirectionXZ4 = new float2x4(normalizedSensorDirectionXZ, normalizedSensorDirectionXZ, normalizedSensorDirectionXZ, normalizedSensorDirectionXZ);
-
                 for (var i = 0; i < vectorizedLength; i++)
                 {
-                    var stimuliPos4 = vectorizedPositions[i];
+                    var stimuliLocalPos4 = vectorizedLocalPositions[i];
 
-                    var sensorToStimulusVector4 = stimuliPos4 - sensorPos4;
-
-                    float2x4 normalizedSensorToStimulusVectorXZ4 = default;
+                    float2x4 normalizedStimulusDirectionXZ = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        normalizedSensorToStimulusVectorXZ4[j] = math.normalizesafe(sensorToStimulusVector4[j].xz, normalizedSensorDirectionXZ4[j]);
+                        normalizedStimulusDirectionXZ[j] = math.normalizesafe(stimuliLocalPos4[j].xz, new float2(0, 1));
                     }
 
                     float4 dotProduct = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        dotProduct[j] = math.dot(normalizedSensorDirectionXZ4[j], normalizedSensorToStimulusVectorXZ4[j]);
+                        dotProduct[j] = normalizedStimulusDirectionXZ[j].y;
                     }
 
                     vectorizedResults[i] &= (dotProduct > dotProductThreshold);
                 }
             }
 
-            private unsafe void RangeCheck(int vectorizedLength, NativeArray<float4x4> vectorizedPositions, bool4* vectorizedResults, float range)
+            private static void RangeCheck(int vectorizedLength, float4x4* vectorizedLocalPositions, bool4* vectorizedResults, float range)
             {
-                var rangeSq4 = new float4(range);
+                var rangeSq4 = new float4(range * range);
 
                 for (var i = 0; i < vectorizedLength; i++)
                 {
-                    var stimuliPosition4 = vectorizedPositions[i];
+                    var stimuliLocalPos4 = vectorizedLocalPositions[i];
 
-                    float4 distanceXZSq4 = default;
+                    float4 lengthXZSq4 = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        distanceXZSq4[j] = math.distancesq(m_SensorPosition.xz, stimuliPosition4[j].xz);
+                        lengthXZSq4[j] = math.lengthsq(stimuliLocalPos4[j].xz);
                     }
 
-                    vectorizedResults[i] &= (distanceXZSq4 < rangeSq4);
+                    vectorizedResults[i] &= (lengthXZSq4 < rangeSq4);
                 }
             }
         }
