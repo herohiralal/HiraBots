@@ -34,6 +34,11 @@ namespace UnityEngine.AI
                 .Schedule(dependencies);
         }
 
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.DrawWireSphere(transform.position, range);
+        }
+
         [BurstCompile]
         private struct BoundsCheckJob : IJob
         {
