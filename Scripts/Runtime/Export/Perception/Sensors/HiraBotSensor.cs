@@ -188,7 +188,7 @@ namespace UnityEngine.AI
                 var raycastResults = new NativeArray<RaycastHit>(raycastCount,
                     Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
 
-                var buildJob = new PerceptionSystem.BuildRaycastCommandsJob(sensorPosFloat4, m_Range, m_LineOfSightCheck.m_BlockingObjects,
+                var buildJob = new PerceptionSystem.BuildRaycastCommandsJob(sensorPosFloat4, m_LineOfSightCheck.m_BlockingObjects,
                         m_PerceivedObjectsLocations, raycastCommands)
                     .Schedule();
 

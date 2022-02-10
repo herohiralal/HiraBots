@@ -14,20 +14,17 @@ namespace HiraBots
         {
             internal BuildRaycastCommandsJob(
                 float4 sensorPosition,
-                float range,
                 LayerMask blockingMask,
                 NativeArray<UnmanagedCollections.Data<float4>> perceivedObjectsPositions,
                 NativeArray<RaycastCommand> raycastCommands)
             {
                 m_SensorPosition = sensorPosition;
-                m_Range = range;
                 m_BlockingMask = blockingMask;
                 m_PerceivedObjectsPositions = perceivedObjectsPositions;
                 m_RaycastCommands = raycastCommands;
             }
 
             [ReadOnly] private readonly float4 m_SensorPosition;
-            [ReadOnly] private readonly float m_Range;
             [ReadOnly] private readonly LayerMask m_BlockingMask;
             [ReadOnly] private NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsPositions;
             [WriteOnly] private NativeArray<RaycastCommand> m_RaycastCommands;
@@ -58,9 +55,11 @@ namespace HiraBots
                 {
                     var direction = vectorizedPositions[i] - vectorizedSensorPosition;
 
+                    float4 magnitudes4 = default;
                     for (var j = 0; j < 4; j++)
                     {
-                        direction[j].xyz = math.normalize(direction[j].xyz);
+                        magnitudes4[j] = math.length(direction[j].xyz);
+                        direction[j].xyz = math.normalizesafe(direction[j].xyz);
                     }
 
                     for (var j = 0; j < 4; j++)
@@ -68,7 +67,7 @@ namespace HiraBots
                         m_RaycastCommands[(i * 4) + j] = new RaycastCommand(
                             vectorizedSensorPosition[j].xyz,
                             direction[j].xyz,
-                            m_Range,
+                            magnitudes4[j],
                             m_BlockingMask,
                             1);
                     }
