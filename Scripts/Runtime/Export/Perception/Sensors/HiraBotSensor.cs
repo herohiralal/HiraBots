@@ -37,7 +37,7 @@ namespace UnityEngine.AI
 
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
-        [SerializeField] private int m_StimulusMask = ~0;
+        [SerializeField] private StimulusMask m_StimulusMask = StimulusMask.all;
 
         [Tooltip("The time it takes to stop perceiving an object after all the stimulus related to it are stopped being perceived.")]
         [SerializeField] private float m_TimeToStimulusDecay = 1f;

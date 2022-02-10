@@ -735,4 +735,45 @@ namespace HiraBots.Editor
             }
         }
     }
+
+    /// <summary>
+    /// Helper class for Perception System GUI.
+    /// </summary>
+    internal static class PerceptionSystemGUIHelpers
+    {
+        static PerceptionSystemGUIHelpers()
+        {
+            Type t = null;
+
+            foreach (var type in TypeCache.GetTypesWithAttribute<ExposedToHiraBotsAttribute>())
+            {
+                if (!type.IsEnum)
+                {
+                    continue;
+                }
+
+                if (type.GetEnumUnderlyingType() != typeof(int))
+                {
+                    continue;
+                }
+
+                var attr = type.GetCustomAttribute<ExposedToHiraBotsAttribute>();
+                if (attr.identifier != "perception system stimulus mask")
+                {
+                    continue;
+                }
+
+                t = type;
+            }
+
+            if (t == null)
+            {
+                t = typeof(HiraBotsDefaultStimulusMask);
+            }
+
+            stimulusMaskType = t;
+        }
+
+        internal static Type stimulusMaskType { get; }
+    }
 }
