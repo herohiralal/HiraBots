@@ -134,6 +134,7 @@ namespace HiraBots
 
                 // do something here on the main thread if needed
 
+                PerceptionSystem.CompleteJobs();
                 PerceptionSystem.CollectJobResults();
             }
         }

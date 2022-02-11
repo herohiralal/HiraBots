@@ -222,18 +222,16 @@ namespace UnityEngine.AI
                 .Schedule(m_UpdateJob.Value);
         }
 
+        internal void CompleteJobs()
+        {
+            m_UpdateJob?.Complete();
+            m_UpdateJob = null;
+            m_ObjectsPerceivedThisFrame.Clear();
+            m_PerceivedObjectsLocations.Clear();
+        }
+
         internal unsafe void CollectJobResults()
         {
-            if (!m_UpdateJob.HasValue)
-            {
-                return;
-            }
-
-            m_UpdateJob.Value.Complete();
-            m_UpdateJob = null;
-
-            m_PerceivedObjectsLocations.Clear();
-
             // callback for new objects perceived
             {
                 var newObjectsPerceived = (int*) m_NewObjectsPerceived.GetUnsafeUnmanagedListReadOnlyPtr();
