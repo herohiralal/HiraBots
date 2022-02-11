@@ -1,85 +1,69 @@
-﻿using System;
-using System.Collections;
-using HiraBots;
+﻿using HiraBots;
 
 namespace UnityEngine.AI
 {
-    public struct HiraBotStimulus : IDisposable
+    public sealed class HiraBotStimulus : MonoBehaviour, IUpdatableBehaviour
     {
-        public HiraBotStimulus(StimulusType type, Vector3 position, Object associatedObject)
-        {
-            m_TypeIndex = type.ToTypeIndex();
-            m_Position = position;
-            m_AssociatedObjectInstanceID = associatedObject.GetInstanceID();
-            m_Id = PerceptionSystem.AddStimulus(m_TypeIndex, m_Position, m_AssociatedObjectInstanceID);
-        }
+        [Tooltip("The type of the stimulus.")]
+        [SerializeField] private StimulusType m_Type;
+
+        [Tooltip("The interval at which to update the position in the stimulus database.")]
+        [SerializeField] private float m_TickInterval;
 
         private int m_Id;
-        private byte m_TypeIndex;
-        private Vector3 m_Position;
-        private int m_AssociatedObjectInstanceID;
 
-        public StimulusType type
+        private void OnEnable()
         {
-            get => new StimulusType(m_TypeIndex);
-            set
-            {
-                var typeIndex = value.ToTypeIndex();
-
-                if (m_Id != 0 && m_TypeIndex != typeIndex)
-                {
-                    PerceptionSystem.ChangeStimulusType(m_Id, typeIndex);
-                }
-
-                m_TypeIndex = typeIndex;
-            }
+            m_Id = PerceptionSystem.AddStimulus(m_Type.ToTypeIndex(), transform.position, gameObject.GetInstanceID());
+            BehaviourUpdater.Add(this, m_TickInterval);
         }
 
-        public Vector3 position
+        private void OnDisable()
         {
-            get => m_Position;
-            set
-            {
-                if (m_Id != 0 && m_Position != value)
-                {
-                    PerceptionSystem.ChangeStimulusPosition(m_Id, value);
-                }
-
-                m_Position = value;
-            }
-        }
-
-        public Object associatedObject
-        {
-            get => ObjectUtils.InstanceIDToObject(m_AssociatedObjectInstanceID);
-            set
-            {
-                var instanceID = value.GetInstanceID();
-
-                if (m_Id != 0 && m_AssociatedObjectInstanceID != instanceID)
-                {
-                    PerceptionSystem.ChangeStimulusAssociatedObject(m_Id, instanceID);
-                }
-
-                m_AssociatedObjectInstanceID = instanceID;
-            }
-        }
-
-        public void Dispose()
-        {
+            BehaviourUpdater.Remove(this);
             PerceptionSystem.RemoveStimulus(m_Id);
             m_Id = 0;
         }
 
-        public void Dispose(float timer)
+        private void OnValidate()
         {
-            CoroutineRunner.Start(DisposeCoroutine(m_Id, timer));
+            type = m_Type;
+            tickInterval = m_TickInterval;
         }
 
-        private static IEnumerator DisposeCoroutine(int id, float timer)
+        public StimulusType type
         {
-            yield return new WaitForSeconds(timer);
-            PerceptionSystem.RemoveStimulus(id);
+            get => m_Type;
+            set
+            {
+                if (m_Id != 0 && m_Type.ToTypeIndex() != value.ToTypeIndex())
+                {
+                    PerceptionSystem.ChangeStimulusType(m_Id, value.ToTypeIndex());
+                }
+
+                m_Type = value;
+            }
+        }
+
+        public float tickInterval
+        {
+            get => m_TickInterval;
+            set
+            {
+                var clampedValue = Mathf.Clamp(value, 0f, float.MaxValue);
+
+                if (m_Id != 0 && isActiveAndEnabled && Mathf.Abs(m_TickInterval - clampedValue) < 0.01f)
+                {
+                    BehaviourUpdater.ChangeTickInterval(this, clampedValue);
+                }
+
+                m_TickInterval = clampedValue;
+            }
+        }
+
+        public void Tick(float deltaTime)
+        {
+            PerceptionSystem.ChangeStimulusPosition(m_Id, transform.position);
         }
     }
 }
