@@ -6,6 +6,7 @@ using Unity.Mathematics;
 
 namespace UnityEngine.AI
 {
+    [AddComponentMenu("AI/HiraBot Sensor (Spherical)")]
     public sealed class HiraBotSphericalSensor : HiraBotSensor
     {
         [Space] [Header("Shape")]

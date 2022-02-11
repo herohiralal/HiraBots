@@ -2,6 +2,7 @@
 
 namespace UnityEngine.AI
 {
+    [AddComponentMenu("AI/HiraBot Sensor Stimulus")]
     public sealed class HiraBotStimulus : MonoBehaviour, IUpdatableBehaviour
     {
         [Tooltip("The type of the stimulus.")]
