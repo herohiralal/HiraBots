@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using HiraBots;
 
 namespace UnityEngine.AI
@@ -68,6 +69,17 @@ namespace UnityEngine.AI
         {
             PerceptionSystem.RemoveStimulus(m_Id);
             m_Id = 0;
+        }
+
+        public void Dispose(float timer)
+        {
+            CoroutineRunner.Start(DisposeCoroutine(m_Id, timer));
+        }
+
+        private static IEnumerator DisposeCoroutine(int id, float timer)
+        {
+            yield return new WaitForSeconds(timer);
+            PerceptionSystem.RemoveStimulus(id);
         }
     }
 }
