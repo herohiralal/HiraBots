@@ -130,14 +130,63 @@ namespace UnityEngine.AI
 
         public ObjectStoppedPerceivingEvent objectStoppedPerceiving => m_OnObjectStoppedPerceiving;
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, m_NavDistanceCheck.m_Enabled);
+
+            try
+            {
+                OnEnableCallback();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
-        private void OnDisable()
+        protected virtual void OnEnableCallback()
         {
+            
+        }
+
+        protected void OnDisable()
+        {
+            try
+            {
+                OnDisableCallback();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+
             PerceptionSystem.RemoveSensor(this);
+        }
+
+        protected virtual void OnDisableCallback()
+        {
+            
+        }
+
+        protected void OnValidate()
+        {
+            stimulusMask = m_StimulusMask;
+            lineOfSightCheck = m_LineOfSightCheck;
+            navDistanceCheck = m_NavDistanceCheck;
+
+            try
+            {
+                OnValidateCallback();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        protected virtual void OnValidateCallback()
+        {
+            
         }
 
         internal bool ScheduleJobsToDetermineObjectsPerceivedThisTick(
