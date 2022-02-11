@@ -26,14 +26,32 @@ namespace UnityEngine.AI
             public bool m_Invert;
         }
 
-        // [System.Serializable]
-        // public struct NavDistanceCheckProperties
-        // {
-        //     public bool m_Enabled;
-        //     public float m_StimulusNavmeshDistanceTolerance;
-        //     public int m_AgentType;
-        //     public int m_AreaMask;
-        // }
+        [System.Serializable]
+        public struct NavDistanceCheckProperties
+        {
+            [System.Serializable]
+            public enum SensorNotOnNavMeshAction : byte
+            {
+                SkipNavDistanceCheck,
+                MarkAllStimuliAsNotPerceived
+            }
+
+            [System.Serializable]
+            public enum StimulusNotOnNavMeshAction : byte
+            {
+                ConsiderPerceived,
+                ConsiderNotPerceived
+            }
+
+            public bool m_Enabled;
+            public bool m_Invert;
+            public float m_Range;
+            public NavAgentType m_AgentType;
+            public NavAreaMask m_AreaMask;
+            public float m_NavmeshDistanceTolerance;
+            public SensorNotOnNavMeshAction m_SensorNotOnNavMeshAction;
+            public StimulusNotOnNavMeshAction m_StimulusNotOnNavMeshAction;
+        }
 
         [Space] [Header("Detection")]
         [Tooltip("The types of stimuli this sensor can detect.")]
@@ -56,6 +74,19 @@ namespace UnityEngine.AI
             m_Enabled = false,
             m_BlockingObjects = ~0,
             m_Invert = false
+        };
+
+        [Tooltip("Whether to check for the navigational distance to the stimulus.")]
+        [SerializeField] private NavDistanceCheckProperties m_NavDistanceCheck = new NavDistanceCheckProperties
+        {
+            m_Enabled = false,
+            m_Invert = false,
+            m_Range = 8f,
+            m_AgentType = 0,
+            m_AreaMask = NavMesh.AllAreas,
+            m_NavmeshDistanceTolerance = 1f,
+            m_SensorNotOnNavMeshAction = NavDistanceCheckProperties.SensorNotOnNavMeshAction.MarkAllStimuliAsNotPerceived,
+            m_StimulusNotOnNavMeshAction = NavDistanceCheckProperties.StimulusNotOnNavMeshAction.ConsiderNotPerceived
         };
 
         internal (NativeArray<UnmanagedCollections.OrderedData<int>> objects, NativeArray<UnmanagedCollections.Data<float>> timeToStimulusDeath) m_PerceivedObjects;
@@ -81,19 +112,19 @@ namespace UnityEngine.AI
             set
             {
                 m_LineOfSightCheck = value;
-                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, false); //m_NavDistanceCheck.m_Enabled);
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, value.m_Enabled, m_NavDistanceCheck.m_Enabled);
             }
         }
 
-        // public NavDistanceCheckProperties navDistanceCheck
-        // {
-        //     get => m_NavDistanceCheck;
-        //     set
-        //     {
-        //         m_NavDistanceCheck = value;
-        //         PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
-        //     }
-        // }
+        public NavDistanceCheckProperties navDistanceCheck
+        {
+            get => m_NavDistanceCheck;
+            set
+            {
+                m_NavDistanceCheck = value;
+                PerceptionSystem.ChangeSecondaryChecksEnabled(this, m_LineOfSightCheck.m_Enabled, value.m_Enabled);
+            }
+        }
 
         public NewObjectPerceivedEvent newObjectPerceived => m_OnNewObjectPerceived;
 
@@ -101,7 +132,7 @@ namespace UnityEngine.AI
 
         private void OnEnable()
         {
-            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, false); // m_NavDistanceCheck.m_Enabled);
+            PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, m_NavDistanceCheck.m_Enabled);
         }
 
         private void OnDisable()
@@ -121,7 +152,7 @@ namespace UnityEngine.AI
                     stimuliPositions,
                     stimuliAssociatedObjects,
                     new PerceivedObjectsList(m_ObjectsPerceivedThisFrame),
-                    m_LineOfSightCheck.m_Enabled // || m_NavDistanceCheck.m_Enabled
+                    m_LineOfSightCheck.m_Enabled || m_NavDistanceCheck.m_Enabled
                         ? new PerceivedObjectsLocationsList(true, m_PerceivedObjectsLocations)
                         : new PerceivedObjectsLocationsList(false, m_PerceivedObjectsLocations),
                     stimuliCount,
@@ -197,10 +228,10 @@ namespace UnityEngine.AI
             }
 
             JobHandle navDistanceJob = default;
-            // if (m_NavDistanceCheck.m_Enabled)
-            // {
-            //     
-            // }
+            if (m_NavDistanceCheck.m_Enabled)
+            {
+                
+            }
 
             m_UpdateJob = JobHandle.CombineDependencies(lineOfSightJob, navDistanceJob);
         }
