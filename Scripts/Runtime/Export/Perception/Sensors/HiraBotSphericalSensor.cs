@@ -38,7 +38,7 @@ namespace UnityEngine.AI
                 .Schedule(dependencies);
         }
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             var originalMatrix = Gizmos.matrix;
             try
