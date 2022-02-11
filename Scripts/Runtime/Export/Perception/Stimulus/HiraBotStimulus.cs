@@ -8,7 +8,7 @@ namespace UnityEngine.AI
         [Tooltip("The type of the stimulus.")]
         [SerializeField] private StimulusType m_Type;
 
-        [Tooltip("The interval at which to update the position in the stimulus database.")]
+        [Tooltip("The interval at which to update the position in the stimulus database. Negative value means no auto-update.")]
         [SerializeField] private float m_TickInterval;
 
         private int m_Id;
@@ -16,7 +16,11 @@ namespace UnityEngine.AI
         private void OnEnable()
         {
             m_Id = PerceptionSystem.AddStimulus(m_Type.ToTypeIndex(), transform.position, gameObject.GetInstanceID());
-            BehaviourUpdater.Add(this, m_TickInterval);
+
+            if (m_TickInterval >= 0f)
+            {
+                BehaviourUpdater.Add(this, m_TickInterval);
+            }
         }
 
         private void OnDisable()
@@ -51,14 +55,21 @@ namespace UnityEngine.AI
             get => m_TickInterval;
             set
             {
-                var clampedValue = Mathf.Clamp(value, 0f, float.MaxValue);
+                m_TickInterval = value;
 
-                if (m_Id != 0 && isActiveAndEnabled && Mathf.Abs(m_TickInterval - clampedValue) < 0.01f)
+                if (!isActiveAndEnabled)
                 {
-                    BehaviourUpdater.ChangeTickInterval(this, clampedValue);
+                    return;
                 }
 
-                m_TickInterval = clampedValue;
+                if (value >= 0f)
+                {
+                    BehaviourUpdater.Add(this, value);
+                }
+                else
+                {
+                    BehaviourUpdater.Remove(this);
+                }
             }
         }
 
