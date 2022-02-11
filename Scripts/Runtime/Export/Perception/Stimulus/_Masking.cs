@@ -42,6 +42,11 @@
     {
         [SerializeField] private byte m_Value;
 
+        internal StimulusType(byte value)
+        {
+            m_Value = value;
+        }
+
         internal byte ToTypeIndex()
         {
             return m_Value;
@@ -53,11 +58,11 @@
             {
                 if ((value >> (i + 1) == 0))
                 {
-                    return new StimulusType { m_Value = i };
+                    return new StimulusType(i);
                 }
             }
 
-            return new StimulusType { m_Value = 0 };
+            return new StimulusType(0);
         }
     }
 
