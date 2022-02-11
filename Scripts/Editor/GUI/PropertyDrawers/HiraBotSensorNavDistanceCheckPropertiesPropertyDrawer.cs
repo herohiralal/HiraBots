@@ -10,7 +10,7 @@ namespace HiraBots.Editor
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var enabled = property.FindPropertyRelative(nameof(HiraBotSensor.NavDistanceCheckProperties.m_Enabled));
-            return 21f + (enabled.boolValue ? (21f + 21f + 21f + 21f + 21f + 21f + 21f) : 0f);
+            return 21f + (enabled.boolValue ? (21f + 21f + 21f + 21f + 21f + 21f + 21f + 21f) : 0f);
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -36,6 +36,9 @@ namespace HiraBots.Editor
                 secondaryRect.height = 19f;
                 secondaryRect.width -= 15f;
                 secondaryRect.x += 15f;
+
+                secondaryRect.y += 21f;
+                EditorGUI.HelpBox(secondaryRect, "Currently does nothing. Blame NavMeshQuery.", MessageType.Warning);
 
                 secondaryRect.y += 21f;
                 EditorGUI.PropertyField(secondaryRect, invert);
