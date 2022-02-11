@@ -65,14 +65,22 @@ namespace HiraBots
 
         public void Abort()
         {
-            m_Agent.isStopped = true;
+            if (m_Agent.isActiveAndEnabled && m_Agent.isOnNavMesh)
+            {
+                m_Agent.isStopped = true;
+            }
+
             m_Agent = null;
             s_Executables.Push(this);
         }
 
         public void End(bool success)
         {
-            m_Agent.isStopped = true;
+            if (m_Agent.isActiveAndEnabled && m_Agent.isOnNavMesh)
+            {
+                m_Agent.isStopped = true;
+            }
+
             m_Agent = null;
             s_Executables.Push(this);
         }
