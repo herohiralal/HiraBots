@@ -273,7 +273,7 @@ namespace HiraBots
                 else
                 {
                     var existingId = BlackboardUnsafeHelpers.ReadIntegerValue(dataPtr, memoryOffset);
-                    var newId = value.GetInstanceID();
+                    var newId = value == null ? 0 : value.GetInstanceID();
 
                     if (existingId != newId)
                     {

@@ -13,7 +13,7 @@ namespace HiraBots
         private BlackboardTemplateCompiledData m_ParentCompiledData;
         private NativeArray<byte> m_Template = default;
         private readonly Dictionary<string, BlackboardKeyCompiledData> m_KeyNameToKeyData;
-        private readonly Dictionary<int, Object> m_ObjectCache;
+        private ObjectCache m_ObjectCache;
 
         /// <summary>
         /// The number of keys within the blackboard template.
@@ -28,7 +28,7 @@ namespace HiraBots
             m_Template = template;
             m_KeyNameToKeyData = keyNameToKeyData;
             this.keyCount = keyCount;
-            m_ObjectCache = new Dictionary<int, Object>();
+            m_ObjectCache = new ObjectCache(0);
         }
 
         internal void Dispose()
@@ -67,8 +67,7 @@ namespace HiraBots
         /// <summary>
         /// Map from stored instance IDs to Objects.
         /// </summary>
-        internal ReadOnlyDictionaryAccessor<int, Object> objectCache =>
-            m_ObjectCache;
+        internal ObjectCache objectCache => m_ObjectCache;
 
         /// <summary>
         /// Get key compiled data from a key name.

@@ -84,7 +84,7 @@ namespace HiraBots
             var owningTemplate = GetOwningTemplate(memoryOffset);
 
             var existingId = BlackboardUnsafeHelpers.ReadIntegerValue(owningTemplate.templatePtr, memoryOffset);
-            var newId = value.GetInstanceID();
+            var newId = value == null ? 0 : value.GetInstanceID();
 
             if (existingId == newId) return;
 

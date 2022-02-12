@@ -13,7 +13,7 @@ namespace HiraBots
         private readonly ulong m_Id;
         private BlackboardTemplateCompiledData m_Template;
         private NativeArray<byte> m_Data;
-        private System.Collections.Generic.Dictionary<int, UnityEngine.Object> m_ObjectCache;
+        private ObjectCache m_ObjectCache;
 
         /// <summary>
         /// Reset the static id assigner.
@@ -59,7 +59,7 @@ namespace HiraBots
             m_Template.CopyTemplateTo(m_Data);
             m_UnexpectedChanges = new System.Collections.Generic.List<string>(template.keyCount);
             m_Template.AddInstanceSyncListener(this);
-            m_ObjectCache = new System.Collections.Generic.Dictionary<int, UnityEngine.Object>();
+            m_ObjectCache = new ObjectCache(0);
         }
 
         internal void Dispose()
