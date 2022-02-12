@@ -7,7 +7,7 @@ using Unity.Mathematics;
 namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/HiraBot Sensor (Radial)")]
-    public sealed class HiraBotRadialSensor : HiraBotSensor
+    public class HiraBotRadialSensor : HiraBotSensor
     {
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
@@ -82,7 +82,7 @@ namespace UnityEngine.AI
             set => m_SecondaryHeightOffset = value;
         }
 
-        protected override JobHandle ScheduleBoundsCheckJob(
+        protected sealed override JobHandle ScheduleBoundsCheckJob(
             NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             PerceivedObjectsList perceivedObjectsList,

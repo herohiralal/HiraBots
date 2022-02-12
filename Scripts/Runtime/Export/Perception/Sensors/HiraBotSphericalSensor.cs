@@ -7,7 +7,7 @@ using Unity.Mathematics;
 namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/HiraBot Sensor (Spherical)")]
-    public sealed class HiraBotSphericalSensor : HiraBotSensor
+    public class HiraBotSphericalSensor : HiraBotSensor
     {
         [Space] [Header("Shape")]
         [Tooltip("The maximum range of the sensor.")]
@@ -19,7 +19,7 @@ namespace UnityEngine.AI
             set => m_Radius = Mathf.Clamp(value, 0f, float.MaxValue);
         }
 
-        protected override JobHandle ScheduleBoundsCheckJob(
+        protected sealed override JobHandle ScheduleBoundsCheckJob(
             NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             PerceivedObjectsList perceivedObjectsList,
