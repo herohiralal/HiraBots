@@ -59,5 +59,13 @@ namespace HiraBots
             o = ret.obj;
             return res;
         }
+
+        internal IEnumerable<Object> GetAllObjects()
+        {
+            foreach (var (o, _) in m_Value.Values)
+            {
+                yield return o;
+            }
+        }
     }
 }

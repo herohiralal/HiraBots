@@ -1,4 +1,5 @@
-﻿using HiraBots;
+﻿using System.Linq;
+using HiraBots;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -128,6 +129,8 @@ namespace UnityEngine.AI
             }
         }
 
+        public Object[] currentlyPerceivedObjects => m_ObjectCache.GetAllObjects().ToArray();
+
         public NewObjectPerceivedEvent newObjectPerceived => m_OnNewObjectPerceived;
 
         public ObjectStoppedPerceivingEvent objectStoppedPerceiving => m_OnObjectStoppedPerceiving;
@@ -245,7 +248,7 @@ namespace UnityEngine.AI
                 var sensorPos = transform.position;
                 var sensorPosFloat4 = new float4(sensorPos.x, sensorPos.y, sensorPos.z, 1);
 
-                var raycastCount = (m_PerceivedObjectsLocations.Count() + 3) & ~3;
+                var raycastCount = (m_PerceivedObjectsLocations.Count<float4>() + 3) & ~3;
 
                 var raycastCommands = new NativeArray<RaycastCommand>(raycastCount,
                     Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
@@ -319,7 +322,7 @@ namespace UnityEngine.AI
             // callback for new objects perceived
             {
                 var newObjectsPerceived = (int*) m_NewObjectsPerceived.GetUnsafeUnmanagedListReadOnlyPtr();
-                var newObjectsPerceivedCount = m_NewObjectsPerceived.Count();
+                var newObjectsPerceivedCount = m_NewObjectsPerceived.Count<int>();
 
                 for (var i = 0; i < newObjectsPerceivedCount; i++)
                 {
@@ -347,7 +350,7 @@ namespace UnityEngine.AI
             // callback for objects stopped being perceived
             {
                 var objectsStoppedPerceiving = (int*) m_ObjectsStoppedPerceiving.GetUnsafeUnmanagedListReadOnlyPtr();
-                var objectsStoppedPerceivingCount = m_ObjectsStoppedPerceiving.Count();
+                var objectsStoppedPerceivingCount = m_ObjectsStoppedPerceiving.Count<int>();
 
                 for (var i = 0; i < objectsStoppedPerceivingCount; i++)
                 {
