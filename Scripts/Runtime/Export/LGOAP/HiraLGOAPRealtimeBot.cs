@@ -80,7 +80,7 @@ namespace UnityEngine.AI
                 }
                 else
                 {
-                    BehaviourUpdater.ChangeTickInterval(this, value);
+                    BehaviourUpdater.Add(this, value);
                 }
             }
         }
