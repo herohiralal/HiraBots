@@ -90,7 +90,7 @@ namespace UnityEngine.AI
             m_StimulusNotOnNavMeshAction = NavDistanceCheckProperties.StimulusNotOnNavMeshAction.ConsiderNotPerceived
         };
 
-        private ObjectCache m_ObjectCache;
+        private ObjectCache m_ObjectCache = new ObjectCache(0);
 
         internal (NativeArray<UnmanagedCollections.OrderedData<int>> objects, NativeArray<UnmanagedCollections.Data<float>> timeToStimulusDeath) m_PerceivedObjects;
         internal NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsLocations;
