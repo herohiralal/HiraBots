@@ -45,7 +45,7 @@ namespace UnityEngine.AI
         // non-VM execution
         protected override float ExecuteFunction(BlackboardComponent blackboard, bool expected, float currentScore)
         {
-            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.ObjectEqualsScoreCalculator(currentScore, invert, ref _key, value.GetInstanceID(), score); return output;
+            var _key = GeneratedBlackboardHelpers.ObjectToInstanceID(blackboard.GetObjectValue(key.selectedKey.name)); var output = HiraBots.SampleScoreCalculatorBlackboardFunctions.ObjectEqualsScoreCalculator(currentScore, invert, ref _key, GeneratedBlackboardHelpers.ObjectToInstanceID(value), score); return output;
         }
 
         #endregion

@@ -17,7 +17,7 @@ namespace UnityEngine.AI
         /// </summary>
         public static int ObjectToInstanceID(Object input)
         {
-            return input.GetInstanceID();
+            return input == null ? 0 : input.GetInstanceID();
         }
     }
 }

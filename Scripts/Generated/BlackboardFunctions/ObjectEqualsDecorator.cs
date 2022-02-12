@@ -43,7 +43,7 @@ namespace UnityEngine.AI
         // non-VM execution
         protected override bool ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); var output = HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(invert, ref _key, value.GetInstanceID()); return output;
+            var _key = GeneratedBlackboardHelpers.ObjectToInstanceID(blackboard.GetObjectValue(key.selectedKey.name)); var output = HiraBots.SampleDecoratorBlackboardFunctions.ObjectEqualsDecorator(invert, ref _key, GeneratedBlackboardHelpers.ObjectToInstanceID(value)); return output;
         }
 
         #endregion

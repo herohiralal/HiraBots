@@ -41,7 +41,7 @@ namespace UnityEngine.AI
         // non-VM execution
         protected override void ExecuteFunction(BlackboardComponent blackboard, bool expected)
         {
-            var _key = blackboard.GetObjectValue(key.selectedKey.name).GetInstanceID(); HiraBots.SampleEffectorBlackboardFunctions.ObjectEqualsEffector(ref _key, value.GetInstanceID()); blackboard.SetObjectValue(key.selectedKey.name, GeneratedBlackboardHelpers.InstanceIDToObject(_key), expected);
+            var _key = GeneratedBlackboardHelpers.ObjectToInstanceID(blackboard.GetObjectValue(key.selectedKey.name)); HiraBots.SampleEffectorBlackboardFunctions.ObjectEqualsEffector(ref _key, GeneratedBlackboardHelpers.ObjectToInstanceID(value)); blackboard.SetObjectValue(key.selectedKey.name, GeneratedBlackboardHelpers.InstanceIDToObject(_key), expected);
         }
 
         #endregion

@@ -680,7 +680,7 @@ namespace HiraBots.Editor
                         case BlackboardFunctionParameterInfo.Type.BlackboardKey:
                             return $"ref _{i.m_Name}";
                         case BlackboardFunctionParameterInfo.Type.Object:
-                            return $"{i.m_Name}.GetInstanceID()";
+                            return $"GeneratedBlackboardHelpers.ObjectToInstanceID({i.m_Name})";
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -710,7 +710,7 @@ namespace HiraBots.Editor
                     case UnityEngine.AI.BlackboardKeyType.Integer:
                         return $"var _{i.m_Name} = blackboard.GetIntegerValue({i.m_Name}.selectedKey.name); ";
                     case UnityEngine.AI.BlackboardKeyType.Object:
-                        return $"var _{i.m_Name} = blackboard.GetObjectValue({i.m_Name}.selectedKey.name).GetInstanceID(); ";
+                        return $"var _{i.m_Name} = GeneratedBlackboardHelpers.ObjectToInstanceID(blackboard.GetObjectValue({i.m_Name}.selectedKey.name)); ";
                     case UnityEngine.AI.BlackboardKeyType.Quaternion:
                         return $"var _{i.m_Name} = blackboard.GetQuaternionValue({i.m_Name}.selectedKey.name); ";
                     case UnityEngine.AI.BlackboardKeyType.Vector:
