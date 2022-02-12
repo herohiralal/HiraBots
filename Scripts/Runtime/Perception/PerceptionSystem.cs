@@ -24,11 +24,11 @@ namespace HiraBots
 
         private static NativeArray<float4>[] s_StimuliPositions;
         private static NativeArray<int>[] s_StimuliAssociatedObjects;
-        private static NativeArray<int>[] s_Stimuli;
-        private static Dictionary<int, (byte type, int index)> s_StimuliLookUpTable;
+        private static NativeArray<ulong>[] s_Stimuli;
+        private static Dictionary<ulong, (byte type, int index)> s_StimuliLookUpTable;
         private static int[] s_StimuliCounts;
 
-        private static int s_Id = 0;
+        private static ulong s_Id = 0;
 
         private static bool isActive { get; set; }
 
@@ -39,7 +39,7 @@ namespace HiraBots
                 return;
             }
 
-            s_Id = int.MinValue;
+            s_Id = 0;
 
             s_SensorsStimulusMasks = new NativeArray<int>(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
             s_SensorsSecondaryChecks = new NativeArray<SensorSecondaryChecksFlags>(8, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
@@ -49,15 +49,15 @@ namespace HiraBots
 
             s_StimuliPositions = new NativeArray<float4>[32];
             s_StimuliAssociatedObjects = new NativeArray<int>[32];
-            s_Stimuli = new NativeArray<int>[32];
-            s_StimuliLookUpTable = new Dictionary<int, (byte, int)>();
+            s_Stimuli = new NativeArray<ulong>[32];
+            s_StimuliLookUpTable = new Dictionary<ulong, (byte, int)>();
             s_StimuliCounts = new int[32];
 
             for (var i = 0; i < 32; i++)
             {
                 s_StimuliPositions[i] = new NativeArray<float4>(0, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                 s_StimuliAssociatedObjects[i] = new NativeArray<int>(0, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-                s_Stimuli[i] = new NativeArray<int>(0, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                s_Stimuli[i] = new NativeArray<ulong>(0, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
                 s_StimuliCounts[i] = 0;
             }
 
@@ -105,7 +105,7 @@ namespace HiraBots
             s_SensorsSecondaryChecks.Dispose();
             s_SensorsStimulusMasks.Dispose();
 
-            s_Id = int.MinValue;
+            s_Id = 0;
         }
 
         internal static void UpdateDatabase()

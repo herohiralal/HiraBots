@@ -10,7 +10,7 @@ namespace HiraBots
     {
         private struct AddStimulusCommand
         {
-            internal AddStimulusCommand(byte stimulusType, float3 position, int associatedObject, int id)
+            internal AddStimulusCommand(byte stimulusType, float3 position, int associatedObject, ulong id)
             {
                 this.stimulusType = stimulusType;
                 this.position = position;
@@ -21,52 +21,52 @@ namespace HiraBots
             internal byte stimulusType { get; }
             internal float3 position { get; }
             internal int associatedObject { get; }
-            internal int id { get; }
+            internal ulong id { get; }
         }
 
         private struct RemoveStimulusCommand
         {
-            internal RemoveStimulusCommand(int id)
+            internal RemoveStimulusCommand(ulong id)
             {
                 this.id = id;
             }
 
-            internal int id { get; }
+            internal ulong id { get; }
         }
 
         private struct ChangeStimulusPositionCommand
         {
-            internal ChangeStimulusPositionCommand(int id, float3 newPos)
+            internal ChangeStimulusPositionCommand(ulong id, float3 newPos)
             {
                 this.id = id;
                 this.newPos = newPos;
             }
 
-            internal int id { get; }
+            internal ulong id { get; }
             internal float3 newPos { get; }
         }
 
         private struct ChangeStimulusTypeCommand
         {
-            internal ChangeStimulusTypeCommand(int id, byte newStimulusType)
+            internal ChangeStimulusTypeCommand(ulong id, byte newStimulusType)
             {
                 this.id = id;
                 this.newStimulusType = newStimulusType;
             }
 
-            internal int id { get; }
+            internal ulong id { get; }
             internal byte newStimulusType { get; }
         }
 
         private struct ChangeStimulusAssociatedObjectCommand
         {
-            internal ChangeStimulusAssociatedObjectCommand(int id, int newAssociatedObject)
+            internal ChangeStimulusAssociatedObjectCommand(ulong id, int newAssociatedObject)
             {
                 this.id = id;
                 this.newAssociatedObject = newAssociatedObject;
             }
 
-            internal int id { get; }
+            internal ulong id { get; }
             internal int newAssociatedObject { get; }
         }
 
@@ -108,7 +108,7 @@ namespace HiraBots
             s_ChangeStimulusAssociatedObjectCommands.Clear();
         }
 
-        internal static int AddStimulus(byte stimulusType, Vector3 position, int associatedObject)
+        internal static ulong AddStimulus(byte stimulusType, Vector3 position, int associatedObject)
         {
             s_Id++;
 
@@ -118,25 +118,25 @@ namespace HiraBots
             return s_Id;
         }
 
-        internal static void RemoveStimulus(int id)
+        internal static void RemoveStimulus(ulong id)
         {
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.RemoveStimulus);
             s_RemoveStimulusCommands.Enqueue(new RemoveStimulusCommand(id));
         }
 
-        internal static void ChangeStimulusPosition(int id, Vector3 newPos)
+        internal static void ChangeStimulusPosition(ulong id, Vector3 newPos)
         {
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusPosition);
             s_ChangeStimulusPositionCommands.Enqueue(new ChangeStimulusPositionCommand(id, newPos));
         }
 
-        internal static void ChangeStimulusType(int id, byte newType)
+        internal static void ChangeStimulusType(ulong id, byte newType)
         {
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusType);
             s_ChangeStimulusTypeCommands.Enqueue(new ChangeStimulusTypeCommand(id, newType));
         }
 
-        internal static void ChangeStimulusAssociatedObject(int id, int newAssociatedObject)
+        internal static void ChangeStimulusAssociatedObject(ulong id, int newAssociatedObject)
         {
             s_StimuliDatabaseCommandTypes.Enqueue(StimuliDatabaseCommandType.ChangeStimulusAssociatedObject);
             s_ChangeStimulusAssociatedObjectCommands.Enqueue(new ChangeStimulusAssociatedObjectCommand(id, newAssociatedObject));
@@ -231,7 +231,7 @@ namespace HiraBots
 #endif
         }
 
-        private static void AddStimulus(byte stimulusType, float4 position, int associatedObject, int id)
+        private static void AddStimulus(byte stimulusType, float4 position, int associatedObject, ulong id)
         {
             var currentStimuliCount = s_StimuliCounts[stimulusType];
 

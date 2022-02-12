@@ -14,7 +14,7 @@ namespace UnityEngine.AI
         [Tooltip("The interval at which to update the position in the stimulus database. Negative value means no auto-update.")]
         [SerializeField] private float m_TickInterval;
 
-        private int m_Id;
+        private ulong m_Id;
 
         private void OnEnable()
         {

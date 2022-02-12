@@ -11,7 +11,7 @@ namespace UnityEngine.AI
             m_Id = PerceptionSystem.AddStimulus(type.ToTypeIndex(), position, associatedObject.GetInstanceID());
         }
 
-        private int m_Id;
+        private ulong m_Id;
 
         public StimulusType type
         {
@@ -39,7 +39,7 @@ namespace UnityEngine.AI
             CoroutineRunner.Start(DisposeCoroutine(m_Id, timer));
         }
 
-        private static IEnumerator DisposeCoroutine(int id, float timer)
+        private static IEnumerator DisposeCoroutine(ulong id, float timer)
         {
             yield return new WaitForSeconds(timer);
             PerceptionSystem.RemoveStimulus(id);
