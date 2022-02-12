@@ -33,6 +33,20 @@
         public string name => m_Value.name;
 
         /// <summary>
+        /// The associated key set for the blackboard.
+        /// Warning: allocates garbage.
+        /// </summary>
+        public KeySet keySet
+        {
+            get
+            {
+                var hs = new System.Collections.Generic.HashSet<HiraBots.BlackboardKey>();
+                m_Value.GetKeySet(hs);
+                return new KeySet(hs.ReadOnly());
+            }
+        }
+
+        /// <summary>
         /// Get instance-synced Boolean value from the blackboard template using the key name.
         /// </summary>
         public bool GetInstanceSyncedBooleanValue(string keyName)
