@@ -89,6 +89,8 @@ namespace UnityEngine.AI
             m_StimulusNotOnNavMeshAction = NavDistanceCheckProperties.StimulusNotOnNavMeshAction.ConsiderNotPerceived
         };
 
+        private ObjectCache m_ObjectCache;
+
         internal (NativeArray<UnmanagedCollections.OrderedData<int>> objects, NativeArray<UnmanagedCollections.Data<float>> timeToStimulusDeath) m_PerceivedObjects;
         internal NativeArray<UnmanagedCollections.Data<float4>> m_PerceivedObjectsLocations;
         internal NativeArray<UnmanagedCollections.Data<int>> m_ObjectsPerceivedThisFrame;
@@ -132,6 +134,7 @@ namespace UnityEngine.AI
 
         protected void OnEnable()
         {
+            m_ObjectCache.Clear();
             PerceptionSystem.AddSensor(this, m_StimulusMask, m_LineOfSightCheck.m_Enabled, m_NavDistanceCheck.m_Enabled);
 
             try
@@ -161,6 +164,7 @@ namespace UnityEngine.AI
             }
 
             PerceptionSystem.RemoveSensor(this);
+            m_ObjectCache.Clear();
         }
 
         protected virtual void OnDisableCallback()
@@ -319,12 +323,15 @@ namespace UnityEngine.AI
 
                 for (var i = 0; i < newObjectsPerceivedCount; i++)
                 {
-                    var obj = ObjectUtils.InstanceIDToObject(newObjectsPerceived[i]);
+                    var id = newObjectsPerceived[i];
+                    var obj = ObjectUtils.InstanceIDToObject(id);
 
                     if (ReferenceEquals(obj, null))
                     {
                         continue;
                     }
+
+                    m_ObjectCache.Add(id, obj);
 
                     try
                     {
@@ -344,12 +351,14 @@ namespace UnityEngine.AI
 
                 for (var i = 0; i < objectsStoppedPerceivingCount; i++)
                 {
-                    var obj = ObjectUtils.InstanceIDToObject(objectsStoppedPerceiving[i]);
+                    var id = objectsStoppedPerceiving[i];
 
-                    if (ReferenceEquals(obj, null))
+                    if (!m_ObjectCache.TryGetValue(id, out var obj))
                     {
                         continue;
                     }
+
+                    m_ObjectCache.Remove(id);
 
                     try
                     {
