@@ -216,13 +216,6 @@ namespace HiraBots
             for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
             {
                 s_Sensors[sensorIndex].CompleteJobs();
-            }
-        }
-
-        internal static void CollectJobResults()
-        {
-            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
-            {
                 s_Sensors[sensorIndex].CollectJobResults();
             }
         }
