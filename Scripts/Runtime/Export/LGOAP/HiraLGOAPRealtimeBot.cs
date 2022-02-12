@@ -62,6 +62,14 @@ namespace UnityEngine.AI
             set => m_Domain = value.m_Value;
         }
 
+        /// <summary>
+        /// The blackboard component currently in use by this HiraBot.
+        /// </summary>
+        public BlackboardComponent blackboardComponent => m_Internal.m_Blackboard;
+
+        /// <summary>
+        /// The ticking interval to check for blackboard updates or task updates. Negative value means no auto-update.
+        /// </summary>
         public float tickInterval
         {
             get => m_TickInterval;
