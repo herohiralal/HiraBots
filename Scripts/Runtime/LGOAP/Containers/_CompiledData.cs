@@ -21,6 +21,7 @@ namespace HiraBots
         {
             name = task.name;
             isAbstract = task.isAbstract;
+            loop = task.loop;
             precondition = ((HiraBotsDecoratorBlackboardFunction[]) task.action.m_Precondition.Clone()).ReadOnly();
             effect = ((HiraBotsEffectorBlackboardFunction[]) task.action.m_Effect.Clone()).ReadOnly();
             target = ((HiraBotsDecoratorBlackboardFunction[]) task.target.m_Target.Clone()).ReadOnly();
@@ -30,6 +31,7 @@ namespace HiraBots
 
         internal string name { get; }
         internal bool isAbstract { get; }
+        internal bool loop { get; }
         internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> precondition { get; }
         internal ReadOnlyArrayAccessor<HiraBotsEffectorBlackboardFunction> effect { get; }
         internal ReadOnlyArrayAccessor<HiraBotsDecoratorBlackboardFunction> target { get; }

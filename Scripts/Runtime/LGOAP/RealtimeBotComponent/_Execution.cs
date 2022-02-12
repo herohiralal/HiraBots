@@ -108,7 +108,15 @@ namespace HiraBots
 
             if (m_CurrentTaskTaskProviderIndex >= providers.count)
             {
-                return false;
+                if (domainData.LoopTask(m_CurrentTaskLayerIndex, m_CurrentTaskContainerIndex))
+                {
+                    // there's always gonna be at least one task provider (error executable)
+                    m_CurrentTaskTaskProviderIndex = 0;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             var taskProvider = providers[m_CurrentTaskTaskProviderIndex];

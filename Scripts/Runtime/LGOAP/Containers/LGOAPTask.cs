@@ -11,6 +11,9 @@ namespace HiraBots
         [SerializeField, HideInInspector] private LGOAPTarget m_Target = LGOAPTarget.empty;
         internal ref LGOAPTarget target => ref m_Target;
 
+        [SerializeField, HideInInspector] private bool m_Loop = false;
+        internal ref bool loop => ref m_Loop;
+
         [SerializeField, HideInInspector] private HiraBotsTaskProvider[] m_TaskProviders = new HiraBotsTaskProvider[0];
         internal ref HiraBotsTaskProvider[] taskProviders => ref m_TaskProviders;
 
