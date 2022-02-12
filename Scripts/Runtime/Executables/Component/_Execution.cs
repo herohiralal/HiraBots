@@ -12,6 +12,12 @@ namespace HiraBots
         internal bool? lastTaskEndSucceeded { get; set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void Message<T>(T message)
+        {
+            m_CurrentTask.Message(message);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void BeginTask(IHiraBotsTask task)
         {
             m_CurrentTask = task;

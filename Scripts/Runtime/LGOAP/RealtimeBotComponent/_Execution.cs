@@ -30,6 +30,20 @@ namespace HiraBots
             }
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        internal void Message<T>(T message)
+        {
+            m_Executor.Message(message);
+
+            foreach (var layer in m_ActiveServicesByLayer)
+            {
+                foreach (var service in layer)
+                {
+                    service.Message(message);
+                }
+            }
+        }
+
         private void GrabPlannerResults()
         {
             m_Planner.CollectExecutionSet(m_PreAllocatedExecutionSet);

@@ -126,6 +126,14 @@ namespace UnityEngine.AI
             m_Internal.Tick();
         }
 
+        /// <summary>
+        /// Send a message to all the tasks/services currently being executed.
+        /// </summary>
+        public void Message<T>(T message)
+        {
+            m_Internal.Message(message);
+        }
+
         private void Awake()
         {
             m_Disposed = false;

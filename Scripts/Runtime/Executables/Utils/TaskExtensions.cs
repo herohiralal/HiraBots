@@ -8,6 +8,22 @@ namespace HiraBots
     internal static class TaskExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Message<T>(this IHiraBotsTask task, T message)
+        {
+            if (task is IMessageListener<T> listener)
+            {
+                try
+                {
+                    listener.OnMessageReceived(message);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void WrappedBegin(this IHiraBotsTask task)
         {
             try

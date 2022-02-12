@@ -8,6 +8,22 @@ namespace HiraBots
     internal static class ServiceExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Message<T>(this IHiraBotsService service, T message)
+        {
+            if (service is IMessageListener<T> listener)
+            {
+                try
+                {
+                    listener.OnMessageReceived(message);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void WrappedStart(this IHiraBotsService service)
         {
             try
