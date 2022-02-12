@@ -269,6 +269,15 @@ namespace HiraBots.Editor
 
                     var containerName = domain.GetContainerName(i, currentContainerIndex);
 
+                    var looping = i != 0
+                                  && !domain.IsTaskAbstract(i, currentContainerIndex)
+                                  && domain.LoopTask(i, currentContainerIndex);
+
+                    if (looping)
+                    {
+                        containerName += " (Looping)";
+                    }
+
                     var progressBarRect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), GUIHelpers.TempContent(containerName));
 
                     float progress;
