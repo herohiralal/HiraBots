@@ -50,7 +50,12 @@ namespace HiraBots
         /// </summary>
         internal Object GetObjectValueWithoutValidation(ushort memoryOffset)
         {
-            return BlackboardUnsafeHelpers.ReadObjectValue(dataReadOnlyPtr, memoryOffset);
+            var val = BlackboardUnsafeHelpers.ReadIntegerValue(dataReadOnlyPtr, memoryOffset);
+            return m_ObjectCache.TryGetValue(val, out var ret)
+                ? ret
+                : m_Template.objectCache.TryGetValue(val, out var ret2)
+                    ? ret2
+                    : ObjectUtils.InstanceIDToObject(val);
         }
 
         /// <summary>

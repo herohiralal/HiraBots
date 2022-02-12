@@ -272,9 +272,17 @@ namespace HiraBots
                 }
                 else
                 {
-                    // unexpected & not instance synced
-                    if (BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(dataPtr, memoryOffset, value))
+                    var existingId = BlackboardUnsafeHelpers.ReadIntegerValue(dataPtr, memoryOffset);
+                    var newId = value.GetInstanceID();
+
+                    if (existingId != newId)
                     {
+                        m_ObjectCache.Remove(existingId);
+                        m_ObjectCache.Add(newId, value);
+
+                        BlackboardUnsafeHelpers.WriteIntegerValue(dataPtr, memoryOffset, newId);
+
+                        // unexpected & not instance synced
                         if (keyData.broadcastEventOnUnexpectedChange)
                         {
                             m_UnexpectedChanges.Add(keyData.keyName);

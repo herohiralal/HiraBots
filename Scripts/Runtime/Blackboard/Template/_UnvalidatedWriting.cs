@@ -82,7 +82,16 @@ namespace HiraBots
         {
             var memoryOffset = keyData.memoryOffset;
             var owningTemplate = GetOwningTemplate(memoryOffset);
-            if (!BlackboardUnsafeHelpers.WriteObjectValueAndGetChange(owningTemplate.templatePtr, memoryOffset, value)) return;
+
+            var existingId = BlackboardUnsafeHelpers.ReadIntegerValue(owningTemplate.templatePtr, memoryOffset);
+            var newId = value.GetInstanceID();
+
+            if (existingId == newId) return;
+
+            m_ObjectCache.Remove(existingId);
+            m_ObjectCache.Add(newId, value);
+
+            BlackboardUnsafeHelpers.WriteIntegerValue(owningTemplate.templatePtr, memoryOffset, newId);
 
             var valuePtr = owningTemplate.templateReadOnlyPtr + memoryOffset;
             foreach (var listener in owningTemplate.m_Listeners)

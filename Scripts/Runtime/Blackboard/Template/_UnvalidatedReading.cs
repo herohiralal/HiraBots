@@ -50,7 +50,10 @@ namespace HiraBots
         /// </summary>
         internal Object GetInstanceSyncedObjectValueWithoutValidation(ushort memoryOffset)
         {
-            return BlackboardUnsafeHelpers.ReadObjectValue(templateReadOnlyPtr, memoryOffset);
+            var val = BlackboardUnsafeHelpers.ReadIntegerValue(templateReadOnlyPtr, memoryOffset);
+            return m_ObjectCache.TryGetValue(val, out var ret)
+                ? ret
+                : ObjectUtils.InstanceIDToObject(val);
         }
 
         /// <summary>
