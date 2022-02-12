@@ -8,6 +8,9 @@ namespace UnityEngine.AI
         [Tooltip("The type of the stimulus.")]
         [SerializeField] private StimulusType m_Type;
 
+        [Tooltip("The override for the associated object. Defaults to the GameObject this MonoBehaviour is attached to.")]
+        [SerializeField] private Object m_AssociatedObjectOverride;
+
         [Tooltip("The interval at which to update the position in the stimulus database. Negative value means no auto-update.")]
         [SerializeField] private float m_TickInterval;
 
@@ -15,7 +18,7 @@ namespace UnityEngine.AI
 
         private void OnEnable()
         {
-            m_Id = PerceptionSystem.AddStimulus(m_Type.ToTypeIndex(), transform.position, gameObject.GetInstanceID());
+            m_Id = PerceptionSystem.AddStimulus(m_Type.ToTypeIndex(), transform.position, associatedObject.GetInstanceID());
 
             if (m_TickInterval >= 0f)
             {
@@ -47,6 +50,22 @@ namespace UnityEngine.AI
                 }
 
                 m_Type = value;
+            }
+        }
+
+        public Object associatedObject => ReferenceEquals(m_AssociatedObjectOverride, null) ? gameObject : m_AssociatedObjectOverride;
+
+        public Object associatedObjectOverride
+        {
+            get => m_AssociatedObjectOverride;
+            set
+            {
+                if (m_Id != 0 && m_AssociatedObjectOverride != value)
+                {
+                    PerceptionSystem.ChangeStimulusAssociatedObject(m_Id, associatedObject.GetInstanceID());
+                }
+
+                m_AssociatedObjectOverride = value;
             }
         }
 
