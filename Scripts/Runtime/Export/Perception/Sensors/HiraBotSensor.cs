@@ -294,11 +294,6 @@ namespace UnityEngine.AI
 
         internal void ScheduleJobsToSortPerceivedObjectsData(float deltaTime)
         {
-            if (!m_UpdateJob.HasValue)
-            {
-                return;
-            }
-
             m_UpdateJob = new PerceptionSystem.SortPerceivedObjectsData(
                     m_PerceivedObjects,
                     m_ObjectsPerceivedThisFrame,
@@ -306,7 +301,7 @@ namespace UnityEngine.AI
                     m_ObjectsStoppedPerceiving,
                     deltaTime,
                     m_TimeToStimulusDecay)
-                .Schedule(m_UpdateJob.Value);
+                .Schedule(m_UpdateJob ?? default);
         }
 
         internal void CompleteJobs()

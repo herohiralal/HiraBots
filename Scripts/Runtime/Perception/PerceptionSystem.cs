@@ -114,68 +114,65 @@ namespace HiraBots
             ApplyStimuliDatabaseCommandBuffer();
         }
 
-        internal static bool shouldTick => s_SensorsCount != 0 && s_StimuliLookUpTable.Count != 0;
+        internal static bool shouldTick => s_SensorsCount != 0;
 
         internal static void ScheduleJobs(float deltaTime)
         {
-            var num = 0;
-            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+            if (s_StimuliLookUpTable.Count > 0)
             {
-                if (s_SensorsSecondaryChecks[sensorIndex] == SensorSecondaryChecksFlags.None)
+                var num = 0;
+                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
-                    continue;
+                    if (s_SensorsSecondaryChecks[sensorIndex] == SensorSecondaryChecksFlags.None)
+                    {
+                        continue;
+                    }
+
+                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
+
+                    if (num >= 20)
+                    {
+                        JobHandle.ScheduleBatchedJobs();
+                        num = 0;
+                    }
                 }
 
-                ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
+                JobHandle.ScheduleBatchedJobs();
 
-                if (num >= 20)
+                num = 0;
+                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
-                    JobHandle.ScheduleBatchedJobs();
-                    num = 0;
+                    if (s_SensorsSecondaryChecks[sensorIndex] != SensorSecondaryChecksFlags.None)
+                    {
+                        continue;
+                    }
+
+                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
+
+                    if (num >= 20)
+                    {
+                        JobHandle.ScheduleBatchedJobs();
+                        num = 0;
+                    }
                 }
+
+                JobHandle.ScheduleBatchedJobs();
+
+                for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
+                {
+                    if (s_SensorsSecondaryChecks[sensorIndex] == SensorSecondaryChecksFlags.None)
+                    {
+                        continue;
+                    }
+
+                    s_Sensors[sensorIndex].ScheduleSecondaryCheckJobs();
+                }
+
+                JobHandle.ScheduleBatchedJobs();
             }
 
-            JobHandle.ScheduleBatchedJobs();
-
-            num = 0;
             for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
             {
-                if (s_SensorsSecondaryChecks[sensorIndex] != SensorSecondaryChecksFlags.None)
-                {
-                    continue;
-                }
-
-                ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
-
-                if (num >= 20)
-                {
-                    JobHandle.ScheduleBatchedJobs();
-                    num = 0;
-                }
-            }
-
-            JobHandle.ScheduleBatchedJobs();
-
-            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
-            {
-                if (s_SensorsSecondaryChecks[sensorIndex] == SensorSecondaryChecksFlags.None)
-                {
-                    continue;
-                }
-
-                s_Sensors[sensorIndex].ScheduleSecondaryCheckJobs();
-                s_Sensors[sensorIndex].ScheduleJobsToSortPerceivedObjectsData(deltaTime);
-            }
-
-            JobHandle.ScheduleBatchedJobs();
-
-            for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
-            {
-                if (s_SensorsSecondaryChecks[sensorIndex] != SensorSecondaryChecksFlags.None)
-                {
-                    continue;
-                }
-
                 s_Sensors[sensorIndex].ScheduleJobsToSortPerceivedObjectsData(deltaTime);
             }
 
