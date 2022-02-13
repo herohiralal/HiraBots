@@ -169,6 +169,7 @@ namespace HiraBots.Editor
                     // self keys list
                     EditorGUILayout.Space();
                     m_ReorderableList.DoLayoutList();
+                    m_SerializedObject.ApplyModifiedProperties();
                 }
             }
         }
