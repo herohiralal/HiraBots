@@ -13,6 +13,14 @@ namespace HiraBots
         }
     }
 
+    internal partial class FailTaskProvider
+    {
+        protected override void UpdateDescription(out string staticDescription)
+        {
+            staticDescription = "Automatically fails this task. Useful for debugging/looping.";
+        }
+    }
+
     internal partial class MoveToTaskProvider
     {
         protected override void OnValidateCallback()

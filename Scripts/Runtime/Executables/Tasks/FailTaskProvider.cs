@@ -2,7 +2,7 @@
 
 namespace HiraBots
 {
-    internal class FailTaskProvider : HiraBotsTaskProvider
+    internal partial class FailTaskProvider : HiraBotsTaskProvider
     {
         protected override IHiraBotsTask GetTask(UnityEngine.AI.BlackboardComponent blackboard, IHiraBotArchetype archetype)
         {
