@@ -80,9 +80,6 @@ namespace HiraBots
                 name = GetProperty("m_Name",
                     SerializedPropertyType.String, false, true);
 
-                loop = GetProperty(nameof(m_Loop), SerializedPropertyType.Boolean,
-                    false, true);
-
                 taskPrecondition = GetProperty<HiraBotsDecoratorBlackboardFunction>($"{nameof(m_Action)}.{nameof(LGOAPAction.m_Precondition)}",
                     true, true);
 
@@ -123,7 +120,6 @@ namespace HiraBots
             internal bool canBeAbstract => target.canBeAbstract;
 
             internal SerializedProperty name { get; }
-            internal SerializedProperty loop { get; }
             internal SerializedProperty taskPrecondition { get; }
             internal bool taskPreconditionBound { get; set; } = false;
             internal ReorderableList taskPreconditionROL { get; }

@@ -58,11 +58,6 @@ namespace HiraBots
             }
         }
 
-        internal bool LoopTask(int layerIndex, int containerIndex)
-        {
-            return m_TaskLayers[layerIndex - 1][containerIndex].loop;
-        }
-
         internal void GetTaskProviders(int layerIndex, int containerIndex, out ReadOnlyArrayAccessor<HiraBotsTaskProvider> taskProviders)
         {
             taskProviders = m_TaskLayers[layerIndex - 1][containerIndex].taskProvider;

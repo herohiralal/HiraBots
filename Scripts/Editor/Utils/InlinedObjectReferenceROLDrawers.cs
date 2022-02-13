@@ -501,27 +501,9 @@ namespace HiraBots.Editor
 
         internal static void Bind(LGOAPTask.Serialized task)
         {
-            const float loopButtonSize = 25f;
-
             if (!task.taskTaskProvidersBound)
             {
                 s_Instance.Bind(task.taskTaskProvidersROL, task, task.taskTaskProviders);
-                task.taskTaskProvidersROL.drawHeaderCallback = r =>
-                {
-                    r.x += 20f;
-                    r.width -= 20f;
-                    EditorGUI.LabelField(r, GUIHelpers.TempContent("Task Providers"), EditorStyles.boldLabel);
-
-                    r.x -= loopButtonSize;
-                    r.y -= (loopButtonSize - r.height);
-                    r.width = r.height = loopButtonSize;
-                    if (GUI.Button(r, ExecutablesGUIHelpers.GetLoopIcon(task.loop.boolValue,
-                            "Whether to loop the task providers infinitely upon successful completion.")))
-                    {
-                        task.loop.boolValue = !task.loop.boolValue;
-                        task.ApplyModifiedProperties();
-                    }
-                };
                 task.taskTaskProvidersBound = true;
             }
         }

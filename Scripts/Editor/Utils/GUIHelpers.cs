@@ -709,16 +709,6 @@ namespace HiraBots.Editor
                     .Replace("ServiceProvider", ""))
             .ReadOnly();
 
-        /// <summary>
-        /// Get a loop icon.
-        /// </summary>
-        internal static GUIContent GetLoopIcon(bool status, string tooltip)
-        {
-            return status
-                ? EditorGUIUtility.IconContent(EditorGUIUtility.isProSkin ? "d_playLoopOn" : "playLoopOn", $"|{tooltip}")
-                : EditorGUIUtility.IconContent(EditorGUIUtility.isProSkin ? "d_playLoopOff" : "playLoopOff", $"|{tooltip}");
-        }
-
         internal static Color taskProviderColor => new Color(121f / 255, 52f / 255, 167f / 255);
 
         internal static Color taskProviderColorFaded
