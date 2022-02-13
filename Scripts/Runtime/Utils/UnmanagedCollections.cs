@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -14,6 +15,8 @@ namespace HiraBots
         /// Type-safe list data.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [DebuggerTypeProxy(typeof(DataDebugView<>))]
+        [DebuggerDisplay("Count = {m_Count}, Capacity = {m_Capacity}")]
         // ReSharper disable once UnusedTypeParameter
         internal struct Data<T> where T : struct
         {
@@ -27,6 +30,8 @@ namespace HiraBots
         /// Type-safe ordered list data.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
+        [DebuggerTypeProxy(typeof(OrderedDataDebugView<>))]
+        [DebuggerDisplay("Count = {m_Count}, Capacity = {m_Capacity}")]
         // ReSharper disable once UnusedTypeParameter
         internal struct OrderedData<T> where T : struct, System.IComparable<T>
         {
@@ -46,6 +51,64 @@ namespace HiraBots
             internal int m_Capacity;
             internal int m_Count;
             internal Allocator m_Allocator;
+        }
+
+        #endregion
+
+        #region Debug
+
+        /// <summary>
+        /// Debug view of Data.
+        /// </summary>
+        internal sealed class DataDebugView<T> where T : struct
+        {
+            private readonly UntypedData m_Data;
+
+            public DataDebugView(Data<T> data) => m_Data = *(UntypedData*) UnsafeUtility.AddressOf(ref data);
+
+            public T[] items
+            {
+                get
+                {
+                    if (m_Data.m_Allocator < Allocator.None || m_Data.m_Count == 0 || m_Data.m_Capacity == 0 || m_Data.m_Buffer == null)
+                    {
+                        return new T[0];
+                    }
+
+                    var output = new T[m_Data.m_Count];
+                    var handle = GCHandle.Alloc(output, GCHandleType.Pinned);
+                    UnsafeUtility.MemCpy((void*) handle.AddrOfPinnedObject(), m_Data.m_Buffer, m_Data.m_Count * UnsafeUtility.SizeOf<T>());
+                    handle.Free();
+                    return output;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Debug view of OrderedData.
+        /// </summary>
+        internal sealed class OrderedDataDebugView<T> where T : struct, System.IComparable<T>
+        {
+            private readonly UntypedData m_Data;
+
+            public OrderedDataDebugView(OrderedData<T> data) => m_Data = *(UntypedData*) UnsafeUtility.AddressOf(ref data);
+
+            public T[] items
+            {
+                get
+                {
+                    if (m_Data.m_Allocator < Allocator.None || m_Data.m_Count == 0 || m_Data.m_Capacity == 0 || m_Data.m_Buffer == null)
+                    {
+                        return new T[0];
+                    }
+
+                    var output = new T[m_Data.m_Count];
+                    var handle = GCHandle.Alloc(output, GCHandleType.Pinned);
+                    UnsafeUtility.MemCpy((void*) handle.AddrOfPinnedObject(), m_Data.m_Buffer, m_Data.m_Count * UnsafeUtility.SizeOf<T>());
+                    handle.Free();
+                    return output;
+                }
+            }
         }
 
         #endregion
