@@ -50,7 +50,7 @@ namespace HiraBots
 
             m_Agent.SetPath(path);
             m_Agent.speed = m_Speed;
-            m_Agent.stoppingDistance = m_Tolerance / 4;
+            m_Agent.stoppingDistance = m_Tolerance;
             m_Agent.isStopped = false;
         }
 
@@ -58,7 +58,7 @@ namespace HiraBots
         {
             return m_Failed
                 ? HiraBotsTaskResult.Failed
-                : m_Agent.remainingDistance <= m_Tolerance / 4
+                : m_Agent.remainingDistance <= m_Tolerance
                     ? HiraBotsTaskResult.Succeeded
                     : HiraBotsTaskResult.InProgress;
         }
