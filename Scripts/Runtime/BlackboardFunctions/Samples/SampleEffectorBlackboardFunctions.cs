@@ -271,6 +271,12 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ObjectEqualsEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, Object value, out string staticDescription)
         {
+            if (!key.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
             staticDescription = $"Set {key.selectedKey.name} to {(value == null ? "null" : value.name)}.";
         }
     }
