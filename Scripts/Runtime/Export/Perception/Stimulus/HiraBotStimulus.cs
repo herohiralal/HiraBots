@@ -3,7 +3,7 @@
 namespace UnityEngine.AI
 {
     [AddComponentMenu("AI/HiraBot Sensor Stimulus")]
-    public sealed class HiraBotStimulus : MonoBehaviour, IUpdatableBehaviour
+    public class HiraBotStimulus : MonoBehaviour, IUpdatableBehaviour
     {
         [Tooltip("The type of the stimulus.")]
         [SerializeField] private StimulusType m_Type;
@@ -16,7 +16,7 @@ namespace UnityEngine.AI
 
         private ulong m_Id;
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             m_Id = PerceptionSystem.AddStimulus(m_Type.ToTypeIndex(), transform.position, associatedObject.GetInstanceID());
 
@@ -26,14 +26,14 @@ namespace UnityEngine.AI
             }
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             BehaviourUpdater.Remove(this);
             PerceptionSystem.RemoveStimulus(m_Id);
             m_Id = 0;
         }
 
-        private void OnValidate()
+        protected void OnValidate()
         {
             type = m_Type;
             tickInterval = m_TickInterval;
