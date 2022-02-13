@@ -107,7 +107,7 @@ namespace HiraBots
                 var count = m_ObjectsPerceivedThisFrame.Count();
                 for (var i = 0; i < count; i++)
                 {
-                    objectsPerceivedThisFrame[i] = m_Invert != (raycastResults[i].m_Collider != 0) ? objectsPerceivedThisFrame[i] : 0;
+                    objectsPerceivedThisFrame[i] = m_Invert != (raycastResults[i].m_Collider == 0) ? objectsPerceivedThisFrame[i] : 0;
                 }
             }
         }
