@@ -77,7 +77,7 @@ namespace UnityEngine.AI
             {
                 m_TickInterval = value;
 
-                if (!isActiveAndEnabled)
+                if (!isActiveAndEnabled || string.IsNullOrWhiteSpace(gameObject.scene.path))
                 {
                     return;
                 }
