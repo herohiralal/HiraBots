@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiraBots.Editor
@@ -15,6 +16,8 @@ namespace HiraBots.Editor
         {
             try
             {
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Validating Blackboard Templates...", 0.1f);
+
                 var success = true;
 
                 EditorSerializationUtility.ConfirmTempBuildFolder();
@@ -34,10 +37,14 @@ namespace HiraBots.Editor
                     blackboardData.Add(templateCollection[i], hs.ReadOnly());
                 }
 
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Validating LGOAP Domains...", 0.5f);
+
                 if (!CookingHelpers.TryGenerateInterpretedLGOAPDomainCollection(blackboardData.ReadOnly(), out var domainCollection))
                 {
                     success = false;
                 }
+
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Cooking HiraBots Components...", 0.9f);
 
                 if (!success)
                 {
@@ -56,6 +63,10 @@ namespace HiraBots.Editor
             catch (System.Exception e)
             {
                 throw new UnityEditor.Build.BuildFailedException(e);
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
             }
         }
 

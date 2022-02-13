@@ -26,6 +26,8 @@ namespace HiraBots.Editor
 
             try
             {
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Validating Blackboard Templates...", 0.1f);
+
                 var success = true;
 
                 EditorSerializationUtility.ConfirmTempEditorFolder();
@@ -35,6 +37,8 @@ namespace HiraBots.Editor
                 {
                     success = false;
                 }
+
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Cooking Blackboard Templates Collection...", 0.5f);
 
                 var blackboardData = new Dictionary<BlackboardTemplate, ReadOnlyHashSetAccessor<BlackboardKey>>();
 
@@ -47,6 +51,8 @@ namespace HiraBots.Editor
 
                 templateCollection.hideFlags = HideFlags.HideAndDontSave;
 
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Validating LGOAP Domains...", 0.6f);
+
                 // cook the collection into the temporary build folder
                 EditorSerializationUtility.CookToTempEditorFolderAndForget(ref templateCollection);
 
@@ -54,6 +60,8 @@ namespace HiraBots.Editor
                 {
                     success = false;
                 }
+
+                EditorUtility.DisplayProgressBar("Validating HiraBots Components", "Cooking LGOAP Domains Collection...", 1.0f);
 
                 domainCollection.hideFlags = HideFlags.HideAndDontSave;
 
@@ -73,6 +81,10 @@ namespace HiraBots.Editor
             {
                 Debug.LogException(e);
                 EditorApplication.isPlaying = false;
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
             }
         }
     }
