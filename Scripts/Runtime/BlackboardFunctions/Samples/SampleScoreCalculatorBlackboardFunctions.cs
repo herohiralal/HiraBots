@@ -10,7 +10,7 @@ namespace HiraBots
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string ScoreString(float score)
         {
-            return $"{(score >= 0 ? '+' : '-')}{score}.";
+            return $"{(score >= 0 ? '+' : '-')}{Mathf.Abs(score)}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
