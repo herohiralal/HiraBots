@@ -26,6 +26,7 @@ namespace UnityEngine.AI
         [SerializeField, HideInInspector] private LGOAPRealtimeBotComponent m_Internal = new LGOAPRealtimeBotComponent(null);
 
         [System.NonSerialized] private bool m_Disposed;
+        [System.NonSerialized] private bool m_FullReplanRequested;
 
         /// <summary>
         /// "The component to use as an archetype. If not provided, will use self."
@@ -131,7 +132,7 @@ namespace UnityEngine.AI
                 StartUsingNewDomain();
             }
 
-            m_Internal.Tick();
+            m_Internal.Tick(m_FullReplanRequested);
         }
 
         /// <summary>
@@ -140,6 +141,14 @@ namespace UnityEngine.AI
         public void Message<T>(T message)
         {
             m_Internal.Message(message);
+        }
+
+        /// <summary>
+        /// Force this HiraBot to replan upon the next tick.
+        /// </summary>
+        public void RequestFullReplan()
+        {
+            m_FullReplanRequested = true;
         }
 
         private void Awake()
@@ -194,10 +203,12 @@ namespace UnityEngine.AI
                 executableTickIntervalMultiplier = m_ExecutableTickIntervalMultiplier,
                 runPlannerSynchronously = m_RunPlannerSynchronously
             };
+            m_FullReplanRequested = false;
         }
 
         private void StopUsingOldDomain()
         {
+            m_FullReplanRequested = false;
             m_Internal.Dispose();
             m_Internal = new LGOAPRealtimeBotComponent(null);
         }

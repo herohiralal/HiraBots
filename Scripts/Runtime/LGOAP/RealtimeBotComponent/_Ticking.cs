@@ -2,14 +2,14 @@
 {
     internal partial struct LGOAPRealtimeBotComponent
     {
-        internal void Tick()
+        internal void Tick(bool forceReplan)
         {
             if (ReferenceEquals(m_Domain, null))
             {
                 return;
             }
 
-            if (m_Blackboard.hasUnexpectedChanges)
+            if (m_Blackboard.hasUnexpectedChanges || forceReplan)
             {
                 m_Planner.StartPlannerAtLayer(0, true);
                 m_Blackboard.ClearUnexpectedChanges();
