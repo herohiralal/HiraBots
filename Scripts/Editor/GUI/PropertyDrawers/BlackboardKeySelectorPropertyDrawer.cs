@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace HiraBots.Editor
 {
@@ -50,6 +51,30 @@ namespace HiraBots.Editor
                     var errorIcon = (Texture2D) EditorGUIUtility.Load("console.erroricon");
                     var errorMessage = new GUIContent(errorIcon, "Invalid selection.");
                     GUI.Label(errorIconPosition, errorMessage, EditorStyles.helpBox);
+                }
+
+                if (keyProperty.objectReferenceValue == null && templateProperty.objectReferenceValue is BlackboardTemplate template)
+                {
+                    var keyTypesFilter = (BlackboardKeyType) keyTypesProperty.intValue;
+
+                    if (keyTypesFilter != BlackboardKeyType.Invalid)
+                    {
+                        var propertyName = label.text.Replace(" ", "");
+                        var hs = new HashSet<BlackboardKey>();
+                        template.GetKeySet(hs, true);
+                        foreach (var key in hs)
+                        {
+                            var keyName = key.name.Replace(" ", "");
+                            if (string.Equals(propertyName, keyName, System.StringComparison.InvariantCultureIgnoreCase)
+                                && keyTypesFilter.HasFlag(key.keyType))
+                            {
+                                keyProperty.objectReferenceValue = key;
+                                isValidProperty.boolValue = true;
+                                keyProperty.serializedObject.ApplyModifiedProperties();
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 var currentKey = keyProperty.objectReferenceValue;
@@ -159,14 +184,15 @@ namespace HiraBots.Editor
         private static IEnumerable<(BlackboardKey key, string label)> GetKeys(BlackboardTemplate template, BlackboardKeyType typesFilter,
             string categoryNameWithSlash)
         {
-            // ignore if can't find parent properties
-            if (!TryFindTemplateProperties(template, out var parentProperty, out var keysProperty))
+            InlinedObjectReferencesHelper.Expand(template, out var so);
+
+            if (!(so is BlackboardTemplate.Serialized cso) || cso.hasError)
             {
                 yield break;
             }
 
             // include parent keys
-            if (parentProperty.objectReferenceValue is BlackboardTemplate parentTemplate)
+            if (cso.parent.objectReferenceValue is BlackboardTemplate parentTemplate)
             {
                 foreach (var inheritedKey in GetKeys(parentTemplate, typesFilter, categoryNameWithSlash))
                 {
@@ -175,49 +201,16 @@ namespace HiraBots.Editor
             }
 
             // check if the key fits the type filter
-            var count = keysProperty.arraySize;
+            var count = cso.keys.arraySize;
             for (var i = 0; i < count; i++)
             {
-                var current = (BlackboardKey) keysProperty.GetArrayElementAtIndex(i).objectReferenceValue;
+                var current = (BlackboardKey) cso.keys.GetArrayElementAtIndex(i).objectReferenceValue;
 
                 if (typesFilter.HasFlag(current.keyType))
                 {
                     yield return (current, categoryNameWithSlash + current.name);
                 }
             }
-        }
-
-        // whether the existence of parent properties has been checked
-        private static bool? s_CheckedParentPropertiesExistence = null;
-
-        // try and get the serialized properties from the template
-        private static bool TryFindTemplateProperties(Object template, out SerializedProperty parentProperty, out SerializedProperty keysProperty)
-        {
-            var so = new SerializedObject(template);
-            parentProperty = so.FindProperty("m_Parent");
-            keysProperty = so.FindProperty("m_Keys");
-
-            // if already confirmed, just return true
-            if (s_CheckedParentPropertiesExistence.HasValue)
-            {
-                return s_CheckedParentPropertiesExistence.Value;
-            }
-
-            // confirm it and return true
-            if (keysProperty != null
-                && keysProperty.isArray
-                && parentProperty != null
-                && parentProperty.propertyType == SerializedPropertyType.ObjectReference)
-            {
-                s_CheckedParentPropertiesExistence = true;
-                return true;
-            }
-
-            // log otherwise
-            Debug.LogError($"Could not find template properties.");
-
-            s_CheckedParentPropertiesExistence = false;
-            return false;
         }
     }
 }
