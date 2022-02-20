@@ -18,7 +18,7 @@ namespace HiraBots
     {
         protected override void Validate(Action<string> reportError, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)
         {
-            if (!m_Target.Validate(in keySet, UnityEngine.AI.BlackboardKeyType.Vector))
+            if (!m_Target.Validate(in keySet, UnityEngine.AI.BlackboardKeyType.Vector | UnityEngine.AI.BlackboardKeyType.Object))
             {
                 reportError($"{name} does not have a valid target key.");
             }

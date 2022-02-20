@@ -27,7 +27,7 @@ namespace HiraBots
         {
             m_Tolerance = Mathf.Max(0, m_Tolerance);
             m_Speed = Mathf.Max(0, m_Speed);
-            m_Target.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Vector;
+            m_Target.keyTypesFilter = UnityEngine.AI.BlackboardKeyType.Vector | UnityEngine.AI.BlackboardKeyType.Object;
         }
 
         protected override void OnTargetBlackboardTemplateChanged(UnityEngine.AI.BlackboardTemplate template, in UnityEngine.AI.BlackboardTemplate.KeySet keySet)

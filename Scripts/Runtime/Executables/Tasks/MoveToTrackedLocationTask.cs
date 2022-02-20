@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace HiraBots
 {
-    internal class MoveToTrackedLocationTask : IHiraBotsTask
+    internal abstract class MoveToTrackedLocationTask<T> : IHiraBotsTask where T : MoveToTrackedLocationTask<T>, new()
     {
-        internal static MoveToTrackedLocationTask Get(UnityEngine.AI.BlackboardComponent blackboard,
+        internal static IHiraBotsTask Get(UnityEngine.AI.BlackboardComponent blackboard,
             NavMeshAgent agent, string locationKey, float tolerance, float speed)
         {
-            var output = s_Executables.Count == 0 ? new MoveToTrackedLocationTask() : s_Executables.Pop();
+            var output = s_Executables.Count == 0 ? new T() : s_Executables.Pop();
 
             output.m_Failed = false;
             output.m_Blackboard = blackboard;
@@ -21,11 +22,7 @@ namespace HiraBots
             return output;
         }
 
-        private MoveToTrackedLocationTask()
-        {
-        }
-
-        private static readonly Stack<MoveToTrackedLocationTask> s_Executables = new Stack<MoveToTrackedLocationTask>();
+        private static readonly Stack<T> s_Executables = new Stack<T>();
 
         private UnityEngine.AI.BlackboardComponent m_Blackboard;
         private NavMeshAgent m_Agent;
@@ -35,9 +32,16 @@ namespace HiraBots
         private float m_Speed;
         private bool m_Failed;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected abstract bool TryGetLocation(UnityEngine.AI.BlackboardComponent blackboard, string key, out Vector3 location);
+
         public void Begin()
         {
-            m_CurrentTarget = m_Blackboard.GetVectorValue(m_LocationKey);
+            if (!TryGetLocation(m_Blackboard, m_LocationKey, out m_CurrentTarget))
+            {
+                m_Failed = true;
+                return;
+            }
 
             if (!m_Agent.SetDestination(m_CurrentTarget))
             {
@@ -57,7 +61,11 @@ namespace HiraBots
                 return HiraBotsTaskResult.Failed;
             }
 
-            Vector3 currentTarget = m_Blackboard.GetVectorValue(m_LocationKey);
+            if (!TryGetLocation(m_Blackboard, m_LocationKey, out var currentTarget))
+            {
+                return HiraBotsTaskResult.Failed;
+            }
+
             if (currentTarget != m_CurrentTarget)
             {
                 m_CurrentTarget = currentTarget;
@@ -84,7 +92,7 @@ namespace HiraBots
 
             m_Blackboard = default;
             m_Agent = null;
-            s_Executables.Push(this);
+            s_Executables.Push((T) this);
         }
 
         public void End(bool success)
@@ -96,7 +104,61 @@ namespace HiraBots
 
             m_Blackboard = default;
             m_Agent = null;
-            s_Executables.Push(this);
+            s_Executables.Push((T) this);
+        }
+    }
+
+    internal sealed class MoveToTrackedVectorTask : MoveToTrackedLocationTask<MoveToTrackedVectorTask>
+    {
+        protected override bool TryGetLocation(UnityEngine.AI.BlackboardComponent blackboard, string key, out Vector3 location)
+        {
+            location = blackboard.GetVectorValue(key);
+            return true;
+        }
+    }
+
+    internal sealed class MoveToTrackedGameObjectTask : MoveToTrackedLocationTask<MoveToTrackedGameObjectTask>
+    {
+        protected override bool TryGetLocation(UnityEngine.AI.BlackboardComponent blackboard, string key, out Vector3 location)
+        {
+            if (!(blackboard.GetObjectValue(key) is GameObject go) || go == null)
+            {
+                location = Vector3.zero;
+                return false;
+            }
+
+            location = go.transform.position;
+            return true;
+        }
+    }
+
+    internal sealed class MoveToTrackedTransformTask : MoveToTrackedLocationTask<MoveToTrackedTransformTask>
+    {
+        protected override bool TryGetLocation(UnityEngine.AI.BlackboardComponent blackboard, string key, out Vector3 location)
+        {
+            if (!(blackboard.GetObjectValue(key) is Transform t) || t == null)
+            {
+                location = Vector3.zero;
+                return false;
+            }
+
+            location = t.position;
+            return true;
+        }
+    }
+
+    internal sealed class MoveToTrackedComponentTask : MoveToTrackedLocationTask<MoveToTrackedComponentTask>
+    {
+        protected override bool TryGetLocation(UnityEngine.AI.BlackboardComponent blackboard, string key, out Vector3 location)
+        {
+            if (!(blackboard.GetObjectValue(key) is Component c) || c == null)
+            {
+                location = Vector3.zero;
+                return false;
+            }
+
+            location = c.transform.position;
+            return true;
         }
     }
 }
