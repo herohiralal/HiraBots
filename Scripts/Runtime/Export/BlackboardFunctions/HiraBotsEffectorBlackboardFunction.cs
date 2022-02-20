@@ -5,13 +5,25 @@
         [System.Runtime.InteropServices.UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
         public unsafe delegate void Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory);
 
+        [Tooltip("Whether to automatically apply the effector on the blackboard component upon successful execution.")]
+        [SerializeField] private bool m_AutoApplyOnSuccessfulExecution = true;
+
+        public bool autoApplyOnSuccessfulExecution
+        {
+            get => m_AutoApplyOnSuccessfulExecution;
+            set => m_AutoApplyOnSuccessfulExecution = value;
+        }
+
         #region Execution
 
         public void Execute(BlackboardComponent blackboard, bool expected)
         {
             try
             {
-                ExecuteFunction(blackboard, expected);
+                if (m_AutoApplyOnSuccessfulExecution)
+                {
+                    ExecuteFunction(blackboard, expected);
+                }
             }
             catch (System.Exception e)
             {
