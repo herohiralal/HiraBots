@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace HiraBots
 {
@@ -13,11 +14,25 @@ namespace HiraBots
         }
     }
 
-    internal partial class FailTaskProvider
+    internal partial class PredeterminedTaskResultTaskProvider
     {
         protected override void UpdateDescription(out string staticDescription)
         {
-            staticDescription = "Automatically fails this task. Useful for debugging/looping.";
+            switch (m_Result)
+            {
+                case HiraBotsTaskResult.InProgress:
+                    staticDescription = "Infinitely loops this task provider. Useful for turning off the AI and running scripted behaviours.";
+                    break;
+                case HiraBotsTaskResult.Succeeded:
+                    staticDescription = "Automatically succeeds this task provider.";
+                    break;
+                case HiraBotsTaskResult.Failed:
+                    staticDescription = "Automatically fails this task provider. Useful for debugging/looping.";
+                    break;
+                default:
+                    staticDescription = "[CONTAINS ERRORS]";
+                    break;
+            }
         }
     }
 
