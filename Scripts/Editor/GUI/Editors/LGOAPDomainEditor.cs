@@ -200,7 +200,9 @@ namespace HiraBots.Editor
                     {
                         EditorGUILayout.Space();
 
+                        m_SerializedObject.Update();
                         m_TopLayer.DoLayoutList();
+                        m_SerializedObject.ApplyModifiedProperties();
 
                         using (new GUIEnabledChanger(false))
                         {
@@ -221,7 +223,9 @@ namespace HiraBots.Editor
                         {
                             EditorGUILayout.Space();
 
+                            m_SerializedObject.Update();
                             m_IntermediateLayers[i].DoLayoutList();
+                            m_SerializedObject.ApplyModifiedProperties();
 
                             DrawPlanSizeProperty(m_SerializedObject.intermediateLayerMaxPlanSizes[i]);
 
@@ -238,7 +242,9 @@ namespace HiraBots.Editor
                     {
                         EditorGUILayout.Space();
 
+                        m_SerializedObject.Update();
                         m_BottomLayer.DoLayoutList();
+                        m_SerializedObject.ApplyModifiedProperties();
 
                         DrawPlanSizeProperty(m_SerializedObject.bottomLayerMaxPlanSize);
 
