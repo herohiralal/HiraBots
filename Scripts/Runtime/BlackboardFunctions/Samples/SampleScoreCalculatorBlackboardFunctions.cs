@@ -229,5 +229,24 @@ namespace HiraBots
 
             staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} set to {(value == null ? "null" : value.name)}.";
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("51db4674a1244ae18bfc087bb6c6b98e")]
+        internal static float DynamicObjectEqualsScoreCalculator(float currentScore, bool invert, [HiraBotsObjectKey] ref int a, [HiraBotsObjectKey] ref int b, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.DynamicObjectEqualsDecorator(invert, ref a, ref b) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicObjectEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector a, UnityEngine.AI.BlackboardTemplate.KeySelector b, float score, out string staticDescription)
+        {
+            if (!a.selectedKey.isValid || !b.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{(ScoreString(score))} if {a.selectedKey.name} {(invert ? "is not" : "is")} equal to {b.selectedKey.name}.";
+        }
     }
 }

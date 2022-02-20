@@ -277,5 +277,25 @@ namespace HiraBots
 
             staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be set to {(value == null ? "null" : value.name)}.";
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("af98399ddc8f4698ad8fe4e5794427ed")]
+        internal static bool DynamicObjectEqualsDecorator(bool invert, [HiraBotsObjectKey] ref int a, [HiraBotsObjectKey] ref int b)
+        {
+            var result = a == b;
+            return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicObjectEqualsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector a, UnityEngine.AI.BlackboardTemplate.KeySelector b, out string staticDescription)
+        {
+            if (!a.selectedKey.isValid || !b.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{a.selectedKey.name} {(invert ? "must not" : "must")} be equal to {b.selectedKey.name}.";
+        }
     }
 }

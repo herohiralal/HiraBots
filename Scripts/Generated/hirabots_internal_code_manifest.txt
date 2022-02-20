@@ -7,6 +7,7 @@ BlackboardFunctions/VectorIsSetDecorator.cs
 BlackboardFunctions/IntegerComparisonDecorator.cs
 BlackboardFunctions/FloatComparisonDecorator.cs
 BlackboardFunctions/ObjectEqualsDecorator.cs
+BlackboardFunctions/DynamicObjectEqualsDecorator.cs
 BlackboardFunctions/BaseScoreScoreCalculator.cs
 BlackboardFunctions/EnumEqualsScoreCalculator.cs
 BlackboardFunctions/EnumHasFlagsScoreCalculator.cs
@@ -16,6 +17,7 @@ BlackboardFunctions/VectorIsSetScoreCalculator.cs
 BlackboardFunctions/IntegerComparisonScoreCalculator.cs
 BlackboardFunctions/FloatComparisonScoreCalculator.cs
 BlackboardFunctions/ObjectEqualsScoreCalculator.cs
+BlackboardFunctions/DynamicObjectEqualsScoreCalculator.cs
 BlackboardFunctions/EnumOperatorEffector.cs
 BlackboardFunctions/FloatOperatorEffector.cs
 BlackboardFunctions/IntegerOperatorEffector.cs
