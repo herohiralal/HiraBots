@@ -94,10 +94,6 @@ namespace HiraBots
                     return;
                 }
 
-                var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.maxLength + 1)];
-                var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.maxLength + 1), (ushort) m_Blackboard.Length);
-                datasets.Copy(0, m_Blackboard);
-
                 var domain = new LowLevelLGOAPDomain((byte*) m_Domain.GetUnsafeReadOnlyPtr());
                 var (targets, actions) = domain.GetTaskLayerAt(m_LayerIndex);
 
@@ -111,6 +107,10 @@ namespace HiraBots
                     m_Result.resultType = LGOAPPlan.Type.NotRequired;
                     return;
                 }
+
+                var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.maxLength + 1)];
+                var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.maxLength + 1), (ushort) m_Blackboard.Length);
+                datasets.Copy(0, m_Blackboard);
 
                 // check if the current plan is ok
                 if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Unchanged)
