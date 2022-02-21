@@ -35,13 +35,13 @@ namespace HiraBots
             switch (operationType)
             {
                 case SampleBlackboardFunctionsEnumOperationType.Set:
-                    staticDescription = $"Set {key.selectedKey.name} to this value.";
+                    staticDescription = $"Set {key.selectedKey.name} to {value}.";
                     break;
                 case SampleBlackboardFunctionsEnumOperationType.AddFlags:
-                    staticDescription = $"Add these flags to {key.selectedKey.name}.";
+                    staticDescription = $"Add these flags to {key.selectedKey.name}: {value}.";
                     break;
                 case SampleBlackboardFunctionsEnumOperationType.RemoveFlags:
-                    staticDescription = $"Remove these flags from {key.selectedKey.name}.";
+                    staticDescription = $"Remove these flags from {key.selectedKey.name}: {value}.";
                     break;
                 default:
                     staticDescription = "";

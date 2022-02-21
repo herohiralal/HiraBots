@@ -37,7 +37,7 @@ namespace HiraBots
                 return;
             }
 
-            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be equal to the selected value.";
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} be equal to {value}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,7 +57,7 @@ namespace HiraBots
                 return;
             }
 
-            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} have these flags.";
+            staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} have these flags: {value}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -42,7 +42,7 @@ namespace HiraBots
                 return;
             }
 
-            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} equal to the selected value.";
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "is not" : "is")} equal to {value}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -61,7 +61,7 @@ namespace HiraBots
                 return;
             }
 
-            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "does not have" : "has")} these flags.";
+            staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "does not have" : "has")} these flags: {value}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -23,5 +23,14 @@
 #endif
             }
         }
+
+#if UNITY_EDITOR
+        public override string ToString()
+        {
+            return HiraBots.DynamicEnum.Helpers.identifierToType.TryGetValue(m_TypeIdentifier, out var type)
+                ? System.Enum.ToObject(type, m_Value).ToString()
+                : m_Value.ToString();
+        }
+#endif
     }
 }
