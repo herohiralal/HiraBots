@@ -108,7 +108,11 @@ namespace HiraBots
                     return;
                 }
 
-                var datasetsPtr = stackalloc byte[m_Blackboard.Length * (m_Result.maxLength + 1)];
+                var datasetsPtr = (byte*) UnsafeUtility.Malloc(
+                    m_Blackboard.Length * (m_Result.maxLength + 1),
+                    UnsafeUtility.AlignOf<byte>(),
+                    Allocator.Persistent);
+
                 var datasets = new LowLevelBlackboardCollection(datasetsPtr, (ushort) (m_Result.maxLength + 1), (ushort) m_Blackboard.Length);
                 datasets.Copy(0, m_Blackboard);
 
@@ -160,6 +164,8 @@ namespace HiraBots
                     m_FallbackPlan = m_FallbackPlan,
                     m_Result = m_Result
                 }.Execute();
+
+                UnsafeUtility.Free(datasetsPtr, Allocator.Persistent);
             }
 
             private struct NewPlanFinder
