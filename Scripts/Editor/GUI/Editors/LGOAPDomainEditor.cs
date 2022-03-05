@@ -38,6 +38,7 @@ namespace HiraBots.Editor
 
         private void OnEnable()
         {
+            m_Dirty = true;
             Undo.undoRedoPerformed += OnUndoPerformed;
         }
 
