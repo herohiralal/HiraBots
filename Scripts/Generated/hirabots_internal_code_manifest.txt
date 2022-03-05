@@ -24,4 +24,5 @@ BlackboardFunctions/IntegerOperatorEffector.cs
 BlackboardFunctions/BooleanIsSetEffector.cs
 BlackboardFunctions/BooleanInvertEffector.cs
 BlackboardFunctions/ObjectEqualsEffector.cs
+BlackboardFunctions/DynamicObjectEqualsEffector.cs
 HiraBots.Generated.asmdef

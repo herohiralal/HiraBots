@@ -279,5 +279,25 @@ namespace HiraBots
 
             staticDescription = $"Set {key.selectedKey.name} to {(value == null ? "null" : value.name)}.";
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("dd2911798c634459affb7196952bd1d9")]
+        // ReSharper disable once RedundantAssignment
+        internal static void DynamicObjectEqualsEffector([HiraBotsObjectKey] ref int key, [HiraBotsObjectKey] ref int value)
+        {
+            key = value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicObjectEqualsEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector key, UnityEngine.AI.BlackboardTemplate.KeySelector value, out string staticDescription)
+        {
+            if (!key.selectedKey.isValid || !value.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"Set {key.selectedKey.name} to {value.selectedKey.name}.";
+        }
     }
 }
