@@ -202,7 +202,7 @@ namespace HiraBots.Editor
 
             if (allowRemove)
             {
-                foreach (var subAsset in subAssets.Where(subAsset => !objectsThatMustBeInFile.Contains(subAsset)))
+                foreach (var subAsset in subAssets.Where(subAsset => subAsset != null && !objectsThatMustBeInFile.Contains(subAsset)))
                 {
                     Debug.Log($"Object clean-up: removed {subAsset.name} from {path}.");
                     AssetDatabase.RemoveObjectFromAsset(subAsset);
