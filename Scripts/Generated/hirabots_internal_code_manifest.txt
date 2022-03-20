@@ -1,6 +1,8 @@
 BlackboardFunctions/AlwaysFailDecorator.cs
 BlackboardFunctions/EnumEqualsDecorator.cs
+BlackboardFunctions/DynamicEnumEqualsDecorator.cs
 BlackboardFunctions/EnumHasFlagsDecorator.cs
+BlackboardFunctions/DynamicEnumHasFlagsDecorator.cs
 BlackboardFunctions/BooleanIsSetDecorator.cs
 BlackboardFunctions/QuaternionIsSetDecorator.cs
 BlackboardFunctions/VectorIsSetDecorator.cs
@@ -10,7 +12,9 @@ BlackboardFunctions/ObjectEqualsDecorator.cs
 BlackboardFunctions/DynamicObjectEqualsDecorator.cs
 BlackboardFunctions/BaseScoreScoreCalculator.cs
 BlackboardFunctions/EnumEqualsScoreCalculator.cs
+BlackboardFunctions/DynamicEnumEqualsScoreCalculator.cs
 BlackboardFunctions/EnumHasFlagsScoreCalculator.cs
+BlackboardFunctions/DynamicEnumHasFlagsScoreCalculator.cs
 BlackboardFunctions/BooleanIsSetScoreCalculator.cs
 BlackboardFunctions/QuaternionIsSetScoreCalculator.cs
 BlackboardFunctions/VectorIsSetScoreCalculator.cs
@@ -19,6 +23,7 @@ BlackboardFunctions/FloatComparisonScoreCalculator.cs
 BlackboardFunctions/ObjectEqualsScoreCalculator.cs
 BlackboardFunctions/DynamicObjectEqualsScoreCalculator.cs
 BlackboardFunctions/EnumOperatorEffector.cs
+BlackboardFunctions/DynamicEnumOperatorEffector.cs
 BlackboardFunctions/FloatOperatorEffector.cs
 BlackboardFunctions/IntegerOperatorEffector.cs
 BlackboardFunctions/BooleanIsSetEffector.cs

@@ -46,6 +46,25 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("da923644764d4bc597a074f3eca02e3f")]
+        internal static float DynamicEnumEqualsScoreCalculator(float currentScore, bool invert, ref byte targetKey, ref byte operatorKey, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.DynamicEnumEqualsDecorator(invert, ref targetKey, ref operatorKey) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicEnumEqualsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, float score, out string staticDescription)
+        {
+            if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {targetKey.selectedKey.name} {(invert ? "is not" : "is")} equal to {operatorKey.selectedKey.name}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea5c")]
         internal static float EnumHasFlagsScoreCalculator(float currentScore, bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value, float score)
         {
@@ -62,6 +81,25 @@ namespace HiraBots
             }
 
             staticDescription = $"{ScoreString(score)} if {key.selectedKey.name} {(invert ? "does not have" : "has")} these flags: {value}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("7dcce05ed5c04e7aa368d41f4dbe38b4")]
+        internal static float DynamicEnumHasFlagsScoreCalculator(float currentScore, bool invert, ref byte targetKey, ref byte operatorKey, float score)
+        {
+            return currentScore + (SampleDecoratorBlackboardFunctions.DynamicEnumHasFlagsDecorator(invert, ref targetKey, ref operatorKey) ? score : 0f);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicEnumHasFlagsScoreCalculatorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, float score, out string staticDescription)
+        {
+            if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{ScoreString(score)} if {targetKey.selectedKey.name} {(invert ? "does not have" : "has")} these flags: {operatorKey.selectedKey.name}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -50,6 +50,49 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("f2ac20c925934185b7aa261643bc71d0")]
+        internal static void DynamicEnumOperatorEffector(ref byte targetKey, SampleBlackboardFunctionsEnumOperationType operationType, ref byte operatorKey)
+        {
+            switch (operationType)
+            {
+                case SampleBlackboardFunctionsEnumOperationType.Set: targetKey = operatorKey;
+                    break;
+                case SampleBlackboardFunctionsEnumOperationType.AddFlags: targetKey |= operatorKey;
+                    break;
+                case SampleBlackboardFunctionsEnumOperationType.RemoveFlags: targetKey = (byte) (targetKey & ~operatorKey);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicEnumOperatorEffector(UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, SampleBlackboardFunctionsEnumOperationType operationType, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, out string staticDescription)
+        {
+            if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            switch (operationType)
+            {
+                case SampleBlackboardFunctionsEnumOperationType.Set:
+                    staticDescription = $"Set {targetKey.selectedKey.name} to {operatorKey.selectedKey.name}.";
+                    break;
+                case SampleBlackboardFunctionsEnumOperationType.AddFlags:
+                    staticDescription = $"Add these flags to {targetKey.selectedKey.name}: {operatorKey.selectedKey.name}.";
+                    break;
+                case SampleBlackboardFunctionsEnumOperationType.RemoveFlags:
+                    staticDescription = $"Remove these flags from {targetKey.selectedKey.name}: {operatorKey.selectedKey.name}.";
+                    break;
+                default:
+                    staticDescription = "";
+                    return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("89af0e100fac43f1ba83126b2d7c87de")]
         internal static void FloatOperatorEffector(ref float key, SampleBlackboardFunctionsFloatOperationType operationType, float value)
         {

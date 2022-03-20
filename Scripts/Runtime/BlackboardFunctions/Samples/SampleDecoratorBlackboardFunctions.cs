@@ -41,6 +41,26 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("7c89e5910ec04893b329539512e8c1b7")]
+        internal static bool DynamicEnumEqualsDecorator(bool invert, ref byte targetKey, ref byte operatorKey)
+        {
+            var result = targetKey == operatorKey;
+            return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicEnumEqualsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, out string staticDescription)
+        {
+            if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{targetKey.selectedKey.name} {(invert ? "must not" : "must")} be equal to {operatorKey.selectedKey.name}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [GenerateInternalBlackboardFunction("841fea4ba9b94948b9a5ff847474ea57")]
         internal static bool EnumHasFlagsDecorator(bool invert, ref byte key, [MatchTypeToEnumKey("key")] byte value)
         {
@@ -58,6 +78,26 @@ namespace HiraBots
             }
 
             staticDescription = $"{key.selectedKey.name} {(invert ? "must not" : "must")} have these flags: {value}.";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [GenerateInternalBlackboardFunction("b407a237055d4715a24a7c10c71d919c")]
+        internal static bool DynamicEnumHasFlagsDecorator(bool invert, ref byte targetKey, ref byte operatorKey)
+        {
+            var result = (targetKey & operatorKey) != 0;
+            return invert != result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void DynamicEnumHasFlagsDecoratorUpdateDescription(bool invert, UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, out string staticDescription)
+        {
+            if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
+            {
+                staticDescription = "";
+                return;
+            }
+
+            staticDescription = $"{targetKey.selectedKey.name} {(invert ? "must not" : "must")} have these flags: {operatorKey.selectedKey.name}.";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
