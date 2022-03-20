@@ -5,20 +5,20 @@
         [System.Runtime.InteropServices.UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
         public unsafe delegate bool Delegate(in BlackboardComponent.LowLevel blackboard, byte* memory);
 
-        [Tooltip("Whether to automatically test the decorator on the blackboard component prior to execution.")]
-        [SerializeField] private bool m_CheckBeforeExecution = true;
+        [Tooltip("Whether to automatically test the decorator on the blackboard component during execution.")]
+        [SerializeField] private bool m_CheckDuringExecution = true;
 
-        public bool checkBeforeExecution
+        public bool checkDuringExecution
         {
-            get => m_CheckBeforeExecution;
-            set => m_CheckBeforeExecution = value;
+            get => m_CheckDuringExecution;
+            set => m_CheckDuringExecution = value;
         }
 
         #region Execution
 
         public bool Execute(BlackboardComponent blackboard, bool expected)
         {
-            if (!m_CheckBeforeExecution)
+            if (!m_CheckDuringExecution)
             {
                 return true;
             }
