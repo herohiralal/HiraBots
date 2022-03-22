@@ -104,7 +104,7 @@ namespace UnityEngine.AI
 
         protected override void UpdateDescription(out string staticDescription)
         {
-            base.UpdateDescription(out staticDescription);
+            HiraBots.SampleEffectorBlackboardFunctions.DynamicEnumOperatorEffectorUpdateDescription(targetKey, operationType, operatorKey, out staticDescription);
         }
 
         #endregion

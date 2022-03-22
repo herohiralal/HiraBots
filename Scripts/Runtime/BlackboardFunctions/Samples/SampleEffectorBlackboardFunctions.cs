@@ -67,7 +67,7 @@ namespace HiraBots
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void DynamicEnumOperatorEffector(UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, SampleBlackboardFunctionsEnumOperationType operationType, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, out string staticDescription)
+        internal static void DynamicEnumOperatorEffectorUpdateDescription(UnityEngine.AI.BlackboardTemplate.KeySelector targetKey, SampleBlackboardFunctionsEnumOperationType operationType, UnityEngine.AI.BlackboardTemplate.KeySelector operatorKey, out string staticDescription)
         {
             if (!targetKey.selectedKey.isValid || !operatorKey.selectedKey.isValid)
             {
