@@ -95,6 +95,19 @@ namespace HiraBots.Editor
             DrawCurrentlyRunningTasks();
         }
 
+        public override bool RequiresConstantRepaint()
+        {
+            return
+                m_Bot != null
+                && !m_Bot.hasError
+                && EditorApplication.isPlaying
+                && m_Bot.domain != null
+                && m_Bot.domain.blackboard != null
+                && m_Bot.domain.blackboard.isCompiled
+                && m_Bot.blackboard != null
+                && m_Bot.planner != null;
+        }
+
         private unsafe void DrawCurrentBlackboardState()
         {
             var blackboardComponent = m_Bot.blackboard;
