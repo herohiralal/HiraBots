@@ -117,6 +117,9 @@ namespace HiraBots
                 datasets.Copy(0, m_Blackboard);
 
                 // check if the current plan is ok
+                short* validOriginalPlan = null;
+                var originalPlanCost = 0f;
+                short originalPlanLength = 0, originalPlanCurrentIndex = 0;
                 if (m_PreviousLayerResult.resultType == LGOAPPlan.Type.Unchanged)
                 {
                     var previousPlanStillValid = true;
@@ -128,11 +131,13 @@ namespace HiraBots
                     // if the plan has been used, can't use an "unchanged" plan now can we?
                     if (currentIndex < planLength)
                     {
+                        var totalPlanCost = 0f;
+
                         for (var i = currentIndex; i < planLength; i++)
                         {
                             actions.collection[m_Result[i]].Break(
                                 out var precondition,
-                                out _,
+                                out var cost,
                                 out var effect);
 
                             if (!precondition.Execute(datasets[0]))
@@ -141,20 +146,35 @@ namespace HiraBots
                                 break;
                             }
 
+                            totalPlanCost += cost.Execute(datasets[0]);
                             effect.Execute(datasets[0]);
                         }
 
                         // current plan is still valid AND it satisfies the target
                         if (previousPlanStillValid && target.GetHeuristic(datasets[0]) == 0)
                         {
-                            m_Result.resultType = LGOAPPlan.Type.Unchanged;
-                            return;
+                            // store cost to compare later
+                            originalPlanCost = totalPlanCost;
+
+                            // store plan to copy later
+                            originalPlanCurrentIndex = currentIndex;
+                            originalPlanLength = planLength;
+                            validOriginalPlan = (short*) UnsafeUtility.Malloc(
+                                planLength * sizeof(short),
+                                UnsafeUtility.AlignOf<short>(),
+                                Allocator.Persistent);
+
+                            for (short i = 0; i < planLength; i++)
+                            {
+                                validOriginalPlan[i] = m_Result[i];
+                            }
                         }
 
                         datasets.Copy(0, m_Blackboard);
                     }
                 }
 
+                // find a new plan
                 new NewPlanFinder
                 {
                     m_Goal = target,
@@ -164,6 +184,44 @@ namespace HiraBots
                     m_FallbackPlan = m_FallbackPlan,
                     m_Result = m_Result
                 }.Execute();
+
+                // if the original plan was valid
+                if (validOriginalPlan != null)
+                {
+                    // reset blackboard
+                    datasets.Copy(0, m_Blackboard);
+
+                    var planLength = m_Result.length;
+                    var currentIndex = m_Result.currentIndex;
+
+                    // calculate cost of new plan
+                    var totalPlanCost = 0f;
+                    for (var i = currentIndex; i < planLength; i++)
+                    {
+                        actions.collection[m_Result[i]].Break(
+                            out _, // do not check for preconditions
+                            out var cost,
+                            out var effect);
+
+                        totalPlanCost += cost.Execute(datasets[0]);
+                        effect.Execute(datasets[0]);
+                    }
+
+                    // copy the plan back if the original plan was just as good (or better?)
+                    if (originalPlanCost <= totalPlanCost)
+                    {
+                        m_Result.currentIndex = originalPlanCurrentIndex;
+                        m_Result.resultType = LGOAPPlan.Type.Unchanged;
+                        m_Result.length = originalPlanLength;
+
+                        for (short i = 0; i < originalPlanLength; i++)
+                        {
+                            m_Result[i] = validOriginalPlan[i];
+                        }
+                    }
+
+                    UnsafeUtility.Free(validOriginalPlan, Allocator.Persistent);
+                }
 
                 UnsafeUtility.Free(datasetsPtr, Allocator.Persistent);
             }
