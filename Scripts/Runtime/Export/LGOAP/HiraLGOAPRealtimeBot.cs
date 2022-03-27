@@ -60,7 +60,28 @@ namespace UnityEngine.AI
         public LGOAPDomain domain
         {
             get => m_Domain;
-            set => m_Domain = value.m_Value;
+            set
+            {
+                m_Domain = value.m_Value;
+
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    return;
+                }
+#endif
+
+                if (!isActiveAndEnabled || string.IsNullOrWhiteSpace(gameObject.scene.path))
+                {
+                    return;
+                }
+
+                if (!ReferenceEquals(m_Domain, m_Internal.m_Domain))
+                {
+                    StopUsingOldDomain();
+                    StartUsingNewDomain();
+                }
+            }
         }
 
         /// <summary>
