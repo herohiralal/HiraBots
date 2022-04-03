@@ -120,7 +120,6 @@ namespace HiraBots
         {
             if (s_StimuliLookUpTable.Count > 0)
             {
-                var num = 0;
                 for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
                     if (s_SensorsSecondaryChecks[sensorIndex] == SensorSecondaryChecksFlags.None)
@@ -128,18 +127,9 @@ namespace HiraBots
                         continue;
                     }
 
-                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
-
-                    if (num >= 20)
-                    {
-                        JobHandle.ScheduleBatchedJobs();
-                        num = 0;
-                    }
+                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex);
                 }
 
-                JobHandle.ScheduleBatchedJobs();
-
-                num = 0;
                 for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
                 {
                     if (s_SensorsSecondaryChecks[sensorIndex] != SensorSecondaryChecksFlags.None)
@@ -147,13 +137,7 @@ namespace HiraBots
                         continue;
                     }
 
-                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex, ref num);
-
-                    if (num >= 20)
-                    {
-                        JobHandle.ScheduleBatchedJobs();
-                        num = 0;
-                    }
+                    ScheduleJobsToDetermineObjectsPerceivedThisTick(sensorIndex);
                 }
 
                 JobHandle.ScheduleBatchedJobs();
@@ -167,8 +151,6 @@ namespace HiraBots
 
                     s_Sensors[sensorIndex].ScheduleSecondaryCheckJobs();
                 }
-
-                JobHandle.ScheduleBatchedJobs();
             }
 
             for (var sensorIndex = 0; sensorIndex < s_SensorsCount; sensorIndex++)
@@ -179,7 +161,7 @@ namespace HiraBots
             JobHandle.ScheduleBatchedJobs();
         }
 
-        private static void ScheduleJobsToDetermineObjectsPerceivedThisTick(int sensorIndex, ref int jobsScheduledCount)
+        private static void ScheduleJobsToDetermineObjectsPerceivedThisTick(int sensorIndex)
         {
             var stimulusMask = s_SensorsStimulusMasks[sensorIndex];
 
@@ -199,12 +181,10 @@ namespace HiraBots
                     continue;
                 }
 
-                var jobScheduled = s_Sensors[sensorIndex].ScheduleJobsToDetermineObjectsPerceivedThisTick(
+                s_Sensors[sensorIndex].ScheduleJobsToDetermineObjectsPerceivedThisTick(
                     s_StimuliPositions[stimulusTypeIndex],
                     s_StimuliAssociatedObjects[stimulusTypeIndex],
                     stimuliCount);
-
-                jobsScheduledCount += jobScheduled ? 1 : 0;
             }
         }
 

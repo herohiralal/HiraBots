@@ -196,7 +196,7 @@ namespace UnityEngine.AI
             
         }
 
-        internal bool ScheduleJobsToDetermineObjectsPerceivedThisTick(
+        internal void ScheduleJobsToDetermineObjectsPerceivedThisTick(
             NativeArray<float4> stimuliPositions,
             NativeArray<int> stimuliAssociatedObjects,
             int stimuliCount)
@@ -217,11 +217,10 @@ namespace UnityEngine.AI
             catch (System.Exception e)
             {
                 Debug.LogException(e);
-                return false;
+                return;
             }
 
             m_UpdateJob = jh;
-            return true;
         }
 
         protected abstract JobHandle ScheduleBoundsCheckJob(

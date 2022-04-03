@@ -141,6 +141,8 @@ namespace HiraBots
         private void Update()
         {
             TickBehavioursUpdateSystem();
+            JobHandle.ScheduleBatchedJobs();
+
             TickTasksUpdateSystem();
             TickServicesUpdateSystem();
 
