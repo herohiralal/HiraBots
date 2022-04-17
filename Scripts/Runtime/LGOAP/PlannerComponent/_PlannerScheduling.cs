@@ -9,7 +9,6 @@ namespace HiraBots
     {
         private enum Status
         {
-            WillSchedulePlanner,
             Planning,
             Normal
         }
@@ -32,12 +31,6 @@ namespace HiraBots
 
             switch (m_Status)
             {
-                case Status.WillSchedulePlanner:
-                    if (index < m_LayerToSchedulePlannerAt)
-                    {
-                        m_LayerToSchedulePlannerAt = index;
-                    }
-                    break;
                 case Status.Planning when discardIfAlreadyPlanning:
                     m_LayerToSchedulePlannerAt = index;
                     break;
@@ -69,11 +62,6 @@ namespace HiraBots
             }
             else
             {
-                // mark the status as about to start planning
-                m_Status = Status.WillSchedulePlanner;
-
-                yield return null;
-
                 // get the index to schedule the planner job at and mark it as consumed
                 index = m_LayerToSchedulePlannerAt.Value;
                 m_LayerToSchedulePlannerAt = null;
