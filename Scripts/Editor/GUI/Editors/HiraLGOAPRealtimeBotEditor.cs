@@ -127,7 +127,7 @@ namespace HiraBots.Editor
 
                 foreach (var key in m_Keys)
                 {
-                    var keyName = key.name;
+                    var keyName = ObjectNames.NicifyVariableName(key.name);
 
                     switch (key)
                     {
