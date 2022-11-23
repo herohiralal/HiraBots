@@ -127,14 +127,15 @@ namespace HiraBots.Editor
 
                 foreach (var key in m_Keys)
                 {
-                    var keyName = ObjectNames.NicifyVariableName(key.name);
+                    var keyName = key.name;
+                    var keyDisplayName = ObjectNames.NicifyVariableName(keyName);
 
                     switch (key)
                     {
                         case BooleanBlackboardKey _:
                         {
                             var currentValue = blackboardComponent.GetBooleanValue(keyName);
-                            var newValue = EditorGUILayout.Toggle(keyName, currentValue);
+                            var newValue = EditorGUILayout.Toggle(keyDisplayName, currentValue);
 
                             if (currentValue != newValue)
                             {
@@ -153,7 +154,7 @@ namespace HiraBots.Editor
                             var newValueTemp = currentValue;
 
                             GUIHelpers.DynamicEnumPopup(EditorGUILayout.GetControlRect(),
-                                GUIHelpers.TempContent(keyName),
+                                GUIHelpers.TempContent(keyDisplayName),
                                 (System.IntPtr) (&newValueTemp),
                                 DynamicEnum.Helpers.identifierToType[enumKey.typeIdentifier]);
 
@@ -172,7 +173,7 @@ namespace HiraBots.Editor
                         case FloatBlackboardKey _:
                         {
                             var currentValue = blackboardComponent.GetFloatValue(keyName);
-                            var newValue = EditorGUILayout.DelayedFloatField(keyName, currentValue);
+                            var newValue = EditorGUILayout.DelayedFloatField(keyDisplayName, currentValue);
 
                             if (Mathf.Abs(newValue - currentValue) >= 0.0001f)
                             {
@@ -187,7 +188,7 @@ namespace HiraBots.Editor
                         case IntegerBlackboardKey _:
                         {
                             var currentValue = blackboardComponent.GetIntegerValue(keyName);
-                            var newValue = EditorGUILayout.DelayedIntField(keyName, currentValue);
+                            var newValue = EditorGUILayout.DelayedIntField(keyDisplayName, currentValue);
 
                             if (currentValue != newValue)
                             {
@@ -202,7 +203,7 @@ namespace HiraBots.Editor
                         case ObjectBlackboardKey _:
                         {
                             var currentValue = blackboardComponent.GetObjectValue(keyName);
-                            var newValue = EditorGUILayout.ObjectField(keyName, currentValue, typeof(Object), true);
+                            var newValue = EditorGUILayout.ObjectField(keyDisplayName, currentValue, typeof(Object), true);
 
                             if (currentValue != newValue)
                             {
@@ -217,7 +218,7 @@ namespace HiraBots.Editor
                         case QuaternionBlackboardKey _:
                         {
                             var currentValue = ((Quaternion) blackboardComponent.GetQuaternionValue(keyName)).eulerAngles;
-                            var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
+                            var newValue = EditorGUILayout.Vector3Field(keyDisplayName, currentValue);
 
                             if (currentValue != newValue)
                             {
@@ -232,7 +233,7 @@ namespace HiraBots.Editor
                         case VectorBlackboardKey _:
                         {
                             var currentValue = (Vector3) blackboardComponent.GetVectorValue(keyName);
-                            var newValue = EditorGUILayout.Vector3Field(keyName, currentValue);
+                            var newValue = EditorGUILayout.Vector3Field(keyDisplayName, currentValue);
 
                             if (currentValue != newValue)
                             {
