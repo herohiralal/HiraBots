@@ -1,0 +1,1 @@
+﻿        internal <BLACKBOARD-KEY-TYPE> m_<BLACKBOARD-KEY-NAME>;

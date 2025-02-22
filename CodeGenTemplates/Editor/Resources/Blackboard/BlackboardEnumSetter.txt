@@ -1,0 +1,16 @@
+﻿#pragma warning disable 109
+        public<BLACKBOARD-STATIC-ACCESSOR> unsafe void Set<BLACKBOARD-INSTANCE-SYNCED-ACCESSOR>EnumValue<T>(string key, T value, bool expected = false)<ENUM-ACCESSOR-CONSTRAINTS>
+#pragma warning restore 109
+        {
+            if (sizeof(T) != 1)
+            {
+                throw new OverflowException($"Invalid enum type: {typeof(T).FullName}. Only 8-bit enums are allowed.");
+            }
+
+            switch (key)
+            {
+<BLACKBOARD-INDIVIDUAL-SETTERS>
+                default:
+                    throw new KeyNotFoundException($"Invalid key name: {key}");
+            }
+        }

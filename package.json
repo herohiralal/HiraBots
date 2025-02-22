@@ -1,14 +1,14 @@
 {
   "name": "com.rohanjadav.hirabots",
-  "version": "0.0.1",
-  "displayName": "HiraBots AI",
-  "unity": "2018.4",
-  "unityRelease": "36f1",
+  "version": "0.9.5",
+  "displayName": "HiraBots",
+  "unity": "2019.4",
+  "unityRelease": "29f1",
   "author": {
     "name": "Rohan Jadav"
   },
   "dependencies": {
-    "com.unity.burst": "1.5.4",
+    "com.unity.burst": "1.5.5",
     "com.unity.mathematics": "1.2.1"
   }
 }

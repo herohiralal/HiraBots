@@ -1,0 +1,3 @@
+﻿                case "<BLACKBOARD-KEY-NAME>":
+                    <BLACKBOARD-STATIC-ACCESSOR>Set<BLACKBOARD-KEY-NAME>(value);
+                    break;

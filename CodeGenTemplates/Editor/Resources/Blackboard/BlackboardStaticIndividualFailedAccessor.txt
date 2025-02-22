@@ -1,0 +1,2 @@
+﻿                case "<BLACKBOARD-KEY-NAME>":
+                    throw new InvalidOperationException($"Instanced value requested without an instance: {key}.");

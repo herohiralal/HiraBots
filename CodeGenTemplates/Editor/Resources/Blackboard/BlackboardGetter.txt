@@ -1,0 +1,11 @@
+﻿#pragma warning disable 109
+        public<BLACKBOARD-STATIC-ACCESSOR> <BLACKBOARD-ACTUAL-KEY-TYPE> Get<BLACKBOARD-INSTANCE-SYNCED-ACCESSOR><BLACKBOARD-KEY-DISPLAY-TYPE>Value(string key)
+#pragma warning restore 109
+        {
+            switch (key)
+            {
+<BLACKBOARD-INDIVIDUAL-GETTERS>
+                default:
+                    throw new KeyNotFoundException($"Invalid key name: {key}");
+            }
+        }
